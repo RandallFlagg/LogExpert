@@ -2,6 +2,7 @@
 using LogExpert.Classes.ILogLineColumnizerCallback;
 using LogExpert.Entities;
 using NLog;
+using Range = LogExpert.Entities.Range;
 
 namespace LogExpert.Classes
 {

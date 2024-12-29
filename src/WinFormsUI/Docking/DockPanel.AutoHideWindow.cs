@@ -2,6 +2,8 @@ using System;
 using System.Windows.Forms;
 using System.Drawing;
 using System.Runtime.InteropServices;
+using Timer = System.Windows.Forms.Timer;
+using System.ComponentModel;
 
 namespace WeifenLuo.WinFormsUI.Docking
 {
@@ -169,8 +171,10 @@ namespace WeifenLuo.WinFormsUI.Docking
 
             public DockPanel DockPanel { get; } = null;
 
+            [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
             public DockPane ActivePane { get; private set; } = null;
 
+            [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
             public IDockContent ActiveContent
             {
                 get { return m_activeContent; }
@@ -227,6 +231,7 @@ namespace WeifenLuo.WinFormsUI.Docking
 
             private bool FlagAnimate { get; set; } = true;
 
+            [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
             internal bool FlagDragging
             {
                 get { return m_flagDragging; }

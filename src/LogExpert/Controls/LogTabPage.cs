@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.Threading;
 using System.Windows.Forms;
 using LogExpert.Classes;
@@ -54,10 +55,13 @@ namespace LogExpert.Controls
             }
         }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool Dirty { get; set; } = false;
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool IsActiveTab { get; set; } = false;
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public string TabTitle { get; set; } = "";
 
         #endregion

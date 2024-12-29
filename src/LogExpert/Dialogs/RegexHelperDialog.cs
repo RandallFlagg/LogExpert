@@ -31,6 +31,7 @@ namespace LogExpert.Dialogs
 
         #region Properties
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool CaseSensitive
         {
             get { return this.caseSensitive; }
@@ -41,6 +42,7 @@ namespace LogExpert.Dialogs
             }
         }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public string Pattern
         {
             get { return this.expressionComboBox.Text; }

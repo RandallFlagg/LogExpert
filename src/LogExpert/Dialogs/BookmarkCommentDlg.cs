@@ -21,6 +21,7 @@ namespace LogExpert.Dialogs
 
         #region Properties
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public string Comment
         {
             set { this.commentTextBox.Text = value; }

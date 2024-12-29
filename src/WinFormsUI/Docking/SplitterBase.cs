@@ -19,6 +19,7 @@ namespace WeifenLuo.WinFormsUI.Docking
 
         #region Properties
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public override DockStyle Dock
         {
             get { return base.Dock; }

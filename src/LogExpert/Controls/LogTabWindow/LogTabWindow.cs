@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.Reflection;
 using System.Text;
@@ -165,7 +166,9 @@ namespace LogExpert.Controls.LogTabWindow
 
         public delegate void HighlightSettingsChangedEventHandler(object sender, EventArgs e);
 
-        private delegate void LoadFileDelegate(string fileName, EncodingOptions encodingOptions);
+        // Define the delegate as asynchronous 
+        //private delegate void LoadFileDelegate(string fileName, EncodingOptions encodingOptions);
+        private delegate Task LoadFileDelegate(string logFileName, EncodingOptions encodingOptions);
 
         private delegate void LoadMultiFilesDelegate(string[] fileName, EncodingOptions encodingOptions);
 
@@ -187,16 +190,19 @@ namespace LogExpert.Controls.LogTabWindow
 
         #region Properties
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public LogWindow.LogWindow CurrentLogWindow
         {
             get => _currentLogWindow;
             set => ChangeCurrentLogWindow(value);
         }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public SearchParams SearchParams { get; private set; } = new SearchParams();
 
         public Preferences Preferences => ConfigManager.Settings.preferences;
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public List<HilightGroup> HilightGroupList { get; private set; } = new List<HilightGroup>();
 
         //public Settings Settings
@@ -204,8 +210,10 @@ namespace LogExpert.Controls.LogTabWindow
         //  get { return ConfigManager.Settings; }
         //}
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public ILogExpertProxy LogExpertProxy { get; set; }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         internal static StaticLogTabWindowData StaticData { get; set; } = new StaticLogTabWindowData();
 
         #endregion

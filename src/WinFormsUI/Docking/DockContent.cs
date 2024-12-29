@@ -100,6 +100,7 @@ namespace WeifenLuo.WinFormsUI.Docking
         }
 
         [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public DockPanel DockPanel
         {
             get { return DockHandler.DockPanel; }
@@ -107,6 +108,7 @@ namespace WeifenLuo.WinFormsUI.Docking
         }
 
         [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public DockState DockState
         {
             get { return DockHandler.DockState; }
@@ -114,6 +116,7 @@ namespace WeifenLuo.WinFormsUI.Docking
         }
 
         [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public DockPane Pane
         {
             get { return DockHandler.Pane; }
@@ -121,6 +124,7 @@ namespace WeifenLuo.WinFormsUI.Docking
         }
 
         [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool IsHidden
         {
             get { return DockHandler.IsHidden; }
@@ -128,6 +132,7 @@ namespace WeifenLuo.WinFormsUI.Docking
         }
 
         [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public DockState VisibleState
         {
             get { return DockHandler.VisibleState; }
@@ -135,6 +140,7 @@ namespace WeifenLuo.WinFormsUI.Docking
         }
 
         [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool IsFloat
         {
             get { return DockHandler.IsFloat; }
@@ -142,6 +148,7 @@ namespace WeifenLuo.WinFormsUI.Docking
         }
 
         [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public DockPane PanelPane
         {
             get { return DockHandler.PanelPane; }
@@ -149,6 +156,7 @@ namespace WeifenLuo.WinFormsUI.Docking
         }
 
         [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public DockPane FloatPane
         {
             get { return DockHandler.FloatPane; }
@@ -182,7 +190,7 @@ namespace WeifenLuo.WinFormsUI.Docking
         [LocalizedCategory("Category_Docking")]
         [LocalizedDescription("DockContent_TabPageContextMenu_Description")]
         [DefaultValue(null)]
-        public ContextMenu TabPageContextMenu
+        public ContextMenuStrip TabPageContextMenu
         {
             get { return DockHandler.TabPageContextMenu; }
             set { DockHandler.TabPageContextMenu = value; }

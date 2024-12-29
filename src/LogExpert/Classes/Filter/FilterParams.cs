@@ -9,6 +9,8 @@ namespace LogExpert.Classes.Filter
     [Serializable]
     public class FilterParams
     {
+        public FilterParams() { }
+
         #region Fields
 
         public string _rangeSearchText = "";

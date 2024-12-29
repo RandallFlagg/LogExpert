@@ -3,6 +3,7 @@ using System.Data;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using System.ComponentModel;
 
 namespace RegexColumnizer
 {
@@ -13,7 +14,8 @@ namespace RegexColumnizer
 			InitializeComponent();
 		}
 
-		public RegexColumnizerConfig Config { get; set; }
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public RegexColumnizerConfig Config { get; set; }
 
 		private void btnOk_Click(object sender, EventArgs e)
 		{

@@ -16,11 +16,13 @@ namespace WeifenLuo.WinFormsUI.Docking
 
         private SplitterControl Splitter { get; set; }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         internal Rectangle SplitterBounds
         {
             set { Splitter.Bounds = value; }
         }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         internal DockAlignment SplitterAlignment
         {
             set { Splitter.Alignment = value; }
@@ -50,6 +52,7 @@ namespace WeifenLuo.WinFormsUI.Docking
 
             public DockPane DockPane { get; }
 
+            [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
             public DockAlignment Alignment
             {
                 get { return m_alignment; }

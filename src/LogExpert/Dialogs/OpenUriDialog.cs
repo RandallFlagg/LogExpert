@@ -30,6 +30,7 @@ namespace LogExpert.Dialogs
             get { return this.uriComboBox.Text; }
         }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public IList<string> UriHistory { get; set; }
 
         #endregion

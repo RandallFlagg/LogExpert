@@ -354,7 +354,7 @@ namespace LogExpert.Controls.LogWindow
             }
 
             int lineNum = _filterResultList[e.RowIndex];
-            ILogLine line = _logFileReader.GetLogLineWithWait(lineNum);
+            ILogLine line = (ILogLine)_logFileReader.GetLogLineWithWait(lineNum);
             if (line != null)
             {
                 HilightEntry entry = FindFirstNoWordMatchHilightEntry(line);

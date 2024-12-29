@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -42,14 +43,17 @@ namespace LogExpert.Dialogs
 
         #region Properties
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public List<HilightGroup> HighlightGroupList
         {
             get => _highlightGroupList;
             set => _highlightGroupList = ObjectClone.Clone(value);
         }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public IList<IKeywordAction> KeywordActionList { get; set; }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public string PreSelectedGroupName { get; set; }
 
         private bool IsDirty => buttonApply.Image == _applyButtonImage;

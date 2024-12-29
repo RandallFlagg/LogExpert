@@ -21,8 +21,8 @@ namespace LogExpert.Controls.LogWindow
     public partial class LogWindow
     {
         #region Public methods
-
         public void LoadFile(string fileName, EncodingOptions encodingOptions)
+        //public async Task LoadFile(string fileName, EncodingOptions encodingOptions)
         {
             EnterLoadFileStatus();
 
@@ -385,99 +385,100 @@ namespace LogExpert.Controls.LogWindow
             return Column.EmptyColumn;
         }
 
-        public void CellPainting(DataGridView gridView, int rowIndex, DataGridViewCellPaintingEventArgs e)
+        public async Task CellPainting(DataGridView gridView, int rowIndex, DataGridViewCellPaintingEventArgs e)
         {
             if (rowIndex < 0 || e.ColumnIndex < 0)
             {
                 e.Handled = false;
-                return;
             }
-
-            ILogLine line = _logFileReader.GetLogLineWithWait(rowIndex);
-
-            if (line != null)
+            else
             {
-                HilightEntry entry = FindFirstNoWordMatchHilightEntry(line);
-                e.Graphics.SetClip(e.CellBounds);
-            
-                if ((e.State & DataGridViewElementStates.Selected) == DataGridViewElementStates.Selected)
-                {
-                    Color backColor = e.CellStyle.SelectionBackColor;
-                    Brush brush;
-                
-                    if (gridView.Focused)
-                    {
-                        brush = new SolidBrush(e.CellStyle.SelectionBackColor);
-                    }
-                    else
-                    {
-                        Color color = Color.FromArgb(255, 170, 170, 170);
-                        brush = new SolidBrush(color);
-                    }
+                ILogLine line = await _logFileReader.GetLogLineWithWait(rowIndex);
 
-                    e.Graphics.FillRectangle(brush, e.CellBounds);
-                    brush.Dispose();
-                }
-                else
+                if (line != null)
                 {
-                    Color bgColor = Color.White;
-                    
-                    if (!DebugOptions.disableWordHighlight)
+                    HilightEntry entry = FindFirstNoWordMatchHilightEntry(line);
+                    e.Graphics.SetClip(e.CellBounds);
+
+                    if ((e.State & DataGridViewElementStates.Selected) == DataGridViewElementStates.Selected)
                     {
-                        if (entry != null)
+                        Color backColor = e.CellStyle.SelectionBackColor;
+                        Brush brush;
+
+                        if (gridView.Focused)
                         {
-                            bgColor = entry.BackgroundColor;
+                            brush = new SolidBrush(e.CellStyle.SelectionBackColor);
                         }
-                    }
-                    else
-                    {
-                        if (entry != null)
+                        else
                         {
-                            bgColor = entry.BackgroundColor;
+                            Color color = Color.FromArgb(255, 170, 170, 170);
+                            brush = new SolidBrush(color);
                         }
-                    }
-                    e.CellStyle.BackColor = bgColor;
-                    e.PaintBackground(e.ClipBounds, false);
-                }
 
-                if (DebugOptions.disableWordHighlight)
-                {
-                    e.PaintContent(e.CellBounds);
-                }
-                else
-                {
-                    PaintCell(e, gridView, false, entry);
-                }
-
-                if (e.ColumnIndex == 0)
-                {
-                    if (_bookmarkProvider.IsBookmarkAtLine(rowIndex))
-                    {
-                        Rectangle r; // = new Rectangle(e.CellBounds.Left + 2, e.CellBounds.Top + 2, 6, 6);
-                        r = e.CellBounds;
-                        r.Inflate(-2, -2);
-                        Brush brush = new SolidBrush(BookmarkColor);
-                        e.Graphics.FillRectangle(brush, r);
+                        e.Graphics.FillRectangle(brush, e.CellBounds);
                         brush.Dispose();
-                        Bookmark bookmark = _bookmarkProvider.GetBookmarkForLine(rowIndex);
-                    
-                        if (bookmark.Text.Length > 0)
+                    }
+                    else
+                    {
+                        Color bgColor = Color.White;
+
+                        if (!DebugOptions.disableWordHighlight)
                         {
-                            StringFormat format = new StringFormat();
-                            format.LineAlignment = StringAlignment.Center;
-                            format.Alignment = StringAlignment.Center;
-                            Brush brush2 = new SolidBrush(Color.FromArgb(255, 190, 100, 0));
-                            Font font = new Font("Courier New", Preferences.fontSize, FontStyle.Bold);
-                            e.Graphics.DrawString("i", font, brush2, new RectangleF(r.Left, r.Top, r.Width, r.Height),
-                                format);
-                            font.Dispose();
-                            brush2.Dispose();
+                            if (entry != null)
+                            {
+                                bgColor = entry.BackgroundColor;
+                            }
+                        }
+                        else
+                        {
+                            if (entry != null)
+                            {
+                                bgColor = entry.BackgroundColor;
+                            }
+                        }
+                        e.CellStyle.BackColor = bgColor;
+                        e.PaintBackground(e.ClipBounds, false);
+                    }
+
+                    if (DebugOptions.disableWordHighlight)
+                    {
+                        e.PaintContent(e.CellBounds);
+                    }
+                    else
+                    {
+                        PaintCell(e, gridView, false, entry);
+                    }
+
+                    if (e.ColumnIndex == 0)
+                    {
+                        if (_bookmarkProvider.IsBookmarkAtLine(rowIndex))
+                        {
+                            Rectangle r; // = new Rectangle(e.CellBounds.Left + 2, e.CellBounds.Top + 2, 6, 6);
+                            r = e.CellBounds;
+                            r.Inflate(-2, -2);
+                            Brush brush = new SolidBrush(BookmarkColor);
+                            e.Graphics.FillRectangle(brush, r);
+                            brush.Dispose();
+                            Bookmark bookmark = _bookmarkProvider.GetBookmarkForLine(rowIndex);
+
+                            if (bookmark.Text.Length > 0)
+                            {
+                                StringFormat format = new StringFormat();
+                                format.LineAlignment = StringAlignment.Center;
+                                format.Alignment = StringAlignment.Center;
+                                Brush brush2 = new SolidBrush(Color.FromArgb(255, 190, 100, 0));
+                                Font font = new Font("Courier New", Preferences.fontSize, FontStyle.Bold);
+                                e.Graphics.DrawString("i", font, brush2, new RectangleF(r.Left, r.Top, r.Width, r.Height),
+                                    format);
+                                font.Dispose();
+                                brush2.Dispose();
+                            }
                         }
                     }
-                }
 
-                e.Paint(e.CellBounds, DataGridViewPaintParts.Border);
-                e.Handled = true;
+                    e.Paint(e.CellBounds, DataGridViewPaintParts.Border);
+                    e.Handled = true;
+                }
             }
         }
 
@@ -578,7 +579,7 @@ namespace LogExpert.Controls.LogWindow
             }
         }
 
-        public void StartSearch()
+        public async void StartSearch()
         {
             _guiStateArgs.MenuEnabled = false;
             GuiStateUpdate(this, _guiStateArgs);
@@ -605,8 +606,10 @@ namespace LogExpert.Controls.LogWindow
             _progressEventArgs.Visible = true;
             SendProgressBarUpdate();
 
-            SearchFx searchFx = Search;
-            searchFx.BeginInvoke(searchParams, SearchComplete, null);
+            //SearchFx searchFx = Search;
+            //searchFx.BeginInvoke(searchParams, SearchComplete, null);
+            var a = await Search(searchParams);
+            SearchComplete(a);
 
             RemoveAllSearchHighlightEntries();
             AddSearchHitHighlightEntry(searchParams);

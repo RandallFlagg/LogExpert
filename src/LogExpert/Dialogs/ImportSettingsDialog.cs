@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Windows.Forms;
 using LogExpert.Config;
 
@@ -21,8 +22,10 @@ namespace LogExpert.Dialogs
 
         #region Properties
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public string FileName { get; private set; }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public ExportImportFlags ImportFlags { get; private set; }
 
         #endregion

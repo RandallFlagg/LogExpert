@@ -132,6 +132,7 @@ namespace WeifenLuo.WinFormsUI.Docking
                      "The BackColor property changes the borders of surrounding controls (DockPane).\r\n" +
                      "Alternatively both properties may be used (BackColor to draw and define the color of the borders and DockBackColor to define the color of the client rectangle).\r\n" +
                      "For Backgroundimages: Set your prefered Image, then set the DockBackColor and the BackColor to the same Color (Control).")]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public Color DockBackColor
         {
             get { return !m_BackColor.IsEmpty ? m_BackColor : base.BackColor; }
@@ -159,6 +160,7 @@ namespace WeifenLuo.WinFormsUI.Docking
         }
 
         [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public IDockContent ActiveAutoHideContent
         {
             get { return AutoHideWindow.ActiveContent; }
@@ -221,6 +223,7 @@ namespace WeifenLuo.WinFormsUI.Docking
 
         [LocalizedCategory("Category_Docking")]
         [LocalizedDescription("DockPanel_DockPanelSkin")]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public DockPanelSkin Skin { get; set; } = new DockPanelSkin();
 
         [DefaultValue(DocumentTabStripLocation.Top)]

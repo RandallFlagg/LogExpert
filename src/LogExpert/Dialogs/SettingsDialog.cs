@@ -10,6 +10,7 @@ using LogExpert.Classes.Columnizer;
 using LogExpert.Config;
 using LogExpert.Controls.LogTabWindow;
 using LogExpert.Entities;
+using System.ComponentModel;
 
 namespace LogExpert.Dialogs
 {
@@ -43,6 +44,7 @@ namespace LogExpert.Dialogs
 
         #region Properties
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public Preferences Preferences { get; private set; }
 
         #endregion

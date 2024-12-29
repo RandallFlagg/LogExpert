@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 using System.Drawing;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Windows.Forms;
 using System.Xml;
+using System.Xml.Serialization;
 using LogExpert.Classes.Filter;
 using LogExpert.Config;
 using LogExpert.Entities;
@@ -218,7 +220,13 @@ namespace LogExpert.Classes.Persister
             WriteBookmarks(xmlDoc, fileElement, persistenceData.bookmarkList);
             WriteRowHeightList(xmlDoc, fileElement, persistenceData.rowHeightList);
             WriteOptions(xmlDoc, fileElement, persistenceData);
-            WriteFilter(xmlDoc, fileElement, persistenceData.filterParamsList);
+            try
+            {
+                WriteFilter(xmlDoc, fileElement, persistenceData.filterParamsList);
+            }
+            catch (Exception ex) {
+                Console.WriteLine(ex.Message);
+            }
             WriteFilterTabs(xmlDoc, fileElement, persistenceData.filterTabDataList);
             WriteEncoding(xmlDoc, fileElement, persistenceData.encoding);
             if (xmlDoc.HasChildNodes)
@@ -296,10 +304,25 @@ namespace LogExpert.Classes.Persister
                 XmlElement filterElement = xmlDoc.CreateElement("filter");
                 XmlElement paramsElement = xmlDoc.CreateElement("params");
 
-                BinaryFormatter formatter = new BinaryFormatter();
-                MemoryStream stream = new MemoryStream(200);
-                formatter.Serialize(stream, filterParams);
-                string base64Data = System.Convert.ToBase64String(stream.ToArray());
+                //FIXME: OBSOLETE
+                //BinaryFormatter formatter = new BinaryFormatter();
+                //MemoryStream stream = new MemoryStream(200);
+                //formatter.Serialize(stream, filterParams);
+                //string base64Data = System.Convert.ToBase64String(stream.ToArray());
+                //FIXME: OBSOLETE
+                XmlSerializer serializer = null;
+                try
+                {
+                    serializer = new XmlSerializer(typeof(FilterParams));
+                }
+                catch (Exception ex) {
+                    Console.WriteLine(ex.Message);
+                }
+                MemoryStream stream = new MemoryStream();
+
+                // Assuming filterParams is an instance of FilterParams
+                serializer.Serialize(stream, filterParams);
+                string base64Data = Convert.ToBase64String(stream.ToArray());
                 paramsElement.InnerText = base64Data;
                 filterElement.AppendChild(paramsElement);
                 filtersElement.AppendChild(filterElement);
@@ -322,7 +345,10 @@ namespace LogExpert.Classes.Persister
                         {
                             string base64Text = subNode.InnerText;
                             byte[] data = System.Convert.FromBase64String(base64Text);
+                            //FIXME: OBSOLETE
+#pragma warning disable SYSLIB0011 // Type or member is obsolete
                             BinaryFormatter formatter = new BinaryFormatter();
+#pragma warning restore SYSLIB0011 // Type or member is obsolete
                             MemoryStream stream = new MemoryStream(data);
                             FilterParams filterParams = (FilterParams) formatter.Deserialize(stream);
                             filterParams.Init();

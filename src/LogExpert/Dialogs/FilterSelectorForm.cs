@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Windows.Forms;
 using LogExpert.Config;
 
@@ -51,10 +52,12 @@ namespace LogExpert.Dialogs
 
         #region Properties
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public ILogLineColumnizer SelectedColumnizer { get; private set; }
 
         public bool ApplyToAll => applyToAllCheckBox.Checked;
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool IsConfigPressed { get; private set; }
 
         #endregion

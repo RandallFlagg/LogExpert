@@ -21,6 +21,7 @@ namespace LogExpert.Dialogs
 
         #region Properties
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public string TabName
         {
             get { return this.tabNameTextBox.Text; }

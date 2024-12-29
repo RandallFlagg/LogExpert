@@ -32,6 +32,7 @@ namespace LogExpert.Dialogs
 
         #region Properties
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public SearchParams SearchParams { get; set; } = null;
 
         #endregion

@@ -114,9 +114,11 @@ namespace LogExpert.Controls.LogTabWindow
                 logWindow.ForcedPersistenceFileName = givenFileName;
             }
 
-            // this.BeginInvoke(new LoadFileDelegate(logWindow.LoadFile), new object[] { logFileName, encoding });
-            LoadFileDelegate loadFileFx = logWindow.LoadFile;
-            loadFileFx.BeginInvoke(logFileName, encodingOptions, null, null);
+            //this.BeginInvoke(new LoadFileDelegate(logWindow.LoadFile), new object[] { logFileName, encoding });
+            //LoadFileDelegate loadFileFx = logWindow.LoadFile;
+            //loadFileFx.BeginInvoke(logFileName, encodingOptions, null, null);
+            Task.Run(()=>logWindow.LoadFile(logFileName, encodingOptions));
+
             return logWindow;
         }
 

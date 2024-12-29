@@ -55,8 +55,10 @@ namespace LogExpert.Dialogs
 
         #region Properties
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool ReverseAlpha { get; set; }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         internal TimeSpreadCalculator TimeSpreadCalc
         {
             get { return timeSpreadCalc; }

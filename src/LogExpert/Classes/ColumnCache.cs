@@ -15,13 +15,13 @@ namespace LogExpert.Classes
 
         #region Internals
 
-        internal IColumnizedLogLine GetColumnsForLine(LogfileReader logFileReader, int lineNumber, ILogLineColumnizer columnizer, ColumnizerCallback columnizerCallback)
+        internal async Task<IColumnizedLogLine> GetColumnsForLine(LogfileReader logFileReader, int lineNumber, ILogLineColumnizer columnizer, ColumnizerCallback columnizerCallback)
         {
             if (_lastColumnizer != columnizer || _lastLineNumber != lineNumber && _cachedColumns != null || columnizerCallback.LineNum != lineNumber)
             {
                 _lastColumnizer = columnizer;
                 _lastLineNumber = lineNumber;
-                ILogLine line = logFileReader.GetLogLineWithWait(lineNumber);
+                ILogLine line = await logFileReader.GetLogLineWithWait(lineNumber);
                 if (line != null)
                 {
                     columnizerCallback.LineNum = lineNumber;

@@ -57,6 +57,7 @@ namespace LogExpert.Dialogs
 
         #region Properties
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public ActionEntry ActionEntry { get; private set; }
 
         #endregion

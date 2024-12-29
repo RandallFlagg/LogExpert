@@ -328,6 +328,7 @@ namespace WeifenLuo.WinFormsUI.Docking
                     }
                 }
 
+                [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
                 public bool FullPanelEdge
                 {
                     get { return m_fullPanelEdge; }
@@ -350,6 +351,7 @@ namespace WeifenLuo.WinFormsUI.Docking
                     get { return DragHandler.DockPanel; }
                 }
 
+                [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
                 public DockPane DockPane
                 {
                     get { return m_dockPane; }
@@ -648,6 +650,7 @@ namespace WeifenLuo.WinFormsUI.Docking
 
                     private DockStyle DockStyle { get; }
 
+                    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
                     public DockStyle Status
                     {
                         get { return m_status; }
@@ -805,6 +808,7 @@ namespace WeifenLuo.WinFormsUI.Docking
                     public static GraphicsPath DisplayingGraphicsPath { get; } =
                         DrawHelper.CalculateGraphicsPathFromBitmap(_bitmapPaneDiamond);
 
+                    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
                     public DockStyle Status
                     {
                         get { return m_status; }

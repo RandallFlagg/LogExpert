@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using LogExpert.Classes;
@@ -37,11 +38,13 @@ namespace LogExpert.Dialogs
 
         #region Properties
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool LineColumnVisible
         {
             set => bookmarkDataGridView.Columns[2].Visible = value;
         }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool ShowBookmarkCommentColumn
         {
             get => commentColumnCheckBox.Checked;

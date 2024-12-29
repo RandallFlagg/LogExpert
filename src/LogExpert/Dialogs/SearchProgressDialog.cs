@@ -26,6 +26,7 @@ namespace LogExpert.Dialogs
 
         #region Properties
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool ShouldStop { get; private set; }
 
         #endregion

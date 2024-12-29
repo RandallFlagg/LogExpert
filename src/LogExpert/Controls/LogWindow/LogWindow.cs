@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.Threading;
 using System.Windows.Forms;
@@ -320,8 +321,10 @@ namespace LogExpert.Controls.LogWindow
 
         #region Properties
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public Color BookmarkColor { get; set; } = Color.FromArgb(165, 200, 225);
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public ILogLineColumnizer CurrentColumnizer
         {
             get => _currentColumnizer;
@@ -335,6 +338,7 @@ namespace LogExpert.Controls.LogWindow
             }
         }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool ShowBookmarkBubbles
         {
             get => _guiStateArgs.ShowBookmarkBubbles;
@@ -345,10 +349,13 @@ namespace LogExpert.Controls.LogWindow
             }
         }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public string FileName { get; private set; }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public string SessionFileName { get; set; } = null;
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool IsMultiFile
         {
             get => _isMultiFile;
@@ -357,8 +364,10 @@ namespace LogExpert.Controls.LogWindow
 
         public bool IsTempFile { get; }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public string TempTitleName { get; set; } = "";
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         internal FilterPipe FilterPipe { get; set; } = null;
 
         public string Title
@@ -376,14 +385,18 @@ namespace LogExpert.Controls.LogWindow
 
         public ColumnizerCallback ColumnizerCallbackObject { get; }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool ForcePersistenceLoading { get; set; }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public string ForcedPersistenceFileName { get; set; } = null;
 
         public Preferences Preferences => ConfigManager.Settings.preferences;
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public string GivenFileName { get; set; } = null;
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public TimeSyncList TimeSyncList { get; private set; }
 
         public bool IsTimeSynced => TimeSyncList != null;
@@ -392,10 +405,13 @@ namespace LogExpert.Controls.LogWindow
 
         public IBookmarkData BookmarkData => _bookmarkProvider;
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public Font MonospacedFont { get; private set; }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public Font NormalFont { get; private set; }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public Font BoldFont { get; private set; }
 
         #endregion
@@ -418,7 +434,7 @@ namespace LogExpert.Controls.LogWindow
 
         internal IColumnizedLogLine GetColumnsForLine(int lineNumber)
         {
-            return _columnCache.GetColumnsForLine(_logFileReader, lineNumber, CurrentColumnizer, ColumnizerCallbackObject);
+            return (IColumnizedLogLine)_columnCache.GetColumnsForLine(_logFileReader, lineNumber, CurrentColumnizer, ColumnizerCallbackObject);
 
             //string line = this.logFileReader.GetLogLine(lineNumber);
             //if (line != null)
@@ -498,7 +514,8 @@ namespace LogExpert.Controls.LogWindow
 
         private delegate void LoadingStartedFx(LoadFileEventArgs e);
 
-        private delegate int SearchFx(SearchParams searchParams);
+        //private delegate int SearchFx(SearchParams searchParams);
+        private delegate Task<int> SearchFx(SearchParams searchParams);
 
         private delegate void SelectLineFx(int line, bool triggerSyncCall);
 

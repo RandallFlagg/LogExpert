@@ -27,6 +27,7 @@ namespace LogExpert.Dialogs
 
         #region Properties
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public int Line { get; private set; }
 
         #endregion

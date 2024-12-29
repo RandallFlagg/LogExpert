@@ -184,6 +184,7 @@ namespace WeifenLuo.WinFormsUI.Docking
 
             #region Properties
 
+            [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
             public bool AutoScroll
             {
                 get { return m_autoScroll; }
@@ -201,6 +202,7 @@ namespace WeifenLuo.WinFormsUI.Docking
                 }
             }
 
+            [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
             public BorderStyle BorderStyle
             {
                 set
@@ -268,9 +270,11 @@ namespace WeifenLuo.WinFormsUI.Docking
                 }
             }
 
+            [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
             public MdiClient MdiClient { get; private set; } = null;
 
             [Browsable(false)]
+            [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
             public Form ParentForm
             {
                 get { return m_parentForm; }
@@ -307,6 +311,7 @@ namespace WeifenLuo.WinFormsUI.Docking
                 }
             }
 
+            [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
             public ISite Site
             {
                 get { return m_site; }

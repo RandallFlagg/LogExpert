@@ -5,6 +5,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.ComponentModel;
 
 namespace LogExpert.Dialogs
 {
@@ -50,6 +51,7 @@ namespace LogExpert.Dialogs
 
         #region Properties
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public Color CustomColor
         {
             get { return this.customColor; }

@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using System.Runtime.InteropServices;
 using System.Security.Permissions;
 using System.Diagnostics.CodeAnalysis;
+using System.ComponentModel;
 
 namespace WeifenLuo.WinFormsUI.Docking
 {
@@ -32,8 +33,10 @@ namespace WeifenLuo.WinFormsUI.Docking
 
         #region Properties
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool AllowEndUserDocking { get; set; } = true;
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public NestedPaneCollection NestedPanes { get; private set; }
 
         public VisibleNestedPaneCollection VisibleNestedPanes
@@ -41,6 +44,7 @@ namespace WeifenLuo.WinFormsUI.Docking
             get { return NestedPanes.VisibleNestedPanes; }
         }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public DockPanel DockPanel { get; private set; }
 
         public DockState DockState

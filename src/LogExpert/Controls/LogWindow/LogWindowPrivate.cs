@@ -4,7 +4,7 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Runtime.Remoting.Messaging;
+//using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -20,6 +20,8 @@ using LogExpert.Dialogs;
 using LogExpert.Entities;
 using LogExpert.Entities.EventArgs;
 using LogExpert.Interface;
+//using Microsoft.IdentityModel.Threading;
+using Range = LogExpert.Entities.Range;
 
 namespace LogExpert.Controls.LogWindow
 {
@@ -85,7 +87,7 @@ namespace LogExpert.Controls.LogWindow
                 _multiFileOptions = new MultiFileOptions();
                 _multiFileOptions.FormatPattern = persistenceData.multiFilePattern;
                 _multiFileOptions.MaxDayTry = persistenceData.multiFileMaxDays;
-                
+
                 if (string.IsNullOrEmpty(_multiFileOptions.FormatPattern))
                 {
                     _multiFileOptions = ObjectClone.Clone(Preferences.multiFileOptions);
@@ -949,7 +951,7 @@ namespace LogExpert.Controls.LogWindow
 
             Type oldColType = _filterParams.currentColumnizer?.GetType();
             Type newColType = columnizer?.GetType();
-            
+
             if (oldColType != newColType && _filterParams.columnRestrict && _filterParams.isFilterTail)
             {
                 _filterParams.columnList.Clear();
@@ -1543,7 +1545,7 @@ namespace LogExpert.Controls.LogWindow
             SendStatusLineUpdate();
         }
 
-        private int Search(SearchParams searchParams)
+        private async Task<int> Search(SearchParams searchParams)
         {
             UpdateProgressBarFx progressFx = UpdateProgressBar;
             if (searchParams.searchText == null)
@@ -1654,7 +1656,7 @@ namespace LogExpert.Controls.LogWindow
             }
         }
 
-        private void SearchComplete(IAsyncResult result)
+        private void SearchComplete(int line)
         {
             if (Disposing)
             {
@@ -1664,9 +1666,11 @@ namespace LogExpert.Controls.LogWindow
             try
             {
                 Invoke(new MethodInvoker(ResetProgressBar));
-                AsyncResult ar = (AsyncResult)result;
-                SearchFx fx = (SearchFx)ar.AsyncDelegate;
-                int line = fx.EndInvoke(result);
+                //AsyncResult ar = (AsyncResult)result;
+                //SearchFx fx = (SearchFx)ar.AsyncDelegate;
+                //int line = fx.EndInvoke(result);
+                // Define the search function as an asynchronous lambda expression
+                
                 _guiStateArgs.MenuEnabled = true;
                 GuiStateUpdate(this, _guiStateArgs);
                 if (line == -1)
@@ -2936,9 +2940,9 @@ namespace LogExpert.Controls.LogWindow
             return new List<int>();
         }
 
-       /* ========================================================================
-        * Timestamp stuff
-        * =======================================================================*/
+        /* ========================================================================
+         * Timestamp stuff
+         * =======================================================================*/
 
         private void SetTimestampLimits()
         {

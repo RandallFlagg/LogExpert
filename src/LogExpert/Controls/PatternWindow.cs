@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using LogExpert.Classes;
@@ -38,24 +39,28 @@ namespace LogExpert.Controls
 
         #region Properties
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public int Fuzzy
         {
             set { this.fuzzyKnobControl.Value = value; }
             get { return this.fuzzyKnobControl.Value; }
         }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public int MaxDiff
         {
             set { this.maxDiffKnobControl.Value = value; }
             get { return this.maxDiffKnobControl.Value; }
         }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public int MaxMisses
         {
             set { this.maxMissesKnobControl.Value = value; }
             get { return this.maxMissesKnobControl.Value; }
         }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public int Weight
         {
             set { this.weigthKnobControl.Value = value; }
