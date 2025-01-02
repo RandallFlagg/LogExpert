@@ -90,6 +90,9 @@ namespace LogExpert.Classes
             RegisteredFileSystemPlugins.Add(new LocalFileSystem());
 
             string pluginDir = Path.Combine(Application.StartupPath, "plugins");
+           
+            if (Path.Exists(pluginDir) == false)
+                pluginDir = Path.Combine(Application.StartupPath, ".");
 
             AppDomain currentDomain = AppDomain.CurrentDomain;
             currentDomain.AssemblyResolve += ColumnizerResolveEventHandler;
