@@ -21,7 +21,7 @@ namespace LogExpert.Tests
             LogfileReader reader = new LogfileReader(path, new EncodingOptions(), true, 40, 50, new MultiFileOptions());
             reader.ReadFiles();
 
-            ILogLine line = reader.GetLogLineWithWait(0);
+            ILogLine line = reader.GetLogLineWithWait(0).Result;
             IColumnizedLogLine logline = new ColumnizedLogLine();
             if (line != null)
             {
