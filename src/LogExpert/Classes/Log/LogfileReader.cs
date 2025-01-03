@@ -428,7 +428,7 @@ namespace LogExpert.Classes.Log
         /// <returns></returns>
         public async Task<ILogLine> GetLogLineWithWait(int lineNum)
         {
-            const int WAIT_TIME = 1000;
+            const int WAIT_TIME = 10000;
 
             ILogLine result = null;
             Console.WriteLine("lineNum: " + lineNum);
