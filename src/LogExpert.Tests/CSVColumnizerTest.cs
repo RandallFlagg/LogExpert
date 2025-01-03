@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
 using LogExpert.Classes.Log;
 using LogExpert.Entities;
 
@@ -14,7 +15,7 @@ namespace LogExpert.Tests
         [TestCase(@".\TestData\organizations-10000.csv", new[] {"Index","Organization Id","Name","Website","Country","Description","Founded","Industry","Number of employees"})]
         [TestCase(@".\TestData\organizations-1000.csv", new[] {"Index","Organization Id","Name","Website","Country","Description","Founded","Industry","Number of employees"})]
         [TestCase(@".\TestData\people-10000.csv", new[] {"Index","User Id","First Name","Last Name","Sex","Email","Phone","Date of birth","Job Title"})]
-        public void Instantiat_CSVFile_BuildCorrectColumnizer(string filename, string[] expectedHeaders)
+        public async Task Instantiat_CSVFile_BuildCorrectColumnizer(string filename, string[] expectedHeaders)
         {
             Console.WriteLine("A");
             CsvColumnizer.CsvColumnizer csvColumnizer = new CsvColumnizer.CsvColumnizer();
@@ -25,7 +26,7 @@ namespace LogExpert.Tests
             Console.WriteLine("D");
             reader.ReadFiles();
             Console.WriteLine("E");
-            ILogLine line = reader.GetLogLineWithWait(0).Result;
+            ILogLine line = await reader.GetLogLineWithWait(0);
             Console.WriteLine("F");
             IColumnizedLogLine logline = new ColumnizedLogLine();
             Console.WriteLine("G");

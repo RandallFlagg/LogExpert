@@ -431,13 +431,15 @@ namespace LogExpert.Classes.Log
             const int WAIT_TIME = 1000;
 
             ILogLine result = null;
-
+            Console.WriteLine("lineNum: " + lineNum);
             if (!_isFastFailOnGetLogLine)
             {
                 var task = Task.Run(() => _logLineFx(lineNum));
+                Console.WriteLine("task == null: " + task == null);
                 if (task.Wait(WAIT_TIME))
                 {
                     result = task.Result;
+                    Console.WriteLine("result: " + result);
                     _isFastFailOnGetLogLine = false;
                 }
                 else
@@ -449,11 +451,14 @@ namespace LogExpert.Classes.Log
             else
             {
                 _logger.Debug("Fast failing GetLogLine()");
+                Console.WriteLine("else");
                 if (!_isFailModeCheckCallPending)
                 {
                     _isFailModeCheckCallPending = true;
                     var logLine = await _logLineFx(lineNum);
+                    Console.WriteLine("logline: " + logLine);
                     GetLineFinishedCallback(logLine);
+                    Console.WriteLine("Done");
                 }
             }
 

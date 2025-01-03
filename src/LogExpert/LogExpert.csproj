@@ -21,7 +21,7 @@
     <Optimize>False</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)'=='Release|AnyCPU' ">
-    <Optimize>True</Optimize>
+    <Optimize>False</Optimize>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\Solution Items\AssemblyVersion.cs">
