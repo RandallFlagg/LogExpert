@@ -12,7 +12,7 @@
     <Optimize>False</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <Optimize>True</Optimize>
+    <Optimize>False</Optimize>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>true</SignAssembly>
