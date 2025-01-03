@@ -32,7 +32,7 @@ namespace LogExpert.Tests
 
             var columnHeaders = jsonColumnizer.GetColumnNames();
             var result = string.Join(" ", columnHeaders);
-            ClassicAssert.AreEqual(result, expectedHeaders);
+            ClassicAssert.AreEqual(expectedHeaders, result);
         }
     }
 }
