@@ -12,3 +12,6 @@ temp.txt
 *.scgdat
 /Data
 /.tmp
+/.nuke/temp/build-attempt.log
+/.nuke/temp/build.2025-01-03_17-31-06.log
+/.nuke/temp/build.log
