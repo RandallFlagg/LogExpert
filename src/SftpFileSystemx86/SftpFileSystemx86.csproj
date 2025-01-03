@@ -9,7 +9,7 @@
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
     <AssemblyTitle>SftpFileSystemx86</AssemblyTitle>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-    <OutputPath>$(SolutionDir)..\bin\$(Configuration)-$(Platform)\pluginsx86\</OutputPath>
+    <OutputPath>$(SolutionDir)..\bin\$(Configuration)-$(Platform)\pluginsx86</OutputPath>
     <NoWarn>CA1416;</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

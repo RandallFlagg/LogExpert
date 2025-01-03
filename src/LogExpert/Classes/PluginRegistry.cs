@@ -90,10 +90,6 @@ namespace LogExpert.Classes
             RegisteredFileSystemPlugins.Add(new LocalFileSystem());
 
             string pluginDir = Path.Combine(Application.StartupPath, "plugins");
-            //TODO: FIXME: This is a hack for the tests to pass. Need to find a better approach
-            if (!Directory.Exists(pluginDir)) {
-                pluginDir = ".";
-            }
 
             AppDomain currentDomain = AppDomain.CurrentDomain;
             currentDomain.AssemblyResolve += ColumnizerResolveEventHandler;
