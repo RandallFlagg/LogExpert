@@ -40,6 +40,7 @@ class Build : NukeBuild
 
     [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
     readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
+    
 
     [Solution] readonly Solution Solution;
     [GitRepository] readonly GitRepository GitRepository;
@@ -306,7 +307,7 @@ class Build : NukeBuild
             NuGetTasks.NuGetPack(s =>
             {
                 s = s.SetTargetPath(columnizerFolder / "ColumnizerLib.csproj")
-                    .DisableBuild()
+                    //.DisableBuild()
                     .SetConfiguration(Configuration)
                     .SetProperty("version", VersionString)
                     .SetOutputDirectory(BinDirectory);
