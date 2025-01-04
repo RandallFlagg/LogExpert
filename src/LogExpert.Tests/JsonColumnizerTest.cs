@@ -18,13 +18,13 @@ namespace LogExpert.Tests
             LogfileReader reader = new LogfileReader(path, new EncodingOptions(), true, 40, 50, new MultiFileOptions());
             reader.ReadFiles();
 
-            ILogLine line = reader.GetLogLineWithWait(0).Result;
+            ILogLine line = reader.GetLogLine(0);
             if (line != null)
             {
                 jsonColumnizer.SplitLine(null, line);
             }
 
-            line = reader.GetLogLineWithWait(1).Result;
+            line = reader.GetLogLine(1);
             if (line != null)
             {
                 jsonColumnizer.SplitLine(null, line);

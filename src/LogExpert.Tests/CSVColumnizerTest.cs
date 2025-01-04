@@ -15,7 +15,7 @@ namespace LogExpert.Tests
         [TestCase(@".\TestData\organizations-10000.csv", new[] {"Index","Organization Id","Name","Website","Country","Description","Founded","Industry","Number of employees"})]
         [TestCase(@".\TestData\organizations-1000.csv", new[] {"Index","Organization Id","Name","Website","Country","Description","Founded","Industry","Number of employees"})]
         [TestCase(@".\TestData\people-10000.csv", new[] {"Index","User Id","First Name","Last Name","Sex","Email","Phone","Date of birth","Job Title"})]
-        public async Task Instantiat_CSVFile_BuildCorrectColumnizer(string filename, string[] expectedHeaders)
+        public void Instantiat_CSVFile_BuildCorrectColumnizer(string filename, string[] expectedHeaders)
         {
             CsvColumnizer.CsvColumnizer csvColumnizer = new CsvColumnizer.CsvColumnizer();
             string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, filename);
