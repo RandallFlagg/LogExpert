@@ -863,7 +863,7 @@ namespace LogExpert.Controls.LogWindow
             if (filterGridView.Focused)
             {
                 gridView = filterGridView;
-                if (gridView.CurrentCellAddress == null || gridView.CurrentCellAddress.Y == -1)
+                if (gridView.CurrentCellAddress.Y == -1)
                 {
                     return;
                 }
@@ -873,7 +873,7 @@ namespace LogExpert.Controls.LogWindow
             else
             {
                 gridView = dataGridView;
-                if (gridView.CurrentCellAddress == null || gridView.CurrentCellAddress.Y == -1)
+                if (gridView.CurrentCellAddress.Y == -1)
                 {
                     return;
                 }
