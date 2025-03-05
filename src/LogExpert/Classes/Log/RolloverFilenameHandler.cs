@@ -99,7 +99,7 @@ namespace LogExpert.Classes.Log
 
         private bool FileExists(string filePath)
         {
-            IFileSystemPlugin fs = PluginRegistry.GetInstance().FindFileSystemForUri(filePath);
+            IFileSystemPlugin fs = PluginRegistry.Instance.FindFileSystemForUri(filePath);
             ILogFileInfo info = fs.GetLogfileInfo(filePath);
             return info.FileExists;
         }

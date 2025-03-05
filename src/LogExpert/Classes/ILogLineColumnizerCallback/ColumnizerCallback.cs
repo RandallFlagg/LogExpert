@@ -56,7 +56,7 @@ namespace LogExpert.Classes.ILogLineColumnizerCallback
 
         public IList<ILogLineColumnizer> GetRegisteredColumnizers()
         {
-            return PluginRegistry.GetInstance().RegisteredColumnizers;
+            return PluginRegistry.Instance.RegisteredColumnizers;
         }
 
         public int GetLineCount()

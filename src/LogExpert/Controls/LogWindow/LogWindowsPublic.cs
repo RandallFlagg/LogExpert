@@ -321,7 +321,7 @@ namespace LogExpert.Controls.LogWindow
 
         public void PreselectColumnizer(string columnizerName)
         {
-            ILogLineColumnizer columnizer = ColumnizerPicker.FindColumnizerByName(columnizerName, PluginRegistry.GetInstance().RegisteredColumnizers);
+            ILogLineColumnizer columnizer = ColumnizerPicker.FindColumnizerByName(columnizerName, PluginRegistry.Instance.RegisteredColumnizers);
             PreSelectColumnizer(ColumnizerPicker.CloneColumnizer(columnizer));
         }
 

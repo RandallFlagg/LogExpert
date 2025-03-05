@@ -897,7 +897,7 @@ namespace LogExpert.Controls.LogWindow
                 if (entry.IsActionEntry && entry.ActionEntry.PluginName != null)
                 {
                     IKeywordAction plugin =
-                        PluginRegistry.GetInstance().FindKeywordActionPluginByName(entry.ActionEntry.PluginName);
+                        PluginRegistry.Instance.FindKeywordActionPluginByName(entry.ActionEntry.PluginName);
                     if (plugin != null)
                     {
                         ActionPluginExecuteFx fx = plugin.Execute;
@@ -2793,7 +2793,7 @@ namespace LogExpert.Controls.LogWindow
         {
             newWin.WaitForLoadingFinished();
             ILogLineColumnizer columnizer = ColumnizerPicker.FindColumnizerByName(persistenceData.columnizerName,
-                PluginRegistry.GetInstance().RegisteredColumnizers);
+                PluginRegistry.Instance.RegisteredColumnizers);
             if (columnizer != null)
             {
                 SetColumnizerFx fx = newWin.ForceColumnizer;

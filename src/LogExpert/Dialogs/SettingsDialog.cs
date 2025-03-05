@@ -273,7 +273,7 @@ namespace LogExpert.Dialogs
         {
             int selIndex = 0;
             comboBox.Items.Clear();
-            IList<ILogLineColumnizer> columnizers = PluginRegistry.GetInstance().RegisteredColumnizers;
+            IList<ILogLineColumnizer> columnizers = PluginRegistry.Instance.RegisteredColumnizers;
 
             foreach (ILogLineColumnizer columnizer in columnizers)
             {
@@ -299,7 +299,7 @@ namespace LogExpert.Dialogs
 
             DataGridViewTextBoxColumn textColumn = (DataGridViewTextBoxColumn)dataGridViewColumnizer.Columns[0];
 
-            IList<ILogLineColumnizer> columnizers = PluginRegistry.GetInstance().RegisteredColumnizers;
+            IList<ILogLineColumnizer> columnizers = PluginRegistry.Instance.RegisteredColumnizers;
 
             foreach (ILogLineColumnizer columnizer in columnizers)
             {
@@ -322,7 +322,7 @@ namespace LogExpert.Dialogs
                 row.Cells.Add(cell);
                 row.Cells[0].Value = maskEntry.mask;
                 ILogLineColumnizer columnizer = ColumnizerPicker.DecideColumnizerByName(maskEntry.columnizerName,
-                    PluginRegistry.GetInstance().RegisteredColumnizers);
+                    PluginRegistry.Instance.RegisteredColumnizers);
 
                 row.Cells[1].Value = columnizer.GetName();
                 dataGridViewColumnizer.Rows.Add(row);
@@ -420,7 +420,7 @@ namespace LogExpert.Dialogs
         {
             listBoxPlugin.Items.Clear();
 
-            foreach (IContextMenuEntry entry in PluginRegistry.GetInstance().RegisteredContextMenuPlugins)
+            foreach (IContextMenuEntry entry in PluginRegistry.Instance.RegisteredContextMenuPlugins)
             {
                 listBoxPlugin.Items.Add(entry);
                 if (entry is ILogExpertPluginConfigurator configurator)
@@ -429,7 +429,7 @@ namespace LogExpert.Dialogs
                 }
             }
 
-            foreach (IKeywordAction entry in PluginRegistry.GetInstance().RegisteredKeywordActions)
+            foreach (IKeywordAction entry in PluginRegistry.Instance.RegisteredKeywordActions)
             {
                 listBoxPlugin.Items.Add(entry);
                 if (entry is ILogExpertPluginConfigurator configurator)
@@ -438,7 +438,7 @@ namespace LogExpert.Dialogs
                 }
             }
 
-            foreach (IFileSystemPlugin entry in PluginRegistry.GetInstance().RegisteredFileSystemPlugins)
+            foreach (IFileSystemPlugin entry in PluginRegistry.Instance.RegisteredFileSystemPlugins)
             {
                 listBoxPlugin.Items.Add(entry);
                 if (entry is ILogExpertPluginConfigurator configurator)
@@ -454,7 +454,7 @@ namespace LogExpert.Dialogs
         {
             _selectedPlugin?.HideConfigForm();
 
-            foreach (IContextMenuEntry entry in PluginRegistry.GetInstance().RegisteredContextMenuPlugins)
+            foreach (IContextMenuEntry entry in PluginRegistry.Instance.RegisteredContextMenuPlugins)
             {
                 if (entry is ILogExpertPluginConfigurator configurator)
                 {
@@ -462,7 +462,7 @@ namespace LogExpert.Dialogs
                 }
             }
 
-            foreach (IKeywordAction entry in PluginRegistry.GetInstance().RegisteredKeywordActions)
+            foreach (IKeywordAction entry in PluginRegistry.Instance.RegisteredKeywordActions)
             {
                 if (entry is ILogExpertPluginConfigurator configurator)
                 {

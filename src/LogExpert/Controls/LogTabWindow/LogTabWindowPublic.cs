@@ -170,7 +170,7 @@ namespace LogExpert.Controls.LogTabWindow
             ColumnizerHistoryEntry entry = FindColumnizerHistoryEntry(fileName);
             if (entry != null)
             {
-                foreach (ILogLineColumnizer columnizer in PluginRegistry.GetInstance().RegisteredColumnizers)
+                foreach (ILogLineColumnizer columnizer in PluginRegistry.Instance.RegisteredColumnizers)
                 {
                     if (columnizer.GetName().Equals(entry.ColumnizerName))
                     {
@@ -242,7 +242,7 @@ namespace LogExpert.Controls.LogTabWindow
                     {
                         if (Regex.IsMatch(fileName, entry.mask))
                         {
-                            ILogLineColumnizer columnizer = ColumnizerPicker.FindColumnizerByName(entry.columnizerName, PluginRegistry.GetInstance().RegisteredColumnizers);
+                            ILogLineColumnizer columnizer = ColumnizerPicker.FindColumnizerByName(entry.columnizerName, PluginRegistry.Instance.RegisteredColumnizers);
                             return columnizer;
                         }
                     }

@@ -24,19 +24,16 @@ namespace LogExpert.Classes
         #region Fields
 
         private static readonly ILogger _logger = LogManager.GetCurrentClassLogger();
-
-        private static readonly object _lockObject = new();
-        private static PluginRegistry _instance;
+        private static readonly Lazy<PluginRegistry> _instance = new(() => new PluginRegistry());
 
         private readonly IFileSystemCallback _fileSystemCallback = new FileSystemCallback();
         private readonly IList<ILogExpertPlugin> _pluginList = new List<ILogExpertPlugin>();
-
         private readonly IDictionary<string, IKeywordAction> _registeredKeywordsDict = new Dictionary<string, IKeywordAction>();
 
         #endregion
 
         #region cTor
-
+        // Private constructor to prevent instantiation
         private PluginRegistry()
         {
             LoadPlugins();
@@ -45,6 +42,8 @@ namespace LogExpert.Classes
         #endregion
 
         #region Properties
+
+        public static PluginRegistry Instance => _instance.Value;
 
         public IList<ILogLineColumnizer> RegisteredColumnizers { get; private set; }
 
@@ -57,20 +56,6 @@ namespace LogExpert.Classes
         #endregion
 
         #region Public methods
-
-        public static PluginRegistry GetInstance()
-        {
-            lock (_lockObject)
-            {
-                if (_instance == null)
-                {
-                    _instance = new PluginRegistry();
-                }
-
-                return _instance;
-            }
-        }
-
         #endregion
 
         #region Internals
@@ -91,7 +76,8 @@ namespace LogExpert.Classes
 
             string pluginDir = Path.Combine(Application.StartupPath, "plugins");
             //TODO: FIXME: This is a hack for the tests to pass. Need to find a better approach
-            if (!Directory.Exists(pluginDir)) {
+            if (!Directory.Exists(pluginDir))
+            {
                 pluginDir = ".";
             }
 
@@ -213,7 +199,7 @@ namespace LogExpert.Classes
         #endregion
 
         #region Private Methods
-
+        //TODO: Can this be delted?
         private bool TryAsContextMenu(Type type)
         {
             IContextMenuEntry me = TryInstantiate<IContextMenuEntry>(type);
@@ -238,6 +224,7 @@ namespace LogExpert.Classes
             return false;
         }
 
+        //TODO: Can this be delted?
         private bool TryAsKeywordAction(Type type)
         {
             IKeywordAction ka = TryInstantiate<IKeywordAction>(type);
@@ -263,6 +250,7 @@ namespace LogExpert.Classes
             return false;
         }
 
+        //TODO: Can this be delted?
         private bool TryAsFileSystem(Type type)
         {
             // file system plugins can have optional constructor with IFileSystemCallback argument

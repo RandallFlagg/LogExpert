@@ -160,7 +160,7 @@ namespace LogExpert.Controls.LogTabWindow
             }
 
             CurrentLogWindow.ColumnizerCallbackObject.LineNum = CurrentLogWindow.GetCurrentLineNum();
-            FilterSelectorForm form = new(PluginRegistry.GetInstance().RegisteredColumnizers, CurrentLogWindow.CurrentColumnizer, CurrentLogWindow.ColumnizerCallbackObject);
+            FilterSelectorForm form = new(PluginRegistry.Instance.RegisteredColumnizers, CurrentLogWindow.CurrentColumnizer, CurrentLogWindow.ColumnizerCallbackObject);
             form.Owner = this;
             form.TopMost = TopMost;
             DialogResult res = form.ShowDialog();

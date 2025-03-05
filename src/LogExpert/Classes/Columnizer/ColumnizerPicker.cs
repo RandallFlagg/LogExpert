@@ -120,7 +120,7 @@ namespace LogExpert.Classes.Columnizer
                 ];
             }
 
-            var registeredColumnizer = PluginRegistry.GetInstance().RegisteredColumnizers;
+            var registeredColumnizer = PluginRegistry.Instance.RegisteredColumnizers;
 
             List<Tuple<Priority, ILogLineColumnizer>> priorityListOfColumnizers = [];
 

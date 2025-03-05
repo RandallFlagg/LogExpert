@@ -264,7 +264,7 @@ namespace LogExpert.Controls.LogTabWindow
 
                 if (!string.IsNullOrEmpty(persistenceData.fileName))
                 {
-                    IFileSystemPlugin fs = PluginRegistry.GetInstance().FindFileSystemForUri(persistenceData.fileName);
+                    IFileSystemPlugin fs = PluginRegistry.Instance.FindFileSystemForUri(persistenceData.fileName);
                     if (fs != null && !fs.GetType().Equals(typeof(LocalFileSystem)))
                     {
                         return persistenceData.fileName;
@@ -330,7 +330,7 @@ namespace LogExpert.Controls.LogTabWindow
         {
             HighlightDialog dlg = new()
             {
-                KeywordActionList = PluginRegistry.GetInstance().RegisteredKeywordActions,
+                KeywordActionList = PluginRegistry.Instance.RegisteredKeywordActions,
                 Owner = this,
                 TopMost = TopMost,
                 HighlightGroupList = HilightGroupList,
@@ -1104,7 +1104,7 @@ namespace LogExpert.Controls.LogTabWindow
             if (sysoutPipe)
             {
                 ILogLineColumnizer columnizer = ColumnizerPicker.DecideColumnizerByName(columnizerName,
-                    PluginRegistry.GetInstance().RegisteredColumnizers);
+                    PluginRegistry.Instance.RegisteredColumnizers);
 
                 _logger.Info("Starting external tool with sysout redirection: {0} {1}", cmd, args);
                 startInfo.UseShellExecute = false;

@@ -799,11 +799,11 @@ namespace LogExpert.Controls.LogWindow
 
             // Add plugin entries
             bool isAdded = false;
-            if (PluginRegistry.GetInstance().RegisteredContextMenuPlugins.Count > 0)
+            if (PluginRegistry.Instance.RegisteredContextMenuPlugins.Count > 0)
             {
                 //string line = this.logFileReader.GetLogLine(lineNum);
                 IList<int> lines = GetSelectedContent();
-                foreach (IContextMenuEntry entry in PluginRegistry.GetInstance().RegisteredContextMenuPlugins)
+                foreach (IContextMenuEntry entry in PluginRegistry.Instance.RegisteredContextMenuPlugins)
                 {
                     LogExpertCallback callback = new(this);
                     ContextMenuPluginEventArgs evArgs = new(entry, lines, CurrentColumnizer, callback);
