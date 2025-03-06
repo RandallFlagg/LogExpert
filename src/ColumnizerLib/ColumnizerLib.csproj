@@ -5,7 +5,6 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>LogExpert</RootNamespace>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
     <DocumentationFile>$(SolutionDir)..\bin\Docs\ColumnizerLib.xml</DocumentationFile>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <OutputPath>$(SolutionDir)..\bin\$(Configuration)</OutputPath>

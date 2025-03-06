@@ -2,8 +2,10 @@
 
 using System;
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 using System.Windows.Forms;
 
+[assembly: SupportedOSPlatform("windows")]
 namespace FlashIconHighlighter
 {
     internal class FlashIconPlugin : IKeywordAction

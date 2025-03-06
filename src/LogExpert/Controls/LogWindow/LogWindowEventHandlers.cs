@@ -122,7 +122,7 @@ namespace LogExpert.Controls.LogWindow
 
         private void OnLogFileReaderLoadingStarted(object sender, LoadFileEventArgs e)
         {
-            Invoke(new LoadingStartedFx(LoadingStarted), e);
+            Invoke(LoadingStarted, e);
         }
 
         private void OnLogFileReaderFinishedLoading(object sender, EventArgs e)
@@ -211,16 +211,11 @@ namespace LogExpert.Controls.LogWindow
                 //Thread loadThread = new Thread(new ThreadStart(ReloadNewFile));
                 //loadThread.Start();
                 _logger.Debug("Reloading invoked.");
-                return;
             }
-
-            if (!_isLoading)
+            else if (_isLoading)
             {
-                return;
+                BeginInvoke(UpdateProgress, e);
             }
-
-            UpdateProgressCallback callback = UpdateProgress;
-            BeginInvoke(callback, e);
         }
 
         private void OnFileSizeChanged(object sender, LogEventArgs e)
