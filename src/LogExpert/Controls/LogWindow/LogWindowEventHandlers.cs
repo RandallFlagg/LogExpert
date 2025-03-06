@@ -646,7 +646,7 @@ namespace LogExpert.Controls.LogWindow
             }
         }
 
-        private void OnDataGridViewSelectionChanged(object sender, EventArgs e)
+        private void DataGridView_SelectionChanged(object sender, EventArgs e)
         {
             UpdateSelectionDisplay();
         }
