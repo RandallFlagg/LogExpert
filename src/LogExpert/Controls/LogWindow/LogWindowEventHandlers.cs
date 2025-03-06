@@ -32,20 +32,17 @@ namespace LogExpert.Controls.LogWindow
 
         protected void OnProgressBarUpdate(ProgressEventArgs e)
         {
-            ProgressBarEventHandler handler = ProgressBarUpdate;
-            handler?.Invoke(this, e);
+            ProgressBarUpdate?.Invoke(this, e);
         }
 
         protected void OnStatusLine(StatusLineEventArgs e)
         {
-            StatusLineEventHandler handler = StatusLineEvent;
-            handler?.Invoke(this, e);
+            StatusLineEvent?.Invoke(this, e);
         }
 
         protected void OnGuiState(GuiStateArgs e)
         {
-            GuiStateEventHandler handler = GuiStateUpdate;
-            handler?.Invoke(this, e);
+            GuiStateUpdate?.Invoke(this, e);
         }
 
         protected void OnTailFollowed(EventArgs e)
