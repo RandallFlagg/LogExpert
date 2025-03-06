@@ -16,7 +16,7 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace LogExpert.Controls.LogTabWindow
 {
-    public partial class LogTabWindow
+    internal partial class LogTabWindow
     {
         #region Public methods
 
@@ -141,7 +141,7 @@ namespace LogExpert.Controls.LogTabWindow
 
         public void LoadFiles(string[] fileNames)
         {
-            Invoke(new AddFileTabsDelegate(AddFileTabs), new object[] {fileNames});
+            Invoke(new AddFileTabsDelegate(AddFileTabs), [fileNames]);
         }
 
         public void OpenSearchDialog()

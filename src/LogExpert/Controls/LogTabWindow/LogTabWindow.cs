@@ -18,7 +18,7 @@ using System.Windows.Forms;
 
 namespace LogExpert.Controls.LogTabWindow
 {
-    public partial class LogTabWindow : Form
+    internal partial class LogTabWindow : Form
     {
         #region Fields
 

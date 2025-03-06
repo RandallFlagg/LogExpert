@@ -3,7 +3,7 @@ using LogExpert.Controls.LogWindow;
 
 namespace LogExpert.Classes.ILogLineColumnizerCallback
 {
-    public class ColumnizerCallback : LogExpert.ILogLineColumnizerCallback, IAutoLogLineColumnizerCallback
+    internal class ColumnizerCallback : LogExpert.ILogLineColumnizerCallback, IAutoLogLineColumnizerCallback
     {
         #region Fields
 

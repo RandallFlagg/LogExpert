@@ -25,7 +25,7 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace LogExpert.Controls.LogWindow
 {
-    public partial class LogWindow : DockContent, ILogPaintContext, ILogView
+    internal partial class LogWindow : DockContent, ILogPaintContext, ILogView
     {
         #region Fields
 

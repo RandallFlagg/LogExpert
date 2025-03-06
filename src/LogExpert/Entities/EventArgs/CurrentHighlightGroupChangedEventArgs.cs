@@ -2,7 +2,7 @@
 
 namespace LogExpert.Entities.EventArgs
 {
-    public class CurrentHighlightGroupChangedEventArgs
+    internal class CurrentHighlightGroupChangedEventArgs
     {
         #region Fields
 

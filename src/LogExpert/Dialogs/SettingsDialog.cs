@@ -14,7 +14,7 @@ using System.Windows.Forms;
 
 namespace LogExpert.Dialogs
 {
-    public partial class SettingsDialog : Form
+    internal partial class SettingsDialog : Form
     {
         #region Fields
 

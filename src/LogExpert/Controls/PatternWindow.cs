@@ -7,7 +7,7 @@ using LogExpert.Entities.EventArgs;
 
 namespace LogExpert.Controls
 {
-    public partial class PatternWindow : Form
+    internal partial class PatternWindow : Form
     {
         #region Fields
 
