@@ -2578,8 +2578,6 @@ namespace LogExpert.Controls.LogWindow
             {
                 return;
             }
-
-            _selectionChangedTrigger.Trigger();
         }
 
         private void UpdateFilterHistoryFromSettings()
@@ -2628,8 +2626,7 @@ namespace LogExpert.Controls.LogWindow
 
         private void SendStatusLineUpdate()
         {
-            //OnStatusLine(this.statusEventArgs);
-            _statusLineTrigger.Trigger();
+            OnStatusLine(_statusEventArgs);
         }
 
         private void ShowAdvancedFilterPanel(bool show)

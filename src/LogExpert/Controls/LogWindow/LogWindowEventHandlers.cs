@@ -643,7 +643,7 @@ namespace LogExpert.Controls.LogWindow
             }
         }
 
-        private void DataGridView_SelectionChanged(object sender, EventArgs e)
+        private void OnDataGridViewSelectionChanged(object sender, EventArgs e)
         {
             UpdateSelectionDisplay();
         }
@@ -1551,11 +1551,6 @@ namespace LogExpert.Controls.LogWindow
             p.isRegex = _filterParams.isRegex;
             p.isCaseSensitive = _filterParams.isCaseSensitive;
             AddSearchHitHighlightEntry(p);
-        }
-
-        private void OnStatusLineTriggerSignal(object sender, EventArgs e)
-        {
-            OnStatusLine(_statusEventArgs);
         }
 
         private void OnColumnComboBoxSelectionChangeCommitted(object sender, EventArgs e)
