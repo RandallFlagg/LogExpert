@@ -17,8 +17,6 @@ namespace FlashIconHighlighter
 
         #endregion
 
-        private delegate void FlashWindowFx(Form form);
-
         #region IKeywordAction Member
 
         public void Execute(string keyword, string param, ILogExpertCallback callback, ILogLineColumnizer columnizer)
@@ -28,8 +26,7 @@ namespace FlashIconHighlighter
             {
                 if (form.TopLevel && form.Name.Equals("LogTabWindow") && form.Text.Contains(callback.GetFileName()))
                 {
-                    FlashWindowFx fx = FlashWindow;
-                    form.BeginInvoke(fx, [form]);
+                    form.BeginInvoke(FlashWindow, [form]);
                 }
             }
         }

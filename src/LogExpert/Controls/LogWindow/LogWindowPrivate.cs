@@ -642,8 +642,7 @@ namespace LogExpert.Controls.LogWindow
                         }
                     }
 
-                    UpdateGridCallback callback = UpdateGrid;
-                    Invoke(callback, [e]);
+                    Invoke(UpdateGrid, [e]);
                     CheckFilterAndHighlight(e);
                     _timeSpreadCalc.SetLineCount(e.LineCount);
                 }

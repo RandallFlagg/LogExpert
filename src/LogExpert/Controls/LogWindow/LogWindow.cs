@@ -619,8 +619,6 @@ namespace LogExpert.Controls.LogWindow
 
         // used for external wait fx WaitForLoadFinished()
 
-        private delegate void UpdateGridCallback(LogEventArgs e);
-
         private delegate void UpdateProgressCallback(LoadFileEventArgs e);
 
         private delegate void LoadingStartedFx(LoadFileEventArgs e);
