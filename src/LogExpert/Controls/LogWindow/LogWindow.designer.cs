@@ -281,7 +281,7 @@ namespace LogExpert.Controls.LogWindow
             dataGridView.RowHeightInfoNeeded += OnDataGridViewRowHeightInfoNeeded;
             dataGridView.RowUnshared += OnDataGridViewRowUnshared;
             dataGridView.Scroll += OnDataGridViewScroll;
-            dataGridView.SelectionChanged += DataGridView_SelectionChanged;
+            dataGridView.SelectionChanged += OnDataGridViewSelectionChanged;
             dataGridView.Paint += OnDataGridViewPaint;
             dataGridView.Enter += OnDataGridViewEnter;
             dataGridView.KeyDown += OnDataGridViewKeyDown;

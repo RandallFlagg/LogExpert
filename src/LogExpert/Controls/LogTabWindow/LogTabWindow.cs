@@ -277,8 +277,6 @@ namespace LogExpert.Controls.LogTabWindow
 
         public delegate void HighlightSettingsChangedEventHandler(object sender, EventArgs e);
 
-        private delegate void LoadFileDelegate(string fileName, EncodingOptions encodingOptions);
-
         private delegate void LoadMultiFilesDelegate(string[] fileName, EncodingOptions encodingOptions);
 
         private delegate void ProgressBarEventFx(ProgressEventArgs e);
@@ -286,8 +284,6 @@ namespace LogExpert.Controls.LogTabWindow
         private delegate void SetColumnizerFx(ILogLineColumnizer columnizer);
 
         private delegate void SetTabIconDelegate(LogWindow.LogWindow logWindow, Icon icon);
-
-        private delegate void StatusLineEventFx(StatusLineEventArgs e);
 
         #endregion
 

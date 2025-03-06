@@ -693,7 +693,7 @@ namespace LogExpert.Controls.LogTabWindow
                                 e = _lastStatusLineEvent.Clone();
                             }
 
-                            BeginInvoke(new StatusLineEventFx(StatusLineEventWorker), e);
+                            BeginInvoke(StatusLineEventWorker, e);
                         }
                         catch (ObjectDisposedException)
                         {

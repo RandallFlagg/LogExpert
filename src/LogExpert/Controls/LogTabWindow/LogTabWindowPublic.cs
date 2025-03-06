@@ -116,8 +116,7 @@ namespace LogExpert.Controls.LogTabWindow
             }
 
             // this.BeginInvoke(new LoadFileDelegate(logWindow.LoadFile), new object[] { logFileName, encoding });
-            LoadFileDelegate loadFileFx = logWindow.LoadFile;
-            Task task = Task.Run(() => logWindow.LoadFile(logFileName, encodingOptions));
+            Task.Run(() => logWindow.LoadFile(logFileName, encodingOptions));
             return logWindow;
         }
 
