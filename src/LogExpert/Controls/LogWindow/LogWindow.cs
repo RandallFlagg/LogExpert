@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Threading;
-using System.Windows.Forms;
-using LogExpert.Classes;
+﻿using LogExpert.Classes;
 using LogExpert.Classes.Bookmark;
 using LogExpert.Classes.Filter;
 using LogExpert.Classes.Highlight;
@@ -14,82 +9,94 @@ using LogExpert.Config;
 using LogExpert.Dialogs;
 using LogExpert.Entities;
 using LogExpert.Entities.EventArgs;
+using LogExpert.Extensions.Forms;
 using LogExpert.Interface;
+
 using NLog;
+
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace LogExpert.Controls.LogWindow
 {
-    public partial class LogWindow : DockContent, ILogPaintContext, ILogView
+    internal partial class LogWindow : DockContent, ILogPaintContext, ILogView
     {
         #region Fields
 
         private const int SPREAD_MAX = 99;
         private const int PROGRESS_BAR_MODULO = 1000;
-        private const int FILTER_ADVANCED_SPLITTER_DISTANCE = 54;
+        private const int FILTER_ADVANCED_SPLITTER_DISTANCE = 150;
         private static readonly ILogger _logger = LogManager.GetCurrentClassLogger();
 
         private readonly Image _advancedButtonImage;
 
-        private readonly object _bookmarkLock = new object();
-        private readonly BookmarkDataProvider _bookmarkProvider = new BookmarkDataProvider();
+        private readonly object _bookmarkLock = new();
+        private readonly BookmarkDataProvider _bookmarkProvider = new();
 
         private readonly IList<BackgroundProcessCancelHandler> _cancelHandlerList = new List<BackgroundProcessCancelHandler>();
 
-        private readonly object _currentColumnizerLock = new object();
+        private readonly object _currentColumnizerLock = new();
 
-        private readonly object _currentHighlightGroupLock = new object();
+        private readonly object _currentHighlightGroupLock = new();
 
         private readonly EventWaitHandle _externaLoadingFinishedEvent = new ManualResetEvent(false);
 
         private readonly IList<FilterPipe> _filterPipeList = new List<FilterPipe>();
-        private readonly Dictionary<Control, bool> _freezeStateMap = new Dictionary<Control, bool>();
-        private readonly GuiStateArgs _guiStateArgs = new GuiStateArgs();
+        private readonly Dictionary<Control, bool> _freezeStateMap = [];
+        private readonly GuiStateArgs _guiStateArgs = new();
 
-        private readonly List<int> _lineHashList = new List<int>();
+        private readonly List<int> _lineHashList = [];
 
         private readonly EventWaitHandle _loadingFinishedEvent = new ManualResetEvent(false);
 
         private readonly EventWaitHandle _logEventArgsEvent = new ManualResetEvent(false);
 
-        private readonly List<LogEventArgs> _logEventArgsList = new List<LogEventArgs>();
-        private readonly Thread _logEventHandlerThread;
+        private readonly List<LogEventArgs> _logEventArgsList = [];
+        private readonly Task _logEventHandlerTask;
+        //private readonly Thread _logEventHandlerThread;
         private readonly Image _panelCloseButtonImage;
 
         private readonly Image _panelOpenButtonImage;
         private readonly LogTabWindow.LogTabWindow _parentLogTabWin;
 
-        private readonly ProgressEventArgs _progressEventArgs = new ProgressEventArgs();
-        private readonly object _reloadLock = new object();
+        private readonly ProgressEventArgs _progressEventArgs = new();
+        private readonly object _reloadLock = new();
         private readonly Image _searchButtonImage;
-        private readonly DelayedTrigger _selectionChangedTrigger = new DelayedTrigger(200);
-        private readonly StatusLineEventArgs _statusEventArgs = new StatusLineEventArgs();
+        private readonly StatusLineEventArgs _statusEventArgs = new();
 
-        private readonly DelayedTrigger _statusLineTrigger = new DelayedTrigger(200);
-        private readonly object _tempHighlightEntryListLock = new object();
+        private readonly object _tempHighlightEntryListLock = new();
 
-        private readonly Thread _timeShiftSyncThread;
+        private readonly Task _timeShiftSyncTask;
+        private readonly CancellationTokenSource cts = new();
+
+        //private readonly Thread _timeShiftSyncThread;
         private readonly EventWaitHandle _timeShiftSyncTimerEvent = new ManualResetEvent(false);
         private readonly EventWaitHandle _timeShiftSyncWakeupEvent = new ManualResetEvent(false);
 
         private readonly TimeSpreadCalculator _timeSpreadCalc;
 
-        private readonly object _timeSyncListLock = new object();
+        private readonly object _timeSyncListLock = new();
 
-        private ColumnCache _columnCache = new ColumnCache();
+        private ColumnCache _columnCache = new();
 
         private ILogLineColumnizer _currentColumnizer;
 
         //List<HilightEntry> currentHilightEntryList = new List<HilightEntry>();
-        private HilightGroup _currentHighlightGroup = new HilightGroup();
+        private HilightGroup _currentHighlightGroup = new();
 
         private SearchParams _currentSearchParams;
 
         private string[] _fileNames;
-        private List<int> _filterHitList = new List<int>();
-        private FilterParams _filterParams = new FilterParams();
+        private List<int> _filterHitList = [];
+        private FilterParams _filterParams = new();
         private int _filterPipeNameCounter = 0;
-        private List<int> _filterResultList = new List<int>();
+        private List<int> _filterResultList = [];
 
         private EventWaitHandle _filterUpdateEvent = new ManualResetEvent(false);
 
@@ -102,25 +109,25 @@ namespace LogExpert.Controls.LogWindow
         private bool _isMultiFile;
         private bool _isSearching;
         private bool _isTimestampDisplaySyncing;
-        private List<int> _lastFilterLinesList = new List<int>();
+        private List<int> _lastFilterLinesList = [];
 
         private int _lineHeight = 0;
 
         internal LogfileReader _logFileReader;
-        private MultiFileOptions _multiFileOptions = new MultiFileOptions();
+        private MultiFileOptions _multiFileOptions = new();
         private bool _noSelectionUpdates;
-        private PatternArgs _patternArgs = new PatternArgs();
+        private PatternArgs _patternArgs = new();
         private PatternWindow _patternWindow;
 
         private ReloadMemento _reloadMemento;
         private int _reloadOverloadCounter = 0;
-        private SortedList<int, RowHeightEntry> _rowHeightList = new SortedList<int, RowHeightEntry>();
+        private SortedList<int, RowHeightEntry> _rowHeightList = [];
         private int _selectedCol = 0; // set by context menu event for column headers only
         private bool _shouldCallTimeSync;
         private bool _shouldCancel;
         private bool _shouldTimestampDisplaySyncingCancel;
         private bool _showAdvanced;
-        private List<HilightEntry> _tempHighlightEntryList = new List<HilightEntry>();
+        private List<HilightEntry> _tempHighlightEntryList = [];
         private int _timeShiftSyncLine = 0;
 
         private bool _waitingForClose;
@@ -133,7 +140,12 @@ namespace LogExpert.Controls.LogWindow
         {
             SuspendLayout();
 
+            AutoScaleDimensions = new SizeF(96F, 96F);
+            AutoScaleMode = AutoScaleMode.Dpi;
+
             InitializeComponent();
+
+            CreateDefaultViewStyle();
 
             columnNamesLabel.Text = ""; // no filtering on columns by default
 
@@ -146,10 +158,12 @@ namespace LogExpert.Controls.LogWindow
             ForcePersistenceLoading = forcePersistenceLoading;
 
             dataGridView.CellValueNeeded += OnDataGridViewCellValueNeeded;
-            dataGridView.CellPainting += dataGridView_CellPainting;
+            dataGridView.CellPainting += OnDataGridView_CellPainting;
 
             filterGridView.CellValueNeeded += OnFilterGridViewCellValueNeeded;
             filterGridView.CellPainting += OnFilterGridViewCellPainting;
+            filterListBox.DrawMode = DrawMode.OwnerDrawVariable;
+            filterListBox.MeasureItem += MeasureItem;
 
             Closing += OnLogWindowClosing;
             Disposed += OnLogWindowDisposed;
@@ -164,7 +178,7 @@ namespace LogExpert.Controls.LogWindow
             tableLayoutPanel1.ColumnStyles[0].Width = 100;
 
             _parentLogTabWin.HighlightSettingsChanged += OnParentHighlightSettingsChanged;
-            SetColumnizer(PluginRegistry.GetInstance().RegisteredColumnizers[0]);
+            SetColumnizer(PluginRegistry.Instance.RegisteredColumnizers[0]);
 
             _patternArgs.maxMisses = 5;
             _patternArgs.minWeight = 1;
@@ -182,9 +196,9 @@ namespace LogExpert.Controls.LogWindow
                 filterComboBox.Items.Add(item);
             }
 
-            filterComboBox.DropDownHeight = filterComboBox.ItemHeight * ConfigManager.Settings.preferences.maximumFilterEntriesDisplayed;            
+            filterComboBox.DropDownHeight = filterComboBox.ItemHeight * ConfigManager.Settings.preferences.maximumFilterEntriesDisplayed;
             AutoResizeFilterBox();
-            
+
             filterRegexCheckBox.Checked = _filterParams.isRegex;
             filterCaseSensitiveCheckBox.Checked = _filterParams.isCaseSensitive;
             filterTailCheckBox.Checked = _filterParams.isFilterTail;
@@ -192,13 +206,17 @@ namespace LogExpert.Controls.LogWindow
             splitContainerLogWindow.Panel2Collapsed = true;
             advancedFilterSplitContainer.SplitterDistance = FILTER_ADVANCED_SPLITTER_DISTANCE;
 
-            _timeShiftSyncThread = new Thread(SyncTimestampDisplayWorker);
-            _timeShiftSyncThread.IsBackground = true;
-            _timeShiftSyncThread.Start();
+            _timeShiftSyncTask = new Task(SyncTimestampDisplayWorker, cts.Token);
+            _timeShiftSyncTask.Start();
+            //_timeShiftSyncThread = new Thread(SyncTimestampDisplayWorker);
+            //_timeShiftSyncThread.IsBackground = true;
+            //_timeShiftSyncThread.Start();
 
-            _logEventHandlerThread = new Thread(LogEventWorker);
-            _logEventHandlerThread.IsBackground = true;
-            _logEventHandlerThread.Start();
+            _logEventHandlerTask = new Task(LogEventWorker, cts.Token);
+            _logEventHandlerTask.Start();
+            //_logEventHandlerThread = new Thread(LogEventWorker);
+            //_logEventHandlerThread.IsBackground = true;
+            //_logEventHandlerThread.Start();
 
             //this.filterUpdateThread = new Thread(new ThreadStart(this.FilterUpdateWorker));
             //this.filterUpdateThread.Start();
@@ -210,11 +228,12 @@ namespace LogExpert.Controls.LogWindow
             dataGridView.EditModeMenuStrip = editModeContextMenuStrip;
             markEditModeToolStripMenuItem.Enabled = true;
 
-            _panelOpenButtonImage = Properties.Resources.PanelOpen;
-            _panelCloseButtonImage = Properties.Resources.PanelClose;
+            _panelOpenButtonImage = Properties.Resources.Arrow_menu_open;
+            _panelCloseButtonImage = Properties.Resources.Arrow_menu_close;
 
             Settings settings = ConfigManager.Settings;
-            if (settings.appBounds != null && settings.appBounds.Right > 0)
+
+            if (settings.appBounds.Right > 0)
             {
                 Bounds = settings.appBounds;
             }
@@ -241,8 +260,103 @@ namespace LogExpert.Controls.LogWindow
 
             ResumeLayout();
 
-            _statusLineTrigger.Signal += OnStatusLineTriggerSignal;
-            _selectionChangedTrigger.Signal += OnSelectionChangedTriggerSignal;
+            ChangeTheme(Controls);
+        }
+
+        #endregion
+
+        #region ColorTheme
+        public void ChangeTheme(Control.ControlCollection container)
+        {
+            #region ApplyColorToAllControls
+            foreach (Control component in container)
+            {
+                if (component.Controls != null && component.Controls.Count > 0)
+                {
+                    ChangeTheme(component.Controls);
+                    component.BackColor = ColorMode.BackgroundColor;
+                    component.ForeColor = ColorMode.ForeColor;
+                }
+                else
+                {
+                    component.BackColor = ColorMode.BackgroundColor;
+                    component.ForeColor = ColorMode.ForeColor;
+                }
+
+            }
+            #endregion
+
+            #region DataGridView
+
+            // Main DataGridView
+            dataGridView.BackgroundColor = ColorMode.DockBackgroundColor;
+            dataGridView.ColumnHeadersDefaultCellStyle.BackColor = ColorMode.BackgroundColor;
+            dataGridView.ColumnHeadersDefaultCellStyle.ForeColor = ColorMode.ForeColor;
+            dataGridView.EnableHeadersVisualStyles = false;
+
+            // Filter dataGridView
+            filterGridView.BackgroundColor = ColorMode.DockBackgroundColor;
+            filterGridView.ColumnHeadersDefaultCellStyle.BackColor = ColorMode.BackgroundColor;
+            filterGridView.ColumnHeadersDefaultCellStyle.ForeColor = ColorMode.ForeColor;
+            filterGridView.EnableHeadersVisualStyles = false;
+
+            // Colors for menu
+            dataGridContextMenuStrip.Renderer = new ExtendedMenuStripRenderer();
+            bookmarkContextMenuStrip.Renderer = new ExtendedMenuStripRenderer();
+            columnContextMenuStrip.Renderer = new ExtendedMenuStripRenderer();
+            editModeContextMenuStrip.Renderer = new ExtendedMenuStripRenderer();
+            filterContextMenuStrip.Renderer = new ExtendedMenuStripRenderer();
+            filterListContextMenuStrip.Renderer = new ExtendedMenuStripRenderer();
+
+            foreach (ToolStripItem item in dataGridContextMenuStrip.Items)
+            {
+                item.ForeColor = ColorMode.ForeColor;
+                item.BackColor = ColorMode.MenuBackgroundColor;
+            }
+
+            foreach (ToolStripItem item in bookmarkContextMenuStrip.Items)
+            {
+                item.ForeColor = ColorMode.ForeColor;
+                item.BackColor = ColorMode.MenuBackgroundColor;
+            }
+
+            foreach (ToolStripItem item in columnContextMenuStrip.Items)
+            {
+                item.ForeColor = ColorMode.ForeColor;
+                item.BackColor = ColorMode.MenuBackgroundColor;
+            }
+
+            foreach (ToolStripItem item in editModeContextMenuStrip.Items)
+            {
+                item.ForeColor = ColorMode.ForeColor;
+                item.BackColor = ColorMode.MenuBackgroundColor;
+            }
+
+            foreach (ToolStripItem item in filterContextMenuStrip.Items)
+            {
+                item.ForeColor = ColorMode.ForeColor;
+                item.BackColor = ColorMode.MenuBackgroundColor;
+            }
+
+            foreach (ToolStripItem item in filterListContextMenuStrip.Items)
+            {
+                item.ForeColor = ColorMode.ForeColor;
+                item.BackColor = ColorMode.MenuBackgroundColor;
+            }
+
+            // Colors for menu
+            filterContextMenuStrip.Renderer = new ExtendedMenuStripRenderer();
+
+            for (var y = 0; y < filterContextMenuStrip.Items.Count; y++)
+            {
+                var item = filterContextMenuStrip.Items[y];
+                item.ForeColor = ColorMode.ForeColor;
+                item.BackColor = ColorMode.MenuBackgroundColor;
+            }
+
+            #endregion DataGridView
+
+            filterComboBox.BackColor = ColorMode.DockBackgroundColor;
         }
 
         #endregion
@@ -442,7 +556,7 @@ namespace LogExpert.Controls.LogWindow
 
         internal void ChangeMultifileMask()
         {
-            MultiFileMaskDialog dlg = new MultiFileMaskDialog(this, FileName);
+            MultiFileMaskDialog dlg = new(this, FileName);
             dlg.Owner = this;
             dlg.MaxDays = _multiFileOptions.MaxDayTry;
             dlg.FileNamePattern = _multiFileOptions.FormatPattern;
@@ -464,8 +578,7 @@ namespace LogExpert.Controls.LogWindow
             {
                 columnComboBox.AutoCompleteMode = AutoCompleteMode.Suggest;
                 columnComboBox.AutoCompleteSource = AutoCompleteSource.CustomSource;
-                columnComboBox.AutoCompleteCustomSource = new AutoCompleteStringCollection();
-                columnComboBox.AutoCompleteCustomSource.AddRange(CurrentColumnizer.GetColumnNames());
+                columnComboBox.AutoCompleteCustomSource = [.. CurrentColumnizer.GetColumnNames()];
                 if (setFocus)
                 {
                     columnComboBox.Focus();
@@ -490,21 +603,25 @@ namespace LogExpert.Controls.LogWindow
 
         #endregion
 
-        // used for external wait fx WaitForLoadFinished()
+        private void OnButtonSizeChanged(object sender, EventArgs e)
+        {
+            if (sender is Button button && button.Image != null)
+            {
+                button.ImageAlign = ContentAlignment.MiddleCenter;
+                button.Image = new Bitmap(button.Image, new Size(button.Size.Height, button.Size.Height));
+            }
+        }
 
-        private delegate void UpdateGridCallback(LogEventArgs e);
+        // used for external wait fx WaitForLoadFinished()
 
         private delegate void UpdateProgressCallback(LoadFileEventArgs e);
 
         private delegate void LoadingStartedFx(LoadFileEventArgs e);
 
-        private delegate int SearchFx(SearchParams searchParams);
-
         private delegate void SelectLineFx(int line, bool triggerSyncCall);
 
-        private delegate void FilterFx(
-            FilterParams filterParams, List<int> filterResultLines, List<int> lastFilterResultLines,
-            List<int> filterHitList);
+        private Action<FilterParams, List<int>, List<int>, List<int>> FilterFxAction;
+        //private delegate void FilterFx(FilterParams filterParams, List<int> filterResultLines, List<int> lastFilterResultLines, List<int> filterHitList);
 
         private delegate void UpdateProgressBarFx(int lineNum);
 

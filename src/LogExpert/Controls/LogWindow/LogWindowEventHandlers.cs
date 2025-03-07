@@ -1,10 +1,5 @@
 ﻿#region
 
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Windows.Forms;
 using LogExpert.Classes;
 using LogExpert.Classes.Filter;
 using LogExpert.Classes.Highlight;
@@ -16,11 +11,17 @@ using LogExpert.Entities.EventArgs;
 using LogExpert.Extensions;
 using LogExpert.Interface;
 
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing;
+using System.Windows.Forms;
+
 #endregion
 
 namespace LogExpert.Controls.LogWindow
 {
-    public partial class LogWindow
+    internal partial class LogWindow
     {
         private void AutoResizeFilterBox()
         {
@@ -31,20 +32,17 @@ namespace LogExpert.Controls.LogWindow
 
         protected void OnProgressBarUpdate(ProgressEventArgs e)
         {
-            ProgressBarEventHandler handler = ProgressBarUpdate;
-            handler?.Invoke(this, e);
+            ProgressBarUpdate?.Invoke(this, e);
         }
 
         protected void OnStatusLine(StatusLineEventArgs e)
         {
-            StatusLineEventHandler handler = StatusLineEvent;
-            handler?.Invoke(this, e);
+            StatusLineEvent?.Invoke(this, e);
         }
 
         protected void OnGuiState(GuiStateArgs e)
         {
-            GuiStateEventHandler handler = GuiStateUpdate;
-            handler?.Invoke(this, e);
+            GuiStateUpdate?.Invoke(this, e);
         }
 
         protected void OnTailFollowed(EventArgs e)
@@ -142,7 +140,10 @@ namespace LogExpert.Controls.LogWindow
                 _externaLoadingFinishedEvent.Set();
                 _timeSpreadCalc.SetLineCount(_logFileReader.LineCount);
 
-                if (_reloadMemento != null) Invoke(new PositionAfterReloadFx(PositionAfterReload), _reloadMemento);
+                if (_reloadMemento != null)
+                {
+                    Invoke(new PositionAfterReloadFx(PositionAfterReload), _reloadMemento);
+                }
 
                 if (filterTailCheckBox.Checked)
                 {
@@ -174,11 +175,13 @@ namespace LogExpert.Controls.LogWindow
         private void OnLogWindowClosing(object sender, CancelEventArgs e)
         {
             if (Preferences.askForClose)
+            {
                 if (MessageBox.Show("Sure to close?", "LogExpert", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
                 {
                     e.Cancel = true;
                     return;
                 }
+            }
 
             SavePersistenceData(false);
             CloseLogWindow();
@@ -211,7 +214,10 @@ namespace LogExpert.Controls.LogWindow
                 return;
             }
 
-            if (!_isLoading) return;
+            if (!_isLoading)
+            {
+                return;
+            }
 
             UpdateProgressCallback callback = UpdateProgress;
             BeginInvoke(callback, e);
@@ -248,16 +254,21 @@ namespace LogExpert.Controls.LogWindow
             // Only support add new columns for now.
             // TODO: Support reload all columns?
             if (CurrentColumnizer != null && CurrentColumnizer.GetColumnCount() > startCount)
+            {
                 for (int i = startCount; i < CurrentColumnizer.GetColumnCount(); i++)
                 {
                     var colName = CurrentColumnizer.GetColumnNames()[i];
                     dataGridView.Columns.Add(PaintHelper.CreateTitleColumn(colName));
                 }
+            }
         }
 
         private void OnDataGridViewCellValuePushed(object sender, DataGridViewCellValueEventArgs e)
         {
-            if (!CurrentColumnizer.IsTimeshiftImplemented()) return;
+            if (!CurrentColumnizer.IsTimeshiftImplemented())
+            {
+                return;
+            }
 
             ILogLine line = _logFileReader.GetLogLine(e.RowIndex);
             int offset = CurrentColumnizer.GetTimeOffset();
@@ -265,17 +276,23 @@ namespace LogExpert.Controls.LogWindow
             ColumnizerCallbackObject.LineNum = e.RowIndex;
             IColumnizedLogLine cols = CurrentColumnizer.SplitLine(ColumnizerCallbackObject, line);
             CurrentColumnizer.SetTimeOffset(offset);
-            if (cols.ColumnValues.Length <= e.ColumnIndex - 2) return;
+            if (cols.ColumnValues.Length <= e.ColumnIndex - 2)
+            {
+                return;
+            }
 
             string oldValue = cols.ColumnValues[e.ColumnIndex - 2].FullValue;
             string newValue = (string)e.Value;
             //string oldValue = (string) this.dataGridView.Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
             CurrentColumnizer.PushValue(ColumnizerCallbackObject, e.ColumnIndex - 2, newValue, oldValue);
             dataGridView.Refresh();
-            TimeSpan timeSpan = new TimeSpan(CurrentColumnizer.GetTimeOffset() * TimeSpan.TicksPerMillisecond);
+            TimeSpan timeSpan = new(CurrentColumnizer.GetTimeOffset() * TimeSpan.TicksPerMillisecond);
             string span = timeSpan.ToString();
             int index = span.LastIndexOf('.');
-            if (index > 0) span = span.Substring(0, index + 4);
+            if (index > 0)
+            {
+                span = span.Substring(0, index + 4);
+            }
 
             SetTimeshiftValue(span);
             SendGuiStateUpdate();
@@ -292,9 +309,15 @@ namespace LogExpert.Controls.LogWindow
             {
                 _statusEventArgs.CurrentLineNum = dataGridView.CurrentRow.Index + 1;
                 SendStatusLineUpdate();
-                if (syncFilterCheckBox.Checked) SyncFilterGridPos();
+                if (syncFilterCheckBox.Checked)
+                {
+                    SyncFilterGridPos();
+                }
 
-                if (CurrentColumnizer.IsTimeshiftImplemented() && Preferences.timestampControl) SyncTimestampDisplay();
+                if (CurrentColumnizer.IsTimeshiftImplemented() && Preferences.timestampControl)
+                {
+                    SyncTimestampDisplay();
+                }
 
                 //MethodInvoker invoker = new MethodInvoker(DisplayCurrentFileOnStatusline);
                 //invoker.BeginInvoke(null, null);
@@ -354,7 +377,7 @@ namespace LogExpert.Controls.LogWindow
             }
 
             int lineNum = _filterResultList[e.RowIndex];
-            ILogLine line = _logFileReader.GetLogLineWithWait(lineNum);
+            ILogLine line = _logFileReader.GetLogLineWithWait(lineNum).Result;
             if (line != null)
             {
                 HilightEntry entry = FindFirstNoWordMatchHilightEntry(line);
@@ -386,11 +409,17 @@ namespace LogExpert.Controls.LogWindow
                     //}
                     if (!DebugOptions.disableWordHighlight)
                     {
-                        if (entry != null) bgColor = entry.BackgroundColor;
+                        if (entry != null)
+                        {
+                            bgColor = entry.BackgroundColor;
+                        }
                     }
                     else
                     {
-                        if (entry != null) bgColor = entry.BackgroundColor;
+                        if (entry != null)
+                        {
+                            bgColor = entry.BackgroundColor;
+                        }
                     }
 
                     e.CellStyle.BackColor = bgColor;
@@ -398,14 +427,19 @@ namespace LogExpert.Controls.LogWindow
                 }
 
                 if (DebugOptions.disableWordHighlight)
+                {
                     e.PaintContent(e.CellBounds);
+                }
                 else
+                {
                     PaintCell(e, filterGridView, false, entry);
+                }
 
                 if (e.ColumnIndex == 0)
+                {
                     if (_bookmarkProvider.IsBookmarkAtLine(lineNum))
                     {
-                        Rectangle r = new Rectangle(e.CellBounds.Left + 2, e.CellBounds.Top + 2, 6, 6);
+                        Rectangle r = new(e.CellBounds.Left + 2, e.CellBounds.Top + 2, 6, 6);
                         r = e.CellBounds;
                         r.Inflate(-2, -2);
                         Brush brush = new SolidBrush(BookmarkColor);
@@ -414,17 +448,18 @@ namespace LogExpert.Controls.LogWindow
                         Bookmark bookmark = _bookmarkProvider.GetBookmarkForLine(lineNum);
                         if (bookmark.Text.Length > 0)
                         {
-                            StringFormat format = new StringFormat();
+                            StringFormat format = new();
                             format.LineAlignment = StringAlignment.Center;
                             format.Alignment = StringAlignment.Center;
                             Brush brush2 = new SolidBrush(Color.FromArgb(255, 190, 100, 0));
-                            Font font = new Font("Verdana", Preferences.fontSize, FontStyle.Bold);
+                            Font font = new("Verdana", Preferences.fontSize, FontStyle.Bold);
                             e.Graphics.DrawString("!", font, brush2, new RectangleF(r.Left, r.Top, r.Width, r.Height),
                                 format);
                             font.Dispose();
                             brush2.Dispose();
                         }
                     }
+                }
 
                 e.Paint(e.CellBounds, DataGridViewPaintParts.Border);
                 e.Handled = true;
@@ -450,7 +485,10 @@ namespace LogExpert.Controls.LogWindow
 
         private void OnFilterComboBoxKeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Enter) FilterSearch();
+            if (e.KeyCode == Keys.Enter)
+            {
+                FilterSearch();
+            }
         }
 
         private void OnFilterGridViewColumnDividerDoubleClick(object sender,
@@ -489,14 +527,20 @@ namespace LogExpert.Controls.LogWindow
                 if (dataGridView.DisplayedRowCount(false) + dataGridView.FirstDisplayedScrollingRowIndex >= dataGridView.RowCount)
                 {
                     //this.guiStateArgs.FollowTail = true;
-                    if (!_guiStateArgs.FollowTail) FollowTailChanged(true, false);
+                    if (!_guiStateArgs.FollowTail)
+                    {
+                        FollowTailChanged(true, false);
+                    }
 
                     OnTailFollowed(EventArgs.Empty);
                 }
                 else
                 {
                     //this.guiStateArgs.FollowTail = false;
-                    if (_guiStateArgs.FollowTail) FollowTailChanged(false, false);
+                    if (_guiStateArgs.FollowTail)
+                    {
+                        FollowTailChanged(false, false);
+                    }
                 }
 
                 SendGuiStateUpdate();
@@ -508,16 +552,16 @@ namespace LogExpert.Controls.LogWindow
             switch (e.KeyCode)
             {
                 case Keys.Enter:
-                {
-                    if (filterGridView.CurrentCellAddress.Y >= 0 && filterGridView.CurrentCellAddress.Y < _filterResultList.Count)
                     {
-                        int lineNum = _filterResultList[filterGridView.CurrentCellAddress.Y];
-                        SelectLine(lineNum, false, true);
-                        e.Handled = true;
-                    }
+                        if (filterGridView.CurrentCellAddress.Y >= 0 && filterGridView.CurrentCellAddress.Y < _filterResultList.Count)
+                        {
+                            int lineNum = _filterResultList[filterGridView.CurrentCellAddress.Y];
+                            SelectLine(lineNum, false, true);
+                            e.Handled = true;
+                        }
 
-                    break;
-                }
+                        break;
+                    }
                 case Keys.Tab when e.Modifiers == Keys.None:
                     dataGridView.Focus();
                     e.Handled = true;
@@ -530,11 +574,11 @@ namespace LogExpert.Controls.LogWindow
             switch (e.KeyCode)
             {
                 case Keys.Tab when e.Modifiers == Keys.None:
-                {
-                    filterGridView.Focus();
-                    e.Handled = true;
-                    break;
-                }
+                    {
+                        filterGridView.Focus();
+                        e.Handled = true;
+                        break;
+                    }
             }
 
             //switch (e.KeyCode)
@@ -549,17 +593,26 @@ namespace LogExpert.Controls.LogWindow
 
         private void OnDataGridViewPreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
-            if (e.KeyCode == Keys.Tab && e.Control) e.IsInputKey = true;
+            if (e.KeyCode == Keys.Tab && e.Control)
+            {
+                e.IsInputKey = true;
+            }
         }
 
         private void OnDataGridViewCellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (dataGridView.CurrentCell != null) dataGridView.BeginEdit(false);
+            if (dataGridView.CurrentCell != null)
+            {
+                dataGridView.BeginEdit(false);
+            }
         }
 
         private void OnSyncFilterCheckBoxCheckedChanged(object sender, EventArgs e)
         {
-            if (syncFilterCheckBox.Checked) SyncFilterGridPos();
+            if (syncFilterCheckBox.Checked)
+            {
+                SyncFilterGridPos();
+            }
         }
 
         private void OnDataGridViewLeave(object sender, EventArgs e)
@@ -643,7 +696,7 @@ namespace LogExpert.Controls.LogWindow
                 {
                     _filterPipeList.Remove((FilterPipe)sender);
                     if (_filterPipeList.Count == 0)
-                        // reset naming counter to 0 if no more open filter tabs for this source window
+                    // reset naming counter to 0 if no more open filter tabs for this source window
                     {
                         _filterPipeNameCounter = 0;
                     }
@@ -708,9 +761,15 @@ namespace LogExpert.Controls.LogWindow
         private void OnDataGridContextMenuStripOpening(object sender, CancelEventArgs e)
         {
             int lineNum = -1;
-            if (dataGridView.CurrentRow != null) lineNum = dataGridView.CurrentRow.Index;
+            if (dataGridView.CurrentRow != null)
+            {
+                lineNum = dataGridView.CurrentRow.Index;
+            }
 
-            if (lineNum == -1) return;
+            if (lineNum == -1)
+            {
+                return;
+            }
 
             int refLineNum = lineNum;
 
@@ -726,27 +785,35 @@ namespace LogExpert.Controls.LogWindow
 
             // Remove all "old" plugin entries
             int index = dataGridContextMenuStrip.Items.IndexOf(pluginSeparator);
+
             if (index > 0)
+            {
                 for (int i = index + 1; i < dataGridContextMenuStrip.Items.Count;)
+                {
                     dataGridContextMenuStrip.Items.RemoveAt(i);
+                }
+            }
 
             // Add plugin entries
             bool isAdded = false;
-            if (PluginRegistry.GetInstance().RegisteredContextMenuPlugins.Count > 0)
+            if (PluginRegistry.Instance.RegisteredContextMenuPlugins.Count > 0)
             {
                 //string line = this.logFileReader.GetLogLine(lineNum);
                 IList<int> lines = GetSelectedContent();
-                foreach (IContextMenuEntry entry in PluginRegistry.GetInstance().RegisteredContextMenuPlugins)
+                foreach (IContextMenuEntry entry in PluginRegistry.Instance.RegisteredContextMenuPlugins)
                 {
-                    LogExpertCallback callback = new LogExpertCallback(this);
-                    ContextMenuPluginEventArgs evArgs = new ContextMenuPluginEventArgs(entry, lines, CurrentColumnizer, callback);
+                    LogExpertCallback callback = new(this);
+                    ContextMenuPluginEventArgs evArgs = new(entry, lines, CurrentColumnizer, callback);
                     EventHandler ev = OnHandlePluginContextMenu;
                     //MenuItem item = this.dataGridView.ContextMenu.MenuItems.Add(entry.GetMenuText(line, this.CurrentColumnizer, callback), ev);
                     string menuText = entry.GetMenuText(lines, CurrentColumnizer, callback);
                     if (menuText != null)
                     {
-                        bool disabled = menuText.StartsWith("_");
-                        if (disabled) menuText = menuText.Substring(1);
+                        bool disabled = menuText.StartsWith('_');
+                        if (disabled)
+                        {
+                            menuText = menuText[1..];
+                        }
 
                         ToolStripItem item = dataGridContextMenuStrip.Items.Add(menuText, null, ev);
                         item.Tag = evArgs;
@@ -769,7 +836,7 @@ namespace LogExpert.Controls.LogWindow
                 syncTimestampsToToolStripMenuItem.Enabled = true;
                 syncTimestampsToToolStripMenuItem.DropDownItems.Clear();
                 EventHandler ev = OnHandleSyncContextMenu;
-                Font italicFont = new Font(syncTimestampsToToolStripMenuItem.Font.FontFamily, syncTimestampsToToolStripMenuItem.Font.Size, FontStyle.Italic);
+                Font italicFont = new(syncTimestampsToToolStripMenuItem.Font.FontFamily, syncTimestampsToToolStripMenuItem.Font.Size, FontStyle.Italic);
 
                 foreach (WindowFileEntry fileEntry in list)
                 {
@@ -817,7 +884,7 @@ namespace LogExpert.Controls.LogWindow
                     FreeSlaveFromTimesync(entry.LogWindow);
                 }
                 else
-                    //AddSlaveToTimesync(entry.LogWindow);
+                //AddSlaveToTimesync(entry.LogWindow);
                 {
                     AddOtherWindowToTimesync(entry.LogWindow);
                 }
@@ -901,10 +968,10 @@ namespace LogExpert.Controls.LogWindow
             CheckForFilterDirty();
         }
 
-        private void OncolumnButtonClick(object sender, EventArgs e)
+        private void OnColumnButtonClick(object sender, EventArgs e)
         {
             _filterParams.currentColumnizer = _currentColumnizer;
-            FilterColumnChooser chooser = new FilterColumnChooser(_filterParams);
+            FilterColumnChooser chooser = new(_filterParams);
             if (chooser.ShowDialog() == DialogResult.OK)
             {
                 columnNamesLabel.Text = CalculateColumnNames(_filterParams);
@@ -952,7 +1019,10 @@ namespace LogExpert.Controls.LogWindow
 
         private void OnFilterGridViewCellContextMenuStripNeeded(object sender, DataGridViewCellContextMenuStripNeededEventArgs e)
         {
-            if (e.ContextMenuStrip == columnContextMenuStrip) _selectedCol = e.ColumnIndex;
+            if (e.ContextMenuStrip == columnContextMenuStrip)
+            {
+                _selectedCol = e.ColumnIndex;
+            }
         }
 
         private void OnColumnContextMenuStripOpening(object sender, CancelEventArgs e)
@@ -960,7 +1030,10 @@ namespace LogExpert.Controls.LogWindow
             Control ctl = columnContextMenuStrip.SourceControl;
             DataGridView gridView = ctl as DataGridView;
             bool frozen = false;
-            if (_freezeStateMap.ContainsKey(ctl)) frozen = _freezeStateMap[ctl];
+            if (_freezeStateMap.ContainsKey(ctl))
+            {
+                frozen = _freezeStateMap[ctl];
+            }
 
             freezeLeftColumnsUntilHereToolStripMenuItem.Checked = frozen;
 
@@ -999,7 +1072,7 @@ namespace LogExpert.Controls.LogWindow
             DataGridViewColumn colLast = gridView.Columns[gridView.Columns.Count - 1];
             moveToLastColumnToolStripMenuItem.Enabled = colLast != null && colLast.Frozen == col.Frozen;
 
-            // Fill context menu with column names 
+            // Fill context menu with column names
             //
             EventHandler ev = OnHandleColumnItemContextMenu;
             allColumnsToolStripMenuItem.DropDownItems.Clear();
@@ -1048,7 +1121,10 @@ namespace LogExpert.Controls.LogWindow
         {
             DataGridView gridView = columnContextMenuStrip.SourceControl as DataGridView;
             DataGridViewColumn col = gridView.Columns[_selectedCol];
-            if (col != null) col.DisplayIndex = gridView.Columns.Count - 1;
+            if (col != null)
+            {
+                col.DisplayIndex = gridView.Columns.Count - 1;
+            }
         }
 
         private void OnMoveLeftToolStripMenuItemClick(object sender, EventArgs e)
@@ -1065,7 +1141,10 @@ namespace LogExpert.Controls.LogWindow
         {
             DataGridView gridView = columnContextMenuStrip.SourceControl as DataGridView;
             DataGridViewColumn col = gridView.Columns[_selectedCol];
-            if (col != null && col.DisplayIndex < gridView.Columns.Count - 1) col.DisplayIndex = col.DisplayIndex + 1;
+            if (col != null && col.DisplayIndex < gridView.Columns.Count - 1)
+            {
+                col.DisplayIndex = col.DisplayIndex + 1;
+            }
         }
 
         private void OnHideColumnToolStripMenuItemClick(object sender, EventArgs e)
@@ -1078,7 +1157,10 @@ namespace LogExpert.Controls.LogWindow
         private void OnRestoreColumnsToolStripMenuItemClick(object sender, EventArgs e)
         {
             DataGridView gridView = columnContextMenuStrip.SourceControl as DataGridView;
-            foreach (DataGridViewColumn col in gridView.Columns) col.Visible = true;
+            foreach (DataGridViewColumn col in gridView.Columns)
+            {
+                col.Visible = true;
+            }
         }
 
         private void OnTimeSpreadingControlLineSelected(object sender, SelectLineEventArgs e)
@@ -1095,7 +1177,20 @@ namespace LogExpert.Controls.LogWindow
         {
             if (dataGridView.EditingControl is DataGridViewTextBoxEditingControl ctl)
             {
-                HilightEntry he = new HilightEntry(ctl.SelectedText, Color.Red, Color.Yellow, false, true, false, false, false, false, null, false);
+                var he = new HilightEntry()
+                {
+                    SearchText = ctl.SelectedText,
+                    ForegroundColor = Color.Red,
+                    BackgroundColor = Color.Yellow,
+                    IsRegEx = false,
+                    IsCaseSensitive = true,
+                    IsLedSwitch = false,
+                    IsSetBookmark = false,
+                    IsActionEntry = false,
+                    ActionEntry = null,
+                    IsWordMatch = false
+                };
+
                 lock (_tempHighlightEntryListLock)
                 {
                     _tempHighlightEntryList.Add(he);
@@ -1111,7 +1206,21 @@ namespace LogExpert.Controls.LogWindow
         {
             if (dataGridView.EditingControl is DataGridViewTextBoxEditingControl ctl)
             {
-                HilightEntry he = new HilightEntry(ctl.SelectedText, Color.Red, Color.Yellow, false, true, false, false, false, false, null, true);
+                HilightEntry he = new()
+                {
+                    SearchText = ctl.SelectedText,
+                    ForegroundColor = Color.Red,
+                    BackgroundColor = Color.Yellow,
+                    IsRegEx = false,
+                    IsCaseSensitive = true,
+                    IsLedSwitch = false,
+                    IsStopTail = false,
+                    IsSetBookmark = false,
+                    IsActionEntry = false,
+                    ActionEntry = null,
+                    IsWordMatch = true
+                };
+
                 lock (_tempHighlightEntryListLock)
                 {
                     _tempHighlightEntryList.Add(he);
@@ -1182,7 +1291,10 @@ namespace LogExpert.Controls.LogWindow
 
         private void OnDataGridViewCellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.ColumnIndex == 0) ToggleBookmark();
+            if (e.ColumnIndex == 0)
+            {
+                ToggleBookmark();
+            }
         }
 
         private void OnDataGridViewOverlayDoubleClicked(object sender, OverlayEventArgs e)
@@ -1194,7 +1306,7 @@ namespace LogExpert.Controls.LogWindow
         {
             if (e.Button == MouseButtons.Right)
             {
-                RegexHelperDialog dlg = new RegexHelperDialog();
+                RegexHelperDialog dlg = new();
                 dlg.Owner = this;
                 dlg.CaseSensitive = filterCaseSensitiveCheckBox.Checked;
                 dlg.Pattern = filterComboBox.Text;
@@ -1233,7 +1345,10 @@ namespace LogExpert.Controls.LogWindow
                 FilterParams filterParams = (FilterParams)filterListBox.Items[index];
                 ConfigManager.Settings.filterList.Remove(filterParams);
                 OnFilterListChanged(this);
-                if (filterListBox.Items.Count > 0) filterListBox.SelectedIndex = filterListBox.Items.Count - 1;
+                if (filterListBox.Items.Count > 0)
+                {
+                    filterListBox.SelectedIndex = filterListBox.Items.Count - 1;
+                }
             }
         }
 
@@ -1254,6 +1369,11 @@ namespace LogExpert.Controls.LogWindow
         private void OnFilterDownButtonClick(object sender, EventArgs e)
         {
             int i = filterListBox.SelectedIndex;
+            if (i < 0)
+            {
+                return;
+            }
+
             if (i < filterListBox.Items.Count - 1)
             {
                 FilterParams filterParams = (FilterParams)filterListBox.Items[i];
@@ -1279,9 +1399,15 @@ namespace LogExpert.Controls.LogWindow
                 CheckForFilterDirty();
                 filterSearchButton.Image = _searchButtonImage;
                 saveFilterButton.Enabled = false;
-                if (hideFilterListOnLoadCheckBox.Checked) ToggleHighlightPanel(false);
+                if (hideFilterListOnLoadCheckBox.Checked)
+                {
+                    ToggleHighlightPanel(false);
+                }
 
-                if (filterOnLoadCheckBox.Checked) FilterSearch();
+                if (filterOnLoadCheckBox.Checked)
+                {
+                    FilterSearch();
+                }
             }
         }
 
@@ -1291,7 +1417,7 @@ namespace LogExpert.Controls.LogWindow
             if (e.Index >= 0)
             {
                 FilterParams filterParams = (FilterParams)filterListBox.Items[e.Index];
-                Rectangle rectangle = new Rectangle(0, e.Bounds.Top, e.Bounds.Width, e.Bounds.Height);
+                Rectangle rectangle = new(0, e.Bounds.Top, e.Bounds.Width, e.Bounds.Height);
 
                 Brush brush;
 
@@ -1318,7 +1444,7 @@ namespace LogExpert.Controls.LogWindow
             if (i < filterListBox.Items.Count && i >= 0)
             {
                 FilterParams filterParams = (FilterParams)filterListBox.Items[i];
-                ColorDialog dlg = new ColorDialog();
+                ColorDialog dlg = new();
                 dlg.CustomColors = new[] { filterParams.color.ToArgb() };
                 dlg.Color = filterParams.color;
                 if (dlg.ShowDialog() == DialogResult.OK)
@@ -1398,11 +1524,13 @@ namespace LogExpert.Controls.LogWindow
             lock (_timeSyncListLock)
             {
                 if (syncList.Count == 0 || syncList.Count == 1 && syncList.Contains(this))
+                {
                     if (syncList == TimeSyncList)
                     {
                         TimeSyncList = null;
                         OnSyncModeChanged();
                     }
+                }
             }
         }
 
@@ -1418,16 +1546,11 @@ namespace LogExpert.Controls.LogWindow
 
         private void OnMarkFilterHitsInLogViewToolStripMenuItemClick(object sender, EventArgs e)
         {
-            SearchParams p = new SearchParams();
+            SearchParams p = new();
             p.searchText = _filterParams.searchText;
             p.isRegex = _filterParams.isRegex;
             p.isCaseSensitive = _filterParams.isCaseSensitive;
             AddSearchHitHighlightEntry(p);
-        }
-
-        private void OnStatusLineTriggerSignal(object sender, EventArgs e)
-        {
-            OnStatusLine(_statusEventArgs);
         }
 
         private void OnColumnComboBoxSelectionChangeCommitted(object sender, EventArgs e)
@@ -1446,9 +1569,15 @@ namespace LogExpert.Controls.LogWindow
 
         private void OnColumnComboBoxPreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
-            if (e.KeyCode == Keys.Down && e.Modifiers == Keys.Alt) columnComboBox.DroppedDown = true;
+            if (e.KeyCode == Keys.Down && e.Modifiers == Keys.Alt)
+            {
+                columnComboBox.DroppedDown = true;
+            }
 
-            if (e.KeyCode == Keys.Enter) e.IsInputKey = true;
+            if (e.KeyCode == Keys.Enter)
+            {
+                e.IsInputKey = true;
+            }
         }
 
         private void OnBookmarkProviderBookmarkRemoved(object sender, EventArgs e)
@@ -1497,5 +1626,10 @@ namespace LogExpert.Controls.LogWindow
         #endregion
 
         #endregion
+
+        private void MeasureItem(object sender, MeasureItemEventArgs e)
+        {
+            e.ItemHeight = filterListBox.Font.Height;
+        }
     }
 }

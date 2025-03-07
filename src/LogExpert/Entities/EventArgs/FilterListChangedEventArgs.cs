@@ -2,7 +2,7 @@
 
 namespace LogExpert.Entities.EventArgs
 {
-    public class FilterListChangedEventArgs
+    internal class FilterListChangedEventArgs
     {
         #region Fields
 

@@ -1,8 +1,9 @@
 using LogExpert.Controls.LogTabWindow;
+using LogExpert.Grpc;
 
 namespace LogExpert.Interface
 {
-    public interface ILogExpertProxy
+    internal interface ILogExpertProxy
     {
         #region Public methods
 

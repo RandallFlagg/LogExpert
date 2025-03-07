@@ -1,31 +1,32 @@
-﻿using System;
+﻿using LogExpert.Classes.Highlight;
+
+using System;
 using System.Collections.Generic;
-using LogExpert.Classes.Highlight;
 
 namespace LogExpert.Entities
 {
     [Serializable]
-    public class HilightGroup
+    public class HilightGroup : ICloneable
     {
-        #region Fields
-
-        private string groupName = "";
-        private List<HilightEntry> hilightEntryList = new List<HilightEntry>();
-
-        #endregion
-
         #region Properties
 
-        public string GroupName
-        {
-            get => groupName;
-            set => groupName = value;
-        }
+        public string GroupName { get; set; } = string.Empty;
 
-        public List<HilightEntry> HilightEntryList
+        public List<HilightEntry> HilightEntryList { get; set; } = [];
+
+        public object Clone()
         {
-            get => hilightEntryList;
-            set => hilightEntryList = value;
+            HilightGroup clone = new()
+            {
+                GroupName = GroupName
+            };
+
+            foreach (HilightEntry entry in HilightEntryList)
+            {
+                clone.HilightEntryList.Add((HilightEntry)entry.Clone());
+            }
+
+            return clone;
         }
 
         #endregion

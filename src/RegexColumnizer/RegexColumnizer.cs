@@ -1,6 +1,5 @@
 ﻿using LogExpert;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -71,6 +70,17 @@ namespace RegexColumnizer
                         Parent = logLine,
                         FullValue = line.FullLine
                     };
+
+                    
+                    //Fill other columns with empty string to avoid null pointer exceptions in unexpected places
+                    for (var i = 0; i < columns.Length - 1; i++)
+                    {
+                        logLine.ColumnValues[i] = new Column
+                        {
+                            Parent = logLine,
+                            FullValue = string.Empty
+                        };
+                    }
                 }
             }
             else
@@ -170,7 +180,7 @@ namespace RegexColumnizer
 
         protected abstract string GetNameInternal();
 
-        private void Init(RegexColumnizerConfig config)
+        public void Init(RegexColumnizerConfig config)
         {
             Config = config;
 

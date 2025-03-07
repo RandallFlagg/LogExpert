@@ -3,23 +3,23 @@
 namespace LogExpert.Classes.Highlight
 {
     [Serializable]
-    public class ActionEntry
+    public class ActionEntry : ICloneable
     {
         #region Fields
 
-        public string actionParam;
-        public string pluginName;
+        public string ActionParam { get; set; }
 
-        #endregion
+        public string PluginName { get; set; }
 
-        #region Public methods
-
-        public ActionEntry Copy()
+        public object Clone()
         {
-            ActionEntry e = new ActionEntry();
-            e.pluginName = this.pluginName;
-            e.actionParam = this.actionParam;
-            return e;
+            var actionEntry = new ActionEntry
+            {
+                PluginName = PluginName,
+                ActionParam = ActionParam
+            };
+
+            return actionEntry;
         }
 
         #endregion

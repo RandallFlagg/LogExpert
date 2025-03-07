@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.IO;
+using System.Reflection;
 using System.Windows.Forms;
 
 namespace LogExpert.Dialogs
@@ -16,6 +17,7 @@ namespace LogExpert.Dialogs
         public AboutBox()
         {
             InitializeComponent();
+
             _assembly = Assembly.GetExecutingAssembly();
 
             Text = $@"About {AssemblyTitle}";
@@ -46,17 +48,30 @@ namespace LogExpert.Dialogs
                 object[] attributes = _assembly.GetCustomAttributes(typeof(AssemblyTitleAttribute), false);
                 if (attributes.Length > 0)
                 {
-                    AssemblyTitleAttribute titleAttribute = (AssemblyTitleAttribute) attributes[0];
+                    AssemblyTitleAttribute titleAttribute = (AssemblyTitleAttribute)attributes[0];
                     if (titleAttribute.Title != "")
                     {
                         return titleAttribute.Title;
                     }
                 }
-                return System.IO.Path.GetFileNameWithoutExtension(_assembly.CodeBase);
+                return Path.GetFileNameWithoutExtension(_assembly.Location);
             }
         }
 
-        public string AssemblyVersion => _assembly.GetName().Version.ToString(3);
+        public string AssemblyVersion
+        {
+            get
+            {
+                AssemblyName assembly = _assembly.GetName();
+                string version = $"{assembly.Version.Major}.{assembly.Version.Minor}.{assembly.Version.Build}.{assembly.Version.Revision}";
+                if (assembly.Version.Revision >= 9000)
+                {
+                    version += " Testrelease";
+                }
+
+                return version;
+            }
+        }
 
         public string AssemblyDescription
         {
@@ -67,7 +82,7 @@ namespace LogExpert.Dialogs
                 {
                     return string.Empty;
                 }
-                return ((AssemblyDescriptionAttribute) attributes[0]).Description;
+                return ((AssemblyDescriptionAttribute)attributes[0]).Description;
             }
         }
 
@@ -80,7 +95,7 @@ namespace LogExpert.Dialogs
                 {
                     return string.Empty;
                 }
-                return ((AssemblyProductAttribute) attributes[0]).Product;
+                return ((AssemblyProductAttribute)attributes[0]).Product;
             }
         }
 
@@ -93,7 +108,7 @@ namespace LogExpert.Dialogs
                 {
                     return string.Empty;
                 }
-                return ((AssemblyCopyrightAttribute) attributes[0]).Copyright;
+                return ((AssemblyCopyrightAttribute)attributes[0]).Copyright;
             }
         }
 
@@ -101,7 +116,7 @@ namespace LogExpert.Dialogs
 
         #region Events handler
 
-        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        private void OnLinkLabelURLClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             string target = e.Link.LinkData as string;
             System.Diagnostics.Process.Start(target);

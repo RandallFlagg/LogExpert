@@ -31,7 +31,9 @@ Or Install via chocolatey
 ```choco install logexpert```
 
 Requirements
-- .NET 4.7.2
+- https://dotnet.microsoft.com/en-us/download/dotnet/8.0
+- .NET 8 (https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-8.0.13-windows-x64-installer or https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-8.0.13-windows-x86-installer) 
+- ASP.NET Core Runtime (https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-aspnetcore-8.0.13-windows-x64-installer, https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-aspnetcore-8.0.13-windows-x86-installer or https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-aspnetcore-8.0.13-windows-hosting-bundle-installer)
 
 ## CI
 This is a continous integration build. So always the latest and greates changes. It should be stable but no promises. Can be viewed as Beta.
@@ -56,7 +58,14 @@ Nuke.build Requirements
 # FAQ / HELP / Informations / Examples
 Please checkout the wiki for FAQ / HELP / Informations / Examples
 
+# High DPI
+- dont use AutoScaleMode for single GUI controls like Buttons etc.
+- dont use AutoScaleDimensions for single GUI controls like Buttons etc.
+
 https://github.com/zarunbal/LogExpert/wiki
+
+# Discord Server
+https://discord.gg/SjxkuckRe9
 
 ## Credits
 ### Contributors

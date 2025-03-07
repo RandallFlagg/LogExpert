@@ -1,13 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Windows.Forms;
-using LogExpert.Classes.Highlight;
+﻿using LogExpert.Classes.Highlight;
 using LogExpert.Config;
 using LogExpert.Dialogs;
 using LogExpert.Entities;
 using LogExpert.Interface;
+
 using NLog;
+
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Windows.Forms;
 
 namespace LogExpert.Classes
 {
@@ -17,6 +19,7 @@ namespace LogExpert.Classes
 
         private static readonly ILogger _logger = LogManager.GetCurrentClassLogger();
 
+        //TODO Make configurable
         private Color _bookmarkColor = Color.FromArgb(165, 200, 225);
 
         #endregion
@@ -60,7 +63,7 @@ namespace LogExpert.Classes
                 }
                 else
                 {
-                    Color bgColor = Color.White;
+                    Color bgColor = LogExpert.Config.ColorMode.DockBackgroundColor;
                     if (!DebugOptions.disableWordHighlight)
                     {
                         if (entry != null)
@@ -101,7 +104,7 @@ namespace LogExpert.Classes
                         brush.Dispose();
                         if (bookmark.Text.Length > 0)
                         {
-                            StringFormat format = new StringFormat();
+                            StringFormat format = new();
                             format.LineAlignment = StringAlignment.Center;
                             format.Alignment = StringAlignment.Center;
                             Brush brush2 = new SolidBrush(Color.FromArgb(255, 190, 100, 0));
@@ -121,7 +124,7 @@ namespace LogExpert.Classes
 
         public static DataGridViewTextBoxColumn CreateMarkerColumn()
         {
-            DataGridViewTextBoxColumn markerColumn = new DataGridViewTextBoxColumn();
+            DataGridViewTextBoxColumn markerColumn = new();
             markerColumn.HeaderText = "";
             markerColumn.AutoSizeMode = DataGridViewAutoSizeColumnMode.NotSet;
             markerColumn.Resizable = DataGridViewTriState.False;
@@ -134,7 +137,7 @@ namespace LogExpert.Classes
 
         public static DataGridViewTextBoxColumn CreateLineNumberColumn()
         {
-            DataGridViewTextBoxColumn lineNumberColumn = new DataGridViewTextBoxColumn();
+            DataGridViewTextBoxColumn lineNumberColumn = new();
             lineNumberColumn.HeaderText = "Line";
             lineNumberColumn.AutoSizeMode = DataGridViewAutoSizeColumnMode.NotSet;
             lineNumberColumn.Resizable = DataGridViewTriState.NotSet;
@@ -169,7 +172,7 @@ namespace LogExpert.Classes
             }
             catch (ArgumentOutOfRangeException ae)
             {
-                // Occures sometimes on empty gridViews (no lines) if bookmark window was closed and re-opened in floating mode. 
+                // Occures sometimes on empty gridViews (no lines) if bookmark window was closed and re-opened in floating mode.
                 // Don't know why.
                 _logger.Error(ae);
             }
@@ -230,7 +233,7 @@ namespace LogExpert.Classes
                 }
                 else
                 {
-                    // Workaround for a .NET bug which brings the DataGridView into an unstable state (causing lots of NullReferenceExceptions). 
+                    // Workaround for a .NET bug which brings the DataGridView into an unstable state (causing lots of NullReferenceExceptions).
                     dataGridView.FirstDisplayedScrollingColumnIndex = 0;
 
                     dataGridView.Columns[dataGridView.Columns.Count - 1].MinimumWidth = 5; // default
@@ -247,7 +250,7 @@ namespace LogExpert.Classes
 
         public static Rectangle BorderWidths(DataGridViewAdvancedBorderStyle advancedBorderStyle)
         {
-            Rectangle rect = new Rectangle();
+            Rectangle rect = new();
 
             rect.X = advancedBorderStyle.Left == DataGridViewAdvancedCellBorderStyle.None ? 0 : 1;
             if (advancedBorderStyle.Left == DataGridViewAdvancedCellBorderStyle.OutsetDouble ||
@@ -292,13 +295,12 @@ namespace LogExpert.Classes
             PaintHighlightedCell(logPaintCtx, e, gridView, noBackgroundFill, groundEntry);
         }
 
-
         private static void PaintHighlightedCell(ILogPaintContext logPaintCtx, DataGridViewCellPaintingEventArgs e, DataGridView gridView, bool noBackgroundFill, HilightEntry groundEntry)
         {
             object value = e.Value ?? string.Empty;
-            
+
             IList<HilightMatchEntry> matchList = logPaintCtx.FindHighlightMatches(value as ILogLine);
-            // too many entries per line seem to cause problems with the GDI 
+            // too many entries per line seem to cause problems with the GDI
             while (matchList.Count > 50)
             {
                 matchList.RemoveAt(50);
@@ -308,16 +310,32 @@ namespace LogExpert.Classes
             {
                 if (string.IsNullOrEmpty(column.FullValue) == false)
                 {
-                    HilightMatchEntry hme = new HilightMatchEntry();
+                    HilightMatchEntry hme = new();
                     hme.StartPos = 0;
                     hme.Length = column.FullValue.Length;
-                    hme.HilightEntry = new HilightEntry(column.FullValue, groundEntry?.ForegroundColor ?? Color.FromKnownColor(KnownColor.Black), groundEntry?.BackgroundColor ?? Color.Empty, false);
+
+                    var he = new HilightEntry
+                    {
+                        SearchText = column.FullValue,
+                        ForegroundColor = groundEntry?.ForegroundColor ?? ColorMode.ForeColor,
+                        BackgroundColor = groundEntry?.BackgroundColor ?? Color.Empty,
+                        IsRegEx = false,
+                        IsCaseSensitive = false,
+                        IsLedSwitch = false,
+                        IsStopTail = false,
+                        IsSetBookmark = false,
+                        IsActionEntry = false,
+                        IsWordMatch = false
+                    };
+
+                    hme.HilightEntry = he;
+
                     matchList = MergeHighlightMatchEntries(matchList, hme);
                 }
             }
 
             int leftPad = e.CellStyle.Padding.Left;
-            RectangleF rect = new RectangleF(e.CellBounds.Left + leftPad, e.CellBounds.Top, e.CellBounds.Width, e.CellBounds.Height);
+            RectangleF rect = new(e.CellBounds.Left + leftPad, e.CellBounds.Top, e.CellBounds.Width, e.CellBounds.Height);
             Rectangle borderWidths = BorderWidths(e.AdvancedBorderStyle);
             Rectangle valBounds = e.CellBounds;
             valBounds.Offset(borderWidths.X, borderWidths.Y);
@@ -346,7 +364,7 @@ namespace LogExpert.Classes
             //TextRenderer.DrawText(e.Graphics, e.Value as String, e.CellStyle.Font, valBounds, Color.FromKnownColor(KnownColor.Black), flags);
 
             Point wordPos = valBounds.Location;
-            Size proposedSize = new Size(valBounds.Width, valBounds.Height);
+            Size proposedSize = new(valBounds.Width, valBounds.Height);
 
             Rectangle r = gridView.GetCellDisplayRectangle(e.ColumnIndex, e.RowIndex, true);
             e.Graphics.SetClip(e.CellBounds);
@@ -372,7 +390,7 @@ namespace LogExpert.Classes
 
                 Size wordSize = TextRenderer.MeasureText(e.Graphics, matchWord, font, proposedSize, flags);
                 wordSize.Height = e.CellBounds.Height;
-                Rectangle wordRect = new Rectangle(wordPos, wordSize);
+                Rectangle wordRect = new(wordPos, wordSize);
 
                 Color foreColor = matchEntry.HilightEntry.ForegroundColor;
                 if ((e.State & DataGridViewElementStates.Selected) != DataGridViewElementStates.Selected)
@@ -398,9 +416,9 @@ namespace LogExpert.Classes
 
 
         /// <summary>
-        /// Builds a list of HilightMatchEntry objects. A HilightMatchEntry spans over a region that is painted with the same foreground and 
+        /// Builds a list of HilightMatchEntry objects. A HilightMatchEntry spans over a region that is painted with the same foreground and
         /// background colors.
-        /// All regions which don't match a word-mode entry will be painted with the colors of a default entry (groundEntry). This is either the 
+        /// All regions which don't match a word-mode entry will be painted with the colors of a default entry (groundEntry). This is either the
         /// first matching non-word-mode highlight entry or a black-on-white default (if no matching entry was found).
         /// </summary>
         /// <param name="matchList">List of all highlight matches for the current cell</param>
@@ -444,7 +462,7 @@ namespace LogExpert.Classes
                 {
                     if (entryArray[pos] != currentEntry)
                     {
-                        HilightMatchEntry me = new HilightMatchEntry();
+                        HilightMatchEntry me = new();
                         me.StartPos = lastStartPos;
                         me.Length = pos - lastStartPos;
                         me.HilightEntry = currentEntry;
@@ -453,7 +471,7 @@ namespace LogExpert.Classes
                         lastStartPos = pos;
                     }
                 }
-                HilightMatchEntry me2 = new HilightMatchEntry();
+                HilightMatchEntry me2 = new();
                 me2.StartPos = lastStartPos;
                 me2.Length = pos - lastStartPos;
                 me2.HilightEntry = currentEntry;

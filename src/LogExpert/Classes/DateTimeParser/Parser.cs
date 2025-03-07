@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace LogExpert.Classes.DateTimeParser
 {
-    internal static class Parser
+    public static class Parser
     {
         public static List<Section> ParseSections(string formatString, out bool syntaxError)
         {
@@ -14,10 +15,14 @@ namespace LogExpert.Classes.DateTimeParser
                 var section = ParseSection(tokenizer, sections.Count, out var sectionSyntaxError);
 
                 if (sectionSyntaxError)
+                {
                     syntaxError = true;
+                }
 
                 if (section == null)
+                {
                     break;
+                }
 
                 sections.Add(section);
             }
@@ -29,12 +34,14 @@ namespace LogExpert.Classes.DateTimeParser
         {
             bool hasDateParts = false;
             string token;
-            List<string> tokens = new List<string>();
+            List<string> tokens = [];
 
             while ((token = ReadToken(reader, out syntaxError)) != null)
             {
                 if (token == ";")
+                {
                     break;
+                }
 
                 if (Token.IsDatePart(token))
                 {
@@ -75,7 +82,7 @@ namespace LogExpert.Classes.DateTimeParser
         private static void ParseMilliseconds(List<string> tokens, out List<string> result)
         {
             // if tokens form .0 through .000.., combine to single subsecond token
-            result = new List<string>();
+            result = [];
             for (var i = 0; i < tokens.Count; i++)
             {
                 var token = tokens[i];
@@ -89,9 +96,13 @@ namespace LogExpert.Classes.DateTimeParser
                     }
 
                     if (zeros > 0)
+                    {
                         result.Add("." + new string('0', zeros));
+                    }
                     else
+                    {
                         result.Add(".");
+                    }
                 }
                 else
                 {
@@ -115,18 +126,18 @@ namespace LogExpert.Classes.DateTimeParser
                 reader.ReadOneOf("#?,!&%+-$€£0123456789{}():;/.@ ") ||
 
                 // Date
-                reader.ReadString("tt", true) || 
-                reader.ReadOneOrMore('y') || 
-                reader.ReadOneOrMore('Y') || 
-                reader.ReadOneOrMore('m') || 
-                reader.ReadOneOrMore('M') || 
-                reader.ReadOneOrMore('d') || 
-                reader.ReadOneOrMore('D') || 
-                reader.ReadOneOrMore('h') || 
-                reader.ReadOneOrMore('H') || 
-                reader.ReadOneOrMore('s') || 
+                reader.ReadString("tt", true) || //AM / PM
+                reader.ReadOneOrMore('y') ||
+                reader.ReadOneOrMore('Y') ||
+                reader.ReadOneOrMore('m') ||
+                reader.ReadOneOrMore('M') ||
+                reader.ReadOneOrMore('d') ||
+                reader.ReadOneOrMore('D') ||
+                reader.ReadOneOrMore('h') ||
+                reader.ReadOneOrMore('H') ||
+                reader.ReadOneOrMore('s') ||
                 reader.ReadOneOrMore('S') ||
-                //Latin Date String: (a.C.n.  ante Christum natum) 
+                //Latin Date String: (a.C.n.  ante Christum natum)
                 reader.ReadString("gg"))
             {
                 syntaxError = false;

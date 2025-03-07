@@ -1,7 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using LogExpert.Extensions;
+﻿using LogExpert.Extensions;
+
 using NUnit.Framework;
+
+using System;
+using System.Collections.Generic;
 
 namespace LogExpert.Tests.Extensions
 {
@@ -13,7 +15,7 @@ namespace LogExpert.Tests.Extensions
         {
             object[] arrayObject = null;
 
-            Assert.IsTrue(arrayObject.IsEmpty());
+            Assert.That(arrayObject.IsEmpty(), Is.True);
         }
 
         [Test]
@@ -21,15 +23,15 @@ namespace LogExpert.Tests.Extensions
         {
             object[] arrayObject = Array.Empty<object>();
 
-            Assert.IsTrue(arrayObject.IsEmpty());
+            Assert.That(arrayObject.IsEmpty(), Is.True);
         }
 
         [Test]
         public void Extensions_IsEmpty_FilledArray()
         {
-            object[] arrayObject = {new object()};
+            object[] arrayObject = { new() };
 
-            Assert.IsFalse(arrayObject.IsEmpty());
+            Assert.That(!arrayObject.IsEmpty(), Is.True);
         }
 
         [Test]
@@ -37,7 +39,7 @@ namespace LogExpert.Tests.Extensions
         {
             IEnumerable<object> arrayObject = null;
 
-            Assert.IsTrue(arrayObject.IsEmpty());
+            Assert.That(arrayObject.IsEmpty(), Is.True);
         }
 
         [Test]
@@ -45,15 +47,15 @@ namespace LogExpert.Tests.Extensions
         {
             IEnumerable<object> arrayObject = new List<object>();
 
-            Assert.IsTrue(arrayObject.IsEmpty());
+            Assert.That(arrayObject.IsEmpty(), Is.True);
         }
 
         [Test]
         public void Extensions_IsEmpty_FilledIEnumerable()
         {
-            IEnumerable<object> arrayObject = new List<object>(new []{new object()});
+            IEnumerable<object> arrayObject = new List<object>(new[] { new object() });
 
-            Assert.IsFalse(arrayObject.IsEmpty());
+            Assert.That(!arrayObject.IsEmpty(), Is.True);
         }
     }
 }

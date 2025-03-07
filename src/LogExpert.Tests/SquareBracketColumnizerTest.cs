@@ -1,11 +1,13 @@
 ﻿
-using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.IO;
 using LogExpert.Classes.Columnizer;
 using LogExpert.Classes.Log;
 using LogExpert.Entities;
+
+using NUnit.Framework;
+
+using System;
+using System.Collections.Generic;
+using System.IO;
 
 namespace LogExpert
 {
@@ -18,12 +20,12 @@ namespace LogExpert
         [TestCase(@".\TestData\SquareBracketColumnizerTest_05.txt", 3)]
         public void GetPriority_HappyFile_ColumnCountMatches(string fileName, int count)
         {
-            SquareBracketColumnizer squareBracketColumnizer = new SquareBracketColumnizer();
+            SquareBracketColumnizer squareBracketColumnizer = new();
             string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName);
 
-            LogfileReader logFileReader = new LogfileReader(path, new EncodingOptions(), true, 40, 50, new MultiFileOptions());
+            LogfileReader logFileReader = new(path, new EncodingOptions(), true, 40, 50, new MultiFileOptions());
             logFileReader.ReadFiles();
-            List<ILogLine> loglines = new List<ILogLine>
+            List<ILogLine> loglines = new()
             {
                 // Sampling a few lines to select the correct columnizer
                 logFileReader.GetLogLine(0),
@@ -39,7 +41,7 @@ namespace LogExpert
             };
 
             squareBracketColumnizer.GetPriority(path, loglines);
-            Assert.AreEqual(squareBracketColumnizer.GetColumnCount(), count);
+            Assert.That(count, Is.EqualTo(squareBracketColumnizer.GetColumnCount()));
         }
 
     }
