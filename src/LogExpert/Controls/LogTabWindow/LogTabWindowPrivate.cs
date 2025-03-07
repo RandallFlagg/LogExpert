@@ -677,7 +677,14 @@ namespace LogExpert.Controls.LogTabWindow
                 labelSize.Size = TextRenderer.MeasureText(labelSize.Text, labelSize.Font);
                 labelCurrentLine.Text = $"Line: {e.CurrentLineNum}";
                 labelCurrentLine.Size = TextRenderer.MeasureText(labelCurrentLine.Text, labelCurrentLine.Font);
-                statusStrip.Refresh();
+                if (statusStrip.InvokeRequired)
+                {
+                    statusStrip.BeginInvoke(new MethodInvoker(delegate { statusStrip.Refresh(); }));
+                }
+                else
+                {
+                    statusStrip.Refresh();
+                }
             }
         }
 
