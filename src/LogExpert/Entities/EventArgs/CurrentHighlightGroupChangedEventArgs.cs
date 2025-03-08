@@ -2,7 +2,7 @@
 
 namespace LogExpert.Entities.EventArgs
 {
-    public class CurrentHighlightGroupChangedEventArgs
+    internal class CurrentHighlightGroupChangedEventArgs
     {
         #region Fields
 
@@ -10,7 +10,7 @@ namespace LogExpert.Entities.EventArgs
 
         #region cTor
 
-        public CurrentHighlightGroupChangedEventArgs(LogWindow logWindow, HighlightGroup currentGroup)
+        public CurrentHighlightGroupChangedEventArgs(LogWindow logWindow, HilightGroup currentGroup)
         {
             this.LogWindow = logWindow;
             this.CurrentGroup = currentGroup;
@@ -22,7 +22,7 @@ namespace LogExpert.Entities.EventArgs
 
         public LogWindow LogWindow { get; }
 
-        public HighlightGroup CurrentGroup { get; }
+        public HilightGroup CurrentGroup { get; }
 
         #endregion
     }

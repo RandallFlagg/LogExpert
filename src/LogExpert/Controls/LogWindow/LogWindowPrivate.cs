@@ -25,7 +25,7 @@ using System.Windows.Forms;
 
 namespace LogExpert.Controls.LogWindow
 {
-    public partial class LogWindow
+    internal partial class LogWindow
     {
         #region Private Methods
 
@@ -108,11 +108,9 @@ namespace LogExpert.Controls.LogWindow
                 }
 
                 IsMultiFile = persistenceData.multiFile;
-                _multiFileOptions = new MultiFileOptions
-                {
-                    FormatPattern = persistenceData.multiFilePattern,
-                    MaxDayTry = persistenceData.multiFileMaxDays
-                };
+                _multiFileOptions = new MultiFileOptions();
+                _multiFileOptions.FormatPattern = persistenceData.multiFilePattern;
+                _multiFileOptions.MaxDayTry = persistenceData.multiFileMaxDays;
 
                 if (string.IsNullOrEmpty(_multiFileOptions.FormatPattern))
                 {
@@ -644,8 +642,7 @@ namespace LogExpert.Controls.LogWindow
                         }
                     }
 
-                    UpdateGridCallback callback = UpdateGrid;
-                    Invoke(callback, [e]);
+                    Invoke(UpdateGrid, [e]);
                     CheckFilterAndHighlight(e);
                     _timeSpreadCalc.SetLineCount(e.LineCount);
                 }
@@ -804,7 +801,7 @@ namespace LogExpert.Controls.LogWindow
                     //pipeFx.BeginInvoke(i, null, null);
                     ProcessFilterPipes(i);
 
-                    IList<HighlightEntry> matchingList = FindMatchingHilightEntries(line);
+                    IList<HilightEntry> matchingList = FindMatchingHilightEntries(line);
                     LaunchHighlightPlugins(matchingList, i);
                     GetHilightActions(matchingList, out suppressLed, out stopTail, out setBookmark, out bookmarkComment);
                     if (setBookmark)
@@ -852,7 +849,7 @@ namespace LogExpert.Controls.LogWindow
                     ILogLine line = _logFileReader.GetLogLine(i);
                     if (line != null)
                     {
-                        IList<HighlightEntry> matchingList = FindMatchingHilightEntries(line);
+                        IList<HilightEntry> matchingList = FindMatchingHilightEntries(line);
                         LaunchHighlightPlugins(matchingList, i);
                         GetHilightActions(matchingList, out suppressLed, out stopTail, out setBookmark,
                             out bookmarkComment);
@@ -887,19 +884,19 @@ namespace LogExpert.Controls.LogWindow
             }
         }
 
-        private void LaunchHighlightPlugins(IList<HighlightEntry> matchingList, int lineNum)
+        private void LaunchHighlightPlugins(IList<HilightEntry> matchingList, int lineNum)
         {
             LogExpertCallback callback = new(this)
             {
                 LineNum = lineNum
             };
 
-            foreach (HighlightEntry entry in matchingList)
+            foreach (HilightEntry entry in matchingList)
             {
                 if (entry.IsActionEntry && entry.ActionEntry.PluginName != null)
                 {
                     IKeywordAction plugin =
-                        PluginRegistry.GetInstance().FindKeywordActionPluginByName(entry.ActionEntry.PluginName);
+                        PluginRegistry.Instance.FindKeywordActionPluginByName(entry.ActionEntry.PluginName);
                     if (plugin != null)
                     {
                         ActionPluginExecuteFx fx = plugin.Execute;
@@ -1087,12 +1084,11 @@ namespace LogExpert.Controls.LogWindow
             OnColumnizerChanged(CurrentColumnizer);
         }
 
-        private void AutoResizeColumns(BufferedDataGridView gridView)
+        private void AutoResizeColumns(DataGridView gridView)
         {
             try
             {
                 gridView.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.DisplayedCells);
-
                 if (gridView.Columns.Count > 1 && Preferences.setLastColumnWidth &&
                     gridView.Columns[gridView.Columns.Count - 1].Width < Preferences.lastColumnWidth
                 )
@@ -1112,26 +1108,28 @@ namespace LogExpert.Controls.LogWindow
             }
         }
 
-        private void PaintCell(DataGridViewCellPaintingEventArgs e, DataGridView gridView, bool noBackgroundFill, HighlightEntry groundEntry)
+        private void PaintCell(DataGridViewCellPaintingEventArgs e, DataGridView gridView, bool noBackgroundFill,
+            HilightEntry groundEntry)
         {
             PaintHighlightedCell(e, gridView, noBackgroundFill, groundEntry);
         }
 
-        private void PaintHighlightedCell(DataGridViewCellPaintingEventArgs e, DataGridView gridView, bool noBackgroundFill, HighlightEntry groundEntry)
+        private void PaintHighlightedCell(DataGridViewCellPaintingEventArgs e, DataGridView gridView,
+            bool noBackgroundFill,
+            HilightEntry groundEntry)
         {
             var column = e.Value as IColumn;
 
             column ??= Column.EmptyColumn;
 
             IList<HilightMatchEntry> matchList = FindHighlightMatches(column);
-
             // too many entries per line seem to cause problems with the GDI
             while (matchList.Count > 50)
             {
                 matchList.RemoveAt(50);
             }
 
-            var he = new HighlightEntry
+            var he = new HilightEntry
             {
                 SearchText = column.DisplayValue,
                 ForegroundColor = groundEntry?.ForegroundColor ?? Color.FromKnownColor(KnownColor.Black),
@@ -1154,11 +1152,10 @@ namespace LogExpert.Controls.LogWindow
             matchList = MergeHighlightMatchEntries(matchList, hme);
 
             int leftPad = e.CellStyle.Padding.Left;
-
-            RectangleF rect = new(e.CellBounds.Left + leftPad, e.CellBounds.Top, e.CellBounds.Width, e.CellBounds.Height);
+            RectangleF rect = new(e.CellBounds.Left + leftPad, e.CellBounds.Top, e.CellBounds.Width,
+                e.CellBounds.Height);
             Rectangle borderWidths = PaintHelper.BorderWidths(e.AdvancedBorderStyle);
             Rectangle valBounds = e.CellBounds;
-
             valBounds.Offset(borderWidths.X, borderWidths.Y);
             valBounds.Width -= borderWidths.Right;
             valBounds.Height -= borderWidths.Bottom;
@@ -1176,7 +1173,12 @@ namespace LogExpert.Controls.LogWindow
                     | TextFormatFlags.PreserveGraphicsClipping
                     | TextFormatFlags.NoPadding
                     | TextFormatFlags.VerticalCenter
-                    | TextFormatFlags.TextBoxControl;
+                    | TextFormatFlags.TextBoxControl
+                ;
+
+            //          | TextFormatFlags.VerticalCenter
+            //          | TextFormatFlags.TextBoxControl
+            //          TextFormatFlags.SingleLine
 
             //TextRenderer.DrawText(e.Graphics, e.Value as String, e.CellStyle.Font, valBounds, Color.FromKnownColor(KnownColor.Black), flags);
 
@@ -1188,21 +1190,16 @@ namespace LogExpert.Controls.LogWindow
 
             foreach (HilightMatchEntry matchEntry in matchList)
             {
-                Font font = matchEntry != null && matchEntry.HilightEntry.IsBold
-                    ? BoldFont
-                    : NormalFont;
-
+                Font font = matchEntry != null && matchEntry.HilightEntry.IsBold ? BoldFont : NormalFont;
                 Brush bgBrush = matchEntry.HilightEntry.BackgroundColor != Color.Empty
                     ? new SolidBrush(matchEntry.HilightEntry.BackgroundColor)
                     : null;
-
                 string matchWord = column.DisplayValue.Substring(matchEntry.StartPos, matchEntry.Length);
                 Size wordSize = TextRenderer.MeasureText(e.Graphics, matchWord, font, proposedSize, flags);
                 wordSize.Height = e.CellBounds.Height;
                 Rectangle wordRect = new(wordPos, wordSize);
 
                 Color foreColor = matchEntry.HilightEntry.ForegroundColor;
-
                 if ((e.State & DataGridViewElementStates.Selected) != DataGridViewElementStates.Selected)
                 {
                     if (!noBackgroundFill && bgBrush != null && !matchEntry.HilightEntry.NoBackground)
@@ -1216,7 +1213,8 @@ namespace LogExpert.Controls.LogWindow
                     foreColor = ColorMode.ForeColor;
                 }
 
-                TextRenderer.DrawText(e.Graphics, matchWord, font, wordRect, foreColor, flags);
+                TextRenderer.DrawText(e.Graphics, matchWord, font, wordRect,
+                    foreColor, flags);
 
                 wordPos.Offset(wordSize.Width, 0);
                 bgBrush?.Dispose();
@@ -1236,7 +1234,7 @@ namespace LogExpert.Controls.LogWindow
             HilightMatchEntry groundEntry)
         {
             // Fill an area with lenth of whole text with a default hilight entry
-            HighlightEntry[] entryArray = new HighlightEntry[groundEntry.Length];
+            HilightEntry[] entryArray = new HilightEntry[groundEntry.Length];
             for (int i = 0; i < entryArray.Length; ++i)
             {
                 entryArray[i] = groundEntry.HilightEntry;
@@ -1265,7 +1263,7 @@ namespace LogExpert.Controls.LogWindow
 
             if (entryArray.Length > 0)
             {
-                HighlightEntry currentEntry = entryArray[0];
+                HilightEntry currentEntry = entryArray[0];
                 int lastStartPos = 0;
                 int pos = 0;
 
@@ -1302,17 +1300,17 @@ namespace LogExpert.Controls.LogWindow
         /// <summary>
         /// Returns the first HilightEntry that matches the given line
         /// </summary>
-        private HighlightEntry FindHilightEntry(ITextValue line)
+        private HilightEntry FindHilightEntry(ITextValue line)
         {
             return FindHighlightEntry(line, false);
         }
 
-        private HighlightEntry FindFirstNoWordMatchHilightEntry(ITextValue line)
+        private HilightEntry FindFirstNoWordMatchHilightEntry(ITextValue line)
         {
             return FindHighlightEntry(line, true);
         }
 
-        private bool CheckHighlightEntryMatch(HighlightEntry entry, ITextValue column)
+        private bool CheckHighlightEntryMatch(HilightEntry entry, ITextValue column)
         {
             if (entry.IsRegEx)
             {
@@ -1346,14 +1344,14 @@ namespace LogExpert.Controls.LogWindow
         /// <summary>
         /// Returns all HilightEntry entries which matches the given line
         /// </summary>
-        private IList<HighlightEntry> FindMatchingHilightEntries(ITextValue line)
+        private IList<HilightEntry> FindMatchingHilightEntries(ITextValue line)
         {
-            IList<HighlightEntry> resultList = [];
+            IList<HilightEntry> resultList = [];
             if (line != null)
             {
                 lock (_currentHighlightGroupLock)
                 {
-                    foreach (HighlightEntry entry in _currentHighlightGroup.HighlightEntryList)
+                    foreach (HilightEntry entry in _currentHighlightGroup.HilightEntryList)
                     {
                         if (CheckHighlightEntryMatch(entry, line))
                         {
@@ -1366,9 +1364,9 @@ namespace LogExpert.Controls.LogWindow
             return resultList;
         }
 
-        private void GetHighlightEntryMatches(ITextValue line, IList<HighlightEntry> hilightEntryList, IList<HilightMatchEntry> resultList)
+        private void GetHighlightEntryMatches(ITextValue line, IList<HilightEntry> hilightEntryList, IList<HilightMatchEntry> resultList)
         {
-            foreach (HighlightEntry entry in hilightEntryList)
+            foreach (HilightEntry entry in hilightEntryList)
             {
                 if (entry.IsWordMatch)
                 {
@@ -1396,13 +1394,13 @@ namespace LogExpert.Controls.LogWindow
             }
         }
 
-        private void GetHilightActions(IList<HighlightEntry> matchingList, out bool noLed, out bool stopTail,
+        private void GetHilightActions(IList<HilightEntry> matchingList, out bool noLed, out bool stopTail,
             out bool setBookmark, out string bookmarkComment)
         {
             noLed = stopTail = setBookmark = false;
             bookmarkComment = string.Empty;
 
-            foreach (HighlightEntry entry in matchingList)
+            foreach (HilightEntry entry in matchingList)
             {
                 if (entry.IsLedSwitch)
                 {
@@ -1790,7 +1788,7 @@ namespace LogExpert.Controls.LogWindow
                 ILogLine line = _logFileReader.GetLogLine(lineNum);
                 if (line != null)
                 {
-                    HighlightEntry entry = FindHilightEntry(line);
+                    HilightEntry entry = FindHilightEntry(line);
                     if (entry != null)
                     {
                         SelectLine(lineNum, false, true);
@@ -1809,7 +1807,7 @@ namespace LogExpert.Controls.LogWindow
                 ILogLine line = _logFileReader.GetLogLine(lineNum);
                 if (line != null)
                 {
-                    HighlightEntry entry = FindHilightEntry(line);
+                    HilightEntry entry = FindHilightEntry(line);
                     if (entry != null)
                     {
                         SelectLine(lineNum, false, true);
@@ -1969,7 +1967,7 @@ namespace LogExpert.Controls.LogWindow
             _filterParams.lowerSearchText = text.ToLower();
             ConfigManager.Settings.filterHistoryList.Remove(text);
             ConfigManager.Settings.filterHistoryList.Insert(0, text);
-            int maxHistory = ConfigManager.Settings.Preferences.maximumFilterEntries;
+            int maxHistory = ConfigManager.Settings.preferences.maximumFilterEntries;
 
             if (ConfigManager.Settings.filterHistoryList.Count > maxHistory)
             {
@@ -2044,7 +2042,7 @@ namespace LogExpert.Controls.LogWindow
             Settings settings = ConfigManager.Settings;
 
             //FilterFx fx = settings.preferences.multiThreadFilter ? MultiThreadedFilter : new FilterFx(Filter);
-            FilterFxAction = settings.Preferences.multiThreadFilter ? MultiThreadedFilter : Filter;
+            FilterFxAction = settings.preferences.multiThreadFilter ? MultiThreadedFilter : Filter;
 
             //Task.Run(() => fx.Invoke(_filterParams, _filterResultList, _lastFilterLinesList, _filterHitList));
             Task filterFxActionTask = Task.Run(() => Filter(_filterParams, _filterResultList, _lastFilterLinesList, _filterHitList));
@@ -2348,15 +2346,11 @@ namespace LogExpert.Controls.LogWindow
                 _isSearching = false;
                 _progressEventArgs.Value = _progressEventArgs.MaxValue;
                 _progressEventArgs.Visible = false;
-
                 SendProgressBarUpdate();
-
                 filterGridView.RowCount = _filterResultList.Count;
-
+                //this.filterGridView.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.DisplayedCells);
                 AutoResizeColumns(filterGridView);
-
-                lblFilterCount.Text = $"{string.Empty}{_filterResultList.Count}";
-
+                lblFilterCount.Text = "" + _filterResultList.Count;
                 if (filterGridView.RowCount > 0)
                 {
                     filterGridView.Focus();
@@ -2538,7 +2532,7 @@ namespace LogExpert.Controls.LogWindow
             }
         }
 
-        private void InvalidateCurrentRow(BufferedDataGridView gridView)
+        private void InvalidateCurrentRow(DataGridView gridView)
         {
             if (gridView.CurrentCellAddress.Y > -1)
             {
@@ -2798,7 +2792,7 @@ namespace LogExpert.Controls.LogWindow
         {
             newWin.WaitForLoadingFinished();
             ILogLineColumnizer columnizer = ColumnizerPicker.FindColumnizerByName(persistenceData.columnizerName,
-                PluginRegistry.GetInstance().RegisteredColumnizers);
+                PluginRegistry.Instance.RegisteredColumnizers);
             if (columnizer != null)
             {
                 SetColumnizerFx fx = newWin.ForceColumnizer;
@@ -2917,7 +2911,7 @@ namespace LogExpert.Controls.LogWindow
             EncodingOptions.Encoding = encoding;
         }
 
-        private void ApplyDataGridViewPrefs(BufferedDataGridView dataGridView, Preferences prefs)
+        private void ApplyDataGridViewPrefs(DataGridView dataGridView, Preferences prefs)
         {
             if (dataGridView.Columns.GetColumnCount(DataGridViewElementStates.None) > 1)
             {
@@ -3595,7 +3589,7 @@ namespace LogExpert.Controls.LogWindow
 
         private void SetDefaultHighlightGroup()
         {
-            HighlightGroup group = _parentLogTabWin.FindHighlightGroupByFileMask(FileName);
+            HilightGroup group = _parentLogTabWin.FindHighlightGroupByFileMask(FileName);
             if (group != null)
             {
                 SetCurrentHighlightGroup(group.GroupName);
@@ -3676,7 +3670,7 @@ namespace LogExpert.Controls.LogWindow
 
         private void AddSearchHitHighlightEntry(SearchParams para)
         {
-            HighlightEntry he = new()
+            HilightEntry he = new()
             {
                 SearchText = para.searchText,
                 ForegroundColor = Color.Red,
@@ -3704,8 +3698,8 @@ namespace LogExpert.Controls.LogWindow
         {
             lock (_tempHighlightEntryListLock)
             {
-                List<HighlightEntry> newList = [];
-                foreach (HighlightEntry he in _tempHighlightEntryList)
+                List<HilightEntry> newList = [];
+                foreach (HilightEntry he in _tempHighlightEntryList)
                 {
                     if (!he.IsSearchHit)
                     {

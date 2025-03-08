@@ -24,19 +24,16 @@ namespace LogExpert.Classes
         #region Fields
 
         private static readonly ILogger _logger = LogManager.GetCurrentClassLogger();
-
-        private static readonly object _lockObject = new();
-        private static PluginRegistry _instance;
+        private static readonly Lazy<PluginRegistry> _instance = new(() => new PluginRegistry());
 
         private readonly IFileSystemCallback _fileSystemCallback = new FileSystemCallback();
         private readonly IList<ILogExpertPlugin> _pluginList = new List<ILogExpertPlugin>();
-
         private readonly IDictionary<string, IKeywordAction> _registeredKeywordsDict = new Dictionary<string, IKeywordAction>();
 
         #endregion
 
         #region cTor
-
+        // Private constructor to prevent instantiation
         private PluginRegistry()
         {
             LoadPlugins();
@@ -45,6 +42,8 @@ namespace LogExpert.Classes
         #endregion
 
         #region Properties
+
+        public static PluginRegistry Instance => _instance.Value;
 
         public IList<ILogLineColumnizer> RegisteredColumnizers { get; private set; }
 
@@ -57,20 +56,6 @@ namespace LogExpert.Classes
         #endregion
 
         #region Public methods
-
-        public static PluginRegistry GetInstance()
-        {
-            lock (_lockObject)
-            {
-                if (_instance == null)
-                {
-                    _instance = new PluginRegistry();
-                }
-
-                return _instance;
-            }
-        }
-
         #endregion
 
         #region Internals
@@ -81,7 +66,7 @@ namespace LogExpert.Classes
 
             RegisteredColumnizers =
             [
-                //TODO: Remove this plugins and load them as any other plugin
+                //TODO: Remove these plugins and load them as any other plugin
                 new DefaultLogfileColumnizer(),
                 new TimestampColumnizer(),
                 new SquareBracketColumnizer(),
@@ -91,55 +76,25 @@ namespace LogExpert.Classes
 
             string pluginDir = Path.Combine(Application.StartupPath, "plugins");
             //TODO: FIXME: This is a hack for the tests to pass. Need to find a better approach
-            if (!Directory.Exists(pluginDir)) {
+            if (!Directory.Exists(pluginDir))
+            {
                 pluginDir = ".";
             }
 
-            AppDomain currentDomain = AppDomain.CurrentDomain;
-            currentDomain.AssemblyResolve += ColumnizerResolveEventHandler;
-
+            AppDomain.CurrentDomain.AssemblyResolve += ColumnizerResolveEventHandler;
 
             string interfaceName = typeof(ILogLineColumnizer).FullName;
-            foreach (string dllName in Directory.GetFiles(pluginDir, "*.dll"))
+            foreach (string dllName in Directory.EnumerateFiles(pluginDir, "*.dll"))
             {
                 try
                 {
-                    Assembly assembly = Assembly.LoadFrom(dllName);
-                    var types = assembly.GetTypes().Where(t => t.GetInterfaces().Any(i => i.FullName == interfaceName));
-                    foreach (var type in types)
-                    {
-                        _logger.Info($"Type {type.FullName} in assembly {assembly.FullName} implements {interfaceName}");
-
-                        ConstructorInfo cti = type.GetConstructor(Type.EmptyTypes);
-                        if (cti != null)
-                        {
-                            object o = cti.Invoke([]);
-                            RegisteredColumnizers.Add((ILogLineColumnizer)o);
-
-                            if (o is IColumnizerConfigurator configurator)
-                            {
-                                configurator.LoadConfig(ConfigManager.Settings.Preferences.PortableMode ? ConfigManager.PortableModeDir : ConfigManager.ConfigDir);
-                            }
-
-                            if (o is ILogExpertPlugin plugin)
-                            {
-                                _pluginList.Add(plugin);
-                                plugin.PluginLoaded();
-                            }
-
-                            _logger.Info("Added columnizer {0}", type.Name);
-                        }
-                    }
+                    LoadPluginAssembly(dllName, interfaceName);
                 }
-                catch (BadImageFormatException e)
+                catch (Exception ex) when (ex is BadImageFormatException or FileLoadException)
                 {
-                    _logger.Error(e, dllName);
-                    // nothing... could be a DLL which is needed by any plugin
-                }
-                catch (FileLoadException e)
-                {
-                    // can happen when a 32bit-only DLL is loaded on a 64bit system (or vice versa)
-                    _logger.Error(e, dllName);
+                    // Can happen when a 32bit-only DLL is loaded on a 64bit system (or vice versa)
+                    // or could be a not columnizer DLL (e.g. A DLL that is needed by a plugin).
+                    _logger.Error(ex, dllName);
                 }
                 catch (ReflectionTypeLoadException ex)
                 {
@@ -151,9 +106,7 @@ namespace LogExpert.Classes
                             _logger.Error(loaderException, "Plugin load failed with '{0}'", dllName);
                         }
                     }
-
                     _logger.Error(ex, "Loader exception during load of dll '{0}'", dllName);
-
                     throw;
                 }
                 catch (Exception ex)
@@ -166,10 +119,39 @@ namespace LogExpert.Classes
             _logger.Info("Plugin loading complete.");
         }
 
+        private void LoadPluginAssembly(string dllName, string interfaceName)
+        {
+            Assembly assembly = Assembly.LoadFrom(dllName);
+            var types = assembly.GetTypes().Where(t => t.GetInterfaces().Any(i => i.FullName == interfaceName));
+            foreach (var type in types)
+            {
+                _logger.Info($"Type {type.FullName} in assembly {assembly.FullName} implements {interfaceName}");
+
+                ConstructorInfo cti = type.GetConstructor(Type.EmptyTypes);
+                if (cti != null)
+                {
+                    object instance = cti.Invoke([]);
+                    RegisteredColumnizers.Add((ILogLineColumnizer)instance);
+
+                    if (instance is IColumnizerConfigurator configurator)
+                    {
+                        configurator.LoadConfig(ConfigManager.Settings.preferences.PortableMode ? ConfigManager.PortableModeDir : ConfigManager.ConfigDir);
+                    }
+
+                    if (instance is ILogExpertPlugin plugin)
+                    {
+                        _pluginList.Add(plugin);
+                        plugin.PluginLoaded();
+                    }
+
+                    _logger.Info("Added columnizer {0}", type.Name);
+                }
+            }
+        }
+
         internal IKeywordAction FindKeywordActionPluginByName(string name)
         {
-            IKeywordAction action = null;
-            _registeredKeywordsDict.TryGetValue(name, out action);
+            _registeredKeywordsDict.TryGetValue(name, out IKeywordAction action);
             return action;
         }
 
@@ -213,7 +195,7 @@ namespace LogExpert.Classes
         #endregion
 
         #region Private Methods
-
+        //TODO: Can this be delted?
         private bool TryAsContextMenu(Type type)
         {
             IContextMenuEntry me = TryInstantiate<IContextMenuEntry>(type);
@@ -238,6 +220,7 @@ namespace LogExpert.Classes
             return false;
         }
 
+        //TODO: Can this be delted?
         private bool TryAsKeywordAction(Type type)
         {
             IKeywordAction ka = TryInstantiate<IKeywordAction>(type);
@@ -263,6 +246,7 @@ namespace LogExpert.Classes
             return false;
         }
 
+        //TODO: Can this be delted?
         private bool TryAsFileSystem(Type type)
         {
             // file system plugins can have optional constructor with IFileSystemCallback argument
@@ -290,7 +274,7 @@ namespace LogExpert.Classes
             return false;
         }
 
-        private T TryInstantiate<T>(Type loadedType) where T : class
+        private static T TryInstantiate<T>(Type loadedType) where T : class
         {
             Type t = typeof(T);
             Type inter = loadedType.GetInterface(t.Name);
@@ -307,7 +291,7 @@ namespace LogExpert.Classes
             return default(T);
         }
 
-        private T TryInstantiate<T>(Type loadedType, IFileSystemCallback fsCallback) where T : class
+        private static T TryInstantiate<T>(Type loadedType, IFileSystemCallback fsCallback) where T : class
         {
             Type t = typeof(T);
             Type inter = loadedType.GetInterface(t.Name);
@@ -330,21 +314,18 @@ namespace LogExpert.Classes
 
         private static Assembly ColumnizerResolveEventHandler(object sender, ResolveEventArgs args)
         {
-            string file = new AssemblyName(args.Name).Name + ".dll";
+            string fileName = new AssemblyName(args.Name).Name + ".dll";
+            string mainDir = Path.Combine(Application.StartupPath, fileName);
+            string pluginDir = Path.Combine(Application.StartupPath, "plugins", fileName);
 
-            string mainDir = Application.StartupPath + Path.DirectorySeparatorChar;
-            string pluginDir = mainDir + "plugins\\";
-
-            FileInfo mainFile = new(mainDir + file);
-
-            FileInfo pluginFile = new(pluginDir + file);
-            if (mainFile.Exists)
+            if (File.Exists(mainDir))
             {
-                return Assembly.LoadFrom(mainFile.FullName);
+                return Assembly.LoadFrom(mainDir);
             }
-            else if (pluginFile.Exists)
+
+            if (File.Exists(pluginDir))
             {
-                return Assembly.LoadFrom(pluginFile.FullName);
+                return Assembly.LoadFrom(pluginDir);
             }
 
             return null;

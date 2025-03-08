@@ -25,7 +25,7 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace LogExpert.Controls.LogWindow
 {
-    public partial class LogWindow : DockContent, ILogPaintContext, ILogView
+    internal partial class LogWindow : DockContent, ILogPaintContext, ILogView
     {
         #region Fields
 
@@ -90,7 +90,7 @@ namespace LogExpert.Controls.LogWindow
         private ILogLineColumnizer _currentColumnizer;
 
         //List<HilightEntry> currentHilightEntryList = new List<HilightEntry>();
-        private HighlightGroup _currentHighlightGroup = new();
+        private HilightGroup _currentHighlightGroup = new();
 
         private SearchParams _currentSearchParams;
 
@@ -129,7 +129,7 @@ namespace LogExpert.Controls.LogWindow
         private bool _shouldCancel;
         private bool _shouldTimestampDisplaySyncingCancel;
         private bool _showAdvanced;
-        private List<HighlightEntry> _tempHighlightEntryList = [];
+        private List<HilightEntry> _tempHighlightEntryList = [];
         private int _timeShiftSyncLine = 0;
 
         private bool _waitingForClose;
@@ -160,7 +160,7 @@ namespace LogExpert.Controls.LogWindow
             ForcePersistenceLoading = forcePersistenceLoading;
 
             dataGridView.CellValueNeeded += OnDataGridViewCellValueNeeded;
-            dataGridView.CellPainting += OnDataGridViewCellPainting;
+            dataGridView.CellPainting += OnDataGridView_CellPainting;
 
             filterGridView.CellValueNeeded += OnFilterGridViewCellValueNeeded;
             filterGridView.CellPainting += OnFilterGridViewCellPainting;
@@ -180,7 +180,7 @@ namespace LogExpert.Controls.LogWindow
             tableLayoutPanel1.ColumnStyles[0].Width = 100;
 
             _parentLogTabWin.HighlightSettingsChanged += OnParentHighlightSettingsChanged;
-            SetColumnizer(PluginRegistry.GetInstance().RegisteredColumnizers[0]);
+            SetColumnizer(PluginRegistry.Instance.RegisteredColumnizers[0]);
 
             _patternArgs.maxMisses = 5;
             _patternArgs.minWeight = 1;
@@ -198,7 +198,7 @@ namespace LogExpert.Controls.LogWindow
                 filterComboBox.Items.Add(item);
             }
 
-            filterComboBox.DropDownHeight = filterComboBox.ItemHeight * ConfigManager.Settings.Preferences.maximumFilterEntriesDisplayed;
+            filterComboBox.DropDownHeight = filterComboBox.ItemHeight * ConfigManager.Settings.preferences.maximumFilterEntriesDisplayed;
             AutoResizeFilterBox();
 
             filterRegexCheckBox.Checked = _filterParams.isRegex;
@@ -499,7 +499,7 @@ namespace LogExpert.Controls.LogWindow
 
         public string ForcedPersistenceFileName { get; set; } = null;
 
-        public Preferences Preferences => ConfigManager.Settings.Preferences;
+        public Preferences Preferences => ConfigManager.Settings.preferences;
 
         public string GivenFileName { get; set; } = null;
 
@@ -561,13 +561,10 @@ namespace LogExpert.Controls.LogWindow
 
         internal void ChangeMultifileMask()
         {
-            MultiFileMaskDialog dlg = new(this, FileName)
-            {
-                Owner = this,
-                MaxDays = _multiFileOptions.MaxDayTry,
-                FileNamePattern = _multiFileOptions.FormatPattern
-            };
-
+            MultiFileMaskDialog dlg = new(this, FileName);
+            dlg.Owner = this;
+            dlg.MaxDays = _multiFileOptions.MaxDayTry;
+            dlg.FileNamePattern = _multiFileOptions.FormatPattern;
             if (dlg.ShowDialog() == DialogResult.OK)
             {
                 _multiFileOptions.FormatPattern = dlg.FileNamePattern;
@@ -582,7 +579,6 @@ namespace LogExpert.Controls.LogWindow
         internal void ToggleColumnFinder(bool show, bool setFocus)
         {
             _guiStateArgs.ColumnFinderVisible = show;
-
             if (show)
             {
                 columnComboBox.AutoCompleteMode = AutoCompleteMode.Suggest;
@@ -623,8 +619,6 @@ namespace LogExpert.Controls.LogWindow
 
         // used for external wait fx WaitForLoadFinished()
 
-        private delegate void UpdateGridCallback(LogEventArgs e);
-
         private delegate void UpdateProgressCallback(LoadFileEventArgs e);
 
         private delegate void LoadingStartedFx(LoadFileEventArgs e);
@@ -650,7 +644,7 @@ namespace LogExpert.Controls.LogWindow
 
         private delegate void PositionAfterReloadFx(ReloadMemento reloadMemento);
 
-        private delegate void AutoResizeColumnsFx(BufferedDataGridView gridView);
+        private delegate void AutoResizeColumnsFx(DataGridView gridView);
 
         private delegate bool BoolReturnDelegate();
 

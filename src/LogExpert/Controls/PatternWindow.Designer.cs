@@ -47,10 +47,10 @@
       this.label4 = new System.Windows.Forms.Label();
       this.label3 = new System.Windows.Forms.Label();
       this.rangeLabel = new System.Windows.Forms.Label();
-      this._weigthKnobControl = new KnobControl();
-      this._maxMissesKnobControl = new KnobControl();
-      this._maxDiffKnobControl = new KnobControl();
-      this._fuzzyKnobControl = new KnobControl();
+      this.weigthKnobControl = new KnobControl();
+      this.maxMissesKnobControl = new KnobControl();
+      this.maxDiffKnobControl = new KnobControl();
+      this.fuzzyKnobControl = new KnobControl();
       this.patternHitsDataGridView = new LogExpert.Dialogs.BufferedDataGridView();
       this.contentDataGridView = new LogExpert.Dialogs.BufferedDataGridView();
       this.splitContainer1.Panel1.SuspendLayout();
@@ -183,13 +183,13 @@
       this.panel4.Controls.Add(this.setRangeButton);
       this.panel4.Controls.Add(this.label7);
       this.panel4.Controls.Add(this.recalcButton);
-      this.panel4.Controls.Add(this._weigthKnobControl);
+      this.panel4.Controls.Add(this.weigthKnobControl);
       this.panel4.Controls.Add(this.label6);
-      this.panel4.Controls.Add(this._maxMissesKnobControl);
+      this.panel4.Controls.Add(this.maxMissesKnobControl);
       this.panel4.Controls.Add(this.label5);
-      this.panel4.Controls.Add(this._maxDiffKnobControl);
+      this.panel4.Controls.Add(this.maxDiffKnobControl);
       this.panel4.Controls.Add(this.label4);
-      this.panel4.Controls.Add(this._fuzzyKnobControl);
+      this.panel4.Controls.Add(this.fuzzyKnobControl);
       this.panel4.Location = new System.Drawing.Point(3, 106);
       this.panel4.Name = "panel4";
       this.panel4.Size = new System.Drawing.Size(345, 57);
@@ -204,7 +204,7 @@
       this.setRangeButton.TabIndex = 12;
       this.setRangeButton.Text = "Set range";
       this.setRangeButton.UseVisualStyleBackColor = true;
-      this.setRangeButton.Click += new System.EventHandler(this.OnSetRangeButtonClick);
+      this.setRangeButton.Click += new System.EventHandler(this.setRangeButton_Click);
       // 
       // label7
       // 
@@ -224,7 +224,7 @@
       this.recalcButton.TabIndex = 6;
       this.recalcButton.Text = "Recalc";
       this.recalcButton.UseVisualStyleBackColor = true;
-      this.recalcButton.Click += new System.EventHandler(this.OnRecalcButtonClick);
+      this.recalcButton.Click += new System.EventHandler(this.recalcButton_Click);
       // 
       // label6
       // 
@@ -275,43 +275,43 @@
       // 
       // weigthKnobControl
       // 
-      this._weigthKnobControl.Location = new System.Drawing.Point(202, 5);
-      this._weigthKnobControl.MaxValue = 30;
-      this._weigthKnobControl.MinValue = 1;
-      this._weigthKnobControl.Name = "weigthKnobControl";
-      this._weigthKnobControl.Size = new System.Drawing.Size(21, 35);
-      this._weigthKnobControl.TabIndex = 10;
-      this._weigthKnobControl.Value = 0;
+      this.weigthKnobControl.Location = new System.Drawing.Point(202, 5);
+      this.weigthKnobControl.MaxValue = 30;
+      this.weigthKnobControl.MinValue = 1;
+      this.weigthKnobControl.Name = "weigthKnobControl";
+      this.weigthKnobControl.Size = new System.Drawing.Size(21, 35);
+      this.weigthKnobControl.TabIndex = 10;
+      this.weigthKnobControl.Value = 0;
       // 
       // maxMissesKnobControl
       // 
-      this._maxMissesKnobControl.Location = new System.Drawing.Point(134, 5);
-      this._maxMissesKnobControl.MaxValue = 30;
-      this._maxMissesKnobControl.MinValue = 0;
-      this._maxMissesKnobControl.Name = "maxMissesKnobControl";
-      this._maxMissesKnobControl.Size = new System.Drawing.Size(22, 35);
-      this._maxMissesKnobControl.TabIndex = 8;
-      this._maxMissesKnobControl.Value = 0;
+      this.maxMissesKnobControl.Location = new System.Drawing.Point(134, 5);
+      this.maxMissesKnobControl.MaxValue = 30;
+      this.maxMissesKnobControl.MinValue = 0;
+      this.maxMissesKnobControl.Name = "maxMissesKnobControl";
+      this.maxMissesKnobControl.Size = new System.Drawing.Size(22, 35);
+      this.maxMissesKnobControl.TabIndex = 8;
+      this.maxMissesKnobControl.Value = 0;
       // 
       // maxDiffKnobControl
       // 
-      this._maxDiffKnobControl.Location = new System.Drawing.Point(69, 5);
-      this._maxDiffKnobControl.MaxValue = 30;
-      this._maxDiffKnobControl.MinValue = 0;
-      this._maxDiffKnobControl.Name = "maxDiffKnobControl";
-      this._maxDiffKnobControl.Size = new System.Drawing.Size(21, 35);
-      this._maxDiffKnobControl.TabIndex = 6;
-      this._maxDiffKnobControl.Value = 0;
+      this.maxDiffKnobControl.Location = new System.Drawing.Point(69, 5);
+      this.maxDiffKnobControl.MaxValue = 30;
+      this.maxDiffKnobControl.MinValue = 0;
+      this.maxDiffKnobControl.Name = "maxDiffKnobControl";
+      this.maxDiffKnobControl.Size = new System.Drawing.Size(21, 35);
+      this.maxDiffKnobControl.TabIndex = 6;
+      this.maxDiffKnobControl.Value = 0;
       // 
       // fuzzyKnobControl
       // 
-      this._fuzzyKnobControl.Location = new System.Drawing.Point(9, 5);
-      this._fuzzyKnobControl.MaxValue = 20;
-      this._fuzzyKnobControl.MinValue = 0;
-      this._fuzzyKnobControl.Name = "fuzzyKnobControl";
-      this._fuzzyKnobControl.Size = new System.Drawing.Size(22, 35);
-      this._fuzzyKnobControl.TabIndex = 4;
-      this._fuzzyKnobControl.Value = 0;
+      this.fuzzyKnobControl.Location = new System.Drawing.Point(9, 5);
+      this.fuzzyKnobControl.MaxValue = 20;
+      this.fuzzyKnobControl.MinValue = 0;
+      this.fuzzyKnobControl.Name = "fuzzyKnobControl";
+      this.fuzzyKnobControl.Size = new System.Drawing.Size(22, 35);
+      this.fuzzyKnobControl.TabIndex = 4;
+      this.fuzzyKnobControl.Value = 0;
       // 
       // patternHitsDataGridView
       // 
@@ -337,11 +337,11 @@
       this.patternHitsDataGridView.Size = new System.Drawing.Size(289, 83);
       this.patternHitsDataGridView.TabIndex = 1;
       this.patternHitsDataGridView.VirtualMode = true;
-      this.patternHitsDataGridView.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.OnPatternHitsDataGridViewMouseDoubleClick);
-      this.patternHitsDataGridView.CellValueNeeded += new System.Windows.Forms.DataGridViewCellValueEventHandler(this.OnPatternHitsDataGridViewCellValueNeeded);
-      this.patternHitsDataGridView.ColumnDividerDoubleClick += new System.Windows.Forms.DataGridViewColumnDividerDoubleClickEventHandler(this.OnPatternHitsDataGridViewColumnDividerDoubleClick);
-      this.patternHitsDataGridView.CellPainting += new System.Windows.Forms.DataGridViewCellPaintingEventHandler(this.OnPatternHitsDataGridViewCellPainting);
-      this.patternHitsDataGridView.CurrentCellChanged += new System.EventHandler(this.OnPatternHitsDataGridViewCurrentCellChanged);
+      this.patternHitsDataGridView.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.patternHitsDataGridView_MouseDoubleClick);
+      this.patternHitsDataGridView.CellValueNeeded += new System.Windows.Forms.DataGridViewCellValueEventHandler(this.patternHitsDataGridView_CellValueNeeded);
+      this.patternHitsDataGridView.ColumnDividerDoubleClick += new System.Windows.Forms.DataGridViewColumnDividerDoubleClickEventHandler(this.patternHitsDataGridView_ColumnDividerDoubleClick);
+      this.patternHitsDataGridView.CellPainting += new System.Windows.Forms.DataGridViewCellPaintingEventHandler(this.patternHitsDataGridView_CellPainting);
+      this.patternHitsDataGridView.CurrentCellChanged += new System.EventHandler(this.patternHitsDataGridView_CurrentCellChanged);
       // 
       // contentDataGridView
       // 
@@ -365,10 +365,10 @@
       this.contentDataGridView.Size = new System.Drawing.Size(491, 83);
       this.contentDataGridView.TabIndex = 0;
       this.contentDataGridView.VirtualMode = true;
-      this.contentDataGridView.CellValueNeeded += new System.Windows.Forms.DataGridViewCellValueEventHandler(this.OnContentDataGridViewCellValueNeeded);
-      this.contentDataGridView.ColumnDividerDoubleClick += new System.Windows.Forms.DataGridViewColumnDividerDoubleClickEventHandler(this.OnContentDataGridViewColumnDividerDoubleClick);
-      this.contentDataGridView.CellPainting += new System.Windows.Forms.DataGridViewCellPaintingEventHandler(this.OnContentDataGridViewCellPainting);
-      this.contentDataGridView.CellMouseDoubleClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.OnContentDataGridViewCellMouseDoubleClick);
+      this.contentDataGridView.CellValueNeeded += new System.Windows.Forms.DataGridViewCellValueEventHandler(this.contentDataGridView_CellValueNeeded);
+      this.contentDataGridView.ColumnDividerDoubleClick += new System.Windows.Forms.DataGridViewColumnDividerDoubleClickEventHandler(this.contentDataGridView_ColumnDividerDoubleClick);
+      this.contentDataGridView.CellPainting += new System.Windows.Forms.DataGridViewCellPaintingEventHandler(this.contentDataGridView_CellPainting);
+      this.contentDataGridView.CellMouseDoubleClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.contentDataGridView_CellMouseDoubleClick);
       // 
       // PatternWindow
       // 
@@ -413,15 +413,15 @@
     private System.Windows.Forms.Label label1;
     private System.Windows.Forms.Label blockCountLabel;
     private System.Windows.Forms.Panel panel3;
-    private KnobControl _fuzzyKnobControl;
+    private KnobControl fuzzyKnobControl;
     private System.Windows.Forms.Panel panel4;
     private System.Windows.Forms.Label label4;
     private System.Windows.Forms.Label label5;
-    private KnobControl _maxDiffKnobControl;
+    private KnobControl maxDiffKnobControl;
     private System.Windows.Forms.Label label6;
-    private KnobControl _maxMissesKnobControl;
+    private KnobControl maxMissesKnobControl;
     private System.Windows.Forms.Label label7;
-    private KnobControl _weigthKnobControl;
+    private KnobControl weigthKnobControl;
     private System.Windows.Forms.Button recalcButton;
     private System.Windows.Forms.Label label3;
     private System.Windows.Forms.Button setRangeButton;

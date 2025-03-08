@@ -18,7 +18,7 @@ using System.Windows.Forms;
 
 namespace LogExpert.Controls.LogTabWindow
 {
-    public partial class LogTabWindow : Form
+    internal partial class LogTabWindow : Form
     {
         #region Fields
 
@@ -93,7 +93,7 @@ namespace LogExpert.Controls.LogTabWindow
             Load += OnLogTabWindowLoad;
 
             ConfigManager.Instance.ConfigChanged += OnConfigChanged;
-            HighlightGroupList = ConfigManager.Settings.Preferences.HighlightGroupList;
+            HilightGroupList = ConfigManager.Settings.hilightGroupList;
 
             Rectangle led = new(0, 0, 8, 2);
 
@@ -277,8 +277,6 @@ namespace LogExpert.Controls.LogTabWindow
 
         public delegate void HighlightSettingsChangedEventHandler(object sender, EventArgs e);
 
-        private delegate void LoadFileDelegate(string fileName, EncodingOptions encodingOptions);
-
         private delegate void LoadMultiFilesDelegate(string[] fileName, EncodingOptions encodingOptions);
 
         private delegate void ProgressBarEventFx(ProgressEventArgs e);
@@ -286,8 +284,6 @@ namespace LogExpert.Controls.LogTabWindow
         private delegate void SetColumnizerFx(ILogLineColumnizer columnizer);
 
         private delegate void SetTabIconDelegate(LogWindow.LogWindow logWindow, Icon icon);
-
-        private delegate void StatusLineEventFx(StatusLineEventArgs e);
 
         #endregion
 
@@ -307,9 +303,9 @@ namespace LogExpert.Controls.LogTabWindow
 
         public SearchParams SearchParams { get; private set; } = new SearchParams();
 
-        public Preferences Preferences => ConfigManager.Settings.Preferences;
+        public Preferences Preferences => ConfigManager.Settings.preferences;
 
-        public List<HighlightGroup> HighlightGroupList { get; private set; } = [];
+        public List<HilightGroup> HilightGroupList { get; private set; } = [];
 
         //public Settings Settings
         //{
@@ -324,11 +320,11 @@ namespace LogExpert.Controls.LogTabWindow
 
         #region Internals
 
-        internal HighlightGroup FindHighlightGroup(string groupName)
+        internal HilightGroup FindHighlightGroup(string groupName)
         {
-            lock (HighlightGroupList)
+            lock (HilightGroupList)
             {
-                foreach (HighlightGroup group in HighlightGroupList)
+                foreach (HilightGroup group in HilightGroupList)
                 {
                     if (group.GroupName.Equals(groupName))
                     {

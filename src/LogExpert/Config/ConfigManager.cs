@@ -28,9 +28,6 @@ namespace LogExpert.Config
         private static ConfigManager _instance;
         private readonly object _loadSaveLock = new();
         private Settings _settings;
-        private const string _settingsFileName = "settings.json";
-        private const string _portableModeSettingsFileName = "portableMode.json";
-        private const string _highlightFileName = "highlights.json";
 
         #endregion
 
@@ -73,7 +70,7 @@ namespace LogExpert.Config
         /// <summary>
         /// portableMode.json
         /// </summary>
-        public static string PortableModeSettingsFileName => _portableModeSettingsFileName;
+        public static string PortableModeSettingsFileName => "portableMode.json";
 
         public static Settings Settings => Instance._settings;
 
@@ -86,30 +83,9 @@ namespace LogExpert.Config
             Instance.Save(Settings, flags);
         }
 
-        public static void ExportSettings(FileInfo fileInfo)
+        public static void Export(FileInfo fileInfo)
         {
-            Save(fileInfo, Settings);
-        }
-
-        public static void ExportHighlightSettings(FileInfo fileInfo)
-        {
-            SaveHighlightSettings(fileInfo);
-        }
-
-        public static void ImportHighlightSettings(FileInfo fileInfo)
-        {
-            try
-            {
-                var highlightGroupList = JsonConvert.DeserializeObject<List<HighlightGroup>>(File.ReadAllText(fileInfo.FullName));
-                Instance._settings.Preferences.HighlightGroupList = highlightGroupList;
-            }
-            catch (Exception e)
-            {
-                _logger.Error($"Error while deserializing config data: {e}");
-                //Keep the old settings
-            }
-
-            Save(SettingsFlags.HighlightSettings);
+            Instance.Save(fileInfo, Settings);
         }
 
         public static void Import(FileInfo fileInfo, ExportImportFlags flags)
@@ -139,80 +115,27 @@ namespace LogExpert.Config
                 dir = Application.StartupPath;
             }
 
-            if (Directory.Exists(dir) == false)
+            if (!Directory.Exists(dir))
             {
                 Directory.CreateDirectory(dir);
             }
 
-            if (File.Exists(dir + Path.DirectorySeparatorChar + _settingsFileName) == false)
+            if (!File.Exists(dir + Path.DirectorySeparatorChar + "settings.json"))
             {
-                var settings = LoadOrCreateNew(null);
-                var highlightGroups = LoadOrCreateNewHighLlightGroups(null);
-
-                settings.Preferences.HighlightGroupList = highlightGroups;
-                return settings;
+                return LoadOrCreateNew(null);
             }
 
             try
             {
-                FileInfo fileInfoSettings = new(dir + Path.DirectorySeparatorChar + _settingsFileName);
-                var settings = LoadOrCreateNew(fileInfoSettings);
-
-                FileInfo fileInfoHighlightGroups = new(dir + Path.DirectorySeparatorChar + _highlightFileName);
-                var highlightGroups = LoadOrCreateNewHighLlightGroups(fileInfoHighlightGroups);
-
-                settings.Preferences.HighlightGroupList = highlightGroups;
-                return settings;
-
+                FileInfo fileInfo = new(dir + Path.DirectorySeparatorChar + "settings.json");
+                return LoadOrCreateNew(fileInfo);
             }
             catch (Exception e)
             {
                 _logger.Error($"Error loading settings: {e}");
-                var settings = LoadOrCreateNew(null);
-                var highlightGroups = LoadOrCreateNewHighLlightGroups(null);
-
-                settings.Preferences.HighlightGroupList = highlightGroups;
-                return settings;
+                return LoadOrCreateNew(null);
             }
 
-        }
-
-        private List<HighlightGroup> LoadOrCreateNewHighLlightGroups(FileInfo fileInfo)
-        {
-            lock (_loadSaveLock)
-            {
-                List<HighlightGroup> highlightGroupList = [];
-
-                if (fileInfo == null || fileInfo.Exists == false)
-                {
-                    return [];
-                }
-                else
-                {
-                    try
-                    {
-                        highlightGroupList = JsonConvert.DeserializeObject<List<HighlightGroup>>(File.ReadAllText(fileInfo.FullName));
-                    }
-                    catch (Exception e)
-                    {
-                        _logger.Error($"Error while deserializing config data: {e}");
-                        return [];
-                    }
-                }
-
-                if (highlightGroupList == null || highlightGroupList.Count == 0)
-                {
-                    HighlightGroup defaultGroup = new()
-                    {
-                        GroupName = "[Default]",
-                        HighlightEntryList = []
-                    };
-
-                    highlightGroupList.Add(defaultGroup);
-                }
-
-                return highlightGroupList;
-            }
         }
 
         /// <summary>
@@ -220,7 +143,7 @@ namespace LogExpert.Config
         /// </summary>
         /// <param name="fileInfo">file that has settings saved</param>
         /// <returns>loaded or created settings</returns>
-        private Settings LoadOrCreateNew(FileInfo fileInfo)
+        private Settings LoadOrCreateNew(FileSystemInfo fileInfo)
         {
             lock (_loadSaveLock)
             {
@@ -243,11 +166,11 @@ namespace LogExpert.Config
                     }
                 }
 
-                settings.Preferences ??= new Preferences();
+                settings.preferences ??= new Preferences();
 
-                settings.Preferences.toolEntries ??= [];
+                settings.preferences.toolEntries ??= [];
 
-                settings.Preferences.columnizerMaskList ??= [];
+                settings.preferences.columnizerMaskList ??= [];
 
                 settings.fileHistoryList ??= [];
 
@@ -255,24 +178,24 @@ namespace LogExpert.Config
 
                 settings.fileColors ??= [];
 
-                if (settings.Preferences.showTailColor == Color.Empty)
+                if (settings.preferences.showTailColor == Color.Empty)
                 {
-                    settings.Preferences.showTailColor = Color.FromKnownColor(KnownColor.Blue);
+                    settings.preferences.showTailColor = Color.FromKnownColor(KnownColor.Blue);
                 }
 
-                if (settings.Preferences.timeSpreadColor == Color.Empty)
+                if (settings.preferences.timeSpreadColor == Color.Empty)
                 {
-                    settings.Preferences.timeSpreadColor = Color.Gray;
+                    settings.preferences.timeSpreadColor = Color.Gray;
                 }
 
-                if (settings.Preferences.bufferCount < 10)
+                if (settings.preferences.bufferCount < 10)
                 {
-                    settings.Preferences.bufferCount = 100;
+                    settings.preferences.bufferCount = 100;
                 }
 
-                if (settings.Preferences.linesPerBuffer < 1)
+                if (settings.preferences.linesPerBuffer < 1)
                 {
-                    settings.Preferences.linesPerBuffer = 500;
+                    settings.preferences.linesPerBuffer = 500;
                 }
 
                 settings.filterList ??= [];
@@ -288,28 +211,43 @@ namespace LogExpert.Config
                     filterParams.Init();
                 }
 
-                settings.Preferences.HighlightMaskList ??= [];
-
-                if (settings.Preferences.pollingInterval < 20)
+                if (settings.hilightGroupList == null)
                 {
-                    settings.Preferences.pollingInterval = 250;
+                    settings.hilightGroupList = [];
+                    // migrate old non-grouped entries
+                    HilightGroup defaultGroup = new()
+                    {
+                        GroupName = "[Default]",
+                        HilightEntryList = settings.hilightEntryList
+                    };
+
+                    settings.hilightGroupList.Add(defaultGroup);
                 }
 
-                settings.Preferences.multiFileOptions ??= new MultiFileOptions();
+                settings.preferences.highlightMaskList ??= [];
 
-                settings.Preferences.defaultEncoding ??= Encoding.Default.HeaderName;
-
-                if (settings.Preferences.maximumFilterEntriesDisplayed == 0)
+                if (settings.preferences.pollingInterval < 20)
                 {
-                    settings.Preferences.maximumFilterEntriesDisplayed = 20;
+                    settings.preferences.pollingInterval = 250;
                 }
 
-                if (settings.Preferences.maximumFilterEntries == 0)
+                settings.preferences.multiFileOptions ??= new MultiFileOptions();
+
+                settings.preferences.defaultEncoding ??= Encoding.Default.HeaderName;
+
+                if (settings.preferences.maximumFilterEntriesDisplayed == 0)
                 {
-                    settings.Preferences.maximumFilterEntries = 30;
+                    settings.preferences.maximumFilterEntriesDisplayed = 20;
+                }
+
+                if (settings.preferences.maximumFilterEntries == 0)
+                {
+                    settings.preferences.maximumFilterEntries = 30;
                 }
 
                 SetBoundsWithinVirtualScreen(settings);
+
+                ConvertSettings(settings);
 
                 return settings;
             }
@@ -327,22 +265,19 @@ namespace LogExpert.Config
                 _logger.Info("Saving settings");
                 lock (this)
                 {
-                    string dir = Settings.Preferences.PortableMode ? Application.StartupPath : ConfigDir;
+                    string dir = Settings.preferences.PortableMode ? Application.StartupPath : ConfigDir;
 
                     if (!Directory.Exists(dir))
                     {
                         Directory.CreateDirectory(dir);
                     }
 
-                    FileInfo fileInfo = new(dir + Path.DirectorySeparatorChar + _highlightFileName);
-                    SaveHighlightSettings(fileInfo);
-
-                    fileInfo = new(dir + Path.DirectorySeparatorChar + _settingsFileName);
+                    FileInfo fileInfo = new(dir + Path.DirectorySeparatorChar + "settings.json");
                     Save(fileInfo, settings);
                 }
-            }
 
-            OnConfigChanged(flags);
+                OnConfigChanged(flags);
+            }
         }
 
         /// <summary>
@@ -350,25 +285,13 @@ namespace LogExpert.Config
         /// </summary>
         /// <param name="fileInfo">FileInfo for creating the file (if exists will be overwritten)</param>
         /// <param name="settings">Current Settings</param>
-        private static void Save(FileInfo fileInfo, Settings settings)
+        private void Save(FileInfo fileInfo, Settings settings)
         {
             //Currently only fileFormat, maybe add some other formats later (YAML or XML?)
             SaveAsJSON(fileInfo, settings);
         }
 
-        private static void SaveHighlightSettings(FileInfo fileInfo)
-        {
-            SaveAsJSON(fileInfo, Settings.Preferences.HighlightGroupList);
-        }
-
-        private static void SaveAsJSON(FileInfo fileInfo, List<HighlightGroup> hilightGroups)
-        {
-            using StreamWriter sw = new(fileInfo.Create());
-            JsonSerializer serializer = new();
-            serializer.Serialize(sw, hilightGroups);
-        }
-
-        private static void SaveAsJSON(FileInfo fileInfo, Settings settings)
+        private void SaveAsJSON(FileInfo fileInfo, Settings settings)
         {
             settings.versionBuild = Assembly.GetExecutingAssembly().GetName().Version.Build;
 
@@ -376,6 +299,56 @@ namespace LogExpert.Config
             JsonSerializer serializer = new();
             serializer.Serialize(sw, settings);
         }
+
+        /// <summary>
+        /// Convert settings loaded from previous versions.
+        /// </summary>
+        /// <param name="settings"></param>
+        private void ConvertSettings(Settings settings)
+        {
+            //int oldBuildNumber = settings.versionBuild;
+
+            //// All Versions before 3583
+            //if (oldBuildNumber < 3584)
+            //{
+            //    // External tools
+            //    List<ToolEntry> newList = [];
+            //    foreach (ToolEntry tool in settings.preferences.toolEntries)
+            //    {
+            //        // set favourite to true only when name is empty, because there are always version released without this conversion fx
+            //        // remove empty tool entries (there were always 3 entries before, which can be empty if not used)
+            //        if (Util.IsNull(tool.name))
+            //        {
+            //            if (!Util.IsNull(tool.cmd))
+            //            {
+            //                tool.name = tool.cmd;
+            //                tool.isFavourite = true;
+            //                newList.Add(tool);
+            //            }
+            //        }
+            //        else
+            //        {
+            //            newList.Add(tool);
+            //        }
+            //        if (Util.IsNull(tool.iconFile))
+            //        {
+            //            tool.iconFile = tool.cmd;
+            //            tool.iconIndex = 0;
+            //        }
+            //    }
+            //    settings.preferences.toolEntries = newList;
+            //}
+
+            //if (oldBuildNumber < 3584)
+            //{
+            //    // Set the color for the FilterList entries to default (black)
+            //    foreach (FilterParams filterParam in settings.filterList)
+            //    {
+            //        filterParam.color = Color.FromKnownColor(KnownColor.Black);
+            //    }
+            //}
+        }
+
 
         /// <summary>
         /// Imports all or some of the settings/prefs stored in the input stream.
@@ -394,10 +367,11 @@ namespace LogExpert.Config
             if ((flags & ExportImportFlags.Other) == ExportImportFlags.Other)
             {
                 newSettings = ownSettings;
-                newSettings.Preferences = ObjectClone.Clone(importSettings.Preferences);
-                newSettings.Preferences.columnizerMaskList = ownSettings.Preferences.columnizerMaskList;
-                newSettings.Preferences.HighlightMaskList = ownSettings.Preferences.HighlightMaskList;
-                newSettings.Preferences.toolEntries = ownSettings.Preferences.toolEntries;
+                newSettings.preferences = ObjectClone.Clone(importSettings.preferences);
+                newSettings.preferences.columnizerMaskList = ownSettings.preferences.columnizerMaskList;
+                newSettings.preferences.highlightMaskList = ownSettings.preferences.highlightMaskList;
+                newSettings.hilightGroupList = ownSettings.hilightGroupList;
+                newSettings.preferences.toolEntries = ownSettings.preferences.toolEntries;
             }
             else
             {
@@ -406,17 +380,19 @@ namespace LogExpert.Config
 
             if ((flags & ExportImportFlags.ColumnizerMasks) == ExportImportFlags.ColumnizerMasks)
             {
-                newSettings.Preferences.columnizerMaskList = ReplaceOrKeepExisting(flags, ownSettings.Preferences.columnizerMaskList, importSettings.Preferences.columnizerMaskList);
+                newSettings.preferences.columnizerMaskList = ReplaceOrKeepExisting(flags, ownSettings.preferences.columnizerMaskList, importSettings.preferences.columnizerMaskList);
             }
-
             if ((flags & ExportImportFlags.HighlightMasks) == ExportImportFlags.HighlightMasks)
             {
-                newSettings.Preferences.HighlightMaskList = ReplaceOrKeepExisting(flags, ownSettings.Preferences.HighlightMaskList, importSettings.Preferences.HighlightMaskList);
+                newSettings.preferences.highlightMaskList = ReplaceOrKeepExisting(flags, ownSettings.preferences.highlightMaskList, importSettings.preferences.highlightMaskList);
             }
-
+            if ((flags & ExportImportFlags.HighlightSettings) == ExportImportFlags.HighlightSettings)
+            {
+                newSettings.hilightGroupList = ReplaceOrKeepExisting(flags, ownSettings.hilightGroupList, importSettings.hilightGroupList);
+            }
             if ((flags & ExportImportFlags.ToolEntries) == ExportImportFlags.ToolEntries)
             {
-                newSettings.Preferences.toolEntries = ReplaceOrKeepExisting(flags, ownSettings.Preferences.toolEntries, importSettings.Preferences.toolEntries);
+                newSettings.preferences.toolEntries = ReplaceOrKeepExisting(flags, ownSettings.preferences.toolEntries, importSettings.preferences.toolEntries);
             }
 
             return newSettings;
@@ -447,7 +423,13 @@ namespace LogExpert.Config
 
         protected void OnConfigChanged(SettingsFlags flags)
         {
-            ConfigChanged?.Invoke(this, new ConfigChangedEventArgs(flags));
+            ConfigChangedEventHandler handler = ConfigChanged;
+
+            if (handler != null)
+            {
+                _logger.Info("Fire config changed event");
+                handler(this, new ConfigChangedEventArgs(flags));
+            }
         }
 
         internal delegate void ConfigChangedEventHandler(object sender, ConfigChangedEventArgs e);

@@ -48,7 +48,7 @@ namespace LogExpert.Classes.Columnizer
                 object o = cti.Invoke(new object[] { });
                 if (o is IColumnizerConfigurator configurator)
                 {
-                    configurator.LoadConfig(ConfigManager.Settings.Preferences.PortableMode ? ConfigManager.PortableModeDir : ConfigManager.ConfigDir);
+                    configurator.LoadConfig(ConfigManager.Settings.preferences.PortableMode ? ConfigManager.PortableModeDir : ConfigManager.ConfigDir);
                 }
                 return (ILogLineColumnizer)o;
             }
@@ -120,13 +120,13 @@ namespace LogExpert.Classes.Columnizer
                 ];
             }
 
-            var registeredColumnizer = PluginRegistry.GetInstance().RegisteredColumnizers;
+            var registeredColumnizer = PluginRegistry.Instance.RegisteredColumnizers;
 
             List<Tuple<Priority, ILogLineColumnizer>> priorityListOfColumnizers = [];
 
             foreach (ILogLineColumnizer logLineColumnizer in registeredColumnizer)
             {
-                Priority priority = default(Priority);
+                Priority priority = default;
                 if (logLineColumnizer is IColumnizerPriority columnizerPriority)
                 {
                     priority = columnizerPriority.GetPriority(fileName, loglines);

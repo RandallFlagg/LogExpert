@@ -1,15 +1,15 @@
-﻿using LogExpert.Config;
-using LogExpert.Entities;
-
-using System;
+﻿using System;
 using System.IO;
 using System.Text;
+using LogExpert.Entities;
 
 namespace LogExpert.Classes.Log
 {
     public abstract class PositionAwareStreamReaderBase : LogStreamReaderBase
     {
         #region Fields
+
+        private const int MAX_LINE_LEN = 20000;
 
         private static readonly Encoding[] _preambleEncodings = { Encoding.UTF8, Encoding.Unicode, Encoding.BigEndianUnicode, Encoding.UTF32 };
 
@@ -35,7 +35,7 @@ namespace LogExpert.Classes.Log
             _posIncPrecomputed = GetPosIncPrecomputed(usedEncoding);
 
             _reader = new StreamReader(_stream, usedEncoding, true);
-
+            
             Position = 0;
         }
 
@@ -54,7 +54,7 @@ namespace LogExpert.Classes.Log
                 /*
                  * 1: Sometime commented (+Encoding.GetPreamble().Length)
                  * 2: Date 1.1 3207
-                 * 3: Error Message from Piet because of Unicode-Bugs.
+                 * 3: Error Message from Piet because of Unicode-Bugs. 
                  *    No Idea, if this is OK.
                  * 4: 27.07.09: Preamble-Length is now calculated in CT, because Encoding.GetPreamble().Length
                  *    always delivers a fixed length (does not mater what kind of data)
@@ -72,7 +72,7 @@ namespace LogExpert.Classes.Log
 
         public sealed override bool IsBufferComplete => true;
 
-        protected static int MaxLineLen => ConfigManager.Settings.Preferences.MaxLineLength;
+        protected static int MaxLineLen => MAX_LINE_LEN;
 
         #endregion
 
@@ -149,11 +149,11 @@ namespace LogExpert.Classes.Log
         private int DetectPreambleLengthAndEncoding(out Encoding detectedEncoding)
         {
             /*
-            UTF-8:                          EF BB BF
-            UTF-16-Big-Endian-Byteorder:    FE FF
-            UTF-16-Little-Endian-Byteorder: FF FE
-            UTF-32-Big-Endian-Byteorder:    00 00 FE FF
-            UTF-32-Little-Endian-Byteorder: FF FE 00 00
+            UTF-8:                          EF BB BF 
+            UTF-16-Big-Endian-Byteorder:    FE FF 
+            UTF-16-Little-Endian-Byteorder: FF FE 
+            UTF-32-Big-Endian-Byteorder:    00 00 FE FF 
+            UTF-32-Little-Endian-Byteorder: FF FE 00 00 
             */
 
             byte[] readPreamble = new byte[4];
@@ -205,17 +205,17 @@ namespace LogExpert.Classes.Log
             switch (usedEncoding)
             {
                 case UTF8Encoding _:
-                    {
-                        return 0;
-                    }
+                {
+                    return 0;
+                }
                 case UnicodeEncoding _:
-                    {
-                        return 2;
-                    }
+                {
+                    return 2;
+                }
                 default:
-                    {
-                        return 1;
-                    }
+                {
+                    return 1;
+                }
             }
         }
 

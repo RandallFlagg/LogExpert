@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 /*
  * Taken from https://cmdline.codeplex.com/
- *
+ * 
  */
 
 namespace LogExpert.Classes
@@ -15,11 +15,15 @@ namespace LogExpert.Classes
     {
         #region cTor
 
-        public CmdLineException(string parameter, string message) : base($"Syntax error of parameter -{parameter}: {message}")
+        public CmdLineException(string parameter, string message)
+            :
+            base(string.Format("Syntax error of parameter -{0}: {1}", parameter, message))
         {
         }
 
-        public CmdLineException(string message) : base(message)
+        public CmdLineException(string message)
+            :
+            base(message)
         {
         }
 
@@ -27,7 +31,7 @@ namespace LogExpert.Classes
     }
 
     /// <summary>
-    /// Represents a command line parameter.
+    /// Represents a command line parameter. 
     /// Parameters are words in the command line beginning with a hyphen (-).
     /// The value of the parameter is the next word in
     /// </summary>
@@ -99,7 +103,7 @@ namespace LogExpert.Classes
     }
 
     /// <summary>
-    /// Represents an integer command line parameter.
+    /// Represents an integer command line parameter. 
     /// </summary>
     public class CmdLineInt : CmdLineParameter
     {
@@ -158,25 +162,22 @@ namespace LogExpert.Classes
         public override void SetValue(string value)
         {
             base.SetValue(value);
-            int i;
-
+            int i = 0;
             try
             {
                 i = Convert.ToInt32(value);
             }
             catch (Exception)
             {
-                throw new CmdLineException(Name, "Value is not an integer.");
+                throw new CmdLineException(base.Name, "Value is not an integer.");
             }
-
             if (i < _min)
             {
-                throw new CmdLineException(Name, $"Value must be greather or equal to {_min}.");
+                throw new CmdLineException(base.Name, string.Format("Value must be greather or equal to {0}.", _min));
             }
-
             if (i > _max)
             {
-                throw new CmdLineException(Name, $"Value must be less or equal to {_max}.");
+                throw new CmdLineException(base.Name, string.Format("Value must be less or equal to {0}.", _max));
             }
             Value = i;
         }
@@ -252,11 +253,11 @@ namespace LogExpert.Classes
         {
             get
             {
-                if (!parameters.TryGetValue(name, out CmdLineParameter value))
+                if (!parameters.ContainsKey(name))
                 {
                     throw new CmdLineException(name, "Not a registered parameter.");
                 }
-                return value;
+                return parameters[name];
             }
         }
 
@@ -306,8 +307,8 @@ namespace LogExpert.Classes
                 if (args[i].Length > 1 && args[i][0] == '-')
                 {
                     // The current string is a parameter name
-                    string key = args[i][1..].ToLower();
-                    string value = string.Empty;
+                    string key = args[i].Substring(1, args[i].Length - 1).ToLower();
+                    string value = "";
                     i++;
                     if (i < args.Length)
                     {
@@ -322,17 +323,17 @@ namespace LogExpert.Classes
                             i++;
                         }
                     }
-                    if (!parameters.TryGetValue(key, out CmdLineParameter cmdLineParameter))
+                    if (!parameters.ContainsKey(key))
                     {
                         throw new CmdLineException(key, "Parameter is not allowed.");
                     }
 
-                    if (cmdLineParameter.Exists)
+                    if (parameters[key].Exists)
                     {
                         throw new CmdLineException(key, "Parameter is specified more than once.");
                     }
 
-                    cmdLineParameter.SetValue(value);
+                    parameters[key].SetValue(value);
                 }
                 else
                 {
@@ -342,7 +343,7 @@ namespace LogExpert.Classes
             }
 
 
-            // Check that required parameters are present in the command line.
+            // Check that required parameters are present in the command line. 
             foreach (string key in parameters.Keys)
             {
                 if (parameters[key].Required && !parameters[key].Exists)
@@ -393,7 +394,7 @@ namespace LogExpert.Classes
 
         public ConsoleCmdLine()
         {
-            RegisterParameter(new CmdLineString("help", false, "Prints the help screen."));
+            base.RegisterParameter(new CmdLineString("help", false, "Prints the help screen."));
         }
 
         #endregion
@@ -403,7 +404,7 @@ namespace LogExpert.Classes
         public new string[] Parse(string[] args)
         {
             string[] ret = null;
-            string error = string.Empty;
+            string error = "";
             try
             {
                 ret = base.Parse(args);
@@ -417,15 +418,15 @@ namespace LogExpert.Classes
             {
                 //foreach(string s in base.HelpScreen().Split('\n'))
                 //    Console.WriteLine(s);
-                Console.WriteLine(HelpScreen());
-                Environment.Exit(0);
+                Console.WriteLine(base.HelpScreen());
+                System.Environment.Exit(0);
             }
 
             if (error != "")
             {
                 Console.WriteLine(error);
                 Console.WriteLine("Use -help for more information.");
-                Environment.Exit(1);
+                System.Environment.Exit(1);
             }
             return ret;
         }

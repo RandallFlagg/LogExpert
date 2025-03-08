@@ -849,7 +849,7 @@ namespace LogExpert.Classes.Log
 
         private ILogFileInfo GetLogFileInfo(string fileNameOrUri)
         {
-            IFileSystemPlugin fs = PluginRegistry.GetInstance().FindFileSystemForUri(fileNameOrUri) ?? throw new LogFileException("No file system plugin found for " + fileNameOrUri);
+            IFileSystemPlugin fs = PluginRegistry.Instance.FindFileSystemForUri(fileNameOrUri) ?? throw new LogFileException("No file system plugin found for " + fileNameOrUri);
             ILogFileInfo logFileInfo = fs.GetLogfileInfo(fileNameOrUri);
             return logFileInfo ?? throw new LogFileException("Cannot find " + fileNameOrUri);
         }
