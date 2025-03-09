@@ -614,10 +614,6 @@ namespace LogExpert.Controls.LogWindow
 
         // used for external wait fx WaitForLoadFinished()
 
-        private delegate void UpdateProgressCallback(LoadFileEventArgs e);
-
-        private delegate void LoadingStartedFx(LoadFileEventArgs e);
-
         private delegate void SelectLineFx(int line, bool triggerSyncCall);
 
         private Action<FilterParams, List<int>, List<int>, List<int>> FilterFxAction;

@@ -122,7 +122,7 @@ namespace LogExpert.Controls.LogWindow
 
         private void OnLogFileReaderLoadingStarted(object sender, LoadFileEventArgs e)
         {
-            Invoke(new LoadingStartedFx(LoadingStarted), e);
+            Invoke(LoadingStarted, e);
         }
 
         private void OnLogFileReaderFinishedLoading(object sender, EventArgs e)
@@ -219,8 +219,7 @@ namespace LogExpert.Controls.LogWindow
                 return;
             }
 
-            UpdateProgressCallback callback = UpdateProgress;
-            BeginInvoke(callback, e);
+            BeginInvoke(UpdateProgress, e);
         }
 
         private void OnFileSizeChanged(object sender, LogEventArgs e)

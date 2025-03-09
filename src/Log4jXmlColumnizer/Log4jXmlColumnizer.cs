@@ -1,14 +1,14 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.Serialization;
+using System.Runtime.Versioning;
 using System.Windows.Forms;
-using Newtonsoft.Json;
 
-
+[assembly: SupportedOSPlatform("windows")]
 namespace LogExpert
 {
     /// <summary>

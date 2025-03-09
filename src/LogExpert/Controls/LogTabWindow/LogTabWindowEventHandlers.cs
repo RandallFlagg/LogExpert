@@ -353,7 +353,7 @@ namespace LogExpert.Controls.LogTabWindow
 
         private void OnProgressBarUpdate(object sender, ProgressEventArgs e)
         {
-            Invoke(new ProgressBarEventFx(ProgressBarUpdateWorker), e);
+            Invoke(ProgressBarUpdateWorker, e);
         }
 
         private void OnStatusLineEvent(object sender, StatusLineEventArgs e)

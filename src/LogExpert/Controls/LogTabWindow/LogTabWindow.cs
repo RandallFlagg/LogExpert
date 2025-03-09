@@ -273,8 +273,6 @@ namespace LogExpert.Controls.LogTabWindow
 
         private delegate void LoadMultiFilesDelegate(string[] fileName, EncodingOptions encodingOptions);
 
-        private delegate void ProgressBarEventFx(ProgressEventArgs e);
-
         private delegate void SetColumnizerFx(ILogLineColumnizer columnizer);
 
         private delegate void SetTabIconDelegate(LogWindow.LogWindow logWindow, Icon icon);
