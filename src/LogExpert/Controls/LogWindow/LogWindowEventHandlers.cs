@@ -211,15 +211,11 @@ namespace LogExpert.Controls.LogWindow
                 //Thread loadThread = new Thread(new ThreadStart(ReloadNewFile));
                 //loadThread.Start();
                 _logger.Debug("Reloading invoked.");
-                return;
             }
-
-            if (!_isLoading)
+            else if (_isLoading)
             {
-                return;
+                BeginInvoke(UpdateProgress, e);
             }
-
-            BeginInvoke(UpdateProgress, e);
         }
 
         private void OnFileSizeChanged(object sender, LogEventArgs e)
