@@ -268,9 +268,6 @@ namespace LogExpert.Controls.LogWindow
             StopTimespreadThread();
             StopTimestampSyncThread();
             StopLogEventWorkerThread();
-            _statusLineTrigger.Stop();
-            _selectionChangedTrigger.Stop();
-            //StopFilterUpdateWorkerThread();
             _shouldCancel = true;
 
             if (_logFileReader != null)
