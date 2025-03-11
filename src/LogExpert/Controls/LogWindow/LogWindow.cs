@@ -68,10 +68,8 @@ namespace LogExpert.Controls.LogWindow
         private readonly ProgressEventArgs _progressEventArgs = new();
         private readonly object _reloadLock = new();
         private readonly Image _searchButtonImage;
-        private readonly DelayedTrigger _selectionChangedTrigger = new(200);
         private readonly StatusLineEventArgs _statusEventArgs = new();
 
-        private readonly DelayedTrigger _statusLineTrigger = new(200);
         private readonly object _tempHighlightEntryListLock = new();
 
         private readonly Task _timeShiftSyncTask;
@@ -261,9 +259,6 @@ namespace LogExpert.Controls.LogWindow
             _bookmarkProvider.AllBookmarksRemoved += OnBookmarkProviderAllBookmarksRemoved;
 
             ResumeLayout();
-
-            _statusLineTrigger.Signal += OnStatusLineTriggerSignal;
-            _selectionChangedTrigger.Signal += OnSelectionChangedTriggerSignal;
 
             ChangeTheme(Controls);
         }

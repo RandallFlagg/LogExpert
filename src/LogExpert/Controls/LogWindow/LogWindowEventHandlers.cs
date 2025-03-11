@@ -1553,11 +1553,6 @@ namespace LogExpert.Controls.LogWindow
             AddSearchHitHighlightEntry(p);
         }
 
-        private void OnStatusLineTriggerSignal(object sender, EventArgs e)
-        {
-            OnStatusLine(_statusEventArgs);
-        }
-
         private void OnColumnComboBoxSelectionChangeCommitted(object sender, EventArgs e)
         {
             SelectColumn();

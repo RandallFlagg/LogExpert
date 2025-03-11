@@ -664,58 +664,28 @@ namespace LogExpert.Controls.LogTabWindow
             }
         }
 
-        private void StatusLineThreadFunc()
-        {
-            int timeSum = 0;
-            int waitTime = 30;
-            while (!_shouldStop)
-            {
-                _statusLineEventWakeupHandle.WaitOne();
-                _statusLineEventWakeupHandle.Reset();
-                if (!_shouldStop)
-                {
-                    bool signaled = false;
-                    do
-                    {
-                        //this.statusLineEventHandle.Reset();
-                        signaled = _statusLineEventHandle.WaitOne(waitTime, true);
-                        timeSum += waitTime;
-                    } while (signaled && timeSum < 900 && !_shouldStop);
-
-                    if (!_shouldStop)
-                    {
-                        timeSum = 0;
-                        try
-                        {
-                            StatusLineEventArgs e;
-                            lock (_statusLineLock)
-                            {
-                                e = _lastStatusLineEvent.Clone();
-                            }
-
-                            BeginInvoke(StatusLineEventWorker, e);
-                        }
-                        catch (ObjectDisposedException)
-                        {
-                            //TODO needs to be handled or removed
-                        }
-                    }
-                }
-            }
-        }
-
         private void StatusLineEventWorker(StatusLineEventArgs e)
         {
-            //_logger.logDebug("StatusLineEvent: text = " + e.StatusText);
-            labelStatus.Text = e.StatusText;
-            labelStatus.Size = TextRenderer.MeasureText(labelStatus.Text, labelStatus.Font);
-            labelLines.Text = $" {e.LineCount} lines";
-            labelLines.Size = TextRenderer.MeasureText(labelLines.Text, labelLines.Font);
-            labelSize.Text = Util.GetFileSizeAsText(e.FileSize);
-            labelSize.Size = TextRenderer.MeasureText(labelSize.Text, labelSize.Font);
-            labelCurrentLine.Text = $"Line: {e.CurrentLineNum}";
-            labelCurrentLine.Size = TextRenderer.MeasureText(labelCurrentLine.Text, labelCurrentLine.Font);
-            statusStrip.Refresh();
+            if (e != null)
+            {
+                //_logger.logDebug("StatusLineEvent: text = " + e.StatusText);
+                labelStatus.Text = e.StatusText;
+                labelStatus.Size = TextRenderer.MeasureText(labelStatus.Text, labelStatus.Font);
+                labelLines.Text = $" {e.LineCount} lines";
+                labelLines.Size = TextRenderer.MeasureText(labelLines.Text, labelLines.Font);
+                labelSize.Text = Util.GetFileSizeAsText(e.FileSize);
+                labelSize.Size = TextRenderer.MeasureText(labelSize.Text, labelSize.Font);
+                labelCurrentLine.Text = $"Line: {e.CurrentLineNum}";
+                labelCurrentLine.Size = TextRenderer.MeasureText(labelCurrentLine.Text, labelCurrentLine.Font);
+                if (statusStrip.InvokeRequired)
+                {
+                    statusStrip.BeginInvoke(new MethodInvoker(delegate { statusStrip.Refresh(); }));
+                }
+                else
+                {
+                    statusStrip.Refresh();
+                }
+            }
         }
 
         // tailState: 0,1,2 = on/off/off by Trigger
