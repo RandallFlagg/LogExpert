@@ -67,7 +67,7 @@ namespace LogExpert.Tests
             string fileName, Type columnizerType)
         {
             string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName);
-            LogfileReader reader = new(path, new EncodingOptions(), true, 40, 50, new MultiFileOptions());
+            LogfileReader reader = new(path, new EncodingOptions(), true, 40, 50, new MultiFileOptions(), 1024*1024);
             reader.ReadFiles();
 
             Mock<ILogLineColumnizer> autoColumnizer = new();

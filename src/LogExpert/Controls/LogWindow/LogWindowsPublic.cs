@@ -81,8 +81,10 @@ namespace LogExpert.Controls.LogWindow
 
                 try
                 {
-                    _logFileReader = new LogfileReader(fileName, EncodingOptions, IsMultiFile, Preferences.bufferCount, Preferences.linesPerBuffer, _multiFileOptions);
-                    _logFileReader.UseNewReader = !Preferences.useLegacyReader;
+                    _logFileReader = new LogfileReader(fileName, EncodingOptions, IsMultiFile, Preferences.bufferCount, Preferences.linesPerBuffer, _multiFileOptions, Preferences.sizePerBuffer)
+                    {
+                        UseNewReader = !Preferences.useLegacyReader
+                    };
                 }
                 catch (LogFileException lfe)
                 {
@@ -154,7 +156,7 @@ namespace LogExpert.Controls.LogWindow
             EncodingOptions = encodingOptions;
             _columnCache = new ColumnCache();
 
-            _logFileReader = new LogfileReader(fileNames, EncodingOptions, Preferences.bufferCount, Preferences.linesPerBuffer, _multiFileOptions);
+            _logFileReader = new LogfileReader(fileNames, EncodingOptions, Preferences.bufferCount, Preferences.linesPerBuffer, _multiFileOptions, Preferences.sizePerBuffer);
             _logFileReader.UseNewReader = !Preferences.useLegacyReader;
             RegisterLogFileReaderEvents();
             _logFileReader.StartMonitoring();

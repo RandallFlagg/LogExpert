@@ -24,7 +24,8 @@ namespace LogExpert.Classes.Log
 
         private readonly string _fileName;
         private readonly int _MAX_BUFFERS = 10;
-        private readonly int _MAX_LINES_PER_BUFFER = 100;
+        private readonly int _MAX_LINES_PER_BUFFER;
+        private readonly int _MAX_SIZE_PER_BUFFER;
 
         private readonly object _monitor = new();
         private readonly MultiFileOptions _multiFileOptions;
@@ -59,7 +60,7 @@ namespace LogExpert.Classes.Log
 
         #region cTor
 
-        public LogfileReader(string fileName, EncodingOptions encodingOptions, bool multiFile, int bufferCount, int linesPerBuffer, MultiFileOptions multiFileOptions)
+        public LogfileReader(string fileName, EncodingOptions encodingOptions, bool multiFile, int bufferCount, int linesPerBuffer, MultiFileOptions multiFileOptions, int sizePerBuffer)
         {
             if (fileName == null)
             {
@@ -71,6 +72,7 @@ namespace LogExpert.Classes.Log
             IsMultiFile = multiFile;
             _MAX_BUFFERS = bufferCount;
             _MAX_LINES_PER_BUFFER = linesPerBuffer;
+            _MAX_SIZE_PER_BUFFER = sizePerBuffer;
             _multiFileOptions = multiFileOptions;
             _logLineFx = GetLogLineInternal;
             InitLruBuffers();
@@ -97,7 +99,7 @@ namespace LogExpert.Classes.Log
             StartGCThread();
         }
 
-        public LogfileReader(string[] fileNames, EncodingOptions encodingOptions, int bufferCount, int linesPerBuffer, MultiFileOptions multiFileOptions)
+        public LogfileReader(string[] fileNames, EncodingOptions encodingOptions, int bufferCount, int linesPerBuffer, MultiFileOptions multiFileOptions, int sizePerBuffer)
         {
             if (fileNames == null || fileNames.Length < 1)
             {
@@ -108,6 +110,7 @@ namespace LogExpert.Classes.Log
             IsMultiFile = true;
             _MAX_BUFFERS = bufferCount;
             _MAX_LINES_PER_BUFFER = linesPerBuffer;
+            _MAX_SIZE_PER_BUFFER = sizePerBuffer;
             _multiFileOptions = multiFileOptions;
             _logLineFx = GetLogLineInternal;
 
@@ -225,9 +228,9 @@ namespace LogExpert.Classes.Log
             //this.lastReturnedLineNumForBuffer = -1;
             _isDeleted = false;
             ClearLru();
-            AcquireBufferListWriterLock();
+            AcquireBufferListWriterLock();//TODO: Why lock? What does this code do?
             _bufferList.Clear();
-            ReleaseBufferListWriterLock();
+            ReleaseBufferListWriterLock();//TODO: Why lock? What does this code do?
             try
             {
                 foreach (ILogFileInfo info in _logFileInfoList)
@@ -347,10 +350,10 @@ namespace LogExpert.Classes.Log
                 if (lostILogFileInfoList.Count > 0)
                 {
                     _logger.Info("Deleting buffers for lost files");
-                    foreach (ILogFileInfo ILogFileInfo in lostILogFileInfoList)
+                    foreach (ILogFileInfo fileInfo in lostILogFileInfoList)
                     {
                         //this.ILogFileInfoList.Remove(ILogFileInfo);
-                        LogBuffer lastBuffer = DeleteBuffersForInfo(ILogFileInfo, false);
+                        LogBuffer lastBuffer = DeleteBuffersForInfo(fileInfo, false);
                         if (lastBuffer != null)
                         {
                             offset += lastBuffer.StartLine + lastBuffer.LineCount;
@@ -936,121 +939,101 @@ namespace LogExpert.Classes.Log
             try
             {
                 using Stream fileStream = logFileInfo.OpenStream();
-                try
+                using ILogStreamReader reader = GetLogStreamReader(fileStream, EncodingOptions, UseNewReader);
+                reader.Position = filePos;
+                _fileLength = logFileInfo.Length;
+
+                int lineNum = startLine;
+                int droppedLines = 0;
+                var logBuffer = InitializeLogBuffer(logFileInfo, startLine, filePos, droppedLines);
+
+                while (ReadLine(reader, logBuffer.StartLine + logBuffer.LineCount, logBuffer.StartLine + logBuffer.LineCount + droppedLines, out var line))
                 {
-                    using ILogStreamReader reader = GetLogStreamReader(fileStream, EncodingOptions, UseNewReader);
-                    reader.Position = filePos;
-                    _fileLength = logFileInfo.Length;
-
-                    int lineNum = startLine;
-                    LogBuffer logBuffer;
-                    AcquireBufferListReaderLock();
-                    if (_bufferList.Count == 0)
+                    if (_shouldStop)
                     {
-                        logBuffer = new LogBuffer(logFileInfo, _MAX_LINES_PER_BUFFER);
-                        logBuffer.StartLine = startLine;
-                        logBuffer.StartPos = filePos;
-                        LockCookie cookie = UpgradeBufferListLockToWriter();
-                        AddBufferToList(logBuffer);
-                        DowngradeBufferListLockFromWriter(ref cookie);
-                    }
-                    else
-                    {
-                        logBuffer = _bufferList[_bufferList.Count - 1];
-
-                        if (!logBuffer.FileInfo.FullName.Equals(logFileInfo.FullName))
-                        {
-                            logBuffer = new LogBuffer(logFileInfo, _MAX_LINES_PER_BUFFER);
-                            logBuffer.StartLine = startLine;
-                            logBuffer.StartPos = filePos;
-                            LockCookie cookie = UpgradeBufferListLockToWriter();
-                            AddBufferToList(logBuffer);
-                            DowngradeBufferListLockFromWriter(ref cookie);
-                        }
-
-                        _disposeLock.AcquireReaderLock(Timeout.Infinite);
-                        if (logBuffer.IsDisposed)
-                        {
-                            LockCookie cookie = _disposeLock.UpgradeToWriterLock(Timeout.Infinite);
-                            ReReadBuffer(logBuffer);
-                            _disposeLock.DowngradeFromWriterLock(ref cookie);
-                        }
-
-                        _disposeLock.ReleaseReaderLock();
+                        Monitor.Exit(logBuffer);
+                        return;
                     }
 
-                    Monitor.Enter(logBuffer); // Lock the buffer
-                    ReleaseBufferListReaderLock();
-                    int lineCount = logBuffer.LineCount;
-                    int droppedLines = logBuffer.PrevBuffersDroppedLinesSum;
+                    if (line == null)
+                    {
+                        logBuffer.DroppedLinesCount++;
+                        droppedLines++;
+                        continue;
+                    }
+
+                    if (logBuffer.IsFull && reader.IsBufferComplete)
+                    {
+                        OnLoadFile(new LoadFileEventArgs(logFileInfo.FullName, filePos, false, logFileInfo.Length, false));
+                        Monitor.Exit(logBuffer);
+                        logBuffer = InitializeLogBuffer(logFileInfo, lineNum, filePos, droppedLines);
+                    }
+
+                    AddLineToBuffer(logBuffer, line, filePos);
+                    logBuffer.SizeTest += reader.Position;
                     filePos = reader.Position;
-
-                    while (ReadLine(reader, logBuffer.StartLine + logBuffer.LineCount, logBuffer.StartLine + logBuffer.LineCount + droppedLines, out var line))
-                    {
-                        LogLine logLine = new();
-                        if (_shouldStop)
-                        {
-                            Monitor.Exit(logBuffer);
-                            return;
-                        }
-
-                        if (line == null)
-                        {
-                            logBuffer.DroppedLinesCount += 1;
-                            droppedLines++;
-                            continue;
-                        }
-
-                        lineCount++;
-                        if (lineCount > _MAX_LINES_PER_BUFFER && reader.IsBufferComplete)
-                        {
-                            OnLoadFile(new LoadFileEventArgs(logFileInfo.FullName, filePos, false, logFileInfo.Length, false));
-
-                            Monitor.Exit(logBuffer);
-                            logBuffer = new LogBuffer(logFileInfo, _MAX_LINES_PER_BUFFER);
-                            Monitor.Enter(logBuffer);
-                            logBuffer.StartLine = lineNum;
-                            logBuffer.StartPos = filePos;
-                            logBuffer.PrevBuffersDroppedLinesSum = droppedLines;
-                            AcquireBufferListWriterLock();
-                            AddBufferToList(logBuffer);
-                            ReleaseBufferListWriterLock();
-                            lineCount = 1;
-                        }
-
-                        logLine.FullLine = line;
-                        logLine.LineNumber = logBuffer.StartLine + logBuffer.LineCount;
-
-                        logBuffer.AddLine(logLine, filePos);
-                        filePos = reader.Position;
-                        lineNum++;
-                    }
-
-                    logBuffer.Size = filePos - logBuffer.StartPos;
-                    Monitor.Exit(logBuffer);
-                    _isLineCountDirty = true;
-                    FileSize = reader.Position;
-                    CurrentEncoding = reader.Encoding; // Reader may have detected another encoding
-                    if (!_shouldStop)
-                    {
-                        OnLoadFile(new LoadFileEventArgs(logFileInfo.FullName, filePos, true, _fileLength, false));
-                        // Fire "Ready" Event
-                    }
+                    //if (logBuffer.Size != filePos - logBuffer.StartPos)
+                    //{
+                    //    throw new Exception("FIX ME");
+                    //}
+                    lineNum++;
                 }
-                catch (IOException ioex)
+
+                FinalizeBuffer(logBuffer, filePos, reader.Position, reader.Encoding);
+
+                if (!_shouldStop)
                 {
-                    _logger.Warn(ioex);
+                    OnLoadFile(new LoadFileEventArgs(logFileInfo.FullName, filePos, true, _fileLength, false));
+                    // Fire "Ready" Event
                 }
             }
-            catch (IOException fe)
+            catch (IOException ex)
             {
-                _logger.Warn(fe, "IOException: ");
+                _logger.Warn(ex);
                 _isDeleted = true;
                 LineCount = 0;
                 FileSize = 0;
-                OnFileNotFound(); // notify LogWindow
+                OnFileNotFound(); // Notify LogWindow
             }
         }
+
+        private LogBuffer InitializeLogBuffer(ILogFileInfo logFileInfo, int startLine, long startPos, int droppedLines)
+        {
+            var logBuffer = new LogBuffer(logFileInfo, _MAX_LINES_PER_BUFFER, _MAX_SIZE_PER_BUFFER)
+            {
+                StartLine = startLine,
+                StartPos = startPos,
+                PrevBuffersDroppedLinesSum = droppedLines
+            };
+
+            Monitor.Enter(logBuffer);
+            AcquireBufferListWriterLock();
+            AddBufferToList(logBuffer);
+            ReleaseBufferListWriterLock();
+
+            return logBuffer;
+        }
+
+        private void AddLineToBuffer(LogBuffer logBuffer, string line, long filePos)
+        {
+            var logLine = new LogLine
+            {
+                FullLine = line,
+                LineNumber = logBuffer.StartLine + logBuffer.LineCount
+            };
+
+            logBuffer.AddLine(logLine, filePos);
+        }
+
+        private void FinalizeBuffer(LogBuffer logBuffer, long filePos, long readerPosition, Encoding readerEncoding)
+        {
+            logBuffer.Size = filePos - logBuffer.StartPos;
+            Monitor.Exit(logBuffer);
+            _isLineCountDirty = true;
+            FileSize = readerPosition;
+            CurrentEncoding = readerEncoding; // Reader may have detected another encoding
+        }
+
 
         private void AddBufferToList(LogBuffer logBuffer)
         {

@@ -23,7 +23,7 @@ namespace LogExpert
             SquareBracketColumnizer squareBracketColumnizer = new();
             string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName);
 
-            LogfileReader logFileReader = new(path, new EncodingOptions(), true, 40, 50, new MultiFileOptions());
+            LogfileReader logFileReader = new(path, new EncodingOptions(), true, 40, 50, new MultiFileOptions(),1024*1024);
             logFileReader.ReadFiles();
             List<ILogLine> loglines = new()
             {

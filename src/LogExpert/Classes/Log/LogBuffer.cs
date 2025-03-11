@@ -10,50 +10,38 @@ namespace LogExpert.Classes.Log
         private static readonly ILogger _logger = LogManager.GetCurrentClassLogger();
 
 #if DEBUG
-        private readonly IList<long> _filePositions = new List<long>(); // file position for every line
+        private readonly IList<long> _filePositions = new List<long>(); // File position for every line
 #endif
 
         private readonly IList<ILogLine> _logLines = new List<ILogLine>();
-        private int MAX_LINES = 500;
         private long _size;
 
-        #endregion
-
-        #region cTor
-
-        //public LogBuffer() { }
-
-        public LogBuffer(ILogFileInfo fileInfo, int maxLines)
-        {
-            FileInfo = fileInfo;
-            MAX_LINES = maxLines;
-        }
-
-        #endregion
+        #endregion Fields
 
         #region Properties
 
-        public long StartPos { set; get; } = 0;
+        public long StartPos { get; set; } = 0;
+
+        public bool IsFull => LineCount >= MaxLines;
+        //public bool IsFull => Size >= MaxSize;
+        //public bool IsFull => SizeTest >= MaxSize;
 
         public long Size
         {
+            get => _size;
             set
             {
                 _size = value;
 #if DEBUG
-                if (_filePositions.Count > 0)
+                if (_filePositions.Count > 0 && _size < _filePositions[^1] - StartPos)
                 {
-                    if (_size < _filePositions[_filePositions.Count - 1] - StartPos)
-                    {
-                        _logger.Error("LogBuffer overall Size must be greater than last line file position!");
-                    }
+                    _logger.Error("LogBuffer overall Size must be greater than last line file position!");
                 }
 #endif
             }
-            get => _size;
         }
 
-        public int StartLine { set; get; } = 0;
+        public int StartLine { get; set; } = 0;
 
         public int LineCount { get; private set; }
 
@@ -65,9 +53,37 @@ namespace LogExpert.Classes.Log
 
         public int PrevBuffersDroppedLinesSum { get; set; } = 0;
 
-        #endregion
+        private int MaxLines { get; }
 
-        #region Public methods
+        private int MaxSize { get; }
+        private long _sizeTest = 0;
+        public long SizeTest
+        {
+            get
+            {
+                return _sizeTest;
+            }
+
+            internal set
+            {
+                _sizeTest = value - SizeTest;
+            }
+        }
+
+        #endregion Properties
+
+        #region Constructor
+
+        public LogBuffer(ILogFileInfo fileInfo, int maxLines, int maxSize = int.MaxValue)
+        {
+            FileInfo = fileInfo;
+            MaxLines = maxLines;
+            MaxSize = maxSize;
+        }
+
+        #endregion Constructor
+
+        #region Public Methods
 
         public void AddLine(ILogLine line, long filePos)
         {
@@ -94,32 +110,18 @@ namespace LogExpert.Classes.Log
 #endif
         }
 
-        public ILogLine GetLineOfBlock(int num)
-        {
-            if (num < _logLines.Count && num >= 0)
-            {
-                return _logLines[num];
-            }
-
-            return null;
-        }
-
-        #endregion
+        public ILogLine GetLineOfBlock(int num) => num >= 0 && num < _logLines.Count ? _logLines[num] : null;
 
 #if DEBUG
+        public long GetFilePosForLineOfBlock(int line) => line >= 0 && line < _filePositions.Count ? _filePositions[line] : -1;
+#endif
+
+#if DEBUG
+
         public long DisposeCount { get; private set; }
 
-
-        public long GetFilePosForLineOfBlock(int line)
-        {
-            if (line >= 0 && line < _filePositions.Count)
-            {
-                return _filePositions[line];
-            }
-
-            return -1;
-        }
-
 #endif
+
+        #endregion Public Methods
     }
 }

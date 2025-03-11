@@ -39,7 +39,7 @@ namespace LogExpert.Tests
             {
                 Encoding = Encoding.Default
             };
-            LogfileReader reader = new(files.Last.Value, encodingOptions, true, 40, 50, options);
+            LogfileReader reader = new(files.Last.Value, encodingOptions, true, 40, 50, options, 1024*1024);
             reader.ReadFiles();
 
             IList<ILogFileInfo> lil = reader.GetLogFileInfoList();

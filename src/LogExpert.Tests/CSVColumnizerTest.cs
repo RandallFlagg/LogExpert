@@ -16,7 +16,7 @@ namespace LogExpert.Tests
         {
             CsvColumnizer.CsvColumnizer csvColumnizer = new();
             string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, filename);
-            LogfileReader reader = new(path, new EncodingOptions(), true, 40, 50, new MultiFileOptions());
+            LogfileReader reader = new(path, new EncodingOptions(), true, 40, 50, new MultiFileOptions(), 1024*1024);
             reader.ReadFiles();
             ILogLine line = reader.GetLogLine(0);
             IColumnizedLogLine logline = new ColumnizedLogLine();

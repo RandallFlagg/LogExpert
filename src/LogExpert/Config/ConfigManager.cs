@@ -198,6 +198,11 @@ namespace LogExpert.Config
                     settings.preferences.linesPerBuffer = 500;
                 }
 
+                if (settings.preferences.sizePerBuffer < 1)
+                {
+                    settings.preferences.sizePerBuffer = 1024 * 1024;
+                }
+
                 settings.filterList ??= [];
 
                 settings.searchHistoryList ??= [];

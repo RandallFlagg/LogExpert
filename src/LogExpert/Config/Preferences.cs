@@ -42,7 +42,9 @@ namespace LogExpert.Config
 
         public int lastColumnWidth = 2000;
 
-        public int linesPerBuffer = 500;
+        public int linesPerBuffer;
+
+        public int sizePerBuffer;
 
         public int maximumFilterEntries = 30;
 
