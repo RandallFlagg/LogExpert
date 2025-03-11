@@ -45,7 +45,7 @@ namespace LogExpert.Config
 
         public List<string> lastOpenFilesList = [];
 
-        public Preferences preferences = new();
+        public Preferences Preferences { get; set; } = new();
 
         public RegexHistory regexHistory = new();
 

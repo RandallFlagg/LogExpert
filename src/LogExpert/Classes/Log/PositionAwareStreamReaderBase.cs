@@ -72,7 +72,7 @@ namespace LogExpert.Classes.Log
 
         public sealed override bool IsBufferComplete => true;
 
-        protected static int MaxLineLen => MAX_LINE_LEN;
+        protected static int MaxLineLen => ConfigManager.Settings.Preferences.MaxLineLength;
 
         #endregion
 

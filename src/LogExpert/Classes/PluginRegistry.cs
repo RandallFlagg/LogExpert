@@ -2,7 +2,9 @@
 using LogExpert.Config;
 using LogExpert.Entities;
 using LogExpert.Extensions;
+
 using NLog;
+
 using System;
 using System.Collections.Generic;
 using System.IO;

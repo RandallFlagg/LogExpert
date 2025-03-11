@@ -1967,7 +1967,7 @@ namespace LogExpert.Controls.LogWindow
             _filterParams.lowerSearchText = text.ToLower();
             ConfigManager.Settings.filterHistoryList.Remove(text);
             ConfigManager.Settings.filterHistoryList.Insert(0, text);
-            int maxHistory = ConfigManager.Settings.preferences.maximumFilterEntries;
+            int maxHistory = ConfigManager.Settings.Preferences.maximumFilterEntries;
 
             if (ConfigManager.Settings.filterHistoryList.Count > maxHistory)
             {
@@ -2042,7 +2042,7 @@ namespace LogExpert.Controls.LogWindow
             Settings settings = ConfigManager.Settings;
 
             //FilterFx fx = settings.preferences.multiThreadFilter ? MultiThreadedFilter : new FilterFx(Filter);
-            FilterFxAction = settings.preferences.multiThreadFilter ? MultiThreadedFilter : Filter;
+            FilterFxAction = settings.Preferences.multiThreadFilter ? MultiThreadedFilter : Filter;
 
             //Task.Run(() => fx.Invoke(_filterParams, _filterResultList, _lastFilterLinesList, _filterHitList));
             Task filterFxActionTask = Task.Run(() => Filter(_filterParams, _filterResultList, _lastFilterLinesList, _filterHitList));
