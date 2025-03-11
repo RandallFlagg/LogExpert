@@ -53,14 +53,14 @@
       this.deleteBookmarkssToolStripMenuItem.Name = "deleteBookmarkssToolStripMenuItem";
       this.deleteBookmarkssToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
       this.deleteBookmarkssToolStripMenuItem.Text = "Delete bookmarks(s)";
-      this.deleteBookmarkssToolStripMenuItem.Click += new System.EventHandler(this.OnDeleteBookmarksToolStripMenuItemClick);
+      this.deleteBookmarkssToolStripMenuItem.Click += new System.EventHandler(this.deleteBookmarksToolStripMenuItem_Click);
       // 
       // removeCommentsToolStripMenuItem
       // 
       this.removeCommentsToolStripMenuItem.Name = "removeCommentsToolStripMenuItem";
       this.removeCommentsToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
       this.removeCommentsToolStripMenuItem.Text = "Remove comment(s)";
-      this.removeCommentsToolStripMenuItem.Click += new System.EventHandler(this.OnRemoveCommentsToolStripMenuItemClick);
+      this.removeCommentsToolStripMenuItem.Click += new System.EventHandler(this.removeCommentsToolStripMenuItem_Click);
       // 
       // bookmarkTextBox
       // 
@@ -73,7 +73,7 @@
       this.bookmarkTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
       this.bookmarkTextBox.Size = new System.Drawing.Size(194, 114);
       this.bookmarkTextBox.TabIndex = 0;
-      this.bookmarkTextBox.TextChanged += new System.EventHandler(this.OnBookmarkTextBoxTextChanged);
+      this.bookmarkTextBox.TextChanged += new System.EventHandler(this.bookmarkTextBox_TextChanged);
       // 
       // splitContainer1
       // 
@@ -119,17 +119,17 @@
       this.bookmarkDataGridView.Size = new System.Drawing.Size(517, 158);
       this.bookmarkDataGridView.TabIndex = 0;
       this.bookmarkDataGridView.VirtualMode = true;
-      this.bookmarkDataGridView.Enter += new System.EventHandler(this.OnBookmarkGridViewEnter);
-      this.bookmarkDataGridView.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.OnBookmarkDataGridViewCellDoubleClick);
+      this.bookmarkDataGridView.Enter += new System.EventHandler(this.bookmarkGridView_Enter);
+      this.bookmarkDataGridView.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.bookmarkDataGridView_CellDoubleClick);
       this.bookmarkDataGridView.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.boomarkDataGridView_MouseDoubleClick);
-      this.bookmarkDataGridView.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.OnBookmarkDataGridViewPreviewKeyDown);
-      this.bookmarkDataGridView.Leave += new System.EventHandler(this.OnBookmarkGridViewLeave);
+      this.bookmarkDataGridView.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.bookmarkDataGridView_PreviewKeyDown);
+      this.bookmarkDataGridView.Leave += new System.EventHandler(this.bookmarkGridView_Leave);
       this.bookmarkDataGridView.ColumnDividerDoubleClick += new System.Windows.Forms.DataGridViewColumnDividerDoubleClickEventHandler(this.boomarkDataGridView_ColumnDividerDoubleClick);
-      this.bookmarkDataGridView.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.OnBookmarkDataGridViewRowsAdded);
-      this.bookmarkDataGridView.SelectionChanged += new System.EventHandler(OnBookmarkDataGridViewSelectionChanged);
-      this.bookmarkDataGridView.CellToolTipTextNeeded += new System.Windows.Forms.DataGridViewCellToolTipTextNeededEventHandler(this.OnBookmarkDataGridViewCellToolTipTextNeeded);
+      this.bookmarkDataGridView.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.bookmarkDataGridView_RowsAdded);
+      this.bookmarkDataGridView.SelectionChanged += new System.EventHandler(bookmarkDataGridView_SelectionChanged);
+      this.bookmarkDataGridView.CellToolTipTextNeeded += new System.Windows.Forms.DataGridViewCellToolTipTextNeededEventHandler(this.bookmarkDataGridView_CellToolTipTextNeeded);
       this.bookmarkDataGridView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.bookmarkGridView_KeyDown);
-      this.bookmarkDataGridView.RowsRemoved += new System.Windows.Forms.DataGridViewRowsRemovedEventHandler(this.OnBookmarkDataGridViewRowsRemoved);
+      this.bookmarkDataGridView.RowsRemoved += new System.Windows.Forms.DataGridViewRowsRemovedEventHandler(this.bookmarkDataGridView_RowsRemoved);
       // 
       // commentColumnCheckBox
       // 
@@ -141,7 +141,7 @@
       this.commentColumnCheckBox.TabIndex = 8;
       this.commentColumnCheckBox.Text = "Show comment column";
       this.commentColumnCheckBox.UseVisualStyleBackColor = true;
-      this.commentColumnCheckBox.CheckedChanged += new System.EventHandler(this.OnCommentColumnCheckBoxCheckedChanged);
+      this.commentColumnCheckBox.CheckedChanged += new System.EventHandler(this.commentColumnCheckBox_CheckedChanged);
       // 
       // label1
       // 
@@ -171,8 +171,8 @@
       this.ShowIcon = false;
       this.ShowInTaskbar = false;
       this.Text = "Bookmarks";
-      this.ClientSizeChanged += new System.EventHandler(this.OnBookmarkWindowClientSizeChanged);
-      this.SizeChanged += new System.EventHandler(this.OnBookmarkWindowSizeChanged);
+      this.ClientSizeChanged += new System.EventHandler(this.BookmarkWindow_ClientSizeChanged);
+      this.SizeChanged += new System.EventHandler(this.BookmarkWindow_SizeChanged);
       this.contextMenuStrip1.ResumeLayout(false);
       this.splitContainer1.Panel1.ResumeLayout(false);
       this.splitContainer1.Panel2.ResumeLayout(false);

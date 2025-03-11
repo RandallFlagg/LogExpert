@@ -18,7 +18,7 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace LogExpert.Controls.LogTabWindow
 {
-    public partial class LogTabWindow
+    internal partial class LogTabWindow
     {
         #region Events handler
 
@@ -64,10 +64,6 @@ namespace LogExpert.Controls.LogTabWindow
             _ledThread.IsBackground = true;
             _ledThread.Start();
 
-            _statusLineThread = new Thread(StatusLineThreadFunc);
-            _statusLineThread.IsBackground = true;
-            _statusLineThread.Start();
-
             FillHighlightComboBox();
             FillToolLauncherBar();
 #if !DEBUG
@@ -83,7 +79,6 @@ namespace LogExpert.Controls.LogTabWindow
                 _statusLineEventHandle.Set();
                 _statusLineEventWakeupHandle.Set();
                 _ledThread.Join();
-                _statusLineThread.Join();
 
                 IList<LogWindow.LogWindow> deleteLogWindowList = new List<LogWindow.LogWindow>();
                 ConfigManager.Settings.alwaysOnTop = TopMost && ConfigManager.Settings.Preferences.allowOnlyOneInstance;
@@ -160,7 +155,7 @@ namespace LogExpert.Controls.LogTabWindow
             }
 
             CurrentLogWindow.ColumnizerCallbackObject.LineNum = CurrentLogWindow.GetCurrentLineNum();
-            FilterSelectorForm form = new(PluginRegistry.GetInstance().RegisteredColumnizers, CurrentLogWindow.CurrentColumnizer, CurrentLogWindow.ColumnizerCallbackObject);
+            FilterSelectorForm form = new(PluginRegistry.Instance.RegisteredColumnizers, CurrentLogWindow.CurrentColumnizer, CurrentLogWindow.ColumnizerCallbackObject);
             form.Owner = this;
             form.TopMost = TopMost;
             DialogResult res = form.ShowDialog();
@@ -333,7 +328,7 @@ namespace LogExpert.Controls.LogTabWindow
 
         private void OnGuiStateUpdate(object sender, GuiStateArgs e)
         {
-            BeginInvoke(new GuiStateUpdateWorkerDelegate(GuiStateUpdateWorker), e);
+            BeginInvoke(GuiStateUpdateWorker, e);
         }
 
         private void OnColumnizerChanged(object sender, ColumnizerEventArgs e)
@@ -363,12 +358,7 @@ namespace LogExpert.Controls.LogTabWindow
 
         private void OnStatusLineEvent(object sender, StatusLineEventArgs e)
         {
-            lock (_statusLineLock)
-            {
-                _lastStatusLineEvent = e;
-                _statusLineEventHandle.Set();
-                _statusLineEventWakeupHandle.Set();
-            }
+            StatusLineEventWorker(e);
         }
 
         private void OnFollowTailCheckBoxClick(object sender, EventArgs e)

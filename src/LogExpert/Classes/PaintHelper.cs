@@ -32,7 +32,8 @@ namespace LogExpert.Classes
 
         #region Public methods
 
-        public static void CellPainting(ILogPaintContext logPaintCtx, BufferedDataGridView gridView, int rowIndex, DataGridViewCellPaintingEventArgs e)
+        public static void CellPainting(ILogPaintContext logPaintCtx, DataGridView gridView, int rowIndex,
+            DataGridViewCellPaintingEventArgs e)
         {
             if (rowIndex < 0 || e.ColumnIndex < 0)
             {
@@ -40,7 +41,6 @@ namespace LogExpert.Classes
                 return;
             }
             ILogLine line = logPaintCtx.GetLogLine(rowIndex);
-
             if (line != null)
             {
                 HilightEntry entry = logPaintCtx.FindHighlightEntry(line, true);
@@ -49,10 +49,9 @@ namespace LogExpert.Classes
                 {
                     Color backColor = e.CellStyle.SelectionBackColor;
                     Brush brush;
-
                     if (gridView.Focused)
                     {
-                        brush = new SolidBrush(backColor);
+                        brush = new SolidBrush(e.CellStyle.SelectionBackColor);
                     }
                     else
                     {
@@ -64,8 +63,7 @@ namespace LogExpert.Classes
                 }
                 else
                 {
-                    Color bgColor = ColorMode.DockBackgroundColor;
-
+                    Color bgColor = LogExpert.Config.ColorMode.DockBackgroundColor;
                     if (!DebugOptions.disableWordHighlight)
                     {
                         if (entry != null)
@@ -80,7 +78,6 @@ namespace LogExpert.Classes
                             bgColor = entry.BackgroundColor;
                         }
                     }
-
                     e.CellStyle.BackColor = bgColor;
                     e.PaintBackground(e.ClipBounds, false);
                 }
@@ -97,7 +94,6 @@ namespace LogExpert.Classes
                 if (e.ColumnIndex == 0)
                 {
                     Entities.Bookmark bookmark = logPaintCtx.GetBookmarkForLine(rowIndex);
-
                     if (bookmark != null)
                     {
                         Rectangle r; // = new Rectangle(e.CellBounds.Left + 2, e.CellBounds.Top + 2, 6, 6);
@@ -106,15 +102,11 @@ namespace LogExpert.Classes
                         Brush brush = new SolidBrush(logPaintCtx.BookmarkColor);
                         e.Graphics.FillRectangle(brush, r);
                         brush.Dispose();
-
                         if (bookmark.Text.Length > 0)
                         {
-                            StringFormat format = new()
-                            {
-                                LineAlignment = StringAlignment.Center,
-                                Alignment = StringAlignment.Center
-                            };
-
+                            StringFormat format = new();
+                            format.LineAlignment = StringAlignment.Center;
+                            format.Alignment = StringAlignment.Center;
                             Brush brush2 = new SolidBrush(Color.FromArgb(255, 190, 100, 0));
                             Font font = logPaintCtx.MonospacedFont;
                             e.Graphics.DrawString("i", font, brush2, new RectangleF(r.Left, r.Top, r.Width, r.Height),
@@ -132,49 +124,43 @@ namespace LogExpert.Classes
 
         public static DataGridViewTextBoxColumn CreateMarkerColumn()
         {
-            DataGridViewTextBoxColumn markerColumn = new()
-            {
-                HeaderText = "",
-                AutoSizeMode = DataGridViewAutoSizeColumnMode.NotSet,
-                Resizable = DataGridViewTriState.False,
-                DividerWidth = 1,
-                ReadOnly = true,
-                SortMode = DataGridViewColumnSortMode.NotSortable
-            };
+            DataGridViewTextBoxColumn markerColumn = new();
+            markerColumn.HeaderText = "";
+            markerColumn.AutoSizeMode = DataGridViewAutoSizeColumnMode.NotSet;
+            markerColumn.Resizable = DataGridViewTriState.False;
+            markerColumn.DividerWidth = 1;
+            markerColumn.ReadOnly = true;
+            markerColumn.SortMode = DataGridViewColumnSortMode.NotSortable;
 
             return markerColumn;
         }
 
         public static DataGridViewTextBoxColumn CreateLineNumberColumn()
         {
-            DataGridViewTextBoxColumn lineNumberColumn = new()
-            {
-                HeaderText = "Line",
-                AutoSizeMode = DataGridViewAutoSizeColumnMode.NotSet,
-                Resizable = DataGridViewTriState.NotSet,
-                DividerWidth = 1,
-                ReadOnly = true,
-                SortMode = DataGridViewColumnSortMode.NotSortable
-            };
+            DataGridViewTextBoxColumn lineNumberColumn = new();
+            lineNumberColumn.HeaderText = "Line";
+            lineNumberColumn.AutoSizeMode = DataGridViewAutoSizeColumnMode.NotSet;
+            lineNumberColumn.Resizable = DataGridViewTriState.NotSet;
+            lineNumberColumn.DividerWidth = 1;
+            lineNumberColumn.ReadOnly = true;
+            lineNumberColumn.SortMode = DataGridViewColumnSortMode.NotSortable;
 
             return lineNumberColumn;
         }
 
         public static DataGridViewColumn CreateTitleColumn(string colName)
         {
-            DataGridViewColumn titleColumn = new LogTextColumn
-            {
-                HeaderText = colName,
-                AutoSizeMode = DataGridViewAutoSizeColumnMode.NotSet,
-                Resizable = DataGridViewTriState.NotSet,
-                DividerWidth = 1,
-                SortMode = DataGridViewColumnSortMode.NotSortable
-            };
+            DataGridViewColumn titleColumn = new LogTextColumn();
+            titleColumn.HeaderText = colName;
+            titleColumn.AutoSizeMode = DataGridViewAutoSizeColumnMode.NotSet;
+            titleColumn.Resizable = DataGridViewTriState.NotSet;
+            titleColumn.DividerWidth = 1;
+            titleColumn.SortMode = DataGridViewColumnSortMode.NotSortable;
 
             return titleColumn;
         }
 
-        public static void SetColumnizer(ILogLineColumnizer columnizer, BufferedDataGridView gridView)
+        public static void SetColumnizer(ILogLineColumnizer columnizer, DataGridView gridView)
         {
             int rowCount = gridView.RowCount;
             int currLine = gridView.CurrentCellAddress.Y;
@@ -213,7 +199,7 @@ namespace LogExpert.Classes
             //AutoResizeColumns(gridView);
         }
 
-        public static void AutoResizeColumns(BufferedDataGridView gridView)
+        public static void AutoResizeColumns(DataGridView gridView)
         {
             try
             {
@@ -237,7 +223,7 @@ namespace LogExpert.Classes
             }
         }
 
-        public static void ApplyDataGridViewPrefs(BufferedDataGridView dataGridView, Preferences prefs)
+        public static void ApplyDataGridViewPrefs(DataGridView dataGridView, Preferences prefs)
         {
             if (dataGridView.Columns.Count > 1)
             {
@@ -264,43 +250,30 @@ namespace LogExpert.Classes
 
         public static Rectangle BorderWidths(DataGridViewAdvancedBorderStyle advancedBorderStyle)
         {
-            Rectangle rect = new()
-            {
-                X = advancedBorderStyle.Left == DataGridViewAdvancedCellBorderStyle.None
-                ? 0
-                : 1
-            };
+            Rectangle rect = new();
 
+            rect.X = advancedBorderStyle.Left == DataGridViewAdvancedCellBorderStyle.None ? 0 : 1;
             if (advancedBorderStyle.Left == DataGridViewAdvancedCellBorderStyle.OutsetDouble ||
                 advancedBorderStyle.Left == DataGridViewAdvancedCellBorderStyle.InsetDouble)
             {
                 rect.X++;
             }
 
-            rect.Y = advancedBorderStyle.Top == DataGridViewAdvancedCellBorderStyle.None
-                ? 0
-                : 1;
-
+            rect.Y = advancedBorderStyle.Top == DataGridViewAdvancedCellBorderStyle.None ? 0 : 1;
             if (advancedBorderStyle.Top == DataGridViewAdvancedCellBorderStyle.OutsetDouble ||
                 advancedBorderStyle.Top == DataGridViewAdvancedCellBorderStyle.InsetDouble)
             {
                 rect.Y++;
             }
 
-            rect.Width = advancedBorderStyle.Right == DataGridViewAdvancedCellBorderStyle.None
-                ? 0
-                : 1;
-
+            rect.Width = advancedBorderStyle.Right == DataGridViewAdvancedCellBorderStyle.None ? 0 : 1;
             if (advancedBorderStyle.Right == DataGridViewAdvancedCellBorderStyle.OutsetDouble ||
                 advancedBorderStyle.Right == DataGridViewAdvancedCellBorderStyle.InsetDouble)
             {
                 rect.Width++;
             }
 
-            rect.Height = advancedBorderStyle.Bottom == DataGridViewAdvancedCellBorderStyle.None
-                ? 0
-                : 1;
-
+            rect.Height = advancedBorderStyle.Bottom == DataGridViewAdvancedCellBorderStyle.None ? 0 : 1;
             if (advancedBorderStyle.Bottom == DataGridViewAdvancedCellBorderStyle.OutsetDouble ||
                 advancedBorderStyle.Bottom == DataGridViewAdvancedCellBorderStyle.InsetDouble)
             {
@@ -317,12 +290,12 @@ namespace LogExpert.Classes
 
         #region Private Methods
 
-        private static void PaintCell(ILogPaintContext logPaintCtx, DataGridViewCellPaintingEventArgs e, BufferedDataGridView gridView, bool noBackgroundFill, HilightEntry groundEntry)
+        private static void PaintCell(ILogPaintContext logPaintCtx, DataGridViewCellPaintingEventArgs e, DataGridView gridView, bool noBackgroundFill, HilightEntry groundEntry)
         {
             PaintHighlightedCell(logPaintCtx, e, gridView, noBackgroundFill, groundEntry);
         }
 
-        private static void PaintHighlightedCell(ILogPaintContext logPaintCtx, DataGridViewCellPaintingEventArgs e, BufferedDataGridView gridView, bool noBackgroundFill, HilightEntry groundEntry)
+        private static void PaintHighlightedCell(ILogPaintContext logPaintCtx, DataGridViewCellPaintingEventArgs e, DataGridView gridView, bool noBackgroundFill, HilightEntry groundEntry)
         {
             object value = e.Value ?? string.Empty;
 
@@ -337,11 +310,9 @@ namespace LogExpert.Classes
             {
                 if (string.IsNullOrEmpty(column.FullValue) == false)
                 {
-                    HilightMatchEntry hme = new()
-                    {
-                        StartPos = 0,
-                        Length = column.FullValue.Length
-                    };
+                    HilightMatchEntry hme = new();
+                    hme.StartPos = 0;
+                    hme.Length = column.FullValue.Length;
 
                     var he = new HilightEntry
                     {
@@ -364,22 +335,19 @@ namespace LogExpert.Classes
             }
 
             int leftPad = e.CellStyle.Padding.Left;
-
             RectangleF rect = new(e.CellBounds.Left + leftPad, e.CellBounds.Top, e.CellBounds.Width, e.CellBounds.Height);
-
             Rectangle borderWidths = BorderWidths(e.AdvancedBorderStyle);
             Rectangle valBounds = e.CellBounds;
-
             valBounds.Offset(borderWidths.X, borderWidths.Y);
             valBounds.Width -= borderWidths.Right;
             valBounds.Height -= borderWidths.Bottom;
-
             if (e.CellStyle.Padding != Padding.Empty)
             {
                 valBounds.Offset(e.CellStyle.Padding.Left, e.CellStyle.Padding.Top);
                 valBounds.Width -= e.CellStyle.Padding.Horizontal;
                 valBounds.Height -= e.CellStyle.Padding.Vertical;
             }
+
 
             TextFormatFlags flags =
                     TextFormatFlags.Left
@@ -494,23 +462,19 @@ namespace LogExpert.Classes
                 {
                     if (entryArray[pos] != currentEntry)
                     {
-                        HilightMatchEntry me = new()
-                        {
-                            StartPos = lastStartPos,
-                            Length = pos - lastStartPos,
-                            HilightEntry = currentEntry
-                        };
+                        HilightMatchEntry me = new();
+                        me.StartPos = lastStartPos;
+                        me.Length = pos - lastStartPos;
+                        me.HilightEntry = currentEntry;
                         mergedList.Add(me);
                         currentEntry = entryArray[pos];
                         lastStartPos = pos;
                     }
                 }
-                HilightMatchEntry me2 = new()
-                {
-                    StartPos = lastStartPos,
-                    Length = pos - lastStartPos,
-                    HilightEntry = currentEntry
-                };
+                HilightMatchEntry me2 = new();
+                me2.StartPos = lastStartPos;
+                me2.Length = pos - lastStartPos;
+                me2.HilightEntry = currentEntry;
                 mergedList.Add(me2);
             }
             return mergedList;

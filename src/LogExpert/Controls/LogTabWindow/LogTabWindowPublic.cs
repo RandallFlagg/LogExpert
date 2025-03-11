@@ -16,7 +16,7 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace LogExpert.Controls.LogTabWindow
 {
-    public partial class LogTabWindow
+    internal partial class LogTabWindow
     {
         #region Public methods
 
@@ -116,8 +116,7 @@ namespace LogExpert.Controls.LogTabWindow
             }
 
             // this.BeginInvoke(new LoadFileDelegate(logWindow.LoadFile), new object[] { logFileName, encoding });
-            LoadFileDelegate loadFileFx = logWindow.LoadFile;
-            Task task = Task.Run(() => logWindow.LoadFile(logFileName, encodingOptions));
+            Task.Run(() => logWindow.LoadFile(logFileName, encodingOptions));
             return logWindow;
         }
 
@@ -141,7 +140,7 @@ namespace LogExpert.Controls.LogTabWindow
 
         public void LoadFiles(string[] fileNames)
         {
-            Invoke(new AddFileTabsDelegate(AddFileTabs), new object[] {fileNames});
+            Invoke(new AddFileTabsDelegate(AddFileTabs), [fileNames]);
         }
 
         public void OpenSearchDialog()
@@ -170,7 +169,7 @@ namespace LogExpert.Controls.LogTabWindow
             ColumnizerHistoryEntry entry = FindColumnizerHistoryEntry(fileName);
             if (entry != null)
             {
-                foreach (ILogLineColumnizer columnizer in PluginRegistry.GetInstance().RegisteredColumnizers)
+                foreach (ILogLineColumnizer columnizer in PluginRegistry.Instance.RegisteredColumnizers)
                 {
                     if (columnizer.GetName().Equals(entry.ColumnizerName))
                     {
@@ -242,7 +241,7 @@ namespace LogExpert.Controls.LogTabWindow
                     {
                         if (Regex.IsMatch(fileName, entry.mask))
                         {
-                            ILogLineColumnizer columnizer = ColumnizerPicker.FindColumnizerByName(entry.columnizerName, PluginRegistry.GetInstance().RegisteredColumnizers);
+                            ILogLineColumnizer columnizer = ColumnizerPicker.FindColumnizerByName(entry.columnizerName, PluginRegistry.Instance.RegisteredColumnizers);
                             return columnizer;
                         }
                     }

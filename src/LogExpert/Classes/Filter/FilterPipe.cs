@@ -7,7 +7,7 @@ using NLog;
 
 namespace LogExpert.Classes.Filter
 {
-    public class FilterPipe
+    internal class FilterPipe
     {
         #region Fields
 

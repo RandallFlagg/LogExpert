@@ -78,7 +78,7 @@ partial class Build : NukeBuild
                 patch = AppVeyor.Instance.BuildNumber;
             }
 
-            return new Version(1, 11, 1, patch);
+            return new Version(1, 11, 2, patch);
         }
     }
 

@@ -135,15 +135,15 @@ namespace SftpFileSystem
             }
         }
 
-        public void ShowConfigDialog(Form owner)
+        public void ShowConfigDialog(object owner)
         {
             throw new NotImplementedException();
         }
 
-        public void ShowConfigForm(Panel parentPanel)
+        public void ShowConfigForm(object parentPanel)
         {
             _configDialog = new ConfigDialog(ConfigData);
-            _configDialog.Parent = parentPanel;
+            _configDialog.Parent = (Panel)parentPanel;
             _configDialog.Show();
         }
 

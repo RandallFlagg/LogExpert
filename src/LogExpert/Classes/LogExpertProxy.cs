@@ -127,7 +127,7 @@ namespace LogExpert.Classes
             if (_windowList.Count == 0)
             {
                 _logger.Info("Last LogTabWindow was closed");
-                PluginRegistry.GetInstance().CleanupPlugins();
+                PluginRegistry.Instance.CleanupPlugins();
                 OnLastWindowClosed();
             }
             else
