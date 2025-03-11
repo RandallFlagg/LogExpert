@@ -307,7 +307,7 @@ namespace LogExpert.Controls.LogTabWindow
 
         public SearchParams SearchParams { get; private set; } = new SearchParams();
 
-        public Preferences Preferences => ConfigManager.Settings.preferences;
+        public Preferences Preferences => ConfigManager.Settings.Preferences;
 
         public List<HilightGroup> HilightGroupList { get; private set; } = [];
 

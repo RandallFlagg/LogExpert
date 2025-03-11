@@ -84,7 +84,7 @@ namespace LogExpert.Dialogs
             {
                 string configDir = ConfigManager.ConfigDir;
 
-                if (ConfigManager.Settings.preferences.PortableMode)
+                if (ConfigManager.Settings.Preferences.PortableMode)
                 {
                     configDir = ConfigManager.PortableModeDir;
                 }

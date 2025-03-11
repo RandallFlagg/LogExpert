@@ -198,7 +198,7 @@ namespace LogExpert.Controls.LogWindow
                 filterComboBox.Items.Add(item);
             }
 
-            filterComboBox.DropDownHeight = filterComboBox.ItemHeight * ConfigManager.Settings.preferences.maximumFilterEntriesDisplayed;
+            filterComboBox.DropDownHeight = filterComboBox.ItemHeight * ConfigManager.Settings.Preferences.maximumFilterEntriesDisplayed;
             AutoResizeFilterBox();
 
             filterRegexCheckBox.Checked = _filterParams.isRegex;
@@ -499,7 +499,7 @@ namespace LogExpert.Controls.LogWindow
 
         public string ForcedPersistenceFileName { get; set; } = null;
 
-        public Preferences Preferences => ConfigManager.Settings.preferences;
+        public Preferences Preferences => ConfigManager.Settings.Preferences;
 
         public string GivenFileName { get; set; } = null;
 

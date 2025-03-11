@@ -234,7 +234,7 @@ namespace LogExpert.Controls.LogTabWindow
 
         public ILogLineColumnizer FindColumnizerByFileMask(string fileName)
         {
-            foreach (ColumnizerMaskEntry entry in ConfigManager.Settings.preferences.columnizerMaskList)
+            foreach (ColumnizerMaskEntry entry in ConfigManager.Settings.Preferences.columnizerMaskList)
             {
                 if (entry.mask != null)
                 {
@@ -259,7 +259,7 @@ namespace LogExpert.Controls.LogTabWindow
 
         public HilightGroup FindHighlightGroupByFileMask(string fileName)
         {
-            foreach (HighlightMaskEntry entry in ConfigManager.Settings.preferences.highlightMaskList)
+            foreach (HighlightMaskEntry entry in ConfigManager.Settings.Preferences.highlightMaskList)
             {
                 if (entry.mask != null)
                 {

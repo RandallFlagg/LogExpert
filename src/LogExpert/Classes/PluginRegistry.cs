@@ -2,7 +2,9 @@
 using LogExpert.Config;
 using LogExpert.Entities;
 using LogExpert.Extensions;
+
 using NLog;
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -91,7 +93,8 @@ namespace LogExpert.Classes
 
             string pluginDir = Path.Combine(Application.StartupPath, "plugins");
             //TODO: FIXME: This is a hack for the tests to pass. Need to find a better approach
-            if (!Directory.Exists(pluginDir)) {
+            if (!Directory.Exists(pluginDir))
+            {
                 pluginDir = ".";
             }
 
@@ -118,7 +121,7 @@ namespace LogExpert.Classes
 
                             if (o is IColumnizerConfigurator configurator)
                             {
-                                configurator.LoadConfig(ConfigManager.Settings.preferences.PortableMode ? ConfigManager.PortableModeDir : ConfigManager.ConfigDir);
+                                configurator.LoadConfig(ConfigManager.Settings.Preferences.PortableMode ? ConfigManager.PortableModeDir : ConfigManager.ConfigDir);
                             }
 
                             if (o is ILogExpertPlugin plugin)

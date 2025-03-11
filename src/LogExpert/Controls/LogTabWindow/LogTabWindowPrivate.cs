@@ -68,7 +68,7 @@ namespace LogExpert.Controls.LogTabWindow
             _bookmarkWindow = new BookmarkWindow();
             _bookmarkWindow.HideOnClose = true;
             _bookmarkWindow.ShowHint = DockState.DockBottom;
-            _bookmarkWindow.PreferencesChanged(ConfigManager.Settings.preferences, false, SettingsFlags.All);
+            _bookmarkWindow.PreferencesChanged(ConfigManager.Settings.Preferences, false, SettingsFlags.All);
             _bookmarkWindow.VisibleChanged += OnBookmarkWindowVisibleChanged;
             _firstBookmarkWindowShow = true;
         }
@@ -120,15 +120,15 @@ namespace LogExpert.Controls.LogTabWindow
 
         private void FillDefaultEncodingFromSettings(EncodingOptions encodingOptions)
         {
-            if (ConfigManager.Settings.preferences.defaultEncoding != null)
+            if (ConfigManager.Settings.Preferences.defaultEncoding != null)
             {
                 try
                 {
-                    encodingOptions.DefaultEncoding = Encoding.GetEncoding(ConfigManager.Settings.preferences.defaultEncoding);
+                    encodingOptions.DefaultEncoding = Encoding.GetEncoding(ConfigManager.Settings.Preferences.defaultEncoding);
                 }
                 catch (ArgumentException)
                 {
-                    _logger.Warn("Encoding " + ConfigManager.Settings.preferences.defaultEncoding + " is not a valid encoding");
+                    _logger.Warn("Encoding " + ConfigManager.Settings.Preferences.defaultEncoding + " is not a valid encoding");
                     encodingOptions.DefaultEncoding = null;
                 }
             }
@@ -426,7 +426,7 @@ namespace LogExpert.Controls.LogTabWindow
                 return;
             }
 
-            MultiFileOption option = ConfigManager.Settings.preferences.multiFileOption;
+            MultiFileOption option = ConfigManager.Settings.Preferences.multiFileOption;
             if (option == MultiFileOption.Ask)
             {
                 MultiLoadRequestDialog dlg = new();
@@ -622,7 +622,7 @@ namespace LogExpert.Controls.LogTabWindow
             cellSelectModeToolStripMenuItem.Checked = e.CellSelectMode;
             RefreshEncodingMenuBar(e.CurrentEncoding);
 
-            if (e.TimeshiftPossible && ConfigManager.Settings.preferences.timestampControl)
+            if (e.TimeshiftPossible && ConfigManager.Settings.Preferences.timestampControl)
             {
                 dragControlDateTime.MinDateTime = e.MinTimestamp;
                 dragControlDateTime.MaxDateTime = e.MaxTimestamp;
@@ -952,12 +952,12 @@ namespace LogExpert.Controls.LogTabWindow
 
         private void OpenSettings(int tabToOpen)
         {
-            SettingsDialog dlg = new(ConfigManager.Settings.preferences, this, tabToOpen);
+            SettingsDialog dlg = new(ConfigManager.Settings.Preferences, this, tabToOpen);
             dlg.TopMost = TopMost;
 
             if (DialogResult.OK == dlg.ShowDialog())
             {
-                ConfigManager.Settings.preferences = dlg.Preferences;
+                ConfigManager.Settings.Preferences = dlg.Preferences;
                 ConfigManager.Save(SettingsFlags.Settings);
                 NotifyWindowsForChangedPrefs(SettingsFlags.Settings);
             }
@@ -972,11 +972,11 @@ namespace LogExpert.Controls.LogTabWindow
             {
                 foreach (LogWindow.LogWindow logWindow in _logWindowList)
                 {
-                    logWindow.PreferencesChanged(ConfigManager.Settings.preferences, false, flags);
+                    logWindow.PreferencesChanged(ConfigManager.Settings.Preferences, false, flags);
                 }
             }
 
-            _bookmarkWindow.PreferencesChanged(ConfigManager.Settings.preferences, false, flags);
+            _bookmarkWindow.PreferencesChanged(ConfigManager.Settings.Preferences, false, flags);
 
             HilightGroupList = ConfigManager.Settings.hilightGroupList;
             if ((flags & SettingsFlags.HighlightSettings) == SettingsFlags.HighlightSettings)
@@ -990,7 +990,7 @@ namespace LogExpert.Controls.LogTabWindow
             if ((flags & SettingsFlags.WindowPosition) == SettingsFlags.WindowPosition)
             {
                 TopMost = alwaysOnTopToolStripMenuItem.Checked = settings.alwaysOnTop;
-                dragControlDateTime.DragOrientation = settings.preferences.timestampControlDragOrientation;
+                dragControlDateTime.DragOrientation = settings.Preferences.timestampControlDragOrientation;
                 hideLineColumnToolStripMenuItem.Checked = settings.hideLineColumn;
             }
 
@@ -1001,7 +1001,7 @@ namespace LogExpert.Controls.LogTabWindow
 
             if ((flags & SettingsFlags.GuiOrColors) == SettingsFlags.GuiOrColors)
             {
-                SetTabIcons(settings.preferences);
+                SetTabIcons(settings.Preferences);
             }
 
             if ((flags & SettingsFlags.ToolSettings) == SettingsFlags.ToolSettings)
