@@ -1508,12 +1508,12 @@
             // 
             upDownLinesPerBlock.Location = new System.Drawing.Point(210, 102);
             upDownLinesPerBlock.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            upDownLinesPerBlock.Maximum = new decimal(new int[] { 5000, 0, 0, 0 });
+            upDownLinesPerBlock.Maximum = new decimal(new int[] { 5000000, 0, 0, 0 });
             upDownLinesPerBlock.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             upDownLinesPerBlock.Name = "upDownLinesPerBlock";
             upDownLinesPerBlock.Size = new System.Drawing.Size(94, 23);
             upDownLinesPerBlock.TabIndex = 3;
-            upDownLinesPerBlock.Value = new decimal(new int[] { 500, 0, 0, 0 });
+            upDownLinesPerBlock.Value = new decimal(new int[] { 50000, 0, 0, 0 });
             upDownLinesPerBlock.ValueChanged += OnNumericUpDown1ValueChanged;
             // 
             // upDownBlockCount
