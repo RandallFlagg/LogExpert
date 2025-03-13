@@ -14,9 +14,6 @@ jobs:
 
     runs-on: windows-latest
 
-    env:
-      Solution_Name: Logexpert
-
     steps:
     - uses: actions/checkout@v4
     - name: Setup .NET
