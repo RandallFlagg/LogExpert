@@ -122,29 +122,39 @@ namespace LogExpert.Classes
         private void LoadPluginAssembly(string dllName, string interfaceName)
         {
             Assembly assembly = Assembly.LoadFrom(dllName);
-            var types = assembly.GetTypes().Where(t => t.GetInterfaces().Any(i => i.FullName == interfaceName));
+            var types = assembly.GetTypes();
+
             foreach (var type in types)
             {
                 _logger.Info($"Type {type.FullName} in assembly {assembly.FullName} implements {interfaceName}");
 
-                ConstructorInfo cti = type.GetConstructor(Type.EmptyTypes);
-                if (cti != null)
+                if (type.GetInterfaces().Any(i => i.FullName == interfaceName))
                 {
-                    object instance = cti.Invoke([]);
-                    RegisteredColumnizers.Add((ILogLineColumnizer)instance);
-
-                    if (instance is IColumnizerConfigurator configurator)
+                    ConstructorInfo cti = type.GetConstructor(Type.EmptyTypes);
+                    if (cti != null)
                     {
-                        configurator.LoadConfig(ConfigManager.Settings.preferences.PortableMode ? ConfigManager.PortableModeDir : ConfigManager.ConfigDir);
-                    }
+                        object instance = cti.Invoke([]);
+                        RegisteredColumnizers.Add((ILogLineColumnizer)instance);
 
-                    if (instance is ILogExpertPlugin plugin)
-                    {
-                        _pluginList.Add(plugin);
-                        plugin.PluginLoaded();
-                    }
+                        if (instance is IColumnizerConfigurator configurator)
+                        {
+                            configurator.LoadConfig(ConfigManager.Settings.preferences.PortableMode ? ConfigManager.PortableModeDir : ConfigManager.ConfigDir);
+                        }
 
-                    _logger.Info("Added columnizer {0}", type.Name);
+                        if (instance is ILogExpertPlugin plugin)
+                        {
+                            _pluginList.Add(plugin);
+                            plugin.PluginLoaded();
+                        }
+
+                        _logger.Info("Added columnizer {0}", type.Name);
+                    }
+                }
+                else
+                {
+                    if (TryAsContextMenu(type)) continue;
+                    if (TryAsKeywordAction(type)) continue;
+                    if (TryAsFileSystem(type)) continue;
                 }
             }
         }
