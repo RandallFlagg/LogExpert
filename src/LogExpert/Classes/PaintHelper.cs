@@ -26,7 +26,7 @@ namespace LogExpert.Classes
 
         #region Properties
 
-        private static Preferences Preferences => ConfigManager.Settings.preferences;
+        private static Preferences Preferences => ConfigManager.Settings.Preferences;
 
         #endregion
 
