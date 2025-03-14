@@ -150,7 +150,7 @@ namespace LogExpert
                             // another instance already exists
                             WindowsIdentity wi = WindowsIdentity.GetCurrent();
                             //LogExpertProxy proxy = (LogExpertProxy)Activator.GetObject(typeof(LogExpertProxy), "ipc://LogExpert" + pId + "/LogExpertProxy");
-                            if (settings.preferences.allowOnlyOneInstance)
+                            if (settings.Preferences.allowOnlyOneInstance)
                             {
                                 client.LoadFiles(new Grpc.FileNames { FileNames_ = { args } });
                             }
@@ -176,12 +176,12 @@ namespace LogExpert
                         MessageBox.Show($"Cannot open connection to first instance ({errMsg})", "LogExpert");
                     }
 
-                    if (settings.preferences.allowOnlyOneInstance && settings.preferences.ShowErrorMessageAllowOnlyOneInstances)
+                    if (settings.Preferences.allowOnlyOneInstance && settings.Preferences.ShowErrorMessageAllowOnlyOneInstances)
                     {
                         AllowOnlyOneInstanceErrorDialog a = new();
                         if (a.ShowDialog() == DialogResult.OK)
                         {
-                            settings.preferences.ShowErrorMessageAllowOnlyOneInstances = !a.DoNotShowThisMessageAgain;
+                            settings.Preferences.ShowErrorMessageAllowOnlyOneInstances = !a.DoNotShowThisMessageAgain;
                             ConfigManager.Save(SettingsFlags.All);
                         }
 

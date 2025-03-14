@@ -166,11 +166,11 @@ namespace LogExpert.Config
                     }
                 }
 
-                settings.preferences ??= new Preferences();
+                settings.Preferences ??= new Preferences();
 
-                settings.preferences.toolEntries ??= [];
+                settings.Preferences.toolEntries ??= [];
 
-                settings.preferences.columnizerMaskList ??= [];
+                settings.Preferences.columnizerMaskList ??= [];
 
                 settings.fileHistoryList ??= [];
 
@@ -178,24 +178,24 @@ namespace LogExpert.Config
 
                 settings.fileColors ??= [];
 
-                if (settings.preferences.showTailColor == Color.Empty)
+                if (settings.Preferences.showTailColor == Color.Empty)
                 {
-                    settings.preferences.showTailColor = Color.FromKnownColor(KnownColor.Blue);
+                    settings.Preferences.showTailColor = Color.FromKnownColor(KnownColor.Blue);
                 }
 
-                if (settings.preferences.timeSpreadColor == Color.Empty)
+                if (settings.Preferences.timeSpreadColor == Color.Empty)
                 {
-                    settings.preferences.timeSpreadColor = Color.Gray;
+                    settings.Preferences.timeSpreadColor = Color.Gray;
                 }
 
-                if (settings.preferences.bufferCount < 10)
+                if (settings.Preferences.bufferCount < 10)
                 {
-                    settings.preferences.bufferCount = 100;
+                    settings.Preferences.bufferCount = 100;
                 }
 
-                if (settings.preferences.linesPerBuffer < 1)
+                if (settings.Preferences.linesPerBuffer < 1)
                 {
-                    settings.preferences.linesPerBuffer = 500;
+                    settings.Preferences.linesPerBuffer = 500;
                 }
 
                 settings.filterList ??= [];
@@ -224,25 +224,25 @@ namespace LogExpert.Config
                     settings.hilightGroupList.Add(defaultGroup);
                 }
 
-                settings.preferences.highlightMaskList ??= [];
+                settings.Preferences.highlightMaskList ??= [];
 
-                if (settings.preferences.pollingInterval < 20)
+                if (settings.Preferences.pollingInterval < 20)
                 {
-                    settings.preferences.pollingInterval = 250;
+                    settings.Preferences.pollingInterval = 250;
                 }
 
-                settings.preferences.multiFileOptions ??= new MultiFileOptions();
+                settings.Preferences.multiFileOptions ??= new MultiFileOptions();
 
-                settings.preferences.defaultEncoding ??= Encoding.Default.HeaderName;
+                settings.Preferences.defaultEncoding ??= Encoding.Default.HeaderName;
 
-                if (settings.preferences.maximumFilterEntriesDisplayed == 0)
+                if (settings.Preferences.maximumFilterEntriesDisplayed == 0)
                 {
-                    settings.preferences.maximumFilterEntriesDisplayed = 20;
+                    settings.Preferences.maximumFilterEntriesDisplayed = 20;
                 }
 
-                if (settings.preferences.maximumFilterEntries == 0)
+                if (settings.Preferences.maximumFilterEntries == 0)
                 {
-                    settings.preferences.maximumFilterEntries = 30;
+                    settings.Preferences.maximumFilterEntries = 30;
                 }
 
                 SetBoundsWithinVirtualScreen(settings);
@@ -265,7 +265,7 @@ namespace LogExpert.Config
                 _logger.Info("Saving settings");
                 lock (this)
                 {
-                    string dir = Settings.preferences.PortableMode ? Application.StartupPath : ConfigDir;
+                    string dir = Settings.Preferences.PortableMode ? Application.StartupPath : ConfigDir;
 
                     if (!Directory.Exists(dir))
                     {
@@ -367,11 +367,11 @@ namespace LogExpert.Config
             if ((flags & ExportImportFlags.Other) == ExportImportFlags.Other)
             {
                 newSettings = ownSettings;
-                newSettings.preferences = ObjectClone.Clone(importSettings.preferences);
-                newSettings.preferences.columnizerMaskList = ownSettings.preferences.columnizerMaskList;
-                newSettings.preferences.highlightMaskList = ownSettings.preferences.highlightMaskList;
+                newSettings.Preferences = ObjectClone.Clone(importSettings.Preferences);
+                newSettings.Preferences.columnizerMaskList = ownSettings.Preferences.columnizerMaskList;
+                newSettings.Preferences.highlightMaskList = ownSettings.Preferences.highlightMaskList;
                 newSettings.hilightGroupList = ownSettings.hilightGroupList;
-                newSettings.preferences.toolEntries = ownSettings.preferences.toolEntries;
+                newSettings.Preferences.toolEntries = ownSettings.Preferences.toolEntries;
             }
             else
             {
@@ -380,11 +380,11 @@ namespace LogExpert.Config
 
             if ((flags & ExportImportFlags.ColumnizerMasks) == ExportImportFlags.ColumnizerMasks)
             {
-                newSettings.preferences.columnizerMaskList = ReplaceOrKeepExisting(flags, ownSettings.preferences.columnizerMaskList, importSettings.preferences.columnizerMaskList);
+                newSettings.Preferences.columnizerMaskList = ReplaceOrKeepExisting(flags, ownSettings.Preferences.columnizerMaskList, importSettings.Preferences.columnizerMaskList);
             }
             if ((flags & ExportImportFlags.HighlightMasks) == ExportImportFlags.HighlightMasks)
             {
-                newSettings.preferences.highlightMaskList = ReplaceOrKeepExisting(flags, ownSettings.preferences.highlightMaskList, importSettings.preferences.highlightMaskList);
+                newSettings.Preferences.highlightMaskList = ReplaceOrKeepExisting(flags, ownSettings.Preferences.highlightMaskList, importSettings.Preferences.highlightMaskList);
             }
             if ((flags & ExportImportFlags.HighlightSettings) == ExportImportFlags.HighlightSettings)
             {
@@ -392,7 +392,7 @@ namespace LogExpert.Config
             }
             if ((flags & ExportImportFlags.ToolEntries) == ExportImportFlags.ToolEntries)
             {
-                newSettings.preferences.toolEntries = ReplaceOrKeepExisting(flags, ownSettings.preferences.toolEntries, importSettings.preferences.toolEntries);
+                newSettings.Preferences.toolEntries = ReplaceOrKeepExisting(flags, ownSettings.Preferences.toolEntries, importSettings.Preferences.toolEntries);
             }
 
             return newSettings;

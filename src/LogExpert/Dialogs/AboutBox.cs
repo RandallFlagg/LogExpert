@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Diagnostics;
+using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
 
@@ -33,7 +34,7 @@ namespace LogExpert.Dialogs
                                            "LogExpert uses modules from:\r\n" +
                                            "http://sourceforge.net/projects/dockpanelsuite/\r\n" +
                                            "http://www.xml-rpc.net/";
-            string link = "https://github.com/zarunbal/LogExpert/";
+            string link = "https://github.com/LogExperts/LogExpert";
             linkLabelURL.Links.Add(new LinkLabel.Link(0, link.Length, link));
         }
 
@@ -119,7 +120,11 @@ namespace LogExpert.Dialogs
         private void OnLinkLabelURLClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             string target = e.Link.LinkData as string;
-            System.Diagnostics.Process.Start(target);
+            Process.Start(new ProcessStartInfo
+            {
+                UseShellExecute = true,
+                FileName = target,
+            });
         }
 
         #endregion

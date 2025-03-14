@@ -102,7 +102,7 @@ namespace LogExpert.Classes.Log
 
         public int PollInterval
         {
-            get { return ConfigManager.Settings.preferences.pollingInterval; }
+            get { return ConfigManager.Settings.Preferences.pollingInterval; }
         }
 
         public long LengthWithoutRetry
