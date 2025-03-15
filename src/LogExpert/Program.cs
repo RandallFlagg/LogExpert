@@ -106,7 +106,7 @@ namespace LogExpert
             {
                 Settings settings = ConfigManager.Settings;
 
-                Mutex mutex = new(false, "Local\\LogExpertInstanceMutex" + pId, out var isCreated);
+                using Mutex mutex = new(false, "Local\\LogExpertInstanceMutex" + pId, out var isCreated);
 
                 if (isCreated)
                 {
@@ -188,8 +188,6 @@ namespace LogExpert
                         //MessageBox.Show($"Only one instance allowed, uncheck \"View Settings => Allow only 1 Instances\" to start multiple instances!", "Logexpert");
                     }
                 }
-
-                mutex.Close();
             }
             catch (Exception ex)
             {
