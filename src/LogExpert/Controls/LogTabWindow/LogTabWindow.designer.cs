@@ -886,7 +886,8 @@ namespace LogExpert.Controls.LogTabWindow
             dockPaneStripToolWindowGradient1.InactiveTabGradient = tabGradient7;
             dockPaneStripSkin1.ToolWindowGradient = dockPaneStripToolWindowGradient1;
             dockPanelSkin1.DockPaneStripSkin = dockPaneStripSkin1;
-            dockPanel.Skin = dockPanelSkin1;
+            dockPanel.Theme = new DockPanelTheme(dockPanelSkin1);
+            //dockPanel.Theme.Skin = dockPanelSkin1;
             dockPanel.TabIndex = 14;
             dockPanel.ActiveContentChanged += OnDockPanelActiveContentChanged;
             // 

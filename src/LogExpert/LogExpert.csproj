@@ -85,9 +85,9 @@
     <PackageReference Include="NLog" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\dockpanelsuite\WinFormsUI\WinFormsUI.csproj" />
     <ProjectReference Include="..\ColumnizerLib\ColumnizerLib.csproj" />
     <ProjectReference Include="..\LogexpertgRPCService\LogexpertgRPCService.csproj" />
-    <ProjectReference Include="..\WinFormsUI\WinFormsUI.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="DebugWindow.Designer.cs" />
