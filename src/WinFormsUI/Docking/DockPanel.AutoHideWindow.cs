@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.Windows.Forms;
 using System.Drawing;
 using System.Runtime.InteropServices;
@@ -167,10 +168,13 @@ namespace WeifenLuo.WinFormsUI.Docking
 
             #region Properties
 
+            [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
             public DockPanel DockPanel { get; } = null;
 
+            [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
             public DockPane ActivePane { get; private set; } = null;
 
+            [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
             public IDockContent ActiveContent
             {
                 get { return m_activeContent; }
@@ -227,6 +231,7 @@ namespace WeifenLuo.WinFormsUI.Docking
 
             private bool FlagAnimate { get; set; } = true;
 
+            [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
             internal bool FlagDragging
             {
                 get { return m_flagDragging; }

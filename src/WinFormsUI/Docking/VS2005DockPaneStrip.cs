@@ -1628,6 +1628,7 @@ namespace WeifenLuo.WinFormsUI.Docking
 
             #region Properties
 
+            [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
             public int ImageCategory
             {
                 get { return m_imageCategory; }

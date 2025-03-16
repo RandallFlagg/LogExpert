@@ -1,9 +1,11 @@
-﻿using System.Windows.Forms;
+﻿using System.ComponentModel;
+using System.Windows.Forms;
 
 namespace LogExpert.Dialogs
 {
     public partial class AllowOnlyOneInstanceErrorDialog : Form
     {
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public bool DoNotShowThisMessageAgain { get; private set; }
 
         public AllowOnlyOneInstanceErrorDialog()

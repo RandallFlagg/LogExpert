@@ -6,6 +6,7 @@ using NLog;
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -46,6 +47,7 @@ namespace LogExpert.Dialogs
 
         #region Properties / Indexers
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public List<HilightGroup> HighlightGroupList
         {
             get => _highlightGroupList;
@@ -60,8 +62,10 @@ namespace LogExpert.Dialogs
             }
         }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public IList<IKeywordAction> KeywordActionList { get; set; }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public string PreSelectedGroupName { get; set; }
 
         private bool IsDirty => btnApply.Image == _applyButtonImage;

@@ -4,6 +4,7 @@ using NLog;
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -55,8 +56,10 @@ namespace LogExpert.Dialogs
 
         #region Properties
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public bool ReverseAlpha { get; set; }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         internal TimeSpreadCalculator TimeSpreadCalc
         {
             get => _timeSpreadCalc;

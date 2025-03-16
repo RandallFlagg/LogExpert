@@ -68,8 +68,10 @@ namespace LogExpert.Dialogs
       }
        */
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public ContextMenuStrip EditModeMenuStrip { get; set; } = null;
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public bool PaintWithOverlays { get; set; } = false;
 
         #endregion

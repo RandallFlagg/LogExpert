@@ -89,8 +89,10 @@ namespace WeifenLuo.WinFormsUI.Docking
 
         private DockPaneCaptionBase CaptionControl { get; set; }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public DockPaneStripBase TabStripControl { get; private set; }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public virtual IDockContent ActiveContent
         {
             get { return m_activeContent; }
@@ -170,10 +172,13 @@ namespace WeifenLuo.WinFormsUI.Docking
             }
         }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public virtual bool AllowDockDragAndDrop { get; set; } = true;
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         internal IDisposable AutoHidePane { get; set; } = null;
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         internal object AutoHideTabs { get; set; } = null;
 
         private object TabPageContextMenu
@@ -329,10 +334,13 @@ namespace WeifenLuo.WinFormsUI.Docking
             get { return ActiveContent == null ? string.Empty : ActiveContent.DockHandler.TabText; }
         }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public DockContentCollection Contents { get; private set; }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public DockContentCollection DisplayingContents { get; private set; }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public DockPanel DockPanel { get; private set; }
 
         private bool HasCaption
@@ -353,8 +361,10 @@ namespace WeifenLuo.WinFormsUI.Docking
             }
         }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public bool IsActivated { get; private set; } = false;
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public bool IsActiveDocumentPane { get; private set; } = false;
 
         public bool IsAutoHide
@@ -372,8 +382,10 @@ namespace WeifenLuo.WinFormsUI.Docking
             get { return ClientRectangle; }
         }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public bool IsHidden { get; private set; } = true;
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public DockWindow DockWindow
         {
             get
@@ -394,6 +406,7 @@ namespace WeifenLuo.WinFormsUI.Docking
             }
         }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public FloatWindow FloatWindow
         {
             get
@@ -414,8 +427,10 @@ namespace WeifenLuo.WinFormsUI.Docking
             }
         }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public NestedDockingStatus NestedDockingStatus { get; private set; }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public bool IsFloat { get; private set; }
 
         public INestedPanesContainer NestedPanesContainer
@@ -433,6 +448,7 @@ namespace WeifenLuo.WinFormsUI.Docking
             }
         }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public DockState DockState
         {
             get { return m_dockState; }

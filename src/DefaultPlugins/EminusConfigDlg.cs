@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace LogExpert
@@ -26,6 +27,7 @@ namespace LogExpert
 
         #region Properties
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
         public EminusConfig Config { get; set; }
 
         #endregion

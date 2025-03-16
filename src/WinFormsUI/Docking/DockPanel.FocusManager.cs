@@ -198,12 +198,16 @@ namespace WeifenLuo.WinFormsUI.Docking
 
             private bool InRefreshActiveWindow { get; set; } = false;
 
+            [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
             public DockPane ActivePane { get; private set; } = null;
 
+            [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
             public IDockContent ActiveContent { get; private set; } = null;
 
+            [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
             public DockPane ActiveDocumentPane { get; private set; } = null;
 
+            [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
             public IDockContent ActiveDocument { get; private set; } = null;
 
             #endregion

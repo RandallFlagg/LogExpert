@@ -28,10 +28,18 @@ namespace LogExpert.Dialogs
 
         #region Properties
 
+
+        #endregion
+
+        #region Properties
+
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public string ParamName { get; set; }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public string ParamValue { get; set; }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public string[] Values { get; set; }
 
         #endregion

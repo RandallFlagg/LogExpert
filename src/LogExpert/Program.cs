@@ -48,7 +48,7 @@ namespace LogExpert
             }
             catch (SecurityException se)
             {
-                MessageBox.Show("Insufficient system rights for LogExpert. Maybe you have started it from a network drive. Please start LogExpert from a local drive.\n(" + se.Message + ")", "LogExpert Error");
+                MessageBox.Show($"Insufficient system rights for LogExpert. Maybe you have started it from a network drive. Please start LogExpert from a local drive.(\"{se.Message}\")", "LogExpert Error");
             }
         }
 
@@ -73,7 +73,7 @@ namespace LogExpert
             // This loop tries to convert relative file names into absolute file names (assuming that platform file names are given).
             // It tolerates errors, to give file system plugins (e.g. sftp) a change later.
             // TODO: possibly should be moved to LocalFileSystem plugin
-            foreach (string fileArg in remainingArgs)
+            foreach (var fileArg in remainingArgs)
             {
                 try
                 {
@@ -185,7 +185,7 @@ namespace LogExpert
                             ConfigManager.Save(SettingsFlags.All);
                         }
 
-                        //MessageBox.Show($"Only one instance allowed, uncheck \"View Settings => Allow only 1 Instances\" to start multiple instances!", "Logexpert");
+                        //MessageBox.Show($"Only one instance allowed, uncheck \"View Settings => Allow only 1 Instances\" to start multiple instances!", "LogExpert");
                     }
                 }
 
@@ -212,7 +212,7 @@ namespace LogExpert
             else
             {
                 stackTrace = exceptionObject.ToString();
-                string[] lines = stackTrace.Split('\n');
+                var lines = stackTrace.Split('\n');
                 if (lines != null && lines.Length > 0)
                 {
                     errorText = lines[0];

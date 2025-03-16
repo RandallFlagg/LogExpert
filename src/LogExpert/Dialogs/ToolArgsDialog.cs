@@ -36,6 +36,7 @@ namespace LogExpert.Dialogs
 
         #region Properties
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public string Arg { get; set; }
 
         #endregion

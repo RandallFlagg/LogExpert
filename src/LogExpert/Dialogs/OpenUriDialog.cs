@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -27,6 +28,7 @@ namespace LogExpert.Dialogs
 
         public string Uri => cmbUri.Text;
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public IList<string> UriHistory { get; set; }
 
         #endregion

@@ -84,10 +84,13 @@ namespace LogExpert.Dialogs
 
         #region Properties
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public DateTime MinDateTime { get; set; } = DateTime.MinValue;
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public DateTime MaxDateTime { get; set; } = DateTime.MaxValue;
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public DragOrientations DragOrientation
         {
             get => dragOrientation;
@@ -98,8 +101,10 @@ namespace LogExpert.Dialogs
             }
         }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public Color HoverColor { get; set; }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public DateTime DateTime
         {
             get => _dateTime.Subtract(TimeSpan.FromMilliseconds(_dateTime.Millisecond));

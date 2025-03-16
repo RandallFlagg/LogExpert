@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Text.RegularExpressions;
@@ -31,6 +32,7 @@ namespace LogExpert.Dialogs
 
         #region Properties
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public bool CaseSensitive
         {
             get => _caseSensitive;
@@ -41,6 +43,7 @@ namespace LogExpert.Dialogs
             }
         }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public string Pattern
         {
             get => comboBoxRegex.Text;

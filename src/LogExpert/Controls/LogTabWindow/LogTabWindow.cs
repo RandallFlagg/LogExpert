@@ -9,6 +9,7 @@ using NLog;
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.Reflection;
 using System.Text;
@@ -287,16 +288,19 @@ namespace LogExpert.Controls.LogTabWindow
 
         #region Properties
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public LogWindow.LogWindow CurrentLogWindow
         {
             get => _currentLogWindow;
             set => ChangeCurrentLogWindow(value);
         }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public SearchParams SearchParams { get; private set; } = new SearchParams();
 
         public Preferences Preferences => ConfigManager.Settings.Preferences;
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public List<HilightGroup> HilightGroupList { get; private set; } = [];
 
         //public Settings Settings
@@ -304,8 +308,10 @@ namespace LogExpert.Controls.LogTabWindow
         //  get { return ConfigManager.Settings; }
         //}
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public ILogExpertProxy LogExpertProxy { get; set; }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         internal static StaticLogTabWindowData StaticData { get; set; } = new StaticLogTabWindowData();
 
         #endregion

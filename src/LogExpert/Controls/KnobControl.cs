@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using NLog;
@@ -47,10 +48,13 @@ namespace LogExpert.Controls
 
         #region Properties
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public int MinValue { get; set; }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public int MaxValue { get; set; }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public int Value
         {
             get { return this.value; }
@@ -67,6 +71,7 @@ namespace LogExpert.Controls
             get { return this.MaxValue - this.MinValue; }
         }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public int DragSensitivity { get; set; } = 3;
 
         #endregion

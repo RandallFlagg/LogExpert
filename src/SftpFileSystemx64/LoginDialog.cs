@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace SftpFileSystem
@@ -40,8 +41,10 @@ namespace SftpFileSystem
 
         #region Properties / Indexers
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public string Password { get; private set; }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public string Username
         {
             get => _username;
