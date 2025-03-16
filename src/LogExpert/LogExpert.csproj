@@ -1,12 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net8.0-windows</TargetFramework>
-    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <TargetFramework>net9.0-windows</TargetFramework>
+    <EnableWindowsTargeting>false</EnableWindowsTargeting>
     <OutputType>WinExe</OutputType>
     <ApplicationIcon>Resources\logexpert.ico</ApplicationIcon>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <UseWindowsForms>true</UseWindowsForms>
-    <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
+    <ImportWindowsDesktopTargets>false</ImportWindowsDesktopTargets>
     <DocumentationFile>$(SolutionDir)..\bin\Docs\LogExpert.xml</DocumentationFile>
 	<IsTestProject>false</IsTestProject>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>

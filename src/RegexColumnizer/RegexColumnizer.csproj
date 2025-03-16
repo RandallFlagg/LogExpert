@@ -1,12 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net8.0-windows</TargetFramework>
-    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <TargetFramework>net9.0</TargetFramework>
+    <EnableWindowsTargeting>false</EnableWindowsTargeting>
     <OutputType>Library</OutputType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <UseWindowsForms>true</UseWindowsForms>
+    <UseWindowsForms>false</UseWindowsForms>
 	<IsTestProject>false</IsTestProject>
-    <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
+    <ImportWindowsDesktopTargets>false</ImportWindowsDesktopTargets>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <OutputPath>$(SolutionDir)..\bin\$(Configuration)\plugins</OutputPath>
   </PropertyGroup>
@@ -36,6 +36,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Core.System.Windows.Forms" />
     <PackageReference Include="Microsoft.CSharp" />
     <PackageReference Include="System.Data.DataSetExtensions" />
   </ItemGroup>

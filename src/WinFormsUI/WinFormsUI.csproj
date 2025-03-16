@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net8.0-windows</TargetFramework>
-    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <TargetFramework>net9.0</TargetFramework>
+    <EnableWindowsTargeting>false</EnableWindowsTargeting>
     <OutputType>Library</OutputType>
     <RootNamespace>WeifenLuo.WinFormsUI</RootNamespace>
     <AssemblyName>WeifenLuo.WinFormsUI.Docking</AssemblyName>
@@ -28,8 +28,8 @@
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <UseWindowsForms>true</UseWindowsForms>
-    <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
+    <UseWindowsForms>false</UseWindowsForms>
+    <ImportWindowsDesktopTargets>false</ImportWindowsDesktopTargets>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <OutputPath>$(SolutionDir)..\bin\$(Configuration)</OutputPath>
     <NoWarn>CA1416;</NoWarn>
@@ -109,5 +109,8 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Docking\DockPanel.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Core.System.Windows.Forms" />
   </ItemGroup>
 </Project>
