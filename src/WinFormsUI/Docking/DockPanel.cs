@@ -22,7 +22,7 @@ namespace WeifenLuo.WinFormsUI.Docking
     public delegate IDockContent DeserializeDockContent(string persistString);
 
     [LocalizedDescription("DockPanel_Description")]
-    [Designer(typeof(System.Windows.Forms.Design.ControlDesigner))]
+    // [Designer(typeof(System.Windows.Forms.Design.ControlDesigner))] //TODO: This is disabled because of linux. need to create a workaround?
     [ToolboxBitmap(typeof(resfinder), "WeifenLuo.WinFormsUI.Docking.DockPanel.bmp")]
     [DefaultProperty("DocumentStyle")]
     [DefaultEvent("ActiveContentChanged")]
