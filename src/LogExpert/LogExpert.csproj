@@ -83,11 +83,15 @@
     <PackageReference Include="System.Text.Encoding" />
     <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="NLog" />
+    <PackageReference Include="Core.System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ColumnizerLib\ColumnizerLib.csproj" />
     <ProjectReference Include="..\LogexpertgRPCService\LogexpertgRPCService.csproj" />
     <ProjectReference Include="..\WinFormsUI\WinFormsUI.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition=" '$(OS)' != 'Windows_NT' and '$(OS_PLATFORM)' == 'Linux' ">
+<!--    <ProjectReference Include="..\..\External\System.Windows.Forms\System.Windows.Forms\System.Windows.Forms.csproj" />-->
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="DebugWindow.Designer.cs" />
