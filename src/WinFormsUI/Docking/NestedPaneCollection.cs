@@ -158,7 +158,9 @@ namespace WeifenLuo.WinFormsUI.Docking
                 FloatWindow floatWindow = (FloatWindow) Container;
                 if (!floatWindow.Disposing && !floatWindow.IsDisposed)
                 {
+#if WINDOWS
                     NativeMethods.PostMessage(((FloatWindow) Container).Handle, FloatWindow.WM_CHECKDISPOSE, 0, 0);
+#endif
                 }
             }
         }

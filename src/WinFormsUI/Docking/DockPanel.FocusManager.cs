@@ -229,14 +229,18 @@ namespace WeifenLuo.WinFormsUI.Docking
                 }
                 if (ContentContains(content, handler.ActiveWindowHandle))
                 {
+#if WINDOWS
                     NativeMethods.SetFocus(handler.ActiveWindowHandle);
+#endif
                 }
                 if (!handler.Form.ContainsFocus)
                 {
                     if (!handler.Form.SelectNextControl(handler.Form.ActiveControl, true, true, true, true))
                         // Since DockContent Form is not selectalbe, use Win32 SetFocus instead
                     {
+#if WINDOWS
                         NativeMethods.SetFocus(handler.Form.Handle);
+#endif
                     }
                 }
             }
@@ -506,6 +510,7 @@ namespace WeifenLuo.WinFormsUI.Docking
 
             private void SetActivePane()
             {
+#if WINDOWS
                 DockPane value = GetPaneFromHandle(NativeMethods.GetFocus());
                 if (ActivePane == value)
                 {
@@ -523,6 +528,7 @@ namespace WeifenLuo.WinFormsUI.Docking
                 {
                     ActivePane.SetIsActivated(true);
                 }
+#endif
             }
 
             private void SetActiveDocumentPane()
@@ -623,9 +629,9 @@ namespace WeifenLuo.WinFormsUI.Docking
             private class LocalWindowsHook : IDisposable
             {
                 #region Fields
-
+#if WINDOWS
                 private readonly NativeMethods.HookProc m_filterFunc = null;
-
+#endif
                 // Internal properties
                 private IntPtr m_hHook = IntPtr.Zero;
 
@@ -638,7 +644,9 @@ namespace WeifenLuo.WinFormsUI.Docking
                 public LocalWindowsHook(Win32.HookType hook)
                 {
                     m_hookType = hook;
+#if WINDOWS
                     m_filterFunc = new NativeMethods.HookProc(this.CoreHookProc);
+#endif
                 }
 
                 #endregion
@@ -664,7 +672,9 @@ namespace WeifenLuo.WinFormsUI.Docking
                 {
                     if (code < 0)
                     {
+#if WINDOWS
                         return NativeMethods.CallNextHookEx(m_hHook, code, wParam, lParam);
+#endif
                     }
 
                     // Let clients determine what to do
@@ -675,7 +685,11 @@ namespace WeifenLuo.WinFormsUI.Docking
                     OnHookInvoked(e);
 
                     // Yield to the next hook in the chain
+                    #if WINDOWS
                     return NativeMethods.CallNextHookEx(m_hHook, code, wParam, lParam);
+#else
+                    return IntPtr.Zero;
+#endif
                 }
 
                 // Install the hook
@@ -685,9 +699,10 @@ namespace WeifenLuo.WinFormsUI.Docking
                     {
                         Uninstall();
                     }
-
+#if WINDOWS
                     int threadId = NativeMethods.GetCurrentThreadId();
                     m_hHook = NativeMethods.SetWindowsHookEx(m_hookType, m_filterFunc, IntPtr.Zero, threadId);
+#endif
                 }
 
                 // Uninstall the hook
@@ -695,7 +710,9 @@ namespace WeifenLuo.WinFormsUI.Docking
                 {
                     if (m_hHook != IntPtr.Zero)
                     {
+#if WINDOWS
                         NativeMethods.UnhookWindowsHookEx(m_hHook);
+#endif
                         m_hHook = IntPtr.Zero;
                     }
                 }

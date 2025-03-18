@@ -314,6 +314,7 @@ namespace WeifenLuo.WinFormsUI.Docking
                     Form.FormBorderStyle = FormBorderStyle.None;
                     Form.ShowInTaskbar = false;
                     Form.WindowState = FormWindowState.Normal;
+                    #if WINDOWS
                     NativeMethods.SetWindowPos(Form.Handle, IntPtr.Zero, 0, 0, 0, 0,
                         Win32.FlagsSetWindowPos.SWP_NOACTIVATE |
                         Win32.FlagsSetWindowPos.SWP_NOMOVE |
@@ -321,6 +322,7 @@ namespace WeifenLuo.WinFormsUI.Docking
                         Win32.FlagsSetWindowPos.SWP_NOZORDER |
                         Win32.FlagsSetWindowPos.SWP_NOOWNERZORDER |
                         Win32.FlagsSetWindowPos.SWP_FRAMECHANGED);
+#endif
                 }
             }
         }

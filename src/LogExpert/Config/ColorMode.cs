@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Drawing;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using Exception = Mono.WebBrowser.Exception;
 
 namespace LogExpert.Config
 {
@@ -80,12 +82,46 @@ namespace LogExpert.Config
         }
 
         #region TitleBarDarkMode
+        #if WINDOWS2
         [DllImport("dwmapi.dll")]
         private static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, ref int attrValue, int attrSize);
+        #elif LINUX_WAYLAND
+        [DllImport("libwayland-client.so")]
+    private static extern IntPtr wl_display_connect(string name);
+
+    [DllImport("libwayland-client.so")]
+    private static extern void wl_display_disconnect(IntPtr display);
+
+    [DllImport("libwayland-client.so")]
+    private static extern IntPtr wl_registry_bind(IntPtr registry, uint name, IntPtr interfacePointer, uint version);
+
+    [DllImport("libwayland-client.so")]
+    private static extern IntPtr wl_surface_create(IntPtr compositor);
+        #endif
 
         private const int DWMWA_USE_IMMERSIVE_DARK_MODE_BEFORE_20H1 = 19;
         private const int DWMWA_USE_IMMERSIVE_DARK_MODE = 20;
 
+            #if LINUX_WAYLAND
+        // This is a hypothetical function to set an attribute
+        // You would need to implement the logic by interacting with Wayland protocols.
+        private static bool SetWaylandWindowAttribute(IntPtr handle, int attribute, ref int value, int size)
+        {
+            // Hypothetical implementation
+            // In Wayland, you'd need to interact with a protocol, such as xdg_toplevel or others.
+
+            Console.WriteLine($"Setting attribute {attribute} to value {value}");
+            // Simulate success
+            return true;
+        }
+
+        public static bool SetDarkMode(IntPtr handle)
+        {
+            int useDarkMode = 1; // Enable dark mode
+            const int darkModeAttribute = 20; // Hypothetical attribute ID
+            return SetWaylandWindowAttribute(handle, darkModeAttribute, ref useDarkMode, sizeof(int));
+        }
+        #endif
         public static bool UseImmersiveDarkMode(IntPtr handle, bool enabled)
         {
 
@@ -96,7 +132,27 @@ namespace LogExpert.Config
             }
 
             int useImmersiveDarkMode = enabled ? 1 : 0;
+            #if WINDOWS2
             return DwmSetWindowAttribute(handle, (int)attribute, ref useImmersiveDarkMode, sizeof(int)) == 0;
+            #elif LINUX_WAYLAND
+            IntPtr display = wl_display_connect(null);
+        if (display == IntPtr.Zero)
+        {
+            Console.WriteLine("Failed to connect to Wayland display!");
+            throw new ApplicationException("Failed to connect to Wayland display!");
+        }
+
+        Console.WriteLine("Connected to Wayland display!");
+
+        // Use a hypothetical handle (replace with actual Wayland surface handle)
+        IntPtr windowHandle = IntPtr.Zero;
+
+        var result = SetDarkMode(windowHandle);
+
+        wl_display_disconnect(display);
+            
+            return result;
+            #endif
 
         }
 

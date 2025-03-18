@@ -5,7 +5,7 @@ using System.Windows.Forms;
 
 namespace WeifenLuo.WinFormsUI.Docking
 {
-    public class FloatWindow : Form, INestedPanesContainer, IDockDragSource
+    public class FloatWindow : Form, INestedPanesContainer, IDockDragSource, IMessageFilter
     {
         #region Fields
 
@@ -145,11 +145,13 @@ namespace WeifenLuo.WinFormsUI.Docking
 
                 Point ptMouse = Control.MousePosition;
                 uint lParam = Win32Helper.MakeLong(ptMouse.X, ptMouse.Y);
+#if WINDOWS
                 if (NativeMethods.SendMessage(Handle, (int) Win32.Msgs.WM_NCHITTEST, 0, lParam) ==
                     (uint) Win32.HitTest.HTCAPTION)
                 {
                     dockOutline.Show(VisibleNestedPanes[0], -1);
                 }
+#endif
             }
         }
 
@@ -220,15 +222,16 @@ namespace WeifenLuo.WinFormsUI.Docking
             base.SetBoundsCore(x, y, width, height, specified);
         }
 
-        protected override void WndProc(ref Message m)
+        //protected override void WndProc(ref Message m)
+        bool System.Windows.Forms.IMessageFilter.PreFilterMessage(ref Message m)
         {
             if (m.Msg == (int) Win32.Msgs.WM_NCLBUTTONDOWN)
             {
                 if (IsDisposed)
                 {
-                    return;
+                    return false;
                 }
-
+#if WINDOWS
                 uint result = NativeMethods.SendMessage(this.Handle, (int) Win32.Msgs.WM_NCHITTEST, 0, (uint) m.LParam);
                 if (result == 2 && DockPanel.AllowEndUserDocking && this.AllowEndUserDocking) // HITTEST_CAPTION
                 {
@@ -240,7 +243,7 @@ namespace WeifenLuo.WinFormsUI.Docking
                     base.WndProc(ref m);
                 }
 
-                return;
+                return false;
             }
             else if (m.Msg == (int) Win32.Msgs.WM_NCRBUTTONDOWN)
             {
@@ -251,19 +254,19 @@ namespace WeifenLuo.WinFormsUI.Docking
                     if (theOnlyPane != null && theOnlyPane.ActiveContent != null)
                     {
                         theOnlyPane.ShowTabPageContextMenu(this, PointToClient(Control.MousePosition));
-                        return;
+                        return false;
                     }
                 }
-
+#endif
                 base.WndProc(ref m);
-                return;
+                return false;
             }
             else if (m.Msg == (int) Win32.Msgs.WM_CLOSE)
             {
                 if (NestedPanes.Count == 0)
                 {
                     base.WndProc(ref m);
-                    return;
+                    return false;
                 }
 
                 for (int i = NestedPanes.Count - 1; i >= 0; i--)
@@ -293,17 +296,19 @@ namespace WeifenLuo.WinFormsUI.Docking
                     }
                 }
 
-                return;
+                return false;
             }
             else if (m.Msg == (int) Win32.Msgs.WM_NCLBUTTONDBLCLK)
             {
+#if WINDOWS
                 uint result = NativeMethods.SendMessage(this.Handle, (int) Win32.Msgs.WM_NCHITTEST, 0, (uint) m.LParam);
+
                 if (result != 2) // HITTEST_CAPTION
                 {
                     base.WndProc(ref m);
-                    return;
+                    return false;
                 }
-
+#endif
                 DockPanel.SuspendLayout(true);
 
                 // Restore to panel
@@ -318,7 +323,7 @@ namespace WeifenLuo.WinFormsUI.Docking
 
 
                 DockPanel.ResumeLayout(true, true);
-                return;
+                return false;
             }
             else if (m.Msg == WM_CHECKDISPOSE)
             {
@@ -327,10 +332,11 @@ namespace WeifenLuo.WinFormsUI.Docking
                     Dispose();
                 }
 
-                return;
+                return false;
             }
 
             base.WndProc(ref m);
+            return false;
         }
 
         #endregion

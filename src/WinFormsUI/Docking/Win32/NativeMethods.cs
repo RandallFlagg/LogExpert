@@ -8,6 +8,7 @@ namespace WeifenLuo.WinFormsUI.Docking
 {
     internal static class NativeMethods
     {
+        #if WINDOWS
         #region Delegates
 
         public delegate IntPtr HookProc(int code, IntPtr wParam, IntPtr lParam);
@@ -70,5 +71,6 @@ namespace WeifenLuo.WinFormsUI.Docking
         public static extern IntPtr CallNextHookEx(IntPtr hhook, int code, IntPtr wParam, IntPtr lParam);
 
         #endregion
+#endif
     }
 }

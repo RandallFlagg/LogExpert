@@ -60,7 +60,11 @@ namespace WeifenLuo.WinFormsUI.Docking
             }
             else
             {
+                #if WINDOWS
                 NativeMethods.ShowWindow(Handle, (int) Win32.ShowWindowStyles.SW_SHOWNOACTIVATE);
+                #else
+                Visible = true;
+                #endif
             }
         }
 
