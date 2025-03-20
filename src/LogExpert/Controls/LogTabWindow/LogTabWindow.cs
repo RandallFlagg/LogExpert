@@ -18,7 +18,7 @@ using System.Windows.Forms;
 
 namespace LogExpert.Controls.LogTabWindow
 {
-    public partial class LogTabWindow : Form
+    internal partial class LogTabWindow : Form
     {
         #region Fields
 
@@ -46,7 +46,6 @@ namespace LogExpert.Controls.LogTabWindow
 
         private readonly EventWaitHandle _statusLineEventHandle = new AutoResetEvent(false);
         private readonly EventWaitHandle _statusLineEventWakeupHandle = new ManualResetEvent(false);
-        private readonly object _statusLineLock = new();
         private readonly Brush _syncLedBrush;
         private readonly StringFormat _tabStringFormat = new();
         private readonly Brush[] _tailLedBrush = new Brush[3];
@@ -56,8 +55,6 @@ namespace LogExpert.Controls.LogTabWindow
         private LogWindow.LogWindow _currentLogWindow;
         private bool _firstBookmarkWindowShow = true;
 
-        private StatusLineEventArgs _lastStatusLineEvent;
-
         private Thread _ledThread;
 
         //Settings settings;
@@ -66,7 +63,6 @@ namespace LogExpert.Controls.LogTabWindow
 
         private bool _skipEvents;
 
-        private Thread _statusLineThread;
         private bool _wasMaximized;
 
         #endregion
@@ -273,21 +269,13 @@ namespace LogExpert.Controls.LogTabWindow
 
         private delegate void FileRespawnedDelegate(LogWindow.LogWindow logWin);
 
-        private delegate void GuiStateUpdateWorkerDelegate(GuiStateArgs e);
-
         public delegate void HighlightSettingsChangedEventHandler(object sender, EventArgs e);
 
-        private delegate void LoadFileDelegate(string fileName, EncodingOptions encodingOptions);
-
         private delegate void LoadMultiFilesDelegate(string[] fileName, EncodingOptions encodingOptions);
-
-        private delegate void ProgressBarEventFx(ProgressEventArgs e);
 
         private delegate void SetColumnizerFx(ILogLineColumnizer columnizer);
 
         private delegate void SetTabIconDelegate(LogWindow.LogWindow logWindow, Icon icon);
-
-        private delegate void StatusLineEventFx(StatusLineEventArgs e);
 
         #endregion
 
@@ -307,7 +295,7 @@ namespace LogExpert.Controls.LogTabWindow
 
         public SearchParams SearchParams { get; private set; } = new SearchParams();
 
-        public Preferences Preferences => ConfigManager.Settings.preferences;
+        public Preferences Preferences => ConfigManager.Settings.Preferences;
 
         public List<HilightGroup> HilightGroupList { get; private set; } = [];
 

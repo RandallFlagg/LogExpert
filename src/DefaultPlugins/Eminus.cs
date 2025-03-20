@@ -6,7 +6,9 @@ using System.Net.Sockets;
 using System.IO;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
+using System.Runtime.Versioning;
 
+[assembly: SupportedOSPlatform("windows")]
 namespace LogExpert
 {
     public class Eminus : IContextMenuEntry, ILogExpertPluginConfigurator
@@ -241,10 +243,10 @@ namespace LogExpert
             return true;
         }
 
-        public void ShowConfigForm(Panel panel)
+        public void ShowConfigForm(object panel)
         {
             dlg = new EminusConfigDlg(tmpConfig);
-            dlg.Parent = panel;
+            dlg.Parent = (Panel)panel;
             dlg.Show();
         }
 
@@ -253,11 +255,11 @@ namespace LogExpert
         /// is pressed (HasEmbeddedForm() must return false for this).
         /// </summary>
         /// <param name="owner"></param>
-        public void ShowConfigDialog(Form owner)
+        public void ShowConfigDialog(object owner)
         {
             dlg = new EminusConfigDlg(tmpConfig);
             dlg.TopLevel = true;
-            dlg.Owner = owner;
+            dlg.Owner = (Form)owner;
             dlg.ShowDialog();
             dlg.ApplyChanges();
         }

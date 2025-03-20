@@ -1,9 +1,9 @@
 ﻿using LogExpert;
-
 using Moq;
-
 using NUnit.Framework;
+using System.Runtime.Versioning;
 
+[assembly: SupportedOSPlatform("windows")]
 namespace RegexColumnizer.UnitTests
 {
     [TestFixture]

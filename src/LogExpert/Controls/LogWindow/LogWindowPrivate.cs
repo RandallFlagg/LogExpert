@@ -25,7 +25,7 @@ using System.Windows.Forms;
 
 namespace LogExpert.Controls.LogWindow
 {
-    public partial class LogWindow
+    internal partial class LogWindow
     {
         #region Private Methods
 
@@ -642,8 +642,7 @@ namespace LogExpert.Controls.LogWindow
                         }
                     }
 
-                    UpdateGridCallback callback = UpdateGrid;
-                    Invoke(callback, [e]);
+                    Invoke(UpdateGrid, [e]);
                     CheckFilterAndHighlight(e);
                     _timeSpreadCalc.SetLineCount(e.LineCount);
                 }
@@ -897,7 +896,7 @@ namespace LogExpert.Controls.LogWindow
                 if (entry.IsActionEntry && entry.ActionEntry.PluginName != null)
                 {
                     IKeywordAction plugin =
-                        PluginRegistry.GetInstance().FindKeywordActionPluginByName(entry.ActionEntry.PluginName);
+                        PluginRegistry.Instance.FindKeywordActionPluginByName(entry.ActionEntry.PluginName);
                     if (plugin != null)
                     {
                         ActionPluginExecuteFx fx = plugin.Execute;
@@ -1582,7 +1581,6 @@ namespace LogExpert.Controls.LogWindow
 
         private int Search(SearchParams searchParams)
         {
-            UpdateProgressBarFx progressFx = UpdateProgressBar;
             if (searchParams.searchText == null)
             {
                 return -1;
@@ -1680,7 +1678,7 @@ namespace LogExpert.Controls.LogWindow
                     {
                         if (!Disposing)
                         {
-                            Invoke(progressFx, [count]);
+                            Invoke(UpdateProgressBar, [count]);
                         }
                     }
                     catch (ObjectDisposedException ex) // can occur when closing the app while searching
@@ -1968,7 +1966,7 @@ namespace LogExpert.Controls.LogWindow
             _filterParams.lowerSearchText = text.ToLower();
             ConfigManager.Settings.filterHistoryList.Remove(text);
             ConfigManager.Settings.filterHistoryList.Insert(0, text);
-            int maxHistory = ConfigManager.Settings.preferences.maximumFilterEntries;
+            int maxHistory = ConfigManager.Settings.Preferences.maximumFilterEntries;
 
             if (ConfigManager.Settings.filterHistoryList.Count > maxHistory)
             {
@@ -2043,7 +2041,7 @@ namespace LogExpert.Controls.LogWindow
             Settings settings = ConfigManager.Settings;
 
             //FilterFx fx = settings.preferences.multiThreadFilter ? MultiThreadedFilter : new FilterFx(Filter);
-            FilterFxAction = settings.preferences.multiThreadFilter ? MultiThreadedFilter : Filter;
+            FilterFxAction = settings.Preferences.multiThreadFilter ? MultiThreadedFilter : Filter;
 
             //Task.Run(() => fx.Invoke(_filterParams, _filterResultList, _lastFilterLinesList, _filterHitList));
             Task filterFxActionTask = Task.Run(() => Filter(_filterParams, _filterResultList, _lastFilterLinesList, _filterHitList));
@@ -2579,8 +2577,6 @@ namespace LogExpert.Controls.LogWindow
             {
                 return;
             }
-
-            _selectionChangedTrigger.Trigger();
         }
 
         private void UpdateFilterHistoryFromSettings()
@@ -2629,8 +2625,7 @@ namespace LogExpert.Controls.LogWindow
 
         private void SendStatusLineUpdate()
         {
-            //OnStatusLine(this.statusEventArgs);
-            _statusLineTrigger.Trigger();
+            OnStatusLine(_statusEventArgs);
         }
 
         private void ShowAdvancedFilterPanel(bool show)
@@ -2793,7 +2788,7 @@ namespace LogExpert.Controls.LogWindow
         {
             newWin.WaitForLoadingFinished();
             ILogLineColumnizer columnizer = ColumnizerPicker.FindColumnizerByName(persistenceData.columnizerName,
-                PluginRegistry.GetInstance().RegisteredColumnizers);
+                PluginRegistry.Instance.RegisteredColumnizers);
             if (columnizer != null)
             {
                 SetColumnizerFx fx = newWin.ForceColumnizer;

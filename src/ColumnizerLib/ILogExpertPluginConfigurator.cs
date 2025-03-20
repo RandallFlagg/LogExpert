@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Windows.Forms;
 
 namespace LogExpert
 {
@@ -46,7 +45,7 @@ namespace LogExpert
         /// </summary>
         /// <seealso cref="HasEmbeddedForm"/>
         /// <param name="parentPanel">Set this panel as the parent for you config dialog.</param>
-        void ShowConfigForm(Panel parentPanel);
+        void ShowConfigForm(object parentPanel);
 
         /// <summary>
         /// Implement this function if your plugin uses an own top level dialog for the configuration (modal config dialog).
@@ -60,7 +59,7 @@ namespace LogExpert
         /// </summary>
         /// <seealso cref="HasEmbeddedForm"/>
         /// <param name="owner">Set the given Form as the owner of your dialog.</param>
-        void ShowConfigDialog(Form owner);
+        void ShowConfigDialog(object owner);
 
         /// <summary>
         /// This function is called when the user selects another plugin in the list. You should retrieve

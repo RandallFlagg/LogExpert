@@ -20,7 +20,7 @@ using System.Windows.Forms;
 
 namespace LogExpert.Controls.LogWindow
 {
-    public partial class LogWindow
+    internal partial class LogWindow
     {
         #region Public methods
 
@@ -81,8 +81,10 @@ namespace LogExpert.Controls.LogWindow
 
                 try
                 {
-                    _logFileReader = new LogfileReader(fileName, EncodingOptions, IsMultiFile, Preferences.bufferCount, Preferences.linesPerBuffer, _multiFileOptions);
-                    _logFileReader.UseNewReader = !Preferences.useLegacyReader;
+                    _logFileReader = new LogfileReader(fileName, EncodingOptions, IsMultiFile, Preferences.bufferCount, Preferences.linesPerBuffer, _multiFileOptions)
+                    {
+                        UseNewReader = !Preferences.useLegacyReader
+                    };
                 }
                 catch (LogFileException lfe)
                 {
@@ -268,9 +270,6 @@ namespace LogExpert.Controls.LogWindow
             StopTimespreadThread();
             StopTimestampSyncThread();
             StopLogEventWorkerThread();
-            _statusLineTrigger.Stop();
-            _selectionChangedTrigger.Stop();
-            //StopFilterUpdateWorkerThread();
             _shouldCancel = true;
 
             if (_logFileReader != null)
@@ -321,7 +320,7 @@ namespace LogExpert.Controls.LogWindow
 
         public void PreselectColumnizer(string columnizerName)
         {
-            ILogLineColumnizer columnizer = ColumnizerPicker.FindColumnizerByName(columnizerName, PluginRegistry.GetInstance().RegisteredColumnizers);
+            ILogLineColumnizer columnizer = ColumnizerPicker.FindColumnizerByName(columnizerName, PluginRegistry.Instance.RegisteredColumnizers);
             PreSelectColumnizer(ColumnizerPicker.CloneColumnizer(columnizer));
         }
 
@@ -863,7 +862,7 @@ namespace LogExpert.Controls.LogWindow
             if (filterGridView.Focused)
             {
                 gridView = filterGridView;
-                if (gridView.CurrentCellAddress == null || gridView.CurrentCellAddress.Y == -1)
+                if (gridView.CurrentCellAddress.Y == -1)
                 {
                     return;
                 }
@@ -873,7 +872,7 @@ namespace LogExpert.Controls.LogWindow
             else
             {
                 gridView = dataGridView;
-                if (gridView.CurrentCellAddress == null || gridView.CurrentCellAddress.Y == -1)
+                if (gridView.CurrentCellAddress.Y == -1)
                 {
                     return;
                 }

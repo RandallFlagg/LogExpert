@@ -22,7 +22,7 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace LogExpert.Controls.LogTabWindow
 {
-    public partial class LogTabWindow
+    internal partial class LogTabWindow
     {
         #region Private Methods
 
@@ -68,7 +68,7 @@ namespace LogExpert.Controls.LogTabWindow
             _bookmarkWindow = new BookmarkWindow();
             _bookmarkWindow.HideOnClose = true;
             _bookmarkWindow.ShowHint = DockState.DockBottom;
-            _bookmarkWindow.PreferencesChanged(ConfigManager.Settings.preferences, false, SettingsFlags.All);
+            _bookmarkWindow.PreferencesChanged(ConfigManager.Settings.Preferences, false, SettingsFlags.All);
             _bookmarkWindow.VisibleChanged += OnBookmarkWindowVisibleChanged;
             _firstBookmarkWindowShow = true;
         }
@@ -120,15 +120,15 @@ namespace LogExpert.Controls.LogTabWindow
 
         private void FillDefaultEncodingFromSettings(EncodingOptions encodingOptions)
         {
-            if (ConfigManager.Settings.preferences.defaultEncoding != null)
+            if (ConfigManager.Settings.Preferences.defaultEncoding != null)
             {
                 try
                 {
-                    encodingOptions.DefaultEncoding = Encoding.GetEncoding(ConfigManager.Settings.preferences.defaultEncoding);
+                    encodingOptions.DefaultEncoding = Encoding.GetEncoding(ConfigManager.Settings.Preferences.defaultEncoding);
                 }
                 catch (ArgumentException)
                 {
-                    _logger.Warn("Encoding " + ConfigManager.Settings.preferences.defaultEncoding + " is not a valid encoding");
+                    _logger.Warn("Encoding " + ConfigManager.Settings.Preferences.defaultEncoding + " is not a valid encoding");
                     encodingOptions.DefaultEncoding = null;
                 }
             }
@@ -264,7 +264,7 @@ namespace LogExpert.Controls.LogTabWindow
 
                 if (!string.IsNullOrEmpty(persistenceData.fileName))
                 {
-                    IFileSystemPlugin fs = PluginRegistry.GetInstance().FindFileSystemForUri(persistenceData.fileName);
+                    IFileSystemPlugin fs = PluginRegistry.Instance.FindFileSystemForUri(persistenceData.fileName);
                     if (fs != null && !fs.GetType().Equals(typeof(LocalFileSystem)))
                     {
                         return persistenceData.fileName;
@@ -330,7 +330,7 @@ namespace LogExpert.Controls.LogTabWindow
         {
             HighlightDialog dlg = new()
             {
-                KeywordActionList = PluginRegistry.GetInstance().RegisteredKeywordActions,
+                KeywordActionList = PluginRegistry.Instance.RegisteredKeywordActions,
                 Owner = this,
                 TopMost = TopMost,
                 HighlightGroupList = HilightGroupList,
@@ -426,7 +426,7 @@ namespace LogExpert.Controls.LogTabWindow
                 return;
             }
 
-            MultiFileOption option = ConfigManager.Settings.preferences.multiFileOption;
+            MultiFileOption option = ConfigManager.Settings.Preferences.multiFileOption;
             if (option == MultiFileOption.Ask)
             {
                 MultiLoadRequestDialog dlg = new();
@@ -622,7 +622,7 @@ namespace LogExpert.Controls.LogTabWindow
             cellSelectModeToolStripMenuItem.Checked = e.CellSelectMode;
             RefreshEncodingMenuBar(e.CurrentEncoding);
 
-            if (e.TimeshiftPossible && ConfigManager.Settings.preferences.timestampControl)
+            if (e.TimeshiftPossible && ConfigManager.Settings.Preferences.timestampControl)
             {
                 dragControlDateTime.MinDateTime = e.MinTimestamp;
                 dragControlDateTime.MaxDateTime = e.MaxTimestamp;
@@ -664,58 +664,28 @@ namespace LogExpert.Controls.LogTabWindow
             }
         }
 
-        private void StatusLineThreadFunc()
-        {
-            int timeSum = 0;
-            int waitTime = 30;
-            while (!_shouldStop)
-            {
-                _statusLineEventWakeupHandle.WaitOne();
-                _statusLineEventWakeupHandle.Reset();
-                if (!_shouldStop)
-                {
-                    bool signaled = false;
-                    do
-                    {
-                        //this.statusLineEventHandle.Reset();
-                        signaled = _statusLineEventHandle.WaitOne(waitTime, true);
-                        timeSum += waitTime;
-                    } while (signaled && timeSum < 900 && !_shouldStop);
-
-                    if (!_shouldStop)
-                    {
-                        timeSum = 0;
-                        try
-                        {
-                            StatusLineEventArgs e;
-                            lock (_statusLineLock)
-                            {
-                                e = _lastStatusLineEvent.Clone();
-                            }
-
-                            BeginInvoke(new StatusLineEventFx(StatusLineEventWorker), e);
-                        }
-                        catch (ObjectDisposedException)
-                        {
-                            //TODO needs to be handled or removed
-                        }
-                    }
-                }
-            }
-        }
-
         private void StatusLineEventWorker(StatusLineEventArgs e)
         {
-            //_logger.logDebug("StatusLineEvent: text = " + e.StatusText);
-            labelStatus.Text = e.StatusText;
-            labelStatus.Size = TextRenderer.MeasureText(labelStatus.Text, labelStatus.Font);
-            labelLines.Text = $" {e.LineCount} lines";
-            labelLines.Size = TextRenderer.MeasureText(labelLines.Text, labelLines.Font);
-            labelSize.Text = Util.GetFileSizeAsText(e.FileSize);
-            labelSize.Size = TextRenderer.MeasureText(labelSize.Text, labelSize.Font);
-            labelCurrentLine.Text = $"Line: {e.CurrentLineNum}";
-            labelCurrentLine.Size = TextRenderer.MeasureText(labelCurrentLine.Text, labelCurrentLine.Font);
-            statusStrip.Refresh();
+            if (e != null)
+            {
+                //_logger.logDebug("StatusLineEvent: text = " + e.StatusText);
+                labelStatus.Text = e.StatusText;
+                labelStatus.Size = TextRenderer.MeasureText(labelStatus.Text, labelStatus.Font);
+                labelLines.Text = $" {e.LineCount} lines";
+                labelLines.Size = TextRenderer.MeasureText(labelLines.Text, labelLines.Font);
+                labelSize.Text = Util.GetFileSizeAsText(e.FileSize);
+                labelSize.Size = TextRenderer.MeasureText(labelSize.Text, labelSize.Font);
+                labelCurrentLine.Text = $"Line: {e.CurrentLineNum}";
+                labelCurrentLine.Size = TextRenderer.MeasureText(labelCurrentLine.Text, labelCurrentLine.Font);
+                if (statusStrip.InvokeRequired)
+                {
+                    statusStrip.BeginInvoke(new MethodInvoker(delegate { statusStrip.Refresh(); }));
+                }
+                else
+                {
+                    statusStrip.Refresh();
+                }
+            }
         }
 
         // tailState: 0,1,2 = on/off/off by Trigger
@@ -952,12 +922,12 @@ namespace LogExpert.Controls.LogTabWindow
 
         private void OpenSettings(int tabToOpen)
         {
-            SettingsDialog dlg = new(ConfigManager.Settings.preferences, this, tabToOpen);
+            SettingsDialog dlg = new(ConfigManager.Settings.Preferences, this, tabToOpen);
             dlg.TopMost = TopMost;
 
             if (DialogResult.OK == dlg.ShowDialog())
             {
-                ConfigManager.Settings.preferences = dlg.Preferences;
+                ConfigManager.Settings.Preferences = dlg.Preferences;
                 ConfigManager.Save(SettingsFlags.Settings);
                 NotifyWindowsForChangedPrefs(SettingsFlags.Settings);
             }
@@ -972,11 +942,11 @@ namespace LogExpert.Controls.LogTabWindow
             {
                 foreach (LogWindow.LogWindow logWindow in _logWindowList)
                 {
-                    logWindow.PreferencesChanged(ConfigManager.Settings.preferences, false, flags);
+                    logWindow.PreferencesChanged(ConfigManager.Settings.Preferences, false, flags);
                 }
             }
 
-            _bookmarkWindow.PreferencesChanged(ConfigManager.Settings.preferences, false, flags);
+            _bookmarkWindow.PreferencesChanged(ConfigManager.Settings.Preferences, false, flags);
 
             HilightGroupList = ConfigManager.Settings.hilightGroupList;
             if ((flags & SettingsFlags.HighlightSettings) == SettingsFlags.HighlightSettings)
@@ -990,7 +960,7 @@ namespace LogExpert.Controls.LogTabWindow
             if ((flags & SettingsFlags.WindowPosition) == SettingsFlags.WindowPosition)
             {
                 TopMost = alwaysOnTopToolStripMenuItem.Checked = settings.alwaysOnTop;
-                dragControlDateTime.DragOrientation = settings.preferences.timestampControlDragOrientation;
+                dragControlDateTime.DragOrientation = settings.Preferences.timestampControlDragOrientation;
                 hideLineColumnToolStripMenuItem.Checked = settings.hideLineColumn;
             }
 
@@ -1001,7 +971,7 @@ namespace LogExpert.Controls.LogTabWindow
 
             if ((flags & SettingsFlags.GuiOrColors) == SettingsFlags.GuiOrColors)
             {
-                SetTabIcons(settings.preferences);
+                SetTabIcons(settings.Preferences);
             }
 
             if ((flags & SettingsFlags.ToolSettings) == SettingsFlags.ToolSettings)
@@ -1104,7 +1074,7 @@ namespace LogExpert.Controls.LogTabWindow
             if (sysoutPipe)
             {
                 ILogLineColumnizer columnizer = ColumnizerPicker.DecideColumnizerByName(columnizerName,
-                    PluginRegistry.GetInstance().RegisteredColumnizers);
+                    PluginRegistry.Instance.RegisteredColumnizers);
 
                 _logger.Info("Starting external tool with sysout redirection: {0} {1}", cmd, args);
                 startInfo.UseShellExecute = false;

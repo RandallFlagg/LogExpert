@@ -11,7 +11,7 @@ using LogExpert.Controls.LogTabWindow;
 
 namespace LogExpert.Dialogs
 {
-    public partial class ToolArgsDialog : Form
+    internal partial class ToolArgsDialog : Form
     {
         #region Fields
 

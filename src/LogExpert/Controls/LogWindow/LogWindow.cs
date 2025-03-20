@@ -25,7 +25,7 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace LogExpert.Controls.LogWindow
 {
-    public partial class LogWindow : DockContent, ILogPaintContext, ILogView
+    internal partial class LogWindow : DockContent, ILogPaintContext, ILogView
     {
         #region Fields
 
@@ -68,10 +68,8 @@ namespace LogExpert.Controls.LogWindow
         private readonly ProgressEventArgs _progressEventArgs = new();
         private readonly object _reloadLock = new();
         private readonly Image _searchButtonImage;
-        private readonly DelayedTrigger _selectionChangedTrigger = new(200);
         private readonly StatusLineEventArgs _statusEventArgs = new();
 
-        private readonly DelayedTrigger _statusLineTrigger = new(200);
         private readonly object _tempHighlightEntryListLock = new();
 
         private readonly Task _timeShiftSyncTask;
@@ -180,7 +178,7 @@ namespace LogExpert.Controls.LogWindow
             tableLayoutPanel1.ColumnStyles[0].Width = 100;
 
             _parentLogTabWin.HighlightSettingsChanged += OnParentHighlightSettingsChanged;
-            SetColumnizer(PluginRegistry.GetInstance().RegisteredColumnizers[0]);
+            SetColumnizer(PluginRegistry.Instance.RegisteredColumnizers[0]);
 
             _patternArgs.maxMisses = 5;
             _patternArgs.minWeight = 1;
@@ -198,7 +196,7 @@ namespace LogExpert.Controls.LogWindow
                 filterComboBox.Items.Add(item);
             }
 
-            filterComboBox.DropDownHeight = filterComboBox.ItemHeight * ConfigManager.Settings.preferences.maximumFilterEntriesDisplayed;
+            filterComboBox.DropDownHeight = filterComboBox.ItemHeight * ConfigManager.Settings.Preferences.maximumFilterEntriesDisplayed;
             AutoResizeFilterBox();
 
             filterRegexCheckBox.Checked = _filterParams.isRegex;
@@ -261,9 +259,6 @@ namespace LogExpert.Controls.LogWindow
             _bookmarkProvider.AllBookmarksRemoved += OnBookmarkProviderAllBookmarksRemoved;
 
             ResumeLayout();
-
-            _statusLineTrigger.Signal += OnStatusLineTriggerSignal;
-            _selectionChangedTrigger.Signal += OnSelectionChangedTriggerSignal;
 
             ChangeTheme(Controls);
         }
@@ -499,7 +494,7 @@ namespace LogExpert.Controls.LogWindow
 
         public string ForcedPersistenceFileName { get; set; } = null;
 
-        public Preferences Preferences => ConfigManager.Settings.preferences;
+        public Preferences Preferences => ConfigManager.Settings.Preferences;
 
         public string GivenFileName { get; set; } = null;
 
@@ -618,12 +613,6 @@ namespace LogExpert.Controls.LogWindow
         }
 
         // used for external wait fx WaitForLoadFinished()
-
-        private delegate void UpdateGridCallback(LogEventArgs e);
-
-        private delegate void UpdateProgressCallback(LoadFileEventArgs e);
-
-        private delegate void LoadingStartedFx(LoadFileEventArgs e);
 
         private delegate void SelectLineFx(int line, bool triggerSyncCall);
 

@@ -21,7 +21,7 @@ using System.Windows.Forms;
 
 namespace LogExpert.Controls.LogWindow
 {
-    public partial class LogWindow
+    internal partial class LogWindow
     {
         private void AutoResizeFilterBox()
         {
@@ -32,20 +32,17 @@ namespace LogExpert.Controls.LogWindow
 
         protected void OnProgressBarUpdate(ProgressEventArgs e)
         {
-            ProgressBarEventHandler handler = ProgressBarUpdate;
-            handler?.Invoke(this, e);
+            ProgressBarUpdate?.Invoke(this, e);
         }
 
         protected void OnStatusLine(StatusLineEventArgs e)
         {
-            StatusLineEventHandler handler = StatusLineEvent;
-            handler?.Invoke(this, e);
+            StatusLineEvent?.Invoke(this, e);
         }
 
         protected void OnGuiState(GuiStateArgs e)
         {
-            GuiStateEventHandler handler = GuiStateUpdate;
-            handler?.Invoke(this, e);
+            GuiStateUpdate?.Invoke(this, e);
         }
 
         protected void OnTailFollowed(EventArgs e)
@@ -125,7 +122,7 @@ namespace LogExpert.Controls.LogWindow
 
         private void OnLogFileReaderLoadingStarted(object sender, LoadFileEventArgs e)
         {
-            Invoke(new LoadingStartedFx(LoadingStarted), e);
+            Invoke(LoadingStarted, e);
         }
 
         private void OnLogFileReaderFinishedLoading(object sender, EventArgs e)
@@ -214,16 +211,11 @@ namespace LogExpert.Controls.LogWindow
                 //Thread loadThread = new Thread(new ThreadStart(ReloadNewFile));
                 //loadThread.Start();
                 _logger.Debug("Reloading invoked.");
-                return;
             }
-
-            if (!_isLoading)
+            else if (_isLoading)
             {
-                return;
+                BeginInvoke(UpdateProgress, e);
             }
-
-            UpdateProgressCallback callback = UpdateProgress;
-            BeginInvoke(callback, e);
         }
 
         private void OnFileSizeChanged(object sender, LogEventArgs e)
@@ -799,11 +791,11 @@ namespace LogExpert.Controls.LogWindow
 
             // Add plugin entries
             bool isAdded = false;
-            if (PluginRegistry.GetInstance().RegisteredContextMenuPlugins.Count > 0)
+            if (PluginRegistry.Instance.RegisteredContextMenuPlugins.Count > 0)
             {
                 //string line = this.logFileReader.GetLogLine(lineNum);
                 IList<int> lines = GetSelectedContent();
-                foreach (IContextMenuEntry entry in PluginRegistry.GetInstance().RegisteredContextMenuPlugins)
+                foreach (IContextMenuEntry entry in PluginRegistry.Instance.RegisteredContextMenuPlugins)
                 {
                     LogExpertCallback callback = new(this);
                     ContextMenuPluginEventArgs evArgs = new(entry, lines, CurrentColumnizer, callback);
@@ -1554,11 +1546,6 @@ namespace LogExpert.Controls.LogWindow
             p.isRegex = _filterParams.isRegex;
             p.isCaseSensitive = _filterParams.isCaseSensitive;
             AddSearchHitHighlightEntry(p);
-        }
-
-        private void OnStatusLineTriggerSignal(object sender, EventArgs e)
-        {
-            OnStatusLine(_statusEventArgs);
         }
 
         private void OnColumnComboBoxSelectionChangeCommitted(object sender, EventArgs e)
