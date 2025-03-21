@@ -9,10 +9,10 @@
     <PackageVersion Include="CsvHelper" Version="33.0.1" />
     <PackageVersion Include="GitVersion.CommandLine" Version="5.12.0" />
     <PackageVersion Include="GitVersion.Core" Version="6.1.0" />
-    <PackageVersion Include="Google.Protobuf" Version="3.29.3" />
-    <PackageVersion Include="Grpc.AspNetCore" Version="2.67.0" />
+    <PackageVersion Include="Google.Protobuf" Version="3.30.1" />
+    <PackageVersion Include="Grpc.AspNetCore" Version="2.70.0" />
     <PackageVersion Include="Grpc.Core" Version="2.46.6" />
-    <PackageVersion Include="Grpc.Tools" Version="2.70.0" />
+    <PackageVersion Include="Grpc.Tools" Version="2.71.0" />
     <PackageVersion Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
     <PackageVersion Include="Moq" Version="4.20.72" />
