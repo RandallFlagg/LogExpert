@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -221,7 +222,6 @@ namespace LogExpert
 
             Column[] columns = Column.CreateColumns(COLUMN_COUNT, clogLine);
 
-
             // If the line is too short (i.e. does not follow the format for this columnizer) return the whole line content
             // in colum 8 (the log message column). Date and time column will be left blank.
             if (line.FullLine.Length < 15)
@@ -233,10 +233,12 @@ namespace LogExpert
                 try
                 {
                     DateTime dateTime = GetTimestamp(callback, line);
+
                     if (dateTime == DateTime.MinValue)
                     {
                         columns[8].FullValue = line.FullLine;
                     }
+
                     string newDate = dateTime.ToString(DATETIME_FORMAT);
                     columns[0].FullValue = newDate;
                 }
@@ -305,6 +307,7 @@ namespace LogExpert
             }
 
             int endIndex = line.FullLine.IndexOf(separatorChar, 1);
+
             if (endIndex > 20 || endIndex < 0)
             {
                 return DateTime.MinValue;
@@ -314,12 +317,12 @@ namespace LogExpert
             try
             {
                 // convert log4j timestamp into a readable format:
-                long timestamp;
-                if (long.TryParse(value, out timestamp))
+                if (long.TryParse(value, out long timestamp))
                 {
                     // Add the time offset before returning
                     DateTime dateTime = new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
                     dateTime = dateTime.AddMilliseconds(timestamp);
+
                     if (_config.localTimestamps)
                     {
                         dateTime = dateTime.ToLocalTime();
@@ -347,7 +350,7 @@ namespace LogExpert
                     DateTime oldDateTime = DateTime.ParseExact(oldValue, DATETIME_FORMAT, cultureInfo);
                     long mSecsOld = oldDateTime.Ticks / TimeSpan.TicksPerMillisecond;
                     long mSecsNew = newDateTime.Ticks / TimeSpan.TicksPerMillisecond;
-                    timeOffset = (int) (mSecsNew - mSecsOld);
+                    timeOffset = (int)(mSecsNew - mSecsOld);
                 }
                 catch (FormatException)
                 {
@@ -411,10 +414,7 @@ namespace LogExpert
 
         #region Private Methods
 
-        private string[] GetAllColumnNames()
-        {
-            return ["Timestamp", "Level", "Logger", "Thread", "Class", "Method", "File", "Line", "Message"];
-        }
+        private string[] GetAllColumnNames() => ["Timestamp", "Level", "Logger", "Thread", "Class", "Method", "File", "Line", "Message"];
 
 
         /// <summary>
@@ -442,7 +442,7 @@ namespace LogExpert
             }
 
 
-            return output.ToArray();
+            return [.. output];
         }
 
         #endregion

@@ -64,7 +64,7 @@
             this.btnOk.TabIndex = 1;
             this.btnOk.Text = "Ok";
             this.btnOk.UseVisualStyleBackColor = true;
-            this.btnOk.Click += new System.EventHandler(this.btnOk_Click);
+            this.btnOk.Click += new System.EventHandler(this.OnBtnOkClick);
             // 
             // lblRegEx
             // 
@@ -93,7 +93,7 @@
             this.tbCheck.TabIndex = 4;
             this.tbCheck.Text = "Check";
             this.tbCheck.UseVisualStyleBackColor = true;
-            this.tbCheck.Click += new System.EventHandler(this.tbCheck_Click);
+            this.tbCheck.Click += new System.EventHandler(this.OnButtonCheckClick);
             // 
             // tbTestLine
             // 
