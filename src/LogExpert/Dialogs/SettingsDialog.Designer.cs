@@ -1315,7 +1315,7 @@
             // checkBoxPortableMode
             // 
             checkBoxPortableMode.AutoSize = true;
-            checkBoxPortableMode.Location = new System.Drawing.Point(34, 377);
+            checkBoxPortableMode.Location = new System.Drawing.Point(35, 110);
             checkBoxPortableMode.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             checkBoxPortableMode.Name = "checkBoxPortableMode";
             checkBoxPortableMode.Size = new System.Drawing.Size(150, 19);
@@ -1328,7 +1328,7 @@
             // checkBoxSaveFilter
             // 
             checkBoxSaveFilter.AutoSize = true;
-            checkBoxSaveFilter.Location = new System.Drawing.Point(34, 74);
+            checkBoxSaveFilter.Location = new System.Drawing.Point(35, 75);
             checkBoxSaveFilter.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             checkBoxSaveFilter.Name = "checkBoxSaveFilter";
             checkBoxSaveFilter.Size = new System.Drawing.Size(217, 19);
@@ -1344,18 +1344,18 @@
             groupBoxPersistantFileLocation.Controls.Add(radioButtonsessionSaveDocuments);
             groupBoxPersistantFileLocation.Controls.Add(radioButtonSessionSameDir);
             groupBoxPersistantFileLocation.Controls.Add(radioButtonSessionApplicationStartupDir);
-            groupBoxPersistantFileLocation.Location = new System.Drawing.Point(34, 134);
+            groupBoxPersistantFileLocation.Location = new System.Drawing.Point(34, 145);
             groupBoxPersistantFileLocation.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             groupBoxPersistantFileLocation.Name = "groupBoxPersistantFileLocation";
             groupBoxPersistantFileLocation.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            groupBoxPersistantFileLocation.Size = new System.Drawing.Size(411, 211);
+            groupBoxPersistantFileLocation.Size = new System.Drawing.Size(411, 190);
             groupBoxPersistantFileLocation.TabIndex = 1;
             groupBoxPersistantFileLocation.TabStop = false;
             groupBoxPersistantFileLocation.Text = "Persistence file location";
             // 
             // labelSessionSaveOwnDir
             // 
-            labelSessionSaveOwnDir.Location = new System.Drawing.Point(39, 142);
+            labelSessionSaveOwnDir.Location = new System.Drawing.Point(27, 160);
             labelSessionSaveOwnDir.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             labelSessionSaveOwnDir.Name = "labelSessionSaveOwnDir";
             labelSessionSaveOwnDir.Size = new System.Drawing.Size(252, 31);
@@ -1364,10 +1364,10 @@
             // 
             // buttonSessionSaveDir
             // 
-            buttonSessionSaveDir.Location = new System.Drawing.Point(357, 102);
+            buttonSessionSaveDir.Location = new System.Drawing.Point(358, 135);
             buttonSessionSaveDir.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             buttonSessionSaveDir.Name = "buttonSessionSaveDir";
-            buttonSessionSaveDir.Size = new System.Drawing.Size(45, 31);
+            buttonSessionSaveDir.Size = new System.Drawing.Size(45, 19);
             buttonSessionSaveDir.TabIndex = 3;
             buttonSessionSaveDir.Text = "...";
             buttonSessionSaveDir.UseVisualStyleBackColor = true;
@@ -1376,7 +1376,7 @@
             // radioButtonSessionSaveOwn
             // 
             radioButtonSessionSaveOwn.AutoSize = true;
-            radioButtonSessionSaveOwn.Location = new System.Drawing.Point(10, 105);
+            radioButtonSessionSaveOwn.Location = new System.Drawing.Point(10, 135);
             radioButtonSessionSaveOwn.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             radioButtonSessionSaveOwn.Name = "radioButtonSessionSaveOwn";
             radioButtonSessionSaveOwn.Size = new System.Drawing.Size(100, 19);
@@ -1388,7 +1388,7 @@
             // radioButtonsessionSaveDocuments
             // 
             radioButtonsessionSaveDocuments.AutoSize = true;
-            radioButtonsessionSaveDocuments.Location = new System.Drawing.Point(10, 68);
+            radioButtonsessionSaveDocuments.Location = new System.Drawing.Point(10, 65);
             radioButtonsessionSaveDocuments.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             radioButtonsessionSaveDocuments.Name = "radioButtonsessionSaveDocuments";
             radioButtonsessionSaveDocuments.Size = new System.Drawing.Size(160, 19);
@@ -1400,7 +1400,7 @@
             // radioButtonSessionSameDir
             // 
             radioButtonSessionSameDir.AutoSize = true;
-            radioButtonSessionSameDir.Location = new System.Drawing.Point(10, 31);
+            radioButtonSessionSameDir.Location = new System.Drawing.Point(10, 30);
             radioButtonSessionSameDir.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             radioButtonSessionSameDir.Name = "radioButtonSessionSameDir";
             radioButtonSessionSameDir.Size = new System.Drawing.Size(157, 19);
@@ -1412,7 +1412,7 @@
             // radioButtonSessionApplicationStartupDir
             // 
             radioButtonSessionApplicationStartupDir.AutoSize = true;
-            radioButtonSessionApplicationStartupDir.Location = new System.Drawing.Point(8, 177);
+            radioButtonSessionApplicationStartupDir.Location = new System.Drawing.Point(10, 100);
             radioButtonSessionApplicationStartupDir.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             radioButtonSessionApplicationStartupDir.Name = "radioButtonSessionApplicationStartupDir";
             radioButtonSessionApplicationStartupDir.Size = new System.Drawing.Size(176, 19);
@@ -1425,7 +1425,7 @@
             // checkBoxSaveSessions
             // 
             checkBoxSaveSessions.AutoSize = true;
-            checkBoxSaveSessions.Location = new System.Drawing.Point(34, 38);
+            checkBoxSaveSessions.Location = new System.Drawing.Point(35, 40);
             checkBoxSaveSessions.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             checkBoxSaveSessions.Name = "checkBoxSaveSessions";
             checkBoxSaveSessions.Size = new System.Drawing.Size(241, 19);
