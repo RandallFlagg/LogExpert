@@ -47,7 +47,7 @@ namespace LogExpert.Config
 
         public Preferences Preferences { get; set; } = new();
 
-        public RegexHistory regexHistory = new();
+        public RegexHistory RegexHistory { get; set; } = new();
 
         public List<string> searchHistoryList = [];
 

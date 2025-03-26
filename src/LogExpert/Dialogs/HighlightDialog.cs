@@ -1,6 +1,7 @@
 ﻿using LogExpert.Classes.Highlight;
 using LogExpert.Config;
 using LogExpert.Entities;
+using LogExpert.UI.Dialogs;
 
 using NLog;
 
@@ -314,12 +315,14 @@ namespace LogExpert.Dialogs
         {
             if (e.Button == MouseButtons.Right)
             {
-                RegexHelperDialog dlg = new();
-                dlg.Owner = this;
-                dlg.CaseSensitive = checkBoxCaseSensitive.Checked;
-                dlg.Pattern = textBoxSearchString.Text;
-                DialogResult res = dlg.ShowDialog();
-                if (res == DialogResult.OK)
+                RegexHelperDialog dlg = new()
+                {
+                    Owner = this,
+                    CaseSensitive = checkBoxCaseSensitive.Checked,
+                    Pattern = textBoxSearchString.Text
+                };
+
+                if (dlg.ShowDialog() == DialogResult.OK)
                 {
                     checkBoxCaseSensitive.Checked = dlg.CaseSensitive;
                     textBoxSearchString.Text = dlg.Pattern;

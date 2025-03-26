@@ -6,11 +6,8 @@ namespace LogExpert.Config
     [Serializable]
     public class RegexHistory
     {
-        #region Fields
+        public List<string> ExpressionHistoryList { get; set; } = [];
 
-        public List<string> expressionHistoryList = [];
-        public List<string> testtextHistoryList = [];
-
-        #endregion
+        public List<string> TesttextHistoryList { get; set; } = [];
     }
 }

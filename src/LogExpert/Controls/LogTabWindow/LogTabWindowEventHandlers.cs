@@ -4,6 +4,7 @@ using LogExpert.Config;
 using LogExpert.Dialogs;
 using LogExpert.Entities;
 using LogExpert.Entities.EventArgs;
+using LogExpert.UI.Dialogs;
 
 using System;
 using System.Collections.Generic;
@@ -977,7 +978,7 @@ namespace LogExpert.Controls.LogTabWindow
                 {
                     ConfigManager.Settings.uriHistoryList = dlg.UriHistory;
                     ConfigManager.Save(SettingsFlags.FileHistory);
-                    LoadFiles(new[] { dlg.Uri }, false);
+                    LoadFiles([dlg.Uri], false);
                 }
             }
         }

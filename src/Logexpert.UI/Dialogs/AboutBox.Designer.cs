@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Versioning;
 
-namespace LogExpert.Dialogs
+namespace LogExpert.UI.Dialogs
 {
     partial class AboutBox
 	{

@@ -1,9 +1,12 @@
-﻿using System;
+﻿using LogExpert.Entities;
+using LogExpert.UI.Dialogs;
+
+using NLog;
+
+using System;
 using System.Drawing;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using LogExpert.Entities;
-using NLog;
 
 namespace LogExpert.Dialogs
 {
@@ -82,13 +85,14 @@ namespace LogExpert.Dialogs
 
         private void OnButtonRegexClick(object sender, EventArgs e)
         {
-            RegexHelperDialog dlg = new();
-            dlg.Owner = this;
-            dlg.CaseSensitive = checkBoxCaseSensitive.Checked;
-            dlg.Pattern = comboBoxSearchFor.Text;
+            RegexHelperDialog dlg = new()
+            {
+                Owner = this,
+                CaseSensitive = checkBoxCaseSensitive.Checked,
+                Pattern = comboBoxSearchFor.Text
+            };
 
-            DialogResult res = dlg.ShowDialog();
-            if (res == DialogResult.OK)
+            if (dlg.ShowDialog() == DialogResult.OK)
             {
                 checkBoxCaseSensitive.Checked = dlg.CaseSensitive;
                 comboBoxSearchFor.Text = dlg.Pattern;

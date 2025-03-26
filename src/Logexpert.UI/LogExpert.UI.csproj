@@ -20,6 +20,9 @@
     <Compile Update="Dialogs\AboutBox.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Update="Dialogs\RegexHelperDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="Dialogs\TabRenameDialog.cs">
       <SubType>Form</SubType>
     </Compile>

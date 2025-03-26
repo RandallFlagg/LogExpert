@@ -10,6 +10,7 @@ using LogExpert.Entities;
 using LogExpert.Entities.EventArgs;
 using LogExpert.Extensions;
 using LogExpert.Interface;
+using LogExpert.UI.Dialogs;
 
 using System;
 using System.Collections.Generic;
@@ -1301,16 +1302,24 @@ namespace LogExpert.Controls.LogWindow
         {
             if (e.Button == MouseButtons.Right)
             {
-                RegexHelperDialog dlg = new();
-                dlg.Owner = this;
-                dlg.CaseSensitive = filterCaseSensitiveCheckBox.Checked;
-                dlg.Pattern = filterComboBox.Text;
-                DialogResult res = dlg.ShowDialog();
-
-                if (res == DialogResult.OK)
+                RegexHelperDialog dlg = new()
                 {
+                    ExpressionHistoryList = ConfigManager.Settings.RegexHistory.ExpressionHistoryList,
+                    TesttextHistoryList = ConfigManager.Settings.RegexHistory.TesttextHistoryList,
+                    Owner = this,
+                    CaseSensitive = filterCaseSensitiveCheckBox.Checked,
+                    Pattern = filterComboBox.Text
+                };
+
+                if (dlg.ShowDialog() == DialogResult.OK)
+                {
+                    ConfigManager.Settings.RegexHistory.ExpressionHistoryList = dlg.ExpressionHistoryList;
+                    ConfigManager.Settings.RegexHistory.TesttextHistoryList = dlg.TesttextHistoryList;
+
                     filterCaseSensitiveCheckBox.Checked = dlg.CaseSensitive;
                     filterComboBox.Text = dlg.Pattern;
+
+                    ConfigManager.Save(SettingsFlags.RegexHistory);
                 }
             }
         }
