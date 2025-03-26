@@ -1004,8 +1004,10 @@ namespace LogExpert.Controls.LogTabWindow
         {
             if (CurrentLogWindow != null)
             {
-                TabRenameDlg dlg = new();
-                dlg.TabName = CurrentLogWindow.Text;
+                TabRenameDialog dlg = new()
+                {
+                    TabName = CurrentLogWindow.Text
+                };
                 if (DialogResult.OK == dlg.ShowDialog())
                 {
                     CurrentLogWindow.Text = dlg.TabName;

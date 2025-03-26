@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+	  <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+
+	<ItemGroup>
+    <Compile Include="..\Solution Items\AssemblyVersion.cs" Link="AssemblyVersion.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Logexpert.Resources\LogExpert.Resources.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Dialogs\AboutBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Dialogs\TabRenameDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+
+</Project>

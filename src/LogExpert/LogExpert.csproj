@@ -3,7 +3,7 @@
     <TargetFramework>net8.0-windows</TargetFramework>
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
     <OutputType>WinExe</OutputType>
-    <ApplicationIcon>Resources\logexpert.ico</ApplicationIcon>
+    <ApplicationIcon>logexpert.ico</ApplicationIcon>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <UseWindowsForms>true</UseWindowsForms>
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
@@ -54,12 +54,6 @@
     <Compile Update="Dialogs\ColorComboBox.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Update="Properties\Resources.Designer.cs">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
     <None Include="..\Solution Items\Key.snk">
       <Link>Key.snk</Link>
     </None>
@@ -74,6 +68,7 @@
     <Content Include="Licenses\WinformsUI.Docking.license.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="logexpert.ico" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="DockPanelSuite" />
@@ -88,16 +83,11 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ColumnizerLib\ColumnizerLib.csproj" />
+    <ProjectReference Include="..\Logexpert.UI\LogExpert.UI.csproj" />
     <ProjectReference Include="..\LogexpertgRPCService\LogexpertgRPCService.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="DebugWindow.Designer.cs" />
     <Compile Remove="HighlightThread.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Update="Properties\Resources.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
   </ItemGroup>
 </Project>
