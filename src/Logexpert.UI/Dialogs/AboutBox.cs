@@ -4,7 +4,7 @@ using System.Runtime.Versioning;
 
 namespace LogExpert.Dialogs
 {
-    [SupportedOSPlatform("windows6.1")]
+    [SupportedOSPlatform("windows")]
     public partial class AboutBox : Form
     {
         #region Fields
@@ -17,11 +17,6 @@ namespace LogExpert.Dialogs
 
         public AboutBox()
         {
-            if (DesignMode)
-            {
-                return;
-            }
-
             InitializeComponent();
 
             LoadResources();
