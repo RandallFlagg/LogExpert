@@ -1,4 +1,4 @@
-﻿using LogExpert.Extensions;
+﻿using LogExpert.Core.Extensions;
 
 using NUnit.Framework;
 

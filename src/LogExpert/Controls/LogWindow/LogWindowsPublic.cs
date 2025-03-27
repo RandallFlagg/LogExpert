@@ -1,13 +1,17 @@
 ﻿using LogExpert.Classes;
-using LogExpert.Classes.Bookmark;
-using LogExpert.Classes.Columnizer;
 using LogExpert.Classes.Filter;
-using LogExpert.Classes.Highlight;
 using LogExpert.Classes.Log;
-using LogExpert.Classes.Persister;
 using LogExpert.Config;
-using LogExpert.Entities;
-using LogExpert.Entities.EventArgs;
+using LogExpert.Core.Classes;
+using LogExpert.Core.Classes.Bookmark;
+using LogExpert.Core.Classes.Columnizer;
+using LogExpert.Core.Classes.Filter;
+using LogExpert.Core.Classes.Highlight;
+using LogExpert.Core.Classes.Persister;
+using LogExpert.Core.Config;
+using LogExpert.Core.Entities;
+using LogExpert.Core.Entities.EventArgs;
+
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -18,7 +22,7 @@ using System.Windows.Forms;
 
 namespace LogExpert.Controls.LogWindow
 {
-    internal partial class LogWindow
+    public partial class LogWindow
     {
         #region Public methods
 
@@ -56,7 +60,10 @@ namespace LogExpert.Controls.LogWindow
                         {
                             if (_reloadMemento == null)
                             {
-                                columnizer = ColumnizerPicker.CloneColumnizer(columnizer);
+                                //TODO this needs to be refactored
+                                var directory = ConfigManager.Settings.Preferences.PortableMode ? ConfigManager.PortableModeDir : ConfigManager.ConfigDir;
+
+                                columnizer = ColumnizerPicker.CloneColumnizer(columnizer, directory);
                             }
                         }
                         else
@@ -121,7 +128,7 @@ namespace LogExpert.Controls.LogWindow
                 {
                     if (Preferences.autoPick)
                     {
-                        ILogLineColumnizer newColumnizer = ColumnizerPicker.FindBetterColumnizer(FileName, _logFileReader, CurrentColumnizer);
+                        ILogLineColumnizer newColumnizer = ColumnizerPicker.FindBetterColumnizer(FileName, _logFileReader, CurrentColumnizer, PluginRegistry.PluginRegistry.Instance.RegisteredColumnizers);
 
                         if (newColumnizer != null)
                         {
@@ -307,19 +314,28 @@ namespace LogExpert.Controls.LogWindow
 
         public void ForceColumnizer(ILogLineColumnizer columnizer)
         {
-            _forcedColumnizer = ColumnizerPicker.CloneColumnizer(columnizer);
+            //TODO this needs to be refactored
+            var directory = ConfigManager.Settings.Preferences.PortableMode ? ConfigManager.PortableModeDir : ConfigManager.ConfigDir;
+
+            _forcedColumnizer = ColumnizerPicker.CloneColumnizer(columnizer, directory);
             SetColumnizer(_forcedColumnizer);
         }
 
         public void ForceColumnizerForLoading(ILogLineColumnizer columnizer)
         {
-            _forcedColumnizerForLoading = ColumnizerPicker.CloneColumnizer(columnizer);
+            //TODO this needs to be refactored
+            var directory = ConfigManager.Settings.Preferences.PortableMode ? ConfigManager.PortableModeDir : ConfigManager.ConfigDir;
+
+            _forcedColumnizerForLoading = ColumnizerPicker.CloneColumnizer(columnizer, directory);
         }
 
         public void PreselectColumnizer(string columnizerName)
         {
-            ILogLineColumnizer columnizer = ColumnizerPicker.FindColumnizerByName(columnizerName, PluginRegistry.Instance.RegisteredColumnizers);
-            PreSelectColumnizer(ColumnizerPicker.CloneColumnizer(columnizer));
+            //TODO this needs to be refactored
+            var directory = ConfigManager.Settings.Preferences.PortableMode ? ConfigManager.PortableModeDir : ConfigManager.ConfigDir;
+
+            ILogLineColumnizer columnizer = ColumnizerPicker.FindColumnizerByName(columnizerName, PluginRegistry.PluginRegistry.Instance.RegisteredColumnizers);
+            PreSelectColumnizer(ColumnizerPicker.CloneColumnizer(columnizer, directory));
         }
 
         public void ColumnizerConfigChanged()

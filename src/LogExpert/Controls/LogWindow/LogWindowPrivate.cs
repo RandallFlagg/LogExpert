@@ -1,14 +1,18 @@
 ﻿using LogExpert.Classes;
-using LogExpert.Classes.Columnizer;
 using LogExpert.Classes.Filter;
-using LogExpert.Classes.Highlight;
 using LogExpert.Classes.ILogLineColumnizerCallback;
-using LogExpert.Classes.Persister;
 using LogExpert.Config;
+using LogExpert.Core.Classes;
+using LogExpert.Core.Classes.Columnizer;
+using LogExpert.Core.Classes.Filter;
+using LogExpert.Core.Classes.Highlight;
+using LogExpert.Core.Classes.Persister;
+using LogExpert.Core.Config;
+using LogExpert.Core.Entities;
+using LogExpert.Core.Entities.EventArgs;
+using LogExpert.Core.Interface;
 using LogExpert.Dialogs;
-using LogExpert.Entities;
-using LogExpert.Entities.EventArgs;
-using LogExpert.Interface;
+using LogExpert.Extensions;
 
 using System;
 using System.Collections.Generic;
@@ -25,7 +29,7 @@ using System.Windows.Forms;
 
 namespace LogExpert.Controls.LogWindow
 {
-    internal partial class LogWindow
+    public partial class LogWindow
     {
         #region Private Methods
 
@@ -424,13 +428,19 @@ namespace LogExpert.Controls.LogWindow
                     {
                         if (_reloadMemento == null)
                         {
-                            columnizer = ColumnizerPicker.CloneColumnizer(columnizer);
+                            //TODO this needs to be refactored
+                            var directory = ConfigManager.Settings.Preferences.PortableMode ? ConfigManager.PortableModeDir : ConfigManager.ConfigDir;
+
+                            columnizer = ColumnizerPicker.CloneColumnizer(columnizer, directory);
                         }
                     }
                     else
                     {
+                        //TODO this needs to be refactored
+                        var directory = ConfigManager.Settings.Preferences.PortableMode ? ConfigManager.PortableModeDir : ConfigManager.ConfigDir;
+
                         // Default Columnizers
-                        columnizer = ColumnizerPicker.CloneColumnizer(ColumnizerPicker.FindColumnizer(FileName, _logFileReader));
+                        columnizer = ColumnizerPicker.CloneColumnizer(ColumnizerPicker.FindColumnizer(FileName, _logFileReader, PluginRegistry.PluginRegistry.Instance.RegisteredColumnizers), directory);
                     }
                 }
 
@@ -895,8 +905,7 @@ namespace LogExpert.Controls.LogWindow
             {
                 if (entry.IsActionEntry && entry.ActionEntry.PluginName != null)
                 {
-                    IKeywordAction plugin =
-                        PluginRegistry.Instance.FindKeywordActionPluginByName(entry.ActionEntry.PluginName);
+                    IKeywordAction plugin = PluginRegistry.PluginRegistry.Instance.FindKeywordActionPluginByName(entry.ActionEntry.PluginName);
                     if (plugin != null)
                     {
                         ActionPluginExecuteFx fx = plugin.Execute;
@@ -916,13 +925,13 @@ namespace LogExpert.Controls.LogWindow
             else
             {
                 CurrentColumnizer = _forcedColumnizerForLoading =
-                    ColumnizerPicker.FindColumnizer(FileName, _logFileReader);
+                    ColumnizerPicker.FindColumnizer(FileName, _logFileReader, PluginRegistry.PluginRegistry.Instance.RegisteredColumnizers);
             }
         }
 
         private void SetColumnizer(ILogLineColumnizer columnizer)
         {
-            columnizer = ColumnizerPicker.FindReplacementForAutoColumnizer(FileName, _logFileReader, columnizer);
+            columnizer = ColumnizerPicker.FindReplacementForAutoColumnizer(FileName, _logFileReader, columnizer, PluginRegistry.PluginRegistry.Instance.RegisteredColumnizers);
 
             int timeDiff = 0;
             if (CurrentColumnizer != null && CurrentColumnizer.IsTimeshiftImplemented())
@@ -2788,7 +2797,7 @@ namespace LogExpert.Controls.LogWindow
         {
             newWin.WaitForLoadingFinished();
             ILogLineColumnizer columnizer = ColumnizerPicker.FindColumnizerByName(persistenceData.columnizerName,
-                PluginRegistry.Instance.RegisteredColumnizers);
+                PluginRegistry.PluginRegistry.Instance.RegisteredColumnizers);
             if (columnizer != null)
             {
                 SetColumnizerFx fx = newWin.ForceColumnizer;
@@ -3534,7 +3543,7 @@ namespace LogExpert.Controls.LogWindow
             _filterParams.rangeSearchText = filterRangeComboBox.Text;
             ColumnizerCallback callback = new(this);
             RangeFinder rangeFinder = new(_filterParams, callback);
-            Entities.Range range = rangeFinder.FindRange(dataGridView.CurrentCellAddress.Y);
+            Core.Entities.Range range = rangeFinder.FindRange(dataGridView.CurrentCellAddress.Y);
             if (range != null)
             {
                 SetCellSelectionMode(false);

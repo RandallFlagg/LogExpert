@@ -1,5 +1,8 @@
-﻿using LogExpert.Classes;
+﻿using LogExpert.Classes.Log;
+using LogExpert.PluginRegistry.FileSystem;
+
 using NUnit.Framework;
+
 using System;
 using System.IO;
 

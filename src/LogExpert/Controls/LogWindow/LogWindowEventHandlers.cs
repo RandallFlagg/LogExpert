@@ -2,14 +2,19 @@
 
 using LogExpert.Classes;
 using LogExpert.Classes.Filter;
-using LogExpert.Classes.Highlight;
 using LogExpert.Classes.ILogLineColumnizerCallback;
 using LogExpert.Config;
+using LogExpert.Core.Classes;
+using LogExpert.Core.Classes.Filter;
+using LogExpert.Core.Classes.Highlight;
+using LogExpert.Core.Config;
+using LogExpert.Core.Entities;
+using LogExpert.Core.Entities.EventArgs;
+using LogExpert.Core.Interface;
 using LogExpert.Dialogs;
 using LogExpert.Entities;
 using LogExpert.Entities.EventArgs;
 using LogExpert.Extensions;
-using LogExpert.Interface;
 using LogExpert.UI.Dialogs;
 
 using System;
@@ -22,7 +27,7 @@ using System.Windows.Forms;
 
 namespace LogExpert.Controls.LogWindow
 {
-    internal partial class LogWindow
+    public partial class LogWindow
     {
         private void AutoResizeFilterBox()
         {
@@ -792,11 +797,11 @@ namespace LogExpert.Controls.LogWindow
 
             // Add plugin entries
             bool isAdded = false;
-            if (PluginRegistry.Instance.RegisteredContextMenuPlugins.Count > 0)
+            if (PluginRegistry.PluginRegistry.Instance.RegisteredContextMenuPlugins.Count > 0)
             {
                 //string line = this.logFileReader.GetLogLine(lineNum);
                 IList<int> lines = GetSelectedContent();
-                foreach (IContextMenuEntry entry in PluginRegistry.Instance.RegisteredContextMenuPlugins)
+                foreach (IContextMenuEntry entry in PluginRegistry.PluginRegistry.Instance.RegisteredContextMenuPlugins)
                 {
                     LogExpertCallback callback = new(this);
                     ContextMenuPluginEventArgs evArgs = new(entry, lines, CurrentColumnizer, callback);

@@ -1,5 +1,8 @@
 ﻿using LogExpert.Classes.Log;
+using LogExpert.Core.Classes.Log;
+using LogExpert.Core.Entities;
 using LogExpert.Entities;
+using LogExpert.PluginRegistry.FileSystem;
 
 using NUnit.Framework;
 

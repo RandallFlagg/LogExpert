@@ -1,6 +1,9 @@
 ﻿using CsvHelper;
+
 using LogExpert;
+
 using Newtonsoft.Json;
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -157,28 +160,26 @@ namespace CsvColumnizer
 
                 if (line != null)
                 {
-                    using (CsvReader csv = new CsvReader(new StringReader(line.FullLine), _config.ReaderConfiguration))
+                    using CsvReader csv = new(new StringReader(line.FullLine), _config.ReaderConfiguration);
+                    csv.Read();
+                    csv.ReadHeader();
+
+                    int fieldCount = csv.Parser.Count;
+
+                    string[] headerRecord = csv.HeaderRecord;
+
+                    if (_config.HasFieldNames && headerRecord != null)
                     {
-                        csv.Read();
-                        csv.ReadHeader();
-                        
-                        int fieldCount = csv.Parser.Count;
-
-                        string[] headerRecord = csv.HeaderRecord;
-
-                        if (_config.HasFieldNames && headerRecord != null)
+                        foreach (string headerColumn in headerRecord)
                         {
-                            foreach (string headerColumn in headerRecord)
-                            {
-                                _columnList.Add(new CsvColumn(headerColumn));
-                            }
+                            _columnList.Add(new CsvColumn(headerColumn));
                         }
-                        else
+                    }
+                    else
+                    {
+                        for (int i = 0; i < fieldCount; ++i)
                         {
-                            for (int i = 0; i < fieldCount; ++i)
-                            {
-                                _columnList.Add(new CsvColumn("Column " + i + 1));
-                            }
+                            _columnList.Add(new CsvColumn("Column " + i + 1));
                         }
                     }
                 }
@@ -187,7 +188,7 @@ namespace CsvColumnizer
 
         public void DeSelected(ILogLineColumnizerCallback callback)
         {
-            // nothing to do 
+            // nothing to do
         }
 
         public void Configure(ILogLineColumnizerCallback callback, string configDir)
@@ -257,14 +258,14 @@ namespace CsvColumnizer
         {
             ColumnizedLogLine cLogLine = new ColumnizedLogLine();
             cLogLine.LogLine = line;
-            
+
             using (CsvReader csv = new CsvReader(new StringReader(line.FullLine), _config.ReaderConfiguration))
             {
                 csv.Read();
                 csv.ReadHeader();
 
                 //we only read line by line and not the whole file so it is always the header
-                string[] records = csv.HeaderRecord; 
+                string[] records = csv.HeaderRecord;
 
                 if (records != null)
                 {

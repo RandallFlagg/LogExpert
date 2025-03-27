@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Text;
-using System.Windows.Forms;
-using System.Drawing.Drawing2D;
-using LogExpert.Entities;
+﻿using LogExpert.Core.Entities;
+
 using NLog;
+
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Windows.Forms;
 
 namespace LogExpert.Dialogs
 {
@@ -37,7 +36,7 @@ namespace LogExpert.Dialogs
 
         public BufferedDataGridView()
         {
-            _pen = new Pen(_bubbleColor, (float) 3.0);
+            _pen = new Pen(_bubbleColor, (float)3.0);
             _brush = new SolidBrush(_bubbleColor);
 
             InitializeComponent();
@@ -61,7 +60,7 @@ namespace LogExpert.Dialogs
 
         #region Properties
 
-        /*    
+        /*
       public Graphics Buffer
       {
         get { return this.myBuffer.Graphics; }
@@ -112,7 +111,7 @@ namespace LogExpert.Dialogs
             base.OnEditingControlShowing(e);
             e.Control.KeyDown -= OnControlKeyDown;
             e.Control.KeyDown += OnControlKeyDown;
-            DataGridViewTextBoxEditingControl editControl = (DataGridViewTextBoxEditingControl) e.Control;
+            DataGridViewTextBoxEditingControl editControl = (DataGridViewTextBoxEditingControl)e.Control;
             e.Control.PreviewKeyDown -= Control_PreviewKeyDown;
             e.Control.PreviewKeyDown += Control_PreviewKeyDown;
 
@@ -249,7 +248,7 @@ namespace LogExpert.Dialogs
                     {
                         SizeF textSize = myBuffer.Graphics.MeasureString(overlay.Bookmark.Text, _font, 300);
                         Rectangle rectBubble = new(overlay.Position,
-                            new Size((int) textSize.Width, (int) textSize.Height));
+                            new Size((int)textSize.Width, (int)textSize.Height));
                         rectBubble.Offset(60, -(rectBubble.Height + 40));
                         rectBubble.Inflate(3, 3);
                         rectBubble.Location += overlay.Bookmark.OverlayOffset;

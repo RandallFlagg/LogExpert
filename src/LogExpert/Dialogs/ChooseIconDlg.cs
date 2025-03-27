@@ -1,8 +1,9 @@
-﻿using System;
+﻿using LogExpert.Core.Classes;
+
+using System;
 using System.Drawing;
-using System.Windows.Forms;
 using System.IO;
-using LogExpert.Classes;
+using System.Windows.Forms;
 
 namespace LogExpert.Dialogs
 {
@@ -39,7 +40,7 @@ namespace LogExpert.Dialogs
         private void FillIconList()
         {
             iconListView.Items.Clear();
-            
+
             Icon[,] icons = Win32.ExtractIcons(FileName);
 
             if (icons == null)
@@ -48,7 +49,7 @@ namespace LogExpert.Dialogs
             }
 
             ImageList imageList = new();
-            
+
             if (icons.GetLength(0) > 0)
             {
                 imageList.ImageSize = icons[1, 0].Size;
@@ -87,7 +88,7 @@ namespace LogExpert.Dialogs
         {
             OpenFileDialog dlg = new();
             dlg.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
-            
+
             if (string.IsNullOrEmpty(iconFileLabel.Text) == false)
             {
                 FileInfo info = new(iconFileLabel.Text);
@@ -108,7 +109,7 @@ namespace LogExpert.Dialogs
         private void OnOkButtonClick(object sender, EventArgs e)
         {
             IconIndex = iconListView.SelectedIndices.Count > 0 ? iconListView.SelectedIndices[0] : -1;
-            ;
+
             DisposeIcons();
         }
 

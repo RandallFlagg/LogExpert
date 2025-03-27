@@ -1,6 +1,6 @@
-﻿using LogExpert.Classes.Highlight;
-using LogExpert.Config;
-using LogExpert.Entities;
+﻿using LogExpert.Config;
+using LogExpert.Core.Classes.Highlight;
+using LogExpert.Core.Entities;
 using LogExpert.UI.Dialogs;
 
 using NLog;

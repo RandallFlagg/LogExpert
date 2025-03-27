@@ -2,6 +2,8 @@
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+
+using LogExpert.Core.Classes;
 using LogExpert.Dialogs;
 
 namespace LogExpert.Classes
@@ -18,7 +20,7 @@ namespace LogExpert.Classes
 
         public ArgParser(string argTemplate)
         {
-            this.argLine = argTemplate;
+            argLine = argTemplate;
         }
 
         #endregion
@@ -27,7 +29,7 @@ namespace LogExpert.Classes
 
         public string BuildArgs(ILogLine logLine, int lineNum, ILogFileInfo logFileInfo, Form parent)
         {
-            StringBuilder builder = new(this.argLine);
+            StringBuilder builder = new(argLine);
             builder.Replace("%L", "" + lineNum);
             builder.Replace("%P", logFileInfo.DirectoryName);
             builder.Replace("%N", logFileInfo.FileName);
@@ -87,7 +89,7 @@ namespace LogExpert.Classes
                             end2 = builder.Length - 1;
                         }
                         string valueStr = builder.ToString().Substring(end + 2, end2 - end - 2);
-                        values = valueStr.Split(new char[] {','}, StringSplitOptions.None);
+                        values = valueStr.Split(new char[] { ',' }, StringSplitOptions.None);
                         end = end2;
                     }
 

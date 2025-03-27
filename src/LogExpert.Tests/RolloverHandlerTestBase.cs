@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using LogExpert.Classes.Log;
+
+using LogExpert.Core.Classes.Log;
 
 namespace LogExpert.Tests
 {

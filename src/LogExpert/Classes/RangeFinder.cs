@@ -1,6 +1,8 @@
-﻿using LogExpert.Classes.Filter;
-using LogExpert.Classes.ILogLineColumnizerCallback;
-using LogExpert.Entities;
+﻿using LogExpert.Classes.ILogLineColumnizerCallback;
+using LogExpert.Core.Classes;
+using LogExpert.Core.Classes.Filter;
+using LogExpert.Core.Entities;
+
 using NLog;
 
 namespace LogExpert.Classes
@@ -8,7 +10,7 @@ namespace LogExpert.Classes
     /// <summary>
     /// Delivers the range (from..to) that matches the current range filter settings starting from a given line.
     /// </summary>
-    internal class RangeFinder
+    public class RangeFinder
     {
         #region Fields
 

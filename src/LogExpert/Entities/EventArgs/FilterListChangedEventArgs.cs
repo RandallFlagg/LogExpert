@@ -2,7 +2,7 @@
 
 namespace LogExpert.Entities.EventArgs
 {
-    internal class FilterListChangedEventArgs
+    public class FilterListChangedEventArgs
     {
         #region Fields
 
@@ -12,7 +12,7 @@ namespace LogExpert.Entities.EventArgs
 
         public FilterListChangedEventArgs(LogWindow logWindow)
         {
-            this.LogWindow = logWindow;
+            LogWindow = logWindow;
         }
 
         #endregion

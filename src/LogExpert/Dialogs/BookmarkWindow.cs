@@ -1,13 +1,17 @@
-﻿using System;
+﻿using LogExpert.Classes;
+using LogExpert.Core.Config;
+using LogExpert.Core.Entities;
+using LogExpert.Core.Enums;
+using LogExpert.Core.Interface;
+using LogExpert.Extensions.Forms;
+
+using NLog;
+
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-using LogExpert.Classes;
-using LogExpert.Config;
-using LogExpert.Entities;
-using LogExpert.Extensions.Forms;
-using LogExpert.Interface;
-using NLog;
+
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace LogExpert.Dialogs
@@ -51,27 +55,27 @@ namespace LogExpert.Dialogs
                 if (component.Controls != null && component.Controls.Count > 0)
                 {
                     ChangeTheme(component.Controls);
-                    component.BackColor = LogExpert.Config.ColorMode.BackgroundColor;
-                    component.ForeColor = LogExpert.Config.ColorMode.ForeColor;
+                    component.BackColor = ColorMode.BackgroundColor;
+                    component.ForeColor = ColorMode.ForeColor;
                 }
                 else
                 {
-                    component.BackColor = LogExpert.Config.ColorMode.BackgroundColor;
-                    component.ForeColor = LogExpert.Config.ColorMode.ForeColor;
+                    component.BackColor = ColorMode.BackgroundColor;
+                    component.ForeColor = ColorMode.ForeColor;
                 }
 
             }
-            #endregion            
+            #endregion
 
             #region DataGridView
 
-            BackColor = LogExpert.Config.ColorMode.DockBackgroundColor;
+            BackColor = ColorMode.DockBackgroundColor;
 
             // Main DataGridView
-            bookmarkDataGridView.BackgroundColor = LogExpert.Config.ColorMode.DockBackgroundColor;
-            bookmarkDataGridView.ColumnHeadersDefaultCellStyle.BackColor = LogExpert.Config.ColorMode.BackgroundColor;
-            bookmarkDataGridView.ColumnHeadersDefaultCellStyle.ForeColor = LogExpert.Config.ColorMode.ForeColor;
-            bookmarkDataGridView.EnableHeadersVisualStyles = false;            
+            bookmarkDataGridView.BackgroundColor = ColorMode.DockBackgroundColor;
+            bookmarkDataGridView.ColumnHeadersDefaultCellStyle.BackColor = ColorMode.BackgroundColor;
+            bookmarkDataGridView.ColumnHeadersDefaultCellStyle.ForeColor = ColorMode.ForeColor;
+            bookmarkDataGridView.EnableHeadersVisualStyles = false;
 
             // Colors for menu
             contextMenuStrip1.Renderer = new ExtendedMenuStripRenderer();
@@ -79,9 +83,9 @@ namespace LogExpert.Dialogs
             for (var y = 0; y < contextMenuStrip1.Items.Count; y++)
             {
                 var item = contextMenuStrip1.Items[y];
-                item.ForeColor = LogExpert.Config.ColorMode.ForeColor;
-                item.BackColor = LogExpert.Config.ColorMode.MenuBackgroundColor;
-            }            
+                item.ForeColor = ColorMode.ForeColor;
+                item.BackColor = ColorMode.MenuBackgroundColor;
+            }
 
             #endregion DataGridView
         }
@@ -248,7 +252,7 @@ namespace LogExpert.Dialogs
             if (!splitContainer1.Visible)
             {
                 Rectangle r = ClientRectangle;
-                e.Graphics.FillRectangle(SystemBrushes.FromSystemColor(LogExpert.Config.ColorMode.BookmarksDefaultBackgroundColor), r);
+                e.Graphics.FillRectangle(SystemBrushes.FromSystemColor(ColorMode.BookmarksDefaultBackgroundColor), r);
                 RectangleF rect = r;
                 StringFormat sf = new();
                 sf.Alignment = StringAlignment.Center;
@@ -276,10 +280,10 @@ namespace LogExpert.Dialogs
 
         private void CommentPainting(DataGridView gridView, int rowIndex, DataGridViewCellPaintingEventArgs e)
         {
-            Color backColor = LogExpert.Config.ColorMode.DockBackgroundColor;
+            Color backColor = ColorMode.DockBackgroundColor;
 
             if ((e.State & DataGridViewElementStates.Selected) == DataGridViewElementStates.Selected)
-            {                
+            {
                 Brush brush;
                 if (gridView.Focused)
                 {
@@ -334,7 +338,7 @@ namespace LogExpert.Dialogs
                 // multiple selection or no selection at all
                 bookmarkTextBox.Enabled = false;
 
-// disable the control first so that changes made to it won't propagate to the bookmark item
+                // disable the control first so that changes made to it won't propagate to the bookmark item
                 bookmarkTextBox.Text = string.Empty;
             }
             else
@@ -384,7 +388,7 @@ namespace LogExpert.Dialogs
                     // CommentPainting(this.bookmarkDataGridView, lineNum, e);
                     // }
                     {
-// else
+                        // else
                         PaintHelper.CellPainting(logPaintContext, bookmarkDataGridView, lineNum, e);
                     }
                 }
@@ -551,7 +555,7 @@ namespace LogExpert.Dialogs
                 int lineNum = bookmarkData.Bookmarks[bookmarkDataGridView.CurrentRow.Index].LineNum;
                 bookmarkData.ToggleBookmark(lineNum);
 
-// we don't ask for confirmation if the bookmark has an associated comment...
+                // we don't ask for confirmation if the bookmark has an associated comment...
                 int boomarkCount = bookmarkData.Bookmarks.Count;
                 bookmarkDataGridView.RowCount = boomarkCount;
 
@@ -666,7 +670,7 @@ namespace LogExpert.Dialogs
             // {
             // // redraw the "no bookmarks" display
             // Invalidate();
-            // } 
+            // }
         }
 
         #endregion

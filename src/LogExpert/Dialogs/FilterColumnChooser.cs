@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
-using LogExpert.Classes.Filter;
+
+using LogExpert.Core.Classes.Filter;
 
 namespace LogExpert.Dialogs
 {

@@ -1,8 +1,10 @@
-using LogExpert.Classes;
-using LogExpert.Classes.Columnizer;
 using LogExpert.Config;
 using LogExpert.Controls.LogTabWindow;
-using LogExpert.Entities;
+using LogExpert.Core.Classes;
+using LogExpert.Core.Classes.Columnizer;
+using LogExpert.Core.Config;
+using LogExpert.Core.Entities;
+using LogExpert.Core.Enums;
 
 using System;
 using System.Collections.Generic;
@@ -79,9 +81,9 @@ namespace LogExpert.Dialogs
             checkBoxFilterTail.Checked = Preferences.filterTail;
             checkBoxFollowTail.Checked = Preferences.followTail;
 
-            radioButtonHorizMouseDrag.Checked = Preferences.timestampControlDragOrientation == DateTimeDragControl.DragOrientations.Horizontal;
-            radioButtonVerticalMouseDrag.Checked = Preferences.timestampControlDragOrientation == DateTimeDragControl.DragOrientations.Vertical;
-            radioButtonVerticalMouseDragInverted.Checked = Preferences.timestampControlDragOrientation == DateTimeDragControl.DragOrientations.InvertedVertical;
+            radioButtonHorizMouseDrag.Checked = Preferences.timestampControlDragOrientation == DragOrientationsEnum.Horizontal;
+            radioButtonVerticalMouseDrag.Checked = Preferences.timestampControlDragOrientation == DragOrientationsEnum.Vertical;
+            radioButtonVerticalMouseDragInverted.Checked = Preferences.timestampControlDragOrientation == DragOrientationsEnum.InvertedVertical;
 
             checkBoxSingleInstance.Checked = Preferences.allowOnlyOneInstance;
             checkBoxOpenLastFiles.Checked = Preferences.openLastFiles;
@@ -275,7 +277,7 @@ namespace LogExpert.Dialogs
         {
             int selIndex = 0;
             comboBox.Items.Clear();
-            IList<ILogLineColumnizer> columnizers = PluginRegistry.Instance.RegisteredColumnizers;
+            IList<ILogLineColumnizer> columnizers = PluginRegistry.PluginRegistry.Instance.RegisteredColumnizers;
 
             foreach (ILogLineColumnizer columnizer in columnizers)
             {
@@ -301,7 +303,7 @@ namespace LogExpert.Dialogs
 
             DataGridViewTextBoxColumn textColumn = (DataGridViewTextBoxColumn)dataGridViewColumnizer.Columns[0];
 
-            IList<ILogLineColumnizer> columnizers = PluginRegistry.Instance.RegisteredColumnizers;
+            IList<ILogLineColumnizer> columnizers = PluginRegistry.PluginRegistry.Instance.RegisteredColumnizers;
 
             foreach (ILogLineColumnizer columnizer in columnizers)
             {
@@ -324,7 +326,7 @@ namespace LogExpert.Dialogs
                 row.Cells.Add(cell);
                 row.Cells[0].Value = maskEntry.mask;
                 ILogLineColumnizer columnizer = ColumnizerPicker.DecideColumnizerByName(maskEntry.columnizerName,
-                    PluginRegistry.Instance.RegisteredColumnizers);
+                    PluginRegistry.PluginRegistry.Instance.RegisteredColumnizers);
 
                 row.Cells[1].Value = columnizer.GetName();
                 dataGridViewColumnizer.Rows.Add(row);
@@ -422,7 +424,7 @@ namespace LogExpert.Dialogs
         {
             listBoxPlugin.Items.Clear();
 
-            foreach (IContextMenuEntry entry in PluginRegistry.Instance.RegisteredContextMenuPlugins)
+            foreach (IContextMenuEntry entry in PluginRegistry.PluginRegistry.Instance.RegisteredContextMenuPlugins)
             {
                 listBoxPlugin.Items.Add(entry);
                 if (entry is ILogExpertPluginConfigurator configurator)
@@ -431,7 +433,7 @@ namespace LogExpert.Dialogs
                 }
             }
 
-            foreach (IKeywordAction entry in PluginRegistry.Instance.RegisteredKeywordActions)
+            foreach (IKeywordAction entry in PluginRegistry.PluginRegistry.Instance.RegisteredKeywordActions)
             {
                 listBoxPlugin.Items.Add(entry);
                 if (entry is ILogExpertPluginConfigurator configurator)
@@ -440,7 +442,7 @@ namespace LogExpert.Dialogs
                 }
             }
 
-            foreach (IFileSystemPlugin entry in PluginRegistry.Instance.RegisteredFileSystemPlugins)
+            foreach (IFileSystemPlugin entry in PluginRegistry.PluginRegistry.Instance.RegisteredFileSystemPlugins)
             {
                 listBoxPlugin.Items.Add(entry);
                 if (entry is ILogExpertPluginConfigurator configurator)
@@ -456,7 +458,7 @@ namespace LogExpert.Dialogs
         {
             _selectedPlugin?.HideConfigForm();
 
-            foreach (IContextMenuEntry entry in PluginRegistry.Instance.RegisteredContextMenuPlugins)
+            foreach (IContextMenuEntry entry in PluginRegistry.PluginRegistry.Instance.RegisteredContextMenuPlugins)
             {
                 if (entry is ILogExpertPluginConfigurator configurator)
                 {
@@ -464,7 +466,7 @@ namespace LogExpert.Dialogs
                 }
             }
 
-            foreach (IKeywordAction entry in PluginRegistry.Instance.RegisteredKeywordActions)
+            foreach (IKeywordAction entry in PluginRegistry.PluginRegistry.Instance.RegisteredKeywordActions)
             {
                 if (entry is ILogExpertPluginConfigurator configurator)
                 {
@@ -622,15 +624,15 @@ namespace LogExpert.Dialogs
 
             if (radioButtonVerticalMouseDrag.Checked)
             {
-                Preferences.timestampControlDragOrientation = DateTimeDragControl.DragOrientations.Vertical;
+                Preferences.timestampControlDragOrientation = DragOrientationsEnum.Vertical;
             }
             else if (radioButtonVerticalMouseDragInverted.Checked)
             {
-                Preferences.timestampControlDragOrientation = DateTimeDragControl.DragOrientations.InvertedVertical;
+                Preferences.timestampControlDragOrientation = DragOrientationsEnum.InvertedVertical;
             }
             else
             {
-                Preferences.timestampControlDragOrientation = DateTimeDragControl.DragOrientations.Horizontal;
+                Preferences.timestampControlDragOrientation = DragOrientationsEnum.Horizontal;
             }
 
             SaveColumnizerList();

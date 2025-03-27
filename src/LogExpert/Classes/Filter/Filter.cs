@@ -1,4 +1,6 @@
 ﻿using LogExpert.Classes.ILogLineColumnizerCallback;
+using LogExpert.Core.Classes;
+using LogExpert.Core.Classes.Filter;
 
 using NLog;
 
@@ -24,6 +26,7 @@ namespace LogExpert.Classes.Filter
 
         #region cTor
 
+        //TODO Is the callback needed?
         public Filter(ColumnizerCallback callback)
         {
             _callback = callback;

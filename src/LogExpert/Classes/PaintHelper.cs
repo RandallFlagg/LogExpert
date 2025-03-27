@@ -1,8 +1,9 @@
-﻿using LogExpert.Classes.Highlight;
-using LogExpert.Config;
+﻿using LogExpert.Config;
+using LogExpert.Core.Classes.Highlight;
+using LogExpert.Core.Config;
+using LogExpert.Core.Entities;
+using LogExpert.Core.Interface;
 using LogExpert.Dialogs;
-using LogExpert.Entities;
-using LogExpert.Interface;
 
 using NLog;
 
@@ -63,7 +64,7 @@ namespace LogExpert.Classes
                 }
                 else
                 {
-                    Color bgColor = LogExpert.Config.ColorMode.DockBackgroundColor;
+                    Color bgColor = ColorMode.DockBackgroundColor;
                     if (!DebugOptions.disableWordHighlight)
                     {
                         if (entry != null)
@@ -93,7 +94,7 @@ namespace LogExpert.Classes
 
                 if (e.ColumnIndex == 0)
                 {
-                    Entities.Bookmark bookmark = logPaintCtx.GetBookmarkForLine(rowIndex);
+                    Bookmark bookmark = logPaintCtx.GetBookmarkForLine(rowIndex);
                     if (bookmark != null)
                     {
                         Rectangle r; // = new Rectangle(e.CellBounds.Left + 2, e.CellBounds.Top + 2, 6, 6);

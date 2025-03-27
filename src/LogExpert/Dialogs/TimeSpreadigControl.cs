@@ -1,4 +1,5 @@
 ﻿using LogExpert.Classes;
+using LogExpert.Core.Classes;
 
 using NLog;
 

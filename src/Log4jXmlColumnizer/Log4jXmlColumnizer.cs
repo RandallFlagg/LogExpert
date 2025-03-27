@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using LogExpert;
+
+using Newtonsoft.Json;
 
 using System;
 using System.Collections.Generic;
@@ -10,7 +12,7 @@ using System.Runtime.Versioning;
 using System.Windows.Forms;
 
 [assembly: SupportedOSPlatform("windows")]
-namespace LogExpert
+namespace Log4jXmlColumnizer
 {
     /// <summary>
     /// XMl configuration for parsing log4j XML files. The XSL will transform every block of log entries

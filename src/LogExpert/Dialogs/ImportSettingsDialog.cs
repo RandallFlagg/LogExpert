@@ -1,7 +1,8 @@
-﻿using System;
+﻿using LogExpert.Core.Config;
+
+using System;
 using System.Drawing;
 using System.Windows.Forms;
-using LogExpert.Config;
 
 namespace LogExpert.Dialogs
 {
@@ -63,7 +64,7 @@ namespace LogExpert.Dialogs
                 {
                     if (((CheckBox)ctl).Checked)
                     {
-                        ImportFlags |= (ExportImportFlags) long.Parse(ctl.Tag as string ?? string.Empty);
+                        ImportFlags |= (ExportImportFlags)long.Parse(ctl.Tag as string ?? string.Empty);
                     }
                 }
             }

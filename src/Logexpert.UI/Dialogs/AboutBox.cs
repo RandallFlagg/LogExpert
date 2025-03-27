@@ -67,14 +67,21 @@ namespace LogExpert.UI.Dialogs
             get
             {
                 AssemblyName assembly = _assembly.GetName();
-                string version = $"{assembly.Version.Major}.{assembly.Version.Minor}.{assembly.Version.Build}.{assembly.Version.Revision}";
-                if (assembly.Version.Revision >= 9000)
+
+                if (assembly.Version != null)
                 {
-                    version += " Testrelease";
+                    string version = $"{assembly.Version.Major}.{assembly.Version.Minor}.{assembly.Version.Build}.{assembly.Version.Revision}";
+                    if (assembly.Version.Revision >= 9000)
+                    {
+                        version += " Testrelease";
+                    }
+
+                    return version;
                 }
 
-                return version;
+                return "0.0.0.0";
             }
+
         }
 
         public string AssemblyDescription
@@ -82,6 +89,7 @@ namespace LogExpert.UI.Dialogs
             get
             {
                 object[] attributes = _assembly.GetCustomAttributes(typeof(AssemblyDescriptionAttribute), false);
+
                 if (attributes.Length == 0)
                 {
                     return string.Empty;
@@ -122,7 +130,13 @@ namespace LogExpert.UI.Dialogs
 
         private void OnLinkLabelURLClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            string target = e.Link.LinkData as string;
+            string? target = string.Empty;
+
+            if (e.Link != null)
+            {
+                target = e.Link.LinkData as string;
+            }
+
             Process.Start(new ProcessStartInfo
             {
                 UseShellExecute = true,

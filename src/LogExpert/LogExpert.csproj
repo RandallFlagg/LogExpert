@@ -85,6 +85,7 @@
     <ProjectReference Include="..\ColumnizerLib\ColumnizerLib.csproj" />
     <ProjectReference Include="..\Logexpert.UI\LogExpert.UI.csproj" />
     <ProjectReference Include="..\LogexpertgRPCService\LogexpertgRPCService.csproj" />
+    <ProjectReference Include="..\PluginRegistry\LogExpert.PluginRegistry.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="DebugWindow.Designer.cs" />

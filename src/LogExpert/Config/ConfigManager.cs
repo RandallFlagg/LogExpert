@@ -1,7 +1,8 @@
-using LogExpert.Classes;
-using LogExpert.Classes.Filter;
-using LogExpert.Entities;
-using LogExpert.Entities.EventArgs;
+using LogExpert.Core.Classes;
+using LogExpert.Core.Classes.Filter;
+using LogExpert.Core.Config;
+using LogExpert.Core.Entities;
+using LogExpert.Core.Entities.EventArgs;
 
 using Newtonsoft.Json;
 
@@ -42,7 +43,7 @@ namespace LogExpert.Config
 
         #region Events
 
-        internal event ConfigChangedEventHandler ConfigChanged;
+        public event ConfigChangedEventHandler ConfigChanged;
 
         #endregion
 
@@ -432,6 +433,6 @@ namespace LogExpert.Config
             }
         }
 
-        internal delegate void ConfigChangedEventHandler(object sender, ConfigChangedEventArgs e);
+        public delegate void ConfigChangedEventHandler(object sender, ConfigChangedEventArgs e);
     }
 }
