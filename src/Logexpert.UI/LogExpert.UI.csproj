@@ -5,7 +5,9 @@
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
-	  <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+	<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+	<SignAssembly>True</SignAssembly>
+	<AssemblyOriginatorKeyFile>..\Solution Items\Key.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
 	<ItemGroup>
@@ -34,6 +36,10 @@
 
   <ItemGroup>
     <Folder Include="Properties\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\Solution Items\Key.snk" Link="Key.snk" />
   </ItemGroup>
 
 </Project>

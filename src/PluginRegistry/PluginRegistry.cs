@@ -1,7 +1,6 @@
 ﻿using LogExpert.Core.Classes;
 using LogExpert.Core.Classes.Columnizer;
 using LogExpert.Core.Entities;
-using LogExpert.Core.Extensions;
 using LogExpert.PluginRegistry.FileSystem;
 
 using NLog;
@@ -124,7 +123,7 @@ namespace LogExpert.PluginRegistry
                 catch (ReflectionTypeLoadException ex)
                 {
                     // can happen when a dll dependency is missing
-                    if (!ex.LoaderExceptions.IsEmpty())
+                    if (ex.LoaderExceptions != null && ex.LoaderExceptions.Length != 0)
                     {
                         foreach (Exception loaderException in ex.LoaderExceptions)
                         {
@@ -360,7 +359,7 @@ namespace LogExpert.PluginRegistry
 
         #region Events handler
 
-        private static Assembly ColumnizerResolveEventHandler(object sender, ResolveEventArgs args)
+        private static Assembly ColumnizerResolveEventHandler(object? sender, ResolveEventArgs args)
         {
             string fileName = new AssemblyName(args.Name).Name + ".dll";
 
