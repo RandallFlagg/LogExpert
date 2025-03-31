@@ -2,9 +2,7 @@
 using LogExpert.Entities;
 using LogExpert.Entities.EventArgs;
 using LogExpert.Interface;
-
 using NLog;
-
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -22,7 +20,17 @@ namespace LogExpert.Classes.Log
 
         private readonly GetLogLineFx _logLineFx;
 
-        private readonly string _fileName;
+        private string FileName
+        {
+            get; init
+            {
+                var uri = new Uri(value);
+                if (uri.IsFile)
+                {
+                    field = uri.LocalPath; // Convert the URI to a local file path
+                }
+            }
+        }
         private readonly int _MAX_BUFFERS = 10;
         private readonly int _MAX_LINES_PER_BUFFER = 100;
 
@@ -39,7 +47,6 @@ namespace LogExpert.Classes.Log
         private long _fileLength;
 
         private Task _garbageCollectorTask;
-        private Task _monitorTask;
         private readonly CancellationTokenSource cts = new();
 
         private bool _isDeleted;
@@ -51,7 +58,7 @@ namespace LogExpert.Classes.Log
 
         private ReaderWriterLock _lruCacheDictLock;
 
-
+        private FileSystemWatcher _watcher;
         private bool _shouldStop;
         private ILogFileInfo _watchedILogFileInfo;
 
@@ -66,7 +73,7 @@ namespace LogExpert.Classes.Log
                 return;
             }
 
-            _fileName = fileName;
+            FileName = fileName;
             EncodingOptions = encodingOptions;
             IsMultiFile = multiFile;
             _MAX_BUFFERS = bufferCount;
@@ -120,7 +127,7 @@ namespace LogExpert.Classes.Log
             }
 
             _watchedILogFileInfo = fileInfo;
-            _fileName = fileInfo.FullName;
+            FileName = fileInfo.FullName;
 
             StartGCThread();
         }
@@ -268,7 +275,7 @@ namespace LogExpert.Classes.Log
         /// <returns></returns>
         public int ShiftBuffers()
         {
-            _logger.Info("ShiftBuffers() begin for {0}{1}", _fileName, IsMultiFile ? " (MultiFile)" : "");
+            _logger.Info("ShiftBuffers() begin for {0}{1}", FileName, IsMultiFile ? " (MultiFile)" : "");
             AcquireBufferListWriterLock();
             int offset = 0;
             _isLineCountDirty = true;
@@ -571,11 +578,125 @@ namespace LogExpert.Classes.Log
             return result;
         }
 
-        public void StartMonitoring()
+        public async Task StartMonitoring()
         {
-            _logger.Info("startMonitoring()");
-            _monitorTask = Task.Run(MonitorThreadProc, cts.Token);
+            _logger.Info("StartMonitoring() for file ${_watchedILogFileInfo.FullName}");
+
+            await Task.Run(() =>
+            {
+                _logger.Info("MonitorThreadProc() for file {0}", _watchedILogFileInfo.FullName);
+
+                long oldSize = 0;
+                try
+                {
+                    OnLoadingStarted(new LoadFileEventArgs(FileName, 0, false, 0, false));
+                    ReadFiles();
+                    if (!_isDeleted)
+                    {
+                        oldSize = _fileLength;
+                        OnLoadingFinished();
+                    }
+                }
+                catch (Exception e)
+                {
+                    _logger.Error(e);
+                }
+            });
+
+            try
+            {
+                _watcher = new FileSystemWatcher
+                {
+                    NotifyFilter = //NotifyFilters.Attributes
+                                   //| NotifyFilters.CreationTime
+                                   //| NotifyFilters.DirectoryName
+                                   //|
+                                     NotifyFilters.FileName
+                                     //| NotifyFilters.LastAccess
+                                     | NotifyFilters.LastWrite
+                                     //| NotifyFilters.Security
+                                     | NotifyFilters.Size,
+
+                    Path = Path.GetDirectoryName(FileName) ?? throw new ArgumentException("Invalid file path"),
+                    Filter = Path.GetFileName(FileName), // Sets filter to the specific 
+                    EnableRaisingEvents = true
+                };
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                Console.WriteLine($"Access denied: {ex.Message}");
+            }
+            catch (ArgumentException ex)
+            {
+                Console.WriteLine($"Invalid argument: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred: {ex.Message}");
+            }
+
+            _watcher.Error += (sender, e) =>
+            {
+                Console.WriteLine($"Error occurred: {e.GetException().Message}");
+                Task.Delay(5000).ContinueWith(_ =>
+                {
+                    try
+                    {
+                        Console.WriteLine("Attempting to restart the watcher...");
+                        _watcher.EnableRaisingEvents = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Failed to restart the watcher: {ex.Message}");
+                    }
+                });
+            };
+            _watcher.Changed += OnFileChanged;
+            _watcher.Created += OnCreated;
+            _watcher.Deleted += OnFileDeleted;
+            _watcher.Renamed += OnFileRenamed;
+            _watcher.Error += OnFileError;
+
             _shouldStop = false;
+        }
+
+        private void OnFileError(object sender, ErrorEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void OnFileRenamed(object sender, RenamedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void OnCreated(object sender, FileSystemEventArgs e)
+        {
+            //TODO: This should be deleted before merge?
+            throw new NotImplementedException();
+        }
+
+        private void OnFileDeleted(object sender, FileSystemEventArgs e)
+        {
+            MonitoredFileNotFound();
+        }
+
+        private void OnFileChanged(object sender, FileSystemEventArgs e)
+        {
+            try
+            {
+                _watchedILogFileInfo.FileHasChanged();
+                _fileLength = _watchedILogFileInfo.Length;
+                FileChanged();
+            }
+            catch (FileNotFoundException ex)
+            {
+                MonitoredFileNotFound();
+            }
+            catch (Exception ex)
+            {
+                throw new NotImplementedException();
+            }
         }
 
         public void StopMonitoring()
@@ -583,15 +704,15 @@ namespace LogExpert.Classes.Log
             _logger.Info("stopMonitoring()");
             _shouldStop = true;
 
-            Thread.Sleep(_watchedILogFileInfo.PollInterval); // leave time for the threads to stop by themselves
-
-            if (_monitorTask != null)
+            if (_watcher != null)
             {
-                if (_monitorTask.Status == TaskStatus.Running) // if thread has not finished, abort it
-                {
-                    cts.Cancel();
-                }
+                _watcher.EnableRaisingEvents = false; // Stop watching
+                _watcher.Dispose(); // Release resources
+                _watcher = null; // Clear the reference
+
             }
+
+            Thread.Sleep(_watchedILogFileInfo.PollInterval); // leave time for the threads to stop by themselves
 
             if (_garbageCollectorTask.IsCanceled == false)
             {
@@ -630,11 +751,11 @@ namespace LogExpert.Classes.Log
         {
             if (_contentDeleted)
             {
-                _logger.Debug("Buffers for {0} already deleted.", Util.GetNameFromPath(_fileName));
+                _logger.Debug("Buffers for {0} already deleted.", Util.GetNameFromPath(FileName));
                 return;
             }
 
-            _logger.Info("Deleting all log buffers for {0}. Used mem: {1:N0}", Util.GetNameFromPath(_fileName), GC.GetTotalMemory(true)); //TODO [Z] uh GC collect calls creepy
+            _logger.Info("Deleting all log buffers for {0}. Used mem: {1:N0}", Util.GetNameFromPath(FileName), GC.GetTotalMemory(true)); //TODO [Z] uh GC collect calls creepy
             AcquireBufferListWriterLock();
             _lruCacheDictLock.AcquireWriterLock(Timeout.Infinite);
             _disposeLock.AcquireWriterLock(Timeout.Infinite);
@@ -701,7 +822,7 @@ namespace LogExpert.Classes.Log
             if (buffer == null)
             {
                 ReleaseBufferListReaderLock();
-                _logger.Error("Cannot find buffer for line {0}, file: {1}{2}", lineNum, _fileName, IsMultiFile ? " (MultiFile)" : "");
+                _logger.Error("Cannot find buffer for line {0}, file: {1}{2}", lineNum, FileName, IsMultiFile ? " (MultiFile)" : "");
                 return;
             }
 
@@ -726,7 +847,7 @@ namespace LogExpert.Classes.Log
             _lruCacheDictLock.ReleaseReaderLock();
 
             AcquireBufferListReaderLock();
-            _logger.Info("File: {0}\r\nBuffer count: {1}\r\nDisposed buffers: {2}", _fileName, _bufferList.Count, _bufferList.Count - cacheCount);
+            _logger.Info("File: {0}\r\nBuffer count: {1}\r\nDisposed buffers: {2}", FileName, _bufferList.Count, _bufferList.Count - cacheCount);
             int lineNum = 0;
             long disposeSum = 0;
             long maxDispose = 0;
@@ -782,7 +903,7 @@ namespace LogExpert.Classes.Log
             if (logBuffer == null)
             {
                 ReleaseBufferListReaderLock();
-                _logger.Error("Cannot find buffer for line {0}, file: {1}{2}", lineNum, _fileName, IsMultiFile ? " (MultiFile)" : "");
+                _logger.Error("Cannot find buffer for line {0}, file: {1}{2}", lineNum, FileName, IsMultiFile ? " (MultiFile)" : "");
                 return null;
             }
 
@@ -1147,7 +1268,7 @@ namespace LogExpert.Classes.Log
 #if DEBUG
                 if (diff > 0)
                 {
-                    _logger.Info("Removing {0} entries from LRU cache for {1}", diff, Util.GetNameFromPath(_fileName));
+                    _logger.Info("Removing {0} entries from LRU cache for {1}", diff, Util.GetNameFromPath(FileName));
                 }
 #endif
                 SortedList<long, int> useSorterList = [];
@@ -1464,74 +1585,6 @@ namespace LogExpert.Classes.Log
             return resultBuffer;
         }
 
-        private void MonitorThreadProc()
-        {
-            Thread.CurrentThread.Name = "MonitorThread";
-            //IFileSystemPlugin fs = PluginRegistry.GetInstance().FindFileSystemForUri(this.watchedILogFileInfo.FullName);
-            _logger.Info("MonitorThreadProc() for file {0}", _watchedILogFileInfo.FullName);
-
-            long oldSize = 0;
-            try
-            {
-                OnLoadingStarted(new LoadFileEventArgs(_fileName, 0, false, 0, false));
-                ReadFiles();
-                if (!_isDeleted)
-                {
-                    oldSize = _fileLength;
-                    OnLoadingFinished();
-                }
-            }
-            catch (Exception e)
-            {
-                _logger.Error(e);
-            }
-
-            while (!_shouldStop)
-            {
-                try
-                {
-                    int pollInterval = _watchedILogFileInfo.PollInterval;
-                    //#if DEBUG
-                    //          if (_logger.IsDebug)
-                    //          {
-                    //            _logger.logDebug("Poll interval for " + this.fileName + ": " + pollInterval);
-                    //          }
-                    //#endif
-                    Thread.Sleep(pollInterval);
-                }
-                catch (Exception e)
-                {
-                    _logger.Error(e);
-                }
-
-                if (_shouldStop)
-                {
-                    return;
-                }
-
-                try
-                {
-                    if (_watchedILogFileInfo.FileHasChanged())
-                    {
-                        _fileLength = _watchedILogFileInfo.Length;
-                        if (_fileLength == -1)
-                        {
-                            MonitoredFileNotFound();
-                        }
-                        else
-                        {
-                            oldSize = _fileLength;
-                            FileChanged();
-                        }
-                    }
-                }
-                catch (FileNotFoundException)
-                {
-                    MonitoredFileNotFound();
-                }
-            }
-        }
-
         private void MonitoredFileNotFound()
         {
             long oldSize;
@@ -1563,7 +1616,7 @@ namespace LogExpert.Classes.Log
             long newSize = _fileLength;
             //if (this.currFileSize != newSize)
             {
-                _logger.Info("file size changed. new size={0}, file: {1}", newSize, _fileName);
+                _logger.Info("file size changed. new size={0}, file: {1}", newSize, FileName);
                 FireChangeEvent();
             }
         }
@@ -1586,7 +1639,7 @@ namespace LogExpert.Classes.Log
                     {
                         // ReloadBufferList();  // removed because reloading is triggered by owning LogWindow
                         // Trigger "new file" handling (reload)
-                        OnLoadFile(new LoadFileEventArgs(_fileName, 0, true, _fileLength, true));
+                        OnLoadFile(new LoadFileEventArgs(FileName, 0, true, _fileLength, true));
 
                         if (_isDeleted)
                         {
