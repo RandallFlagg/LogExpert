@@ -34,111 +34,105 @@ namespace SftpFileSystem
         internal SftpLogFileInfo(SftpFileSystem sftpFileSystem, Uri fileUri, ILogExpertLogger logger)
         {
             _logger = logger;
-            SftpFileSystem sftFileSystem = sftpFileSystem;
             Uri = fileUri;
             _remoteFileName = Uri.PathAndQuery;
-
             int port = Uri.Port != -1 ? Uri.Port : 22;
 
-            bool success = false;
-            bool cancelled = false;
-            if (sftFileSystem.ConfigData.UseKeyfile)
+            // Attempt to initialize the SFTP connection
+            if (!InitializeSftpConnection(sftpFileSystem, port))
             {
-                lock (_sshKeyMonitor) // prevent multiple password dialogs when opening multiple files at once
-                {
-                    while (sftFileSystem.PrivateKeyFile == null)
-                    {
-                        PrivateKeyPasswordDialog dlg = new();
-                        DialogResult dialogResult = dlg.ShowDialog();
-                        if (dialogResult == DialogResult.Cancel)
-                        {
-                            cancelled = true;
-                            break;
-                        }
-
-                        PrivateKeyFile privateKeyFile = new(sftFileSystem.ConfigData.KeyFile, dlg.Password);
-
-                        if (privateKeyFile != null)
-                        {
-                            sftFileSystem.PrivateKeyFile = privateKeyFile;
-                        }
-                        else
-                        {
-                            MessageBox.Show("Loading key file failed");
-                        }
-                    }
-                }
-
-                if (cancelled == false)
-                {
-                    success = false;
-                    Credentials credentials = sftFileSystem.GetCredentials(Uri, true, true);
-                    while (success == false)
-                    {
-                        //Add ConnectionInfo object
-                        _sftp = new SftpClient(Uri.Host, credentials.UserName, sftFileSystem.PrivateKeyFile);
-
-                        if (_sftp != null)
-                        {
-                            _sftp.Connect();
-                            success = true;
-                        }
-
-                        if (success == false)
-                        {
-                            FailedKeyDialog dlg = new();
-                            DialogResult res = dlg.ShowDialog();
-                            dlg.Dispose();
-                            if (res == DialogResult.Cancel)
-                            {
-                                return;
-                            }
-
-                            if (res == DialogResult.OK)
-                            {
-                                break; // go to user/pw auth
-                            }
-
-                            // retries with disabled cache
-                            credentials = sftFileSystem.GetCredentials(Uri, false, true);
-                        }
-                    }
-                }
-            }
-
-            if (success == false)
-            {
-                // username/password auth
-                Credentials credentials = sftFileSystem.GetCredentials(Uri, true, false);
-                _sftp = new SftpClient(Uri.Host, port, credentials.UserName, credentials.Password);
-
-                if (_sftp == null)
-                {
-                    // first fail -> try again with disabled cache
-                    credentials = sftFileSystem.GetCredentials(Uri, false, false);
-                    _sftp = new SftpClient(Uri.Host, port, credentials.UserName, credentials.Password);
-
-                    if (_sftp == null)
-                    {
-                        // 2nd fail -> abort
-                        MessageBox.Show("Authentication failed!");
-                        //MessageBox.Show(sftp.LastErrorText);
-                        return;
-                    }
-                }
-                else
-                {
-                    _sftp.Connect();
-                }
-            }
-
-            if (_sftp.IsConnected == false)
-            {
-                MessageBox.Show("Sftp is not connected");
+                MessageBox.Show("SFTP connection failed.");
                 return;
             }
 
             OriginalLength = _lastLength = Length;
+        }
+
+        private bool InitializeSftpConnection(SftpFileSystem sftpFileSystem, int port)
+        {
+            if (sftpFileSystem.ConfigData.UseKeyfile)
+            {
+                if (!LoadPrivateKey(sftpFileSystem))
+                {
+                    return false;
+                }
+
+                // Attempt connection with keyfile
+                return TryConnectWithKeyfile(sftpFileSystem, port);
+            }
+
+            // Fallback to username/password authentication
+            return TryConnectWithCredentials(sftpFileSystem, port);
+        }
+
+        private bool LoadPrivateKey(SftpFileSystem sftpFileSystem)
+        {
+            lock (_sshKeyMonitor)
+            {
+                while (sftpFileSystem.PrivateKeyFile == null)
+                {
+                    using PrivateKeyPasswordDialog dlg = new();
+                    if (dlg.ShowDialog() == DialogResult.Cancel)
+                    {
+                        return false;
+                    }
+
+                    try
+                    {
+                        sftpFileSystem.PrivateKeyFile = new PrivateKeyFile(sftpFileSystem.ConfigData.KeyFile, dlg.Password);
+                    }
+                    catch
+                    {
+                        MessageBox.Show("Loading key file failed.");
+                    }
+                }
+            }
+            return true;
+        }
+
+        private bool TryConnectWithKeyfile(SftpFileSystem sftpFileSystem, int port)
+        {
+            sftpFileSystem.GetCredentials(Uri, true, true);
+
+            while (true)
+            {
+                _sftp.Connect();
+
+                if (_sftp.IsConnected)
+                {
+                    return true;
+                }
+
+                using FailedKeyDialog dlg = new();
+                if (dlg.ShowDialog() == DialogResult.Cancel)
+                {
+                    return false;
+                }
+
+                // Retry with cache disabled
+                sftpFileSystem.GetCredentials(Uri, false, true);
+            }
+        }
+
+        private bool TryConnectWithCredentials(SftpFileSystem sftpFileSystem, int port)
+        {
+            sftpFileSystem.GetCredentials(Uri, true, false);
+            _sftp.Connect();
+
+            if (!_sftp.IsConnected)
+            {
+                // Retry with cache disabled
+                sftpFileSystem.GetCredentials(Uri, false, false);
+                _sftp.Connect();
+
+                if (!_sftp.IsConnected)
+                {
+                    MessageBox.Show("Authentication failed!");
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         #endregion
