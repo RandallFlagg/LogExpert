@@ -67,8 +67,8 @@ namespace LogExpert.Dialogs
             get
             {
                 AssemblyName assembly = _assembly.GetName();
-                string version = $"{assembly.Version.Major}.{assembly.Version.Minor}.{assembly.Version.Build}.{assembly.Version.Revision}";
-                if (assembly.Version.Revision >= 9000)
+                string version = assembly.Version != null ? $"{assembly.Version.Major}.{assembly.Version.Minor}.{assembly.Version.Build}.{assembly.Version.Revision}" : "No version in assembly";
+                if (assembly.Version?.Revision >= 9000)
                 {
                     version += " Testrelease";
                 }
@@ -122,11 +122,10 @@ namespace LogExpert.Dialogs
 
         private void OnLinkLabelURLClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            string target = e.Link.LinkData as string;
             Process.Start(new ProcessStartInfo
             {
                 UseShellExecute = true,
-                FileName = target,
+                FileName = e.Link?.LinkData as string,
             });
         }
 
