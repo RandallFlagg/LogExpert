@@ -8,7 +8,6 @@ using LogExpert.Classes.Persister;
 using LogExpert.Config;
 using LogExpert.Entities;
 using LogExpert.Entities.EventArgs;
-
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -16,7 +15,6 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-//using System.Linq;
 
 namespace LogExpert.Controls.LogWindow
 {
@@ -81,7 +79,7 @@ namespace LogExpert.Controls.LogWindow
 
                 try
                 {
-                    _logFileReader = new LogfileReader(fileName, EncodingOptions, IsMultiFile, Preferences.bufferCount, Preferences.linesPerBuffer, _multiFileOptions, Preferences.sizePerBuffer)
+                    _logFileReader = new LogfileReader(fileName, EncodingOptions, IsMultiFile, Preferences.bufferCount, Preferences.linesPerBuffer, _multiFileOptions)
                     {
                         UseNewReader = !Preferences.useLegacyReader
                     };
@@ -156,7 +154,7 @@ namespace LogExpert.Controls.LogWindow
             EncodingOptions = encodingOptions;
             _columnCache = new ColumnCache();
 
-            _logFileReader = new LogfileReader(fileNames, EncodingOptions, Preferences.bufferCount, Preferences.linesPerBuffer, _multiFileOptions, Preferences.sizePerBuffer);
+            _logFileReader = new LogfileReader(fileNames, EncodingOptions, Preferences.bufferCount, Preferences.linesPerBuffer, _multiFileOptions);
             _logFileReader.UseNewReader = !Preferences.useLegacyReader;
             RegisterLogFileReaderEvents();
             _logFileReader.StartMonitoring();

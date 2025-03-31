@@ -1,6 +1,5 @@
 ﻿using LogExpert.Dialogs;
 using LogExpert.Extensions.Forms;
-using LogExpert.Properties;
 
 using System;
 using System.Drawing;
@@ -578,7 +577,7 @@ namespace LogExpert.Controls.LogWindow
             // 
             // pnlProFilterLabel
             // 
-            pnlProFilterLabel.BackgroundImage = Resources.Pro_Filter;
+            pnlProFilterLabel.BackgroundImage = LogExpert.Resources.Resources.Pro_Filter;
             pnlProFilterLabel.BackgroundImageLayout = ImageLayout.Center;
             pnlProFilterLabel.Location = new Point(5, 7);
             pnlProFilterLabel.Name = "pnlProFilterLabel";
@@ -655,7 +654,7 @@ namespace LogExpert.Controls.LogWindow
             // btnToggleHighlightPanel
             // 
             btnToggleHighlightPanel.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnToggleHighlightPanel.Image = Resources.Arrow_menu_open;
+            btnToggleHighlightPanel.Image = LogExpert.Resources.Resources.Arrow_menu_open;
             btnToggleHighlightPanel.Location = new Point(1832, 1);
             btnToggleHighlightPanel.Name = "btnToggleHighlightPanel";
             btnToggleHighlightPanel.Size = new Size(20, 21);
@@ -785,7 +784,7 @@ namespace LogExpert.Controls.LogWindow
             // 
             // filterDownButton
             // 
-            filterDownButton.BackgroundImage = Resources.ArrowDown;
+            filterDownButton.BackgroundImage = LogExpert.Resources.Resources.ArrowDown;
             filterDownButton.BackgroundImageLayout = ImageLayout.Stretch;
             filterDownButton.Location = new Point(296, 85);
             filterDownButton.Name = "filterDownButton";
@@ -798,7 +797,7 @@ namespace LogExpert.Controls.LogWindow
             // 
             // filterUpButton
             // 
-            filterUpButton.BackgroundImage = Resources.ArrowUp;
+            filterUpButton.BackgroundImage = LogExpert.Resources.Resources.ArrowUp;
             filterUpButton.BackgroundImageLayout = ImageLayout.Stretch;
             filterUpButton.Location = new Point(258, 85);
             filterUpButton.Name = "filterUpButton";

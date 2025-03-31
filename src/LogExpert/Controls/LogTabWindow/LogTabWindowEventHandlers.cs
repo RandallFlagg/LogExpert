@@ -44,7 +44,7 @@ namespace LogExpert.Controls.LogTabWindow
                 }
             }
 
-            if (ConfigManager.Settings.preferences.openLastFiles && _startupFileNames == null)
+            if (ConfigManager.Settings.Preferences.openLastFiles && _startupFileNames == null)
             {
                 List<string> tmpList = ObjectClone.Clone(ConfigManager.Settings.lastOpenFilesList);
 
@@ -81,7 +81,7 @@ namespace LogExpert.Controls.LogTabWindow
                 _ledThread.Join();
 
                 IList<LogWindow.LogWindow> deleteLogWindowList = new List<LogWindow.LogWindow>();
-                ConfigManager.Settings.alwaysOnTop = TopMost && ConfigManager.Settings.preferences.allowOnlyOneInstance;
+                ConfigManager.Settings.alwaysOnTop = TopMost && ConfigManager.Settings.Preferences.allowOnlyOneInstance;
                 SaveLastOpenFilesList();
 
                 foreach (LogWindow.LogWindow logWindow in _logWindowList)
@@ -353,7 +353,7 @@ namespace LogExpert.Controls.LogTabWindow
 
         private void OnProgressBarUpdate(object sender, ProgressEventArgs e)
         {
-            Invoke(new ProgressBarEventFx(ProgressBarUpdateWorker), e);
+            Invoke(ProgressBarUpdateWorker, e);
         }
 
         private void OnStatusLineEvent(object sender, StatusLineEventArgs e)
@@ -952,7 +952,7 @@ namespace LogExpert.Controls.LogTabWindow
 
         private void OnOptionToolStripMenuItemDropDownOpening(object sender, EventArgs e)
         {
-            lockInstanceToolStripMenuItem.Enabled = !ConfigManager.Settings.preferences.allowOnlyOneInstance;
+            lockInstanceToolStripMenuItem.Enabled = !ConfigManager.Settings.Preferences.allowOnlyOneInstance;
             lockInstanceToolStripMenuItem.Checked = StaticData.CurrentLockedMainWindow == this;
         }
 
@@ -1004,8 +1004,10 @@ namespace LogExpert.Controls.LogTabWindow
         {
             if (CurrentLogWindow != null)
             {
-                TabRenameDlg dlg = new();
-                dlg.TabName = CurrentLogWindow.Text;
+                TabRenameDialog dlg = new()
+                {
+                    TabName = CurrentLogWindow.Text
+                };
                 if (DialogResult.OK == dlg.ShowDialog())
                 {
                     CurrentLogWindow.Text = dlg.TabName;

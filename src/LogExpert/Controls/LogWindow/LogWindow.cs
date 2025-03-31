@@ -196,7 +196,7 @@ namespace LogExpert.Controls.LogWindow
                 filterComboBox.Items.Add(item);
             }
 
-            filterComboBox.DropDownHeight = filterComboBox.ItemHeight * ConfigManager.Settings.preferences.maximumFilterEntriesDisplayed;
+            filterComboBox.DropDownHeight = filterComboBox.ItemHeight * ConfigManager.Settings.Preferences.maximumFilterEntriesDisplayed;
             AutoResizeFilterBox();
 
             filterRegexCheckBox.Checked = _filterParams.isRegex;
@@ -228,8 +228,8 @@ namespace LogExpert.Controls.LogWindow
             dataGridView.EditModeMenuStrip = editModeContextMenuStrip;
             markEditModeToolStripMenuItem.Enabled = true;
 
-            _panelOpenButtonImage = Properties.Resources.Arrow_menu_open;
-            _panelCloseButtonImage = Properties.Resources.Arrow_menu_close;
+            _panelOpenButtonImage = Resources.Resources.Arrow_menu_open;
+            _panelCloseButtonImage = Resources.Resources.Arrow_menu_close;
 
             Settings settings = ConfigManager.Settings;
 
@@ -494,7 +494,7 @@ namespace LogExpert.Controls.LogWindow
 
         public string ForcedPersistenceFileName { get; set; } = null;
 
-        public Preferences Preferences => ConfigManager.Settings.preferences;
+        public Preferences Preferences => ConfigManager.Settings.Preferences;
 
         public string GivenFileName { get; set; } = null;
 
@@ -613,10 +613,6 @@ namespace LogExpert.Controls.LogWindow
         }
 
         // used for external wait fx WaitForLoadFinished()
-
-        private delegate void UpdateProgressCallback(LoadFileEventArgs e);
-
-        private delegate void LoadingStartedFx(LoadFileEventArgs e);
 
         private delegate void SelectLineFx(int line, bool triggerSyncCall);
 

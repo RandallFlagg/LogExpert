@@ -48,7 +48,7 @@ namespace LogExpert.Classes.Columnizer
                 object o = cti.Invoke(new object[] { });
                 if (o is IColumnizerConfigurator configurator)
                 {
-                    configurator.LoadConfig(ConfigManager.Settings.preferences.PortableMode ? ConfigManager.PortableModeDir : ConfigManager.ConfigDir);
+                    configurator.LoadConfig(ConfigManager.Settings.Preferences.PortableMode ? ConfigManager.PortableModeDir : ConfigManager.ConfigDir);
                 }
                 return (ILogLineColumnizer)o;
             }

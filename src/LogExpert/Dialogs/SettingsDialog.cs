@@ -142,6 +142,8 @@ namespace LogExpert.Dialogs
                 radioButtonSessionApplicationStartupDir.Checked = true;
             }
 
+            upDownMaximumLineLength.Value = Preferences.MaxLineLength;
+
             upDownMaximumFilterEntriesDisplayed.Value = Preferences.maximumFilterEntriesDisplayed;
             upDownMaximumFilterEntries.Value = Preferences.maximumFilterEntries;
 
@@ -1022,7 +1024,7 @@ namespace LogExpert.Dialogs
                 }
 
                 ConfigManager.Import(fileInfo, dlg.ImportFlags);
-                Preferences = ConfigManager.Settings.preferences;
+                Preferences = ConfigManager.Settings.Preferences;
                 FillDialog();
                 MessageBox.Show(this, @"Settings imported", @"LogExpert");
             }
