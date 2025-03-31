@@ -968,16 +968,18 @@ namespace LogExpert.Controls.LogTabWindow
 
         private void OnOpenURIToolStripMenuItemClick(object sender, EventArgs e)
         {
-            OpenUriDialog dlg = new();
-            dlg.UriHistory = ConfigManager.Settings.uriHistoryList;
+            OpenUriDialog dlg = new()
+            {
+                UriHistory = ConfigManager.Settings.uriHistoryList
+            };
 
             if (DialogResult.OK == dlg.ShowDialog())
             {
-                if (dlg.Uri.Trim().Length > 0)
+                if (!string.IsNullOrWhiteSpace(dlg.Uri))
                 {
                     ConfigManager.Settings.uriHistoryList = dlg.UriHistory;
                     ConfigManager.Save(SettingsFlags.FileHistory);
-                    LoadFiles(new[] { dlg.Uri }, false);
+                    LoadFiles([dlg.Uri], false);
                 }
             }
         }

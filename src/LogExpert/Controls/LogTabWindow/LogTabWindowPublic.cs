@@ -49,31 +49,46 @@ namespace LogExpert.Controls.LogTabWindow
         {
             return AddFileTab(givenFileName, isTempFile, title, forcePersistenceLoading, preProcessColumnizer, true);
         }
-        
+
         public LogWindow.LogWindow AddFileTab(string givenFileName, bool isTempFile, string title, bool forcePersistenceLoading, ILogLineColumnizer preProcessColumnizer, bool doNotAddToDockPanel = false)
         {
-            string logFileName = FindFilenameForSettings(givenFileName);
-            LogWindow.LogWindow win = FindWindowForFile(logFileName);
-            if (win != null)
+            // Resolve log file name and check for an existing window
+            var logFileName = FindFilenameForSettings(givenFileName);
+            var existingWindow = FindWindowForFile(logFileName);
+            if (existingWindow != null)
             {
                 if (!isTempFile)
                 {
                     AddToFileHistory(givenFileName);
                 }
-
-                SelectTab(win);
-                return win;
+                SelectTab(existingWindow);
+                return existingWindow;
             }
 
+            // Setup encoding options and create a new log window
             EncodingOptions encodingOptions = new();
             FillDefaultEncodingFromSettings(encodingOptions);
-            LogWindow.LogWindow logWindow = new(this, logFileName, isTempFile, forcePersistenceLoading);
-
-            logWindow.GivenFileName = givenFileName;
+            LogWindow.LogWindow logWindow = new(this, logFileName, isTempFile, forcePersistenceLoading)
+            {
+                GivenFileName = givenFileName
+            };
 
             if (preProcessColumnizer != null)
             {
                 logWindow.ForceColumnizerForLoading(preProcessColumnizer);
+            }
+
+            // Add the log window and update file history
+            AddLogWindow(logWindow, title, doNotAddToDockPanel);
+
+            // Update tab color based on settings
+            var data = logWindow.Tag as LogWindowData;
+            data.color = _defaultTabColor;
+            SetTabColor(logWindow, _defaultTabColor);
+
+            if (givenFileName.EndsWith(".lxp", StringComparison.OrdinalIgnoreCase))
+            {
+                logWindow.ForcedPersistenceFileName = givenFileName;
             }
 
             if (isTempFile)
@@ -81,22 +96,13 @@ namespace LogExpert.Controls.LogTabWindow
                 logWindow.TempTitleName = title;
                 encodingOptions.Encoding = new UnicodeEncoding(false, false);
             }
-
-            AddLogWindow(logWindow, title, doNotAddToDockPanel);
-            if (!isTempFile)
+            else
             {
                 AddToFileHistory(givenFileName);
-            }
-
-            LogWindowData data = logWindow.Tag as LogWindowData;            
-            data.color = _defaultTabColor;
-            SetTabColor(logWindow, _defaultTabColor);
-            //data.tabPage.BorderColor = this.defaultTabBorderColor;
-            if (!isTempFile)
-            {
-                foreach (ColorEntry colorEntry in ConfigManager.Settings.fileColors)
+                SetTooltipText(logWindow, logFileName);
+                foreach (var colorEntry in ConfigManager.Settings.fileColors)
                 {
-                    if (colorEntry.FileName.ToLower().Equals(logFileName.ToLower()))
+                    if (colorEntry.FileName.Equals(logFileName, StringComparison.OrdinalIgnoreCase))
                     {
                         data.color = colorEntry.Color;
                         SetTabColor(logWindow, colorEntry.Color);
@@ -105,18 +111,9 @@ namespace LogExpert.Controls.LogTabWindow
                 }
             }
 
-            if (!isTempFile)
-            {
-                SetTooltipText(logWindow, logFileName);
-            }
-
-            if (givenFileName.EndsWith(".lxp"))
-            {
-                logWindow.ForcedPersistenceFileName = givenFileName;
-            }
-
-            // this.BeginInvoke(new LoadFileDelegate(logWindow.LoadFile), new object[] { logFileName, encoding });
+            // Load the file in a separate task
             Task.Run(() => logWindow.LoadFile(logFileName, encodingOptions));
+
             return logWindow;
         }
 
