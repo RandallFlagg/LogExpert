@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace LogExpert
@@ -15,10 +16,15 @@ namespace LogExpert
 
         public Log4jXmlColumnizerConfigDlg(Log4jXmlColumnizerConfig config)
         {
+            SuspendLayout();
+            AutoScaleDimensions = new SizeF(96F, 96F);
+            AutoScaleMode = AutoScaleMode.Dpi;
+
             _config = config;
             InitializeComponent();
             FillListBox();
             localTimeCheckBox.Checked = _config.localTimestamps;
+            ResumeLayout();
         }
 
         #endregion
@@ -33,7 +39,7 @@ namespace LogExpert
 
             foreach (Log4jColumnEntry entry in _config.columnList)
             {
-                DataGridViewRow row = new DataGridViewRow();
+                DataGridViewRow row = new();
                 row.Cells.Add(new DataGridViewCheckBoxCell());
                 row.Cells.Add(new DataGridViewTextBoxCell());
                 row.Cells.Add(new DataGridViewTextBoxCell());
@@ -58,8 +64,8 @@ namespace LogExpert
             {
                 _config.columnList[i].visible = (bool)columnGridView.Rows[i].Cells[0].Value;
                 string sLen = (string)columnGridView.Rows[i].Cells[2].Value;
-                int len;
-                if (int.TryParse(sLen, out len))
+
+                if (int.TryParse(sLen, out int len))
                 {
                     _config.columnList[i].maxLen = len;
                 }
