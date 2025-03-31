@@ -64,7 +64,7 @@
             this.btnOk.TabIndex = 1;
             this.btnOk.Text = "Ok";
             this.btnOk.UseVisualStyleBackColor = true;
-            this.btnOk.Click += new System.EventHandler(this.btnOk_Click);
+            this.btnOk.Click += new System.EventHandler(this.OnBtnOkClick);
             // 
             // lblRegEx
             // 
@@ -93,7 +93,7 @@
             this.tbCheck.TabIndex = 4;
             this.tbCheck.Text = "Check";
             this.tbCheck.UseVisualStyleBackColor = true;
-            this.tbCheck.Click += new System.EventHandler(this.tbCheck_Click);
+            this.tbCheck.Click += new System.EventHandler(this.OnButtonCheckClick);
             // 
             // tbTestLine
             // 
@@ -163,8 +163,6 @@
             // 
             // RegexColumnizerConfigDialog
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(938, 293);
             this.Controls.Add(this.tbName);
             this.Controls.Add(this.label2);

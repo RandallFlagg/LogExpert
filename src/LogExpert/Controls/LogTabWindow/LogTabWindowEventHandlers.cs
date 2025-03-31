@@ -1,4 +1,11 @@
-﻿using System;
+﻿using LogExpert.Classes;
+using LogExpert.Classes.Persister;
+using LogExpert.Config;
+using LogExpert.Dialogs;
+using LogExpert.Entities;
+using LogExpert.Entities.EventArgs;
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -6,17 +13,12 @@ using System.Drawing;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
-using LogExpert.Classes;
-using LogExpert.Classes.Persister;
-using LogExpert.Config;
-using LogExpert.Dialogs;
-using LogExpert.Entities;
-using LogExpert.Entities.EventArgs;
+
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace LogExpert.Controls.LogTabWindow
 {
-    public partial class LogTabWindow
+    internal partial class LogTabWindow
     {
         #region Events handler
 
@@ -42,7 +44,7 @@ namespace LogExpert.Controls.LogTabWindow
                 }
             }
 
-            if (ConfigManager.Settings.preferences.openLastFiles && _startupFileNames == null)
+            if (ConfigManager.Settings.Preferences.openLastFiles && _startupFileNames == null)
             {
                 List<string> tmpList = ObjectClone.Clone(ConfigManager.Settings.lastOpenFilesList);
 
@@ -62,10 +64,6 @@ namespace LogExpert.Controls.LogTabWindow
             _ledThread.IsBackground = true;
             _ledThread.Start();
 
-            _statusLineThread = new Thread(StatusLineThreadFunc);
-            _statusLineThread.IsBackground = true;
-            _statusLineThread.Start();
-
             FillHighlightComboBox();
             FillToolLauncherBar();
 #if !DEBUG
@@ -81,10 +79,9 @@ namespace LogExpert.Controls.LogTabWindow
                 _statusLineEventHandle.Set();
                 _statusLineEventWakeupHandle.Set();
                 _ledThread.Join();
-                _statusLineThread.Join();
 
                 IList<LogWindow.LogWindow> deleteLogWindowList = new List<LogWindow.LogWindow>();
-                ConfigManager.Settings.alwaysOnTop = TopMost && ConfigManager.Settings.preferences.allowOnlyOneInstance;
+                ConfigManager.Settings.alwaysOnTop = TopMost && ConfigManager.Settings.Preferences.allowOnlyOneInstance;
                 SaveLastOpenFilesList();
 
                 foreach (LogWindow.LogWindow logWindow in _logWindowList)
@@ -99,7 +96,7 @@ namespace LogExpert.Controls.LogTabWindow
 
                 DestroyBookmarkWindow();
 
-                ConfigManager.Instance.ConfigChanged -= ConfigChanged;
+                ConfigManager.Instance.ConfigChanged -= OnConfigChanged;
 
                 SaveWindowPosition();
                 ConfigManager.Save(SettingsFlags.WindowPosition | SettingsFlags.FileHistory);
@@ -134,14 +131,14 @@ namespace LogExpert.Controls.LogTabWindow
         private void OnLogWindowDisposed(object sender, EventArgs e)
         {
             LogWindow.LogWindow logWindow = sender as LogWindow.LogWindow;
-            
+
             if (sender == CurrentLogWindow)
             {
                 ChangeCurrentLogWindow(null);
             }
-            
+
             RemoveLogWindow(logWindow);
-            
+
             logWindow.Tag = null;
         }
 
@@ -158,11 +155,11 @@ namespace LogExpert.Controls.LogTabWindow
             }
 
             CurrentLogWindow.ColumnizerCallbackObject.LineNum = CurrentLogWindow.GetCurrentLineNum();
-            FilterSelectorForm form = new FilterSelectorForm(PluginRegistry.GetInstance().RegisteredColumnizers, CurrentLogWindow.CurrentColumnizer, CurrentLogWindow.ColumnizerCallbackObject);
+            FilterSelectorForm form = new(PluginRegistry.Instance.RegisteredColumnizers, CurrentLogWindow.CurrentColumnizer, CurrentLogWindow.ColumnizerCallbackObject);
             form.Owner = this;
             form.TopMost = TopMost;
             DialogResult res = form.ShowDialog();
-            
+
             if (res == DialogResult.OK)
             {
                 if (form.ApplyToAll)
@@ -221,7 +218,7 @@ namespace LogExpert.Controls.LogTabWindow
                 return;
             }
 
-            GotoLineDialog dlg = new GotoLineDialog(this);
+            GotoLineDialog dlg = new(this);
             DialogResult res = dlg.ShowDialog();
             if (res == DialogResult.OK)
             {
@@ -285,7 +282,7 @@ namespace LogExpert.Controls.LogTabWindow
                 s += format;
                 s += " , ";
             }
-            s = s.Substring(0, s.Length - 3);
+            s = s[..^3];
             _logger.Debug(s);
 #endif
 
@@ -313,11 +310,11 @@ namespace LogExpert.Controls.LogTabWindow
 
         private void OnAboutToolStripMenuItemClick(object sender, EventArgs e)
         {
-            AboutBox aboutBox = new AboutBox();
+            AboutBox aboutBox = new();
             aboutBox.TopMost = TopMost;
             aboutBox.ShowDialog();
         }
-        
+
         private void OnFilterToolStripMenuItemClick(object sender, EventArgs e)
         {
             CurrentLogWindow?.ToggleFilterPanel();
@@ -331,7 +328,7 @@ namespace LogExpert.Controls.LogTabWindow
 
         private void OnGuiStateUpdate(object sender, GuiStateArgs e)
         {
-            BeginInvoke(new GuiStateUpdateWorkerDelegate(GuiStateUpdateWorker), e);
+            BeginInvoke(GuiStateUpdateWorker, e);
         }
 
         private void OnColumnizerChanged(object sender, ColumnizerEventArgs e)
@@ -356,24 +353,19 @@ namespace LogExpert.Controls.LogTabWindow
 
         private void OnProgressBarUpdate(object sender, ProgressEventArgs e)
         {
-            Invoke(new ProgressBarEventFx(ProgressBarUpdateWorker), e);
+            Invoke(ProgressBarUpdateWorker, e);
         }
 
         private void OnStatusLineEvent(object sender, StatusLineEventArgs e)
         {
-            lock (_statusLineLock)
-            {
-                _lastStatusLineEvent = e;
-                _statusLineEventHandle.Set();
-                _statusLineEventWakeupHandle.Set();
-            }
+            StatusLineEventWorker(e);
         }
 
         private void OnFollowTailCheckBoxClick(object sender, EventArgs e)
         {
             CurrentLogWindow?.FollowTailChanged(checkBoxFollowTail.Checked, false);
         }
-        
+
         private void OnLogTabWindowKeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.W && e.Control)
@@ -434,7 +426,7 @@ namespace LogExpert.Controls.LogTabWindow
                     return;
                 }
 
-                if (((LogWindow.LogWindow) sender).Tag is LogWindowData data)
+                if (((LogWindow.LogWindow)sender).Tag is LogWindowData data)
                 {
                     lock (data)
                     {
@@ -453,7 +445,7 @@ namespace LogExpert.Controls.LogTabWindow
                         data.dirty = true;
                     }
                     Icon icon = GetIcon(diff, data);
-                    BeginInvoke(new SetTabIconDelegate(SetTabIcon), (LogWindow.LogWindow) sender, icon);
+                    BeginInvoke(new SetTabIconDelegate(SetTabIcon), (LogWindow.LogWindow)sender, icon);
                 }
             }
         }
@@ -500,10 +492,10 @@ namespace LogExpert.Controls.LogTabWindow
             {
                 if (dockPanel.ActiveContent == sender)
                 {
-                    LogWindowData data = ((LogWindow.LogWindow) sender).Tag as LogWindowData;
+                    LogWindowData data = ((LogWindow.LogWindow)sender).Tag as LogWindowData;
                     data.dirty = false;
                     Icon icon = GetIcon(data.diffSum, data);
-                    BeginInvoke(new SetTabIconDelegate(SetTabIcon), (LogWindow.LogWindow) sender, icon);
+                    BeginInvoke(new SetTabIconDelegate(SetTabIcon), (LogWindow.LogWindow)sender, icon);
                 }
             }
         }
@@ -512,10 +504,10 @@ namespace LogExpert.Controls.LogTabWindow
         {
             if (!Disposing)
             {
-                LogWindowData data = ((LogWindow.LogWindow) sender).Tag as LogWindowData;
+                LogWindowData data = ((LogWindow.LogWindow)sender).Tag as LogWindowData;
                 data.syncMode = e.IsTimeSynced ? 1 : 0;
                 Icon icon = GetIcon(data.diffSum, data);
-                BeginInvoke(new SetTabIconDelegate(SetTabIcon), (LogWindow.LogWindow) sender, icon);
+                BeginInvoke(new SetTabIconDelegate(SetTabIcon), (LogWindow.LogWindow)sender, icon);
             }
             else
             {
@@ -601,7 +593,7 @@ namespace LogExpert.Controls.LogTabWindow
         {
             CurrentLogWindow?.AppFocusGained();
         }
-        
+
         private void OnShowBookmarkListToolStripMenuItemClick(object sender, EventArgs e)
         {
             if (_bookmarkWindow.Visible)
@@ -707,19 +699,21 @@ namespace LogExpert.Controls.LogTabWindow
             LogWindow.LogWindow logWindow = dockPanel.ActiveContent as LogWindow.LogWindow;
 
             LogWindowData data = logWindow.Tag as LogWindowData;
+
             if (data == null)
             {
                 return;
             }
 
-            ColorDialog dlg = new ColorDialog();
+            ColorDialog dlg = new();
             dlg.Color = data.color;
             if (dlg.ShowDialog() == DialogResult.OK)
             {
                 data.color = dlg.Color;
                 SetTabColor(logWindow, data.color);
             }
-            List<ColorEntry> delList = new List<ColorEntry>();
+            List<ColorEntry> delList = [];
+
             foreach (ColorEntry entry in ConfigManager.Settings.fileColors)
             {
                 if (entry.FileName.ToLower().Equals(logWindow.FileName.ToLower()))
@@ -727,11 +721,13 @@ namespace LogExpert.Controls.LogTabWindow
                     delList.Add(entry);
                 }
             }
+
             foreach (ColorEntry entry in delList)
             {
                 ConfigManager.Settings.fileColors.Remove(entry);
             }
             ConfigManager.Settings.fileColors.Add(new ColorEntry(logWindow.FileName, dlg.Color));
+
             while (ConfigManager.Settings.fileColors.Count > MAX_COLOR_HISTORY)
             {
                 ConfigManager.Settings.fileColors.RemoveAt(0);
@@ -745,16 +741,17 @@ namespace LogExpert.Controls.LogTabWindow
                 _wasMaximized = WindowState == FormWindowState.Maximized;
             }
         }
-        
+
         private void OnSaveProjectToolStripMenuItemClick(object sender, EventArgs e)
         {
-            SaveFileDialog dlg = new SaveFileDialog();
+            SaveFileDialog dlg = new();
             dlg.DefaultExt = "lxj";
             dlg.Filter = @"LogExpert session (*.lxj)|*.lxj";
+
             if (dlg.ShowDialog() == DialogResult.OK)
             {
                 string fileName = dlg.FileName;
-                List<string> fileNames = new List<string>();
+                List<string> fileNames = [];
 
                 lock (_logWindowList)
                 {
@@ -768,7 +765,8 @@ namespace LogExpert.Controls.LogTabWindow
                         }
                     }
                 }
-                ProjectData projectData = new ProjectData();
+
+                ProjectData projectData = new();
                 projectData.memberList = fileNames;
                 projectData.tabLayoutXml = SaveLayout();
                 ProjectPersister.SaveProjectData(fileName, projectData);
@@ -777,10 +775,10 @@ namespace LogExpert.Controls.LogTabWindow
 
         private void OnLoadProjectToolStripMenuItemClick(object sender, EventArgs e)
         {
-            OpenFileDialog dlg = new OpenFileDialog();
+            OpenFileDialog dlg = new();
             dlg.DefaultExt = "lxj";
             dlg.Filter = @"LogExpert sessions (*.lxj)|*.lxj";
-            
+
             if (dlg.ShowDialog() == DialogResult.OK)
             {
                 string projectFileName = dlg.FileName;
@@ -806,7 +804,7 @@ namespace LogExpert.Controls.LogTabWindow
         {
             LogWindow.LogWindow logWindow = dockPanel.ActiveContent as LogWindow.LogWindow;
 
-            Process explorer = new Process();
+            Process explorer = new();
             explorer.StartInfo.FileName = "explorer.exe";
             explorer.StartInfo.Arguments = "/e,/select," + logWindow.Title;
             explorer.StartInfo.UseShellExecute = false;
@@ -817,7 +815,7 @@ namespace LogExpert.Controls.LogTabWindow
         {
             CurrentLogWindow?.ExportBookmarkList();
         }
-        
+
         private void OnHighlightGroupsComboBoxDropDownClosed(object sender, EventArgs e)
         {
             ApplySelectedHighlightGroup();
@@ -836,7 +834,8 @@ namespace LogExpert.Controls.LogTabWindow
             }
         }
 
-        private void ConfigChanged(object sender, ConfigChangedEventArgs e)
+
+        private void OnConfigChanged(object sender, ConfigChangedEventArgs e)
         {
             if (LogExpertProxy != null)
             {
@@ -899,7 +898,7 @@ namespace LogExpert.Controls.LogTabWindow
 
         private void OnThrowExceptionBackgroundThreadToolStripMenuItemClick(object sender, EventArgs e)
         {
-            Thread thread = new Thread(ThrowExceptionThreadFx);
+            Thread thread = new(ThrowExceptionThreadFx);
             thread.IsBackground = true;
             thread.Start();
         }
@@ -953,7 +952,7 @@ namespace LogExpert.Controls.LogTabWindow
 
         private void OnOptionToolStripMenuItemDropDownOpening(object sender, EventArgs e)
         {
-            lockInstanceToolStripMenuItem.Enabled = !ConfigManager.Settings.preferences.allowOnlyOneInstance;
+            lockInstanceToolStripMenuItem.Enabled = !ConfigManager.Settings.Preferences.allowOnlyOneInstance;
             lockInstanceToolStripMenuItem.Checked = StaticData.CurrentLockedMainWindow == this;
         }
 
@@ -969,7 +968,7 @@ namespace LogExpert.Controls.LogTabWindow
 
         private void OnOpenURIToolStripMenuItemClick(object sender, EventArgs e)
         {
-            OpenUriDialog dlg = new OpenUriDialog();
+            OpenUriDialog dlg = new();
             dlg.UriHistory = ConfigManager.Settings.uriHistoryList;
 
             if (DialogResult.OK == dlg.ShowDialog())
@@ -978,7 +977,7 @@ namespace LogExpert.Controls.LogTabWindow
                 {
                     ConfigManager.Settings.uriHistoryList = dlg.UriHistory;
                     ConfigManager.Save(SettingsFlags.FileHistory);
-                    LoadFiles(new[] {dlg.Uri}, false);
+                    LoadFiles(new[] { dlg.Uri }, false);
                 }
             }
         }
@@ -1005,8 +1004,10 @@ namespace LogExpert.Controls.LogTabWindow
         {
             if (CurrentLogWindow != null)
             {
-                TabRenameDlg dlg = new TabRenameDlg();
-                dlg.TabName = CurrentLogWindow.Text;
+                TabRenameDialog dlg = new()
+                {
+                    TabName = CurrentLogWindow.Text
+                };
                 if (DialogResult.OK == dlg.ShowDialog())
                 {
                     CurrentLogWindow.Text = dlg.TabName;

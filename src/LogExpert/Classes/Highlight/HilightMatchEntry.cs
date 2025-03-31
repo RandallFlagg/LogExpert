@@ -5,10 +5,6 @@
     /// </summary>
     public class HilightMatchEntry
     {
-        #region Fields
-
-        #endregion
-
         #region Properties
 
         public HilightEntry HilightEntry { get; set; }
@@ -23,7 +19,7 @@
 
         public override string ToString()
         {
-            return this.HilightEntry.SearchText + "/" + this.StartPos + "/" + this.Length;
+            return $"{HilightEntry.SearchText}/{StartPos}/{Length}";
         }
 
         #endregion

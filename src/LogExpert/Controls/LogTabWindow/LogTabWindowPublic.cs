@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using LogExpert.Classes;
 using LogExpert.Classes.Columnizer;
@@ -15,7 +16,7 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace LogExpert.Controls.LogTabWindow
 {
-    public partial class LogTabWindow
+    internal partial class LogTabWindow
     {
         #region Public methods
 
@@ -29,7 +30,7 @@ namespace LogExpert.Controls.LogTabWindow
             LogWindow.LogWindow logWin = AddFileTab(pipe.FileName, true, title, false, preProcessColumnizer);
             if (pipe.FilterParams.searchText.Length > 0)
             {
-                ToolTip tip = new ToolTip(components);
+                ToolTip tip = new(components);
                 tip.SetToolTip(logWin,
                     "Filter: \"" + pipe.FilterParams.searchText + "\"" +
                     (pipe.FilterParams.isInvert ? " (Invert match)" : "") +
@@ -64,9 +65,9 @@ namespace LogExpert.Controls.LogTabWindow
                 return win;
             }
 
-            EncodingOptions encodingOptions = new EncodingOptions();
+            EncodingOptions encodingOptions = new();
             FillDefaultEncodingFromSettings(encodingOptions);
-            LogWindow.LogWindow logWindow = new LogWindow.LogWindow(this, logFileName, isTempFile, forcePersistenceLoading);
+            LogWindow.LogWindow logWindow = new(this, logFileName, isTempFile, forcePersistenceLoading);
 
             logWindow.GivenFileName = givenFileName;
 
@@ -87,7 +88,7 @@ namespace LogExpert.Controls.LogTabWindow
                 AddToFileHistory(givenFileName);
             }
 
-            LogWindowData data = logWindow.Tag as LogWindowData;
+            LogWindowData data = logWindow.Tag as LogWindowData;            
             data.color = _defaultTabColor;
             SetTabColor(logWindow, _defaultTabColor);
             //data.tabPage.BorderColor = this.defaultTabBorderColor;
@@ -115,8 +116,7 @@ namespace LogExpert.Controls.LogTabWindow
             }
 
             // this.BeginInvoke(new LoadFileDelegate(logWindow.LoadFile), new object[] { logFileName, encoding });
-            LoadFileDelegate loadFileFx = logWindow.LoadFile;
-            loadFileFx.BeginInvoke(logFileName, encodingOptions, null, null);
+            Task.Run(() => logWindow.LoadFile(logFileName, encodingOptions));
             return logWindow;
         }
 
@@ -127,11 +127,11 @@ namespace LogExpert.Controls.LogTabWindow
                 return null;
             }
 
-            LogWindow.LogWindow logWindow = new LogWindow.LogWindow(this, fileNames[fileNames.Length - 1], false, false);
+            LogWindow.LogWindow logWindow = new(this, fileNames[fileNames.Length - 1], false, false);
             AddLogWindow(logWindow, fileNames[fileNames.Length - 1], false);
             multiFileToolStripMenuItem.Checked = true;
             multiFileEnabledStripMenuItem.Checked = true;
-            EncodingOptions encodingOptions = new EncodingOptions();
+            EncodingOptions encodingOptions = new();
             FillDefaultEncodingFromSettings(encodingOptions);
             BeginInvoke(new LoadMultiFilesDelegate(logWindow.LoadFilesAsMulti), fileNames, encodingOptions);
             AddToFileHistory(fileNames[0]);
@@ -140,7 +140,7 @@ namespace LogExpert.Controls.LogTabWindow
 
         public void LoadFiles(string[] fileNames)
         {
-            Invoke(new AddFileTabsDelegate(AddFileTabs), new object[] {fileNames});
+            Invoke(new AddFileTabsDelegate(AddFileTabs), [fileNames]);
         }
 
         public void OpenSearchDialog()
@@ -150,7 +150,7 @@ namespace LogExpert.Controls.LogTabWindow
                 return;
             }
 
-            SearchDialog dlg = new SearchDialog();
+            SearchDialog dlg = new();
             AddOwnedForm(dlg);
             dlg.TopMost = TopMost;
             SearchParams.historyList = ConfigManager.Settings.searchHistoryList;
@@ -169,7 +169,7 @@ namespace LogExpert.Controls.LogTabWindow
             ColumnizerHistoryEntry entry = FindColumnizerHistoryEntry(fileName);
             if (entry != null)
             {
-                foreach (ILogLineColumnizer columnizer in PluginRegistry.GetInstance().RegisteredColumnizers)
+                foreach (ILogLineColumnizer columnizer in PluginRegistry.Instance.RegisteredColumnizers)
                 {
                     if (columnizer.GetName().Equals(entry.ColumnizerName))
                     {
@@ -233,7 +233,7 @@ namespace LogExpert.Controls.LogTabWindow
 
         public ILogLineColumnizer FindColumnizerByFileMask(string fileName)
         {
-            foreach (ColumnizerMaskEntry entry in ConfigManager.Settings.preferences.columnizerMaskList)
+            foreach (ColumnizerMaskEntry entry in ConfigManager.Settings.Preferences.columnizerMaskList)
             {
                 if (entry.mask != null)
                 {
@@ -241,7 +241,7 @@ namespace LogExpert.Controls.LogTabWindow
                     {
                         if (Regex.IsMatch(fileName, entry.mask))
                         {
-                            ILogLineColumnizer columnizer = ColumnizerPicker.FindColumnizerByName(entry.columnizerName, PluginRegistry.GetInstance().RegisteredColumnizers);
+                            ILogLineColumnizer columnizer = ColumnizerPicker.FindColumnizerByName(entry.columnizerName, PluginRegistry.Instance.RegisteredColumnizers);
                             return columnizer;
                         }
                     }
@@ -258,7 +258,7 @@ namespace LogExpert.Controls.LogTabWindow
 
         public HilightGroup FindHighlightGroupByFileMask(string fileName)
         {
-            foreach (HighlightMaskEntry entry in ConfigManager.Settings.preferences.highlightMaskList)
+            foreach (HighlightMaskEntry entry in ConfigManager.Settings.Preferences.highlightMaskList)
             {
                 if (entry.mask != null)
                 {

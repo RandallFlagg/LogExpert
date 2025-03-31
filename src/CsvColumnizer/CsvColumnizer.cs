@@ -1,13 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using CsvHelper;
 using LogExpert;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Versioning;
 using System.Windows.Forms;
-using CsvHelper;
-using Newtonsoft.Json;
 
+[assembly: SupportedOSPlatform("windows")]
 namespace CsvColumnizer
 {
     /// <summary>
@@ -212,10 +214,9 @@ namespace CsvColumnizer
 
         public void LoadConfig(string configDir)
         {
-            string configPath = configDir + "\\" + _configFileName;
-            FileSystemInfo fileInfo = new FileInfo(configPath);
+            string configPath = Path.Combine(configDir, _configFileName);
 
-            if (fileInfo.Exists == false)
+            if (!File.Exists(configPath))
             {
                 _config = new CsvColumnizerConfig();
                 _config.InitDefaults();
@@ -224,7 +225,7 @@ namespace CsvColumnizer
             {
                 try
                 {
-                    _config = JsonConvert.DeserializeObject<CsvColumnizerConfig>(File.ReadAllText($"{fileInfo.FullName}"));
+                    _config = JsonConvert.DeserializeObject<CsvColumnizerConfig>(File.ReadAllText(configPath));
                     _config.ConfigureReaderConfiguration();
                 }
                 catch (Exception e)

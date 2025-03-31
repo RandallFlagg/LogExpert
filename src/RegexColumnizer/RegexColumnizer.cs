@@ -1,12 +1,13 @@
 ﻿using LogExpert;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.Versioning;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using System.Xml.Serialization;
 
+[assembly: SupportedOSPlatform("windows")]
 namespace RegexColumnizer
 {
     public abstract class BaseRegexColumnizer : ILogLineColumnizer, IColumnizerConfigurator
@@ -123,16 +124,16 @@ namespace RegexColumnizer
 
         public void Configure(ILogLineColumnizerCallback callback, string configDir)
         {
-            RegexColumnizerConfigDialog d = new RegexColumnizerConfigDialog {Config = Config};
-            if (d.ShowDialog() == DialogResult.OK)
+            RegexColumnizerConfigDialog dialog = new RegexColumnizerConfigDialog {Config = Config};
+            if (dialog.ShowDialog() == DialogResult.OK)
             {
                 var configFile = GetConfigFile(configDir);
                 using (var w = new FileStream(configFile, FileMode.Create))
                 {
-                    xml.Serialize(w, d.Config);
+                    xml.Serialize(w, dialog.Config);
                 }
 
-                Init(d.Config);
+                Init(dialog.Config);
             }
         }
 
@@ -181,7 +182,7 @@ namespace RegexColumnizer
 
         protected abstract string GetNameInternal();
 
-        internal void Init(RegexColumnizerConfig config)
+        public void Init(RegexColumnizerConfig config)
         {
             Config = config;
 

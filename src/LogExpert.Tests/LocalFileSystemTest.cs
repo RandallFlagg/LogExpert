@@ -1,7 +1,7 @@
-﻿using System;
-using System.IO;
-using LogExpert.Classes;
+﻿using LogExpert.Classes;
 using NUnit.Framework;
+using System;
+using System.IO;
 
 namespace LogExpert.Tests
 {
@@ -24,11 +24,11 @@ namespace LogExpert.Tests
         [Test]
         public void TestUriHandle()
         {
-            LocalFileSystem fs = new LocalFileSystem();
-            Assert.True(fs.CanHandleUri("file:///c:/logfile.txt"));
-            Assert.True(fs.CanHandleUri("file:///c:\\logfile.txt"));
-            Assert.True(fs.CanHandleUri("c:/logfile.txt"));
-            Assert.True(fs.CanHandleUri("c:\\logfile.txt"));
+            LocalFileSystem fs = new();
+            Assert.That(fs.CanHandleUri("file:///c:/logfile.txt"), Is.True);
+            Assert.That(fs.CanHandleUri("file:///c:\\logfile.txt"), Is.True);
+            Assert.That(fs.CanHandleUri("c:/logfile.txt"), Is.True);
+            Assert.That(fs.CanHandleUri("c:\\logfile.txt"), Is.True);
         }
 
         [Test]
@@ -37,15 +37,15 @@ namespace LogExpert.Tests
             DirectoryInfo dInfo = Directory.CreateDirectory(RolloverHandlerTest.TEST_DIR_NAME);
             string fullName = CreateFile(dInfo, "test.log");
 
-            LocalFileSystem fs = new LocalFileSystem();
+            LocalFileSystem fs = new();
             ILogFileInfo info = fs.GetLogfileInfo(fullName);
-            Assert.True(info.Length > 0);
-            Assert.True(info.OriginalLength == info.Length);
+            Assert.That(info.Length > 0, Is.True);
+            Assert.That(info.OriginalLength == info.Length, Is.True);
             Stream stream = info.OpenStream();
-            Assert.True(stream.CanSeek);
-            StreamReader reader = new StreamReader(stream);
+            Assert.That(stream.CanSeek, Is.True);
+            StreamReader reader = new(stream);
             string line = reader.ReadLine();
-            Assert.True(line.StartsWith("line number", StringComparison.InvariantCultureIgnoreCase));
+            Assert.That(line.StartsWith("line number", StringComparison.InvariantCultureIgnoreCase), Is.True);
             reader.Close();
         }
     }

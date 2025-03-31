@@ -16,7 +16,7 @@ namespace LogExpert.Tests
 
         protected LinkedList<string> CreateTestFilesWithDate()
         {
-            LinkedList<string> createdFiles = new LinkedList<string>();
+            LinkedList<string> createdFiles = new();
             DirectoryInfo dInfo = Directory.CreateDirectory(TEST_DIR_NAME);
             createdFiles.AddLast(CreateFile(dInfo, "engine_2010-06-08_1.log"));
             createdFiles.AddLast(CreateFile(dInfo, "engine_2010-06-08_0.log"));
@@ -31,7 +31,7 @@ namespace LogExpert.Tests
 
         protected LinkedList<string> CreateTestFilesWithoutDate()
         {
-            LinkedList<string> createdFiles = new LinkedList<string>();
+            LinkedList<string> createdFiles = new();
             DirectoryInfo dInfo = Directory.CreateDirectory(TEST_DIR_NAME);
             createdFiles.AddLast(CreateFile(dInfo, "engine.log.6"));
             createdFiles.AddLast(CreateFile(dInfo, "engine.log.5"));
@@ -47,7 +47,7 @@ namespace LogExpert.Tests
             bool deleteLatestFile)
         {
             LinkedList<string> fileList = files;
-            RolloverFilenameBuilder fnb = new RolloverFilenameBuilder(formatPattern);
+            RolloverFilenameBuilder fnb = new(formatPattern);
             fnb.SetFileName(fileList.Last.Value);
             fnb.Index += fileList.Count;
             string newFileName = fnb.BuildFileName();
@@ -88,7 +88,7 @@ namespace LogExpert.Tests
             int lineCount = 10;
             string fullName = dInfo == null ? fileName : dInfo.FullName + Path.DirectorySeparatorChar + fileName;
 
-            using (StreamWriter writer = new StreamWriter(File.Create(fullName)))
+            using (StreamWriter writer = new(File.Create(fullName)))
             {
                 for (int i = 1; i <= lineCount; ++i)
                 {

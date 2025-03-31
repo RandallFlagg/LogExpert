@@ -1,204 +1,108 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+
+using System;
 using System.Drawing;
 using System.Text.RegularExpressions;
-using Newtonsoft.Json;
-//using System.Linq;
 
 namespace LogExpert.Classes.Highlight
 {
     [Serializable]
-    public class HilightEntry
+    [method: JsonConstructor]
+    public class HilightEntry() : ICloneable
     {
         #region Fields
 
-        private ActionEntry actionEntry;
-        private Color bgColor;
-        private string bookmarkComment;
-        private Color fgColor;
-        private bool isActionEntry;
-        private bool isBold;
-        private bool isCaseSensitive;
-        private bool isLedSwitch;
-        private bool isRegEx;
-
-        [NonSerialized] private bool isSearchHit; // highlightes search result
-
-        private bool isSetBookmark;
-        private bool isStopTail;
-        private bool isWordMatch;
-        private bool noBackground;
-
         [NonSerialized] private Regex regex = null;
 
-        private string searchText = "";
+        private string _searchText = string.Empty;
 
-        #endregion
-
-        #region cTor
-
-        [JsonConstructor]
-        public HilightEntry()
-        {
-
-        }
-
-        public HilightEntry(string searchText, Color fgColor, Color bgColor, bool isWordMatch)
-        {
-            this.searchText = searchText;
-            this.fgColor = fgColor;
-            this.bgColor = bgColor;
-            this.isRegEx = false;
-            this.isCaseSensitive = false;
-            this.isLedSwitch = false;
-            this.isStopTail = false;
-            this.isSetBookmark = false;
-            this.isActionEntry = false;
-            this.actionEntry = null;
-            this.IsWordMatch = isWordMatch;
-        }
-
-
-        public HilightEntry(string searchText, Color fgColor, Color bgColor,
-            bool isRegEx, bool isCaseSensitive, bool isLedSwitch,
-            bool isStopTail, bool isSetBookmark, bool isActionEntry, ActionEntry actionEntry, bool isWordMatch)
-        {
-            this.searchText = searchText;
-            this.fgColor = fgColor;
-            this.bgColor = bgColor;
-            this.isRegEx = isRegEx;
-            this.isCaseSensitive = isCaseSensitive;
-            this.isLedSwitch = isLedSwitch;
-            this.isStopTail = isStopTail;
-            this.isSetBookmark = isSetBookmark;
-            this.isActionEntry = isActionEntry;
-            this.actionEntry = actionEntry;
-            this.IsWordMatch = isWordMatch;
-        }
-
-        #endregion
+        #endregion Fields
 
         #region Properties
 
-        public bool IsStopTail
-        {
-            get { return isStopTail; }
-            set { isStopTail = value; }
-        }
+        public bool IsStopTail { get; set; }
 
-        public bool IsSetBookmark
-        {
-            get { return isSetBookmark; }
-            set { isSetBookmark = value; }
-        }
+        public bool IsSetBookmark { get; set; }
 
-        public bool IsRegEx
-        {
-            get { return isRegEx; }
-            set { isRegEx = value; }
-        }
+        public bool IsRegEx { get; set; }
 
-        public bool IsCaseSensitive
-        {
-            get { return isCaseSensitive; }
-            set
-            {
-                isCaseSensitive = value;
-                this.regex = null;
-            }
-        }
+        public bool IsCaseSensitive { get; set; }
 
+        public Color ForegroundColor { get; set; }
 
-        public Color ForegroundColor
-        {
-            get { return this.fgColor; }
-            set { this.fgColor = value; }
-        }
-
-        public Color BackgroundColor
-        {
-            get { return this.bgColor; }
-            set { this.bgColor = value; }
-        }
+        public Color BackgroundColor { get; set; }
 
         public string SearchText
         {
-            get { return this.searchText; }
+            get => _searchText;
             set
             {
-                this.searchText = value;
-                this.regex = null;
+                _searchText = value;
+                regex = null;
             }
         }
 
-        public bool IsLedSwitch
-        {
-            get { return this.isLedSwitch; }
-            set { this.isLedSwitch = value; }
-        }
+        public bool IsLedSwitch { get; set; }
 
-        public ActionEntry ActionEntry
-        {
-            get { return this.actionEntry; }
-            set { this.actionEntry = value; }
-        }
+        public ActionEntry ActionEntry { get; set; }
 
-        public bool IsActionEntry
-        {
-            get { return this.isActionEntry; }
-            set { this.isActionEntry = value; }
-        }
+        public bool IsActionEntry { get; set; }
 
-        public string BookmarkComment
-        {
-            get { return this.bookmarkComment; }
-            set { this.bookmarkComment = value; }
-        }
+        public string BookmarkComment { get; set; }
 
         public Regex Regex
         {
             get
             {
-                if (this.regex == null)
+                if (regex == null)
                 {
-                    if (this.IsRegEx)
+                    if (IsRegEx)
                     {
-                        this.regex = new Regex(this.SearchText,
-                            this.IsCaseSensitive ? RegexOptions.None : RegexOptions.IgnoreCase);
+                        regex = new Regex(SearchText, IsCaseSensitive ? RegexOptions.None : RegexOptions.IgnoreCase);
                     }
                     else
                     {
-                        this.regex = new Regex(Regex.Escape(this.SearchText),
-                            this.IsCaseSensitive ? RegexOptions.None : RegexOptions.IgnoreCase);
+                        regex = new Regex(Regex.Escape(SearchText), IsCaseSensitive ? RegexOptions.None : RegexOptions.IgnoreCase);
                     }
                 }
-                return this.regex;
+                return regex;
             }
         }
 
-        public bool IsWordMatch
+        public bool IsWordMatch { get; set; }
+
+        // highlightes search result
+        [field: NonSerialized]
+        public bool IsSearchHit { get; set; }
+
+        public bool IsBold { get; set; }
+
+        public bool NoBackground { get; set; }
+
+        public object Clone()
         {
-            get { return this.isWordMatch; }
-            set { this.isWordMatch = value; }
+            var highLightEntry = new HilightEntry
+            {
+                SearchText = SearchText,
+                ForegroundColor = ForegroundColor,
+                BackgroundColor = BackgroundColor,
+                IsRegEx = IsRegEx,
+                IsCaseSensitive = IsCaseSensitive,
+                IsLedSwitch = IsLedSwitch,
+                IsStopTail = IsStopTail,
+                IsSetBookmark = IsSetBookmark,
+                IsActionEntry = IsActionEntry,
+                ActionEntry = ActionEntry != null ? (ActionEntry)ActionEntry.Clone() : null,
+                IsWordMatch = IsWordMatch,
+                IsBold = IsBold,
+                BookmarkComment = BookmarkComment,
+                NoBackground = NoBackground,
+                IsSearchHit = IsSearchHit
+            };
+
+            return highLightEntry;
         }
 
-        public bool IsSearchHit
-        {
-            get { return this.isSearchHit; }
-            set { this.isSearchHit = value; }
-        }
-
-        public bool IsBold
-        {
-            get { return this.isBold; }
-            set { this.isBold = value; }
-        }
-
-        public bool NoBackground
-        {
-            get { return noBackground; }
-            set { noBackground = value; }
-        }
-
-        #endregion
+        #endregion Properties
     }
 }

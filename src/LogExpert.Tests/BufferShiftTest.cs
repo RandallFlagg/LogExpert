@@ -1,8 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Text;
-using LogExpert.Classes.Log;
+﻿using LogExpert.Classes.Log;
 using LogExpert.Entities;
+
 using NUnit.Framework;
+
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace LogExpert.Tests
 {
@@ -26,23 +29,29 @@ namespace LogExpert.Tests
         public void TestShiftBuffers1()
         {
             int linesPerFile = 10;
-            MultiFileOptions options = new MultiFileOptions();
-            options.MaxDayTry = 0;
-            options.FormatPattern = "*$J(.)";
+            MultiFileOptions options = new()
+            {
+                MaxDayTry = 0,
+                FormatPattern = "*$J(.)"
+            };
             LinkedList<string> files = CreateTestFilesWithoutDate();
-            EncodingOptions encodingOptions = new EncodingOptions();
-            encodingOptions.Encoding = Encoding.Default;
-            LogfileReader reader = new LogfileReader(files.Last.Value, encodingOptions, true, 40, 50, options);
+            EncodingOptions encodingOptions = new()
+            {
+                Encoding = Encoding.Default
+            };
+            LogfileReader reader = new(files.Last.Value, encodingOptions, true, 40, 50, options);
             reader.ReadFiles();
 
             IList<ILogFileInfo> lil = reader.GetLogFileInfoList();
-            Assert.AreEqual(files.Count, lil.Count);
+            Assert.That(lil.Count, Is.EqualTo(files.Count));
+
             LinkedList<string>.Enumerator enumerator = files.GetEnumerator();
             enumerator.MoveNext();
-            foreach (LogFileInfo li in lil)
+
+            foreach (LogFileInfo li in lil.Cast<LogFileInfo>())
             {
                 string fileName = enumerator.Current;
-                Assert.AreEqual(fileName, li.FullName);
+                Assert.That(li.FullName, Is.EqualTo(fileName));
                 enumerator.MoveNext();
             }
             int oldCount = lil.Count;
@@ -51,28 +60,28 @@ namespace LogExpert.Tests
             //
             files = RolloverSimulation(files, "*$J(.)", false);
 
-            // Simulate rollover detection 
+            // Simulate rollover detection
             //
             reader.ShiftBuffers();
 
             lil = reader.GetLogFileInfoList();
-            Assert.AreEqual(oldCount + 1, lil.Count);
+            Assert.That(lil.Count, Is.EqualTo(oldCount + 1));
 
-            Assert.AreEqual(linesPerFile * lil.Count, reader.LineCount);
+            Assert.That(reader.LineCount, Is.EqualTo(linesPerFile * lil.Count));
 
             // Check if rollover'd file names have been handled by LogfileReader
             //
-            Assert.AreEqual(files.Count, lil.Count);
+            Assert.That(lil.Count, Is.EqualTo(files.Count));
             enumerator = files.GetEnumerator();
             enumerator.MoveNext();
             foreach (LogFileInfo li in lil)
             {
                 string fileName = enumerator.Current;
-                Assert.AreEqual(fileName, li.FullName);
+                Assert.That(li.FullName, Is.EqualTo(fileName));
                 enumerator.MoveNext();
             }
 
-            // Check if file buffers have correct files. Assuming here that one buffer fits for a 
+            // Check if file buffers have correct files. Assuming here that one buffer fits for a
             // complete file
             //
             enumerator = files.GetEnumerator();
@@ -81,8 +90,8 @@ namespace LogExpert.Tests
             int startLine = 0;
             foreach (LogBuffer logBuffer in logBuffers)
             {
-                Assert.AreEqual(logBuffer.FileInfo.FullName, enumerator.Current);
-                Assert.AreEqual(startLine, logBuffer.StartLine);
+                Assert.That(enumerator.Current, Is.EqualTo(logBuffer.FileInfo.FullName));
+                Assert.That(logBuffer.StartLine, Is.EqualTo(startLine));
                 startLine += 10;
                 enumerator.MoveNext();
             }
@@ -98,7 +107,7 @@ namespace LogExpert.Tests
             {
                 LogBuffer logBuffer = logBuffers[i];
                 ILogLine line = logBuffer.GetLineOfBlock(0);
-                Assert.IsTrue(line.FullLine.Contains(enumerator.Current));
+                Assert.That(line.FullLine.Contains(enumerator.Current));
                 enumerator.MoveNext();
             }
             enumerator.MoveNext();
@@ -107,7 +116,7 @@ namespace LogExpert.Tests
             {
                 LogBuffer logBuffer = logBuffers[i];
                 ILogLine line = logBuffer.GetLineOfBlock(0);
-                Assert.IsTrue(line.FullLine.Contains(enumerator.Current));
+                Assert.That(line.FullLine.Contains(enumerator.Current));
             }
 
             oldCount = lil.Count;
@@ -116,21 +125,21 @@ namespace LogExpert.Tests
             //
             files = RolloverSimulation(files, "*$J(.)", true);
 
-            // Simulate rollover detection 
+            // Simulate rollover detection
             //
             reader.ShiftBuffers();
             lil = reader.GetLogFileInfoList();
 
-            Assert.AreEqual(oldCount, lil.Count); // same count because oldest file is deleted
-            Assert.AreEqual(files.Count, lil.Count);
-            Assert.AreEqual(linesPerFile * lil.Count, reader.LineCount);
+            Assert.That(lil.Count, Is.EqualTo(oldCount)); // same count because oldest file is deleted
+            Assert.That(lil.Count, Is.EqualTo(files.Count));
+            Assert.That(reader.LineCount, Is.EqualTo(linesPerFile * lil.Count));
 
             // Check first line to see if buffers are correct
             //
             ILogLine firstLine = reader.GetLogLine(0);
             string[] names = new string[files.Count];
             files.CopyTo(names, 0);
-            Assert.IsTrue(firstLine.FullLine.Contains(names[2]));
+            Assert.That(firstLine.FullLine.Contains(names[2]));
         }
     }
 }
