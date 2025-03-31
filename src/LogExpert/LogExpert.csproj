@@ -3,7 +3,7 @@
     <TargetFramework>net8.0-windows</TargetFramework>
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
     <OutputType>WinExe</OutputType>
-    <ApplicationIcon>Resources\logexpert.ico</ApplicationIcon>
+    <ApplicationIcon>logexpert.ico</ApplicationIcon>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <UseWindowsForms>true</UseWindowsForms>
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
@@ -17,8 +17,8 @@
     <OutputPath>$(SolutionDir)..\bin\$(Configuration)</OutputPath>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
-	<ForceDesignerDPIUnaware>true</ForceDesignerDPIUnaware>
-    <NoWarn>CS1591;CA1416;</NoWarn>
+    <ForceDesignerDPIUnaware>true</ForceDesignerDPIUnaware>
+    <NoWarn>CS1591;</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <Optimize>False</Optimize>
@@ -54,12 +54,6 @@
     <Compile Update="Dialogs\ColorComboBox.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Update="Properties\Resources.Designer.cs">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
     <None Include="..\Solution Items\Key.snk">
       <Link>Key.snk</Link>
     </None>
@@ -74,8 +68,11 @@
     <Content Include="Licenses\WinformsUI.Docking.license.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="logexpert.ico" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="DockPanelSuite" />
+    <PackageReference Include="DockPanelSuite.ThemeVS2015" />
     <PackageReference Include="Grpc.AspNetCore" />
     <PackageReference Include="Google.Protobuf" />
     <PackageReference Include="Grpc.Core" />
@@ -86,18 +83,11 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ColumnizerLib\ColumnizerLib.csproj" />
-    <ProjectReference Include="..\FileLockFinder\FileLockFinder.csproj" />
+    <ProjectReference Include="..\Logexpert.UI\LogExpert.UI.csproj" />
     <ProjectReference Include="..\LogexpertgRPCService\LogexpertgRPCService.csproj" />
-    <ProjectReference Include="..\WinFormsUI\WinFormsUI.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="DebugWindow.Designer.cs" />
     <Compile Remove="HighlightThread.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Update="Properties\Resources.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
   </ItemGroup>
 </Project>

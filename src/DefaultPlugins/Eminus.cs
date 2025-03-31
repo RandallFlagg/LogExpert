@@ -6,7 +6,9 @@ using System.Net.Sockets;
 using System.IO;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
+using System.Runtime.Versioning;
 
+[assembly: SupportedOSPlatform("windows")]
 namespace LogExpert
 {
     public class Eminus : IContextMenuEntry, ILogExpertPluginConfigurator

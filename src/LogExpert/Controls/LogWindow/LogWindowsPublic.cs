@@ -80,8 +80,10 @@ namespace LogExpert.Controls.LogWindow
 
                 try
                 {
-                    _logFileReader = new LogfileReader(fileName, EncodingOptions, IsMultiFile, Preferences.bufferCount, Preferences.linesPerBuffer, _multiFileOptions);
-                    _logFileReader.UseNewReader = !Preferences.useLegacyReader;
+                    _logFileReader = new LogfileReader(fileName, EncodingOptions, IsMultiFile, Preferences.bufferCount, Preferences.linesPerBuffer, _multiFileOptions)
+                    {
+                        UseNewReader = !Preferences.useLegacyReader
+                    };
                 }
                 catch (LogFileException lfe)
                 {

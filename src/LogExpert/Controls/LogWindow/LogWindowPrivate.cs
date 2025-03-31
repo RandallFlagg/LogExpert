@@ -1581,7 +1581,6 @@ namespace LogExpert.Controls.LogWindow
 
         private int Search(SearchParams searchParams)
         {
-            UpdateProgressBarFx progressFx = UpdateProgressBar;
             if (searchParams.searchText == null)
             {
                 return -1;
@@ -1679,7 +1678,7 @@ namespace LogExpert.Controls.LogWindow
                     {
                         if (!Disposing)
                         {
-                            Invoke(progressFx, [count]);
+                            Invoke(UpdateProgressBar, [count]);
                         }
                     }
                     catch (ObjectDisposedException ex) // can occur when closing the app while searching

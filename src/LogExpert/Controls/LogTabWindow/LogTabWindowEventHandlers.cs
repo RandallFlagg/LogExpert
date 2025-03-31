@@ -353,7 +353,7 @@ namespace LogExpert.Controls.LogTabWindow
 
         private void OnProgressBarUpdate(object sender, ProgressEventArgs e)
         {
-            Invoke(new ProgressBarEventFx(ProgressBarUpdateWorker), e);
+            Invoke(ProgressBarUpdateWorker, e);
         }
 
         private void OnStatusLineEvent(object sender, StatusLineEventArgs e)
@@ -1009,8 +1009,10 @@ namespace LogExpert.Controls.LogTabWindow
         {
             if (CurrentLogWindow != null)
             {
-                TabRenameDlg dlg = new();
-                dlg.TabName = CurrentLogWindow.Text;
+                TabRenameDialog dlg = new()
+                {
+                    TabName = CurrentLogWindow.Text
+                };
                 if (DialogResult.OK == dlg.ShowDialog())
                 {
                     CurrentLogWindow.Text = dlg.TabName;
