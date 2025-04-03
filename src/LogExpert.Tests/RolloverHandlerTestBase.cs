@@ -1,8 +1,8 @@
+using LogExpert.Core.Classes.Log;
+
 using System;
 using System.Collections.Generic;
 using System.IO;
-
-using LogExpert.Core.Classes.Log;
 
 namespace LogExpert.Tests
 {
@@ -10,7 +10,8 @@ namespace LogExpert.Tests
     {
         #region Fields
 
-        protected const string TEST_DIR_NAME = "test";
+        public const string TEST_DIR_NAME = "test";
+        public DirectoryInfo testDirectory;
 
         #endregion
 
@@ -19,6 +20,7 @@ namespace LogExpert.Tests
         {
             LinkedList<string> createdFiles = new();
             DirectoryInfo dInfo = Directory.CreateDirectory(TEST_DIR_NAME);
+            testDirectory = dInfo;
             createdFiles.AddLast(CreateFile(dInfo, "engine_2010-06-08_1.log"));
             createdFiles.AddLast(CreateFile(dInfo, "engine_2010-06-08_0.log"));
             createdFiles.AddLast(CreateFile(dInfo, "engine_2010-06-10_0.log"));
@@ -34,6 +36,7 @@ namespace LogExpert.Tests
         {
             LinkedList<string> createdFiles = new();
             DirectoryInfo dInfo = Directory.CreateDirectory(TEST_DIR_NAME);
+            testDirectory = dInfo;
             createdFiles.AddLast(CreateFile(dInfo, "engine.log.6"));
             createdFiles.AddLast(CreateFile(dInfo, "engine.log.5"));
             createdFiles.AddLast(CreateFile(dInfo, "engine.log.4"));

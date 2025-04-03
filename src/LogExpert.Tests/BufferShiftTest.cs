@@ -1,7 +1,6 @@
 ﻿using LogExpert.Classes.Log;
 using LogExpert.Core.Classes.Log;
 using LogExpert.Core.Entities;
-using LogExpert.Entities;
 using LogExpert.PluginRegistry.FileSystem;
 
 using NUnit.Framework;
@@ -42,6 +41,8 @@ namespace LogExpert.Tests
             {
                 Encoding = Encoding.Default
             };
+
+            PluginRegistry.PluginRegistry.Instance.Create(testDirectory.FullName, 500);
             LogfileReader reader = new(files.Last.Value, encodingOptions, true, 40, 50, options);
             reader.ReadFiles();
 
