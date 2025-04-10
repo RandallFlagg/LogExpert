@@ -1,4 +1,5 @@
-﻿using LogExpert.Classes.Log;
+﻿using LogExpert.Core.Classes.Log;
+
 using NUnit.Framework;
 
 namespace LogExpert.Tests

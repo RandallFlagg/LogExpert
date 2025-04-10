@@ -1,4 +1,5 @@
-﻿using LogExpert.Classes.DateTimeParser;
+﻿using LogExpert.Core.Classes.DateTimeParser;
+using LogExpert.Core.Enums;
 
 using System;
 using System.Collections.Generic;
@@ -30,7 +31,7 @@ namespace LogExpert.Dialogs
         private readonly StringFormat _digitsFormat = new();
         private int _draggedDigit;
 
-        public DragOrientations dragOrientation = DragOrientations.Vertical;
+        public DragOrientationsEnum dragOrientation = DragOrientationsEnum.Vertical;
 
         private readonly ToolStripItem toolStripItemHorizontalDrag = new ToolStripMenuItem();
         private readonly ToolStripItem toolStripItemVerticalDrag = new ToolStripMenuItem();
@@ -88,7 +89,7 @@ namespace LogExpert.Dialogs
 
         public DateTime MaxDateTime { get; set; } = DateTime.MaxValue;
 
-        public DragOrientations DragOrientation
+        public DragOrientationsEnum DragOrientation
         {
             get => dragOrientation;
             set
@@ -288,13 +289,6 @@ namespace LogExpert.Dialogs
             ValueDragged?.Invoke(this, e);
         }
 
-        public enum DragOrientations
-        {
-            Horizontal,
-            Vertical,
-            InvertedVertical
-        }
-
         #region Contextual Menu
 
         private void BuildContextualMenu()
@@ -321,9 +315,9 @@ namespace LogExpert.Dialogs
 
         private void UpdateContextMenu()
         {
-            toolStripItemHorizontalDrag.Enabled = DragOrientation != DragOrientations.Horizontal;
-            toolStripItemVerticalDrag.Enabled = DragOrientation != DragOrientations.Vertical;
-            toolStripItemVerticalInvertedDrag.Enabled = DragOrientation != DragOrientations.InvertedVertical;
+            toolStripItemHorizontalDrag.Enabled = DragOrientation != DragOrientationsEnum.Horizontal;
+            toolStripItemVerticalDrag.Enabled = DragOrientation != DragOrientationsEnum.Vertical;
+            toolStripItemVerticalInvertedDrag.Enabled = DragOrientation != DragOrientationsEnum.InvertedVertical;
         }
 
         private void OnContextMenuStripOpening(object sender, CancelEventArgs e)
@@ -336,7 +330,7 @@ namespace LogExpert.Dialogs
 
         private void OnToolStripItemHorizontalDragClick(object sender, EventArgs e)
         {
-            DragOrientation = DragOrientations.Horizontal;
+            DragOrientation = DragOrientationsEnum.Horizontal;
             toolStripItemHorizontalDrag.Enabled = false;
             toolStripItemVerticalDrag.Enabled = true;
             toolStripItemVerticalInvertedDrag.Enabled = true;
@@ -344,7 +338,7 @@ namespace LogExpert.Dialogs
 
         private void OnToolStripItemVerticalDragClick(object sender, EventArgs e)
         {
-            DragOrientation = DragOrientations.Vertical;
+            DragOrientation = DragOrientationsEnum.Vertical;
             toolStripItemHorizontalDrag.Enabled = true;
             toolStripItemVerticalDrag.Enabled = false;
             toolStripItemVerticalInvertedDrag.Enabled = true;
@@ -352,7 +346,7 @@ namespace LogExpert.Dialogs
 
         private void OnToolStripItemVerticalInvertedDragClick(object sender, EventArgs e)
         {
-            DragOrientation = DragOrientations.InvertedVertical;
+            DragOrientation = DragOrientationsEnum.InvertedVertical;
             toolStripItemHorizontalDrag.Enabled = true;
             toolStripItemVerticalDrag.Enabled = true;
             toolStripItemVerticalInvertedDrag.Enabled = false;
@@ -468,12 +462,12 @@ namespace LogExpert.Dialogs
             int diff;
             switch (DragOrientation)
             {
-                case DragOrientations.Vertical:
+                case DragOrientationsEnum.Vertical:
                     {
                         diff = _startMouseY - e.Y;
                         break;
                     }
-                case DragOrientations.InvertedVertical:
+                case DragOrientationsEnum.InvertedVertical:
                     {
                         diff = _startMouseY + e.Y;
                         break;

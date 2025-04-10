@@ -1,4 +1,6 @@
-﻿using System.Drawing;
+﻿using LogExpert.Core.Config;
+
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace LogExpert.Extensions.Forms
@@ -19,9 +21,9 @@ namespace LogExpert.Extensions.Forms
 
             // Choose the colors for drawing.
             // I've used Color.White as the foreColor.
-            Color foreColor = Config.ColorMode.ForeColor;
+            Color foreColor = ColorMode.ForeColor;
             // Color.Teal as the backColor.
-            Color backColor = Config.ColorMode.BackgroundColor;
+            Color backColor = ColorMode.BackgroundColor;
 
             // Fill the background.
             using SolidBrush backbrush = new(backColor);

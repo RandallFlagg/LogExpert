@@ -1,9 +1,12 @@
-﻿using LogExpert.Classes;
-using LogExpert.Classes.Persister;
-using LogExpert.Config;
+﻿using LogExpert.Config;
+using LogExpert.Core.Classes;
+using LogExpert.Core.Classes.Persister;
+using LogExpert.Core.Config;
+using LogExpert.Core.Entities;
+using LogExpert.Core.Entities.EventArgs;
 using LogExpert.Dialogs;
-using LogExpert.Entities;
 using LogExpert.Entities.EventArgs;
+using LogExpert.UI.Dialogs;
 
 using System;
 using System.Collections.Generic;
@@ -18,7 +21,7 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace LogExpert.Controls.LogTabWindow
 {
-    internal partial class LogTabWindow
+    public partial class LogTabWindow
     {
         #region Events handler
 
@@ -155,7 +158,7 @@ namespace LogExpert.Controls.LogTabWindow
             }
 
             CurrentLogWindow.ColumnizerCallbackObject.LineNum = CurrentLogWindow.GetCurrentLineNum();
-            FilterSelectorForm form = new(PluginRegistry.Instance.RegisteredColumnizers, CurrentLogWindow.CurrentColumnizer, CurrentLogWindow.ColumnizerCallbackObject);
+            FilterSelectorForm form = new(PluginRegistry.PluginRegistry.Instance.RegisteredColumnizers, CurrentLogWindow.CurrentColumnizer, CurrentLogWindow.ColumnizerCallbackObject);
             form.Owner = this;
             form.TopMost = TopMost;
             DialogResult res = form.ShowDialog();
@@ -977,7 +980,7 @@ namespace LogExpert.Controls.LogTabWindow
                 {
                     ConfigManager.Settings.uriHistoryList = dlg.UriHistory;
                     ConfigManager.Save(SettingsFlags.FileHistory);
-                    LoadFiles(new[] { dlg.Uri }, false);
+                    LoadFiles([dlg.Uri], false);
                 }
             }
         }

@@ -1,6 +1,8 @@
 ﻿using LogExpert.Classes.Log;
-using LogExpert.Entities;
+using LogExpert.Core.Entities;
+
 using NUnit.Framework;
+
 using System;
 using System.Collections.Generic;
 using System.IO;

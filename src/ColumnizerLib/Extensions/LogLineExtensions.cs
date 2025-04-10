@@ -1,4 +1,4 @@
-﻿namespace LogExpert
+﻿namespace LogExpert.Extensions
 {
     public static class LogLineExtensions
     {

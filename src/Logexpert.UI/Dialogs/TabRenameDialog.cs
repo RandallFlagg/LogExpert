@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Versioning;
 
-namespace LogExpert.Dialogs
+namespace LogExpert.UI.Dialogs
 {
     [SupportedOSPlatform("windows")]
     public partial class TabRenameDialog : Form

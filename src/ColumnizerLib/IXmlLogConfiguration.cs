@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace LogExpert
+﻿namespace LogExpert
 {
     /// <summary>
     /// This interface declares the configuration data which is needed for XML log file parsing.
@@ -32,7 +28,7 @@ namespace LogExpert
         /// <summary>
         /// A namespace declaration. The returned array must contain 2 strings: The namespace and its declaration.<br></br>
         /// Example: {"log4j", "http://jakarta.apache.org/log4j"}
-        /// 
+        ///
         /// </summary>
         string[] Namespace { get; }
 

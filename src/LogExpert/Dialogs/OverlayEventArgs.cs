@@ -1,5 +1,6 @@
-﻿using System;
-using LogExpert.Entities;
+﻿using LogExpert.Core.Entities;
+
+using System;
 
 namespace LogExpert.Dialogs
 {

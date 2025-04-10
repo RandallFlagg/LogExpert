@@ -1,8 +1,9 @@
 ﻿using LogExpert.Controls.LogWindow;
+using LogExpert.Core.Entities;
 
 namespace LogExpert.Entities.EventArgs
 {
-    internal class CurrentHighlightGroupChangedEventArgs
+    public class CurrentHighlightGroupChangedEventArgs
     {
         #region Fields
 
@@ -12,8 +13,8 @@ namespace LogExpert.Entities.EventArgs
 
         public CurrentHighlightGroupChangedEventArgs(LogWindow logWindow, HilightGroup currentGroup)
         {
-            this.LogWindow = logWindow;
-            this.CurrentGroup = currentGroup;
+            LogWindow = logWindow;
+            CurrentGroup = currentGroup;
         }
 
         #endregion

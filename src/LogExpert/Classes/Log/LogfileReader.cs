@@ -1,7 +1,9 @@
-﻿using LogExpert.Classes.xml;
-using LogExpert.Entities;
-using LogExpert.Entities.EventArgs;
-using LogExpert.Interface;
+﻿using LogExpert.Core.Classes;
+using LogExpert.Core.Classes.Log;
+using LogExpert.Core.Classes.xml;
+using LogExpert.Core.Entities;
+using LogExpert.Core.Entities.EventArgs;
+using LogExpert.Core.Interface;
 
 using NLog;
 
@@ -694,7 +696,7 @@ namespace LogExpert.Classes.Log
 
 #if DEBUG
 
-        internal void LogBufferInfoForLine(int lineNum)
+        public void LogBufferInfoForLine(int lineNum)
         {
             AcquireBufferListReaderLock();
             LogBuffer buffer = GetBufferForLine(lineNum);
@@ -717,7 +719,7 @@ namespace LogExpert.Classes.Log
 #endif
 
 #if DEBUG
-        internal void LogBufferDiagnostic()
+        public void LogBufferDiagnostic()
         {
             _logger.Info("-------- Buffer diagnostics -------");
             _lruCacheDictLock.AcquireReaderLock(Timeout.Infinite);
@@ -849,7 +851,8 @@ namespace LogExpert.Classes.Log
 
         private ILogFileInfo GetLogFileInfo(string fileNameOrUri)
         {
-            IFileSystemPlugin fs = PluginRegistry.Instance.FindFileSystemForUri(fileNameOrUri) ?? throw new LogFileException("No file system plugin found for " + fileNameOrUri);
+            //TODO this must be fixed and should be given to the logfilereader not just called
+            IFileSystemPlugin fs = PluginRegistry.PluginRegistry.Instance.FindFileSystemForUri(fileNameOrUri) ?? throw new LogFileException("No file system plugin found for " + fileNameOrUri);
             ILogFileInfo logFileInfo = fs.GetLogfileInfo(fileNameOrUri);
             return logFileInfo ?? throw new LogFileException("Cannot find " + fileNameOrUri);
         }

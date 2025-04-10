@@ -1,4 +1,5 @@
-﻿using LogExpert.Interface;
+﻿using LogExpert.Core.Interface;
+
 using NLog;
 
 namespace LogExpert.Classes.Filter

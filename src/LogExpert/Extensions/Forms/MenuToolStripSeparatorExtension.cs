@@ -1,4 +1,6 @@
-﻿using System.Drawing;
+﻿using LogExpert.Core.Config;
+
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace LogExpert.Extensions.Forms
@@ -19,9 +21,9 @@ namespace LogExpert.Extensions.Forms
 
             // Choose the colors for drawing.
             // I've used Color.White as the foreColor.
-            Color foreColor = Config.ColorMode.ForeColor;
+            Color foreColor = ColorMode.ForeColor;
             // Color.Teal as the backColor.
-            Color backColor = Config.ColorMode.MenuBackgroundColor;
+            Color backColor = ColorMode.MenuBackgroundColor;
 
             // Fill the background.
             e.Graphics.FillRectangle(new SolidBrush(backColor), 0, 0, width, height);
@@ -29,5 +31,5 @@ namespace LogExpert.Extensions.Forms
             // Draw the line.
             e.Graphics.DrawLine(new Pen(foreColor), 4, height / 2, width - 4, height / 2);
         }
-    }  
+    }
 }

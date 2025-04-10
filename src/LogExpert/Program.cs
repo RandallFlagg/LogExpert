@@ -4,6 +4,8 @@ using Grpc.Net.Client;
 using LogExpert.Classes;
 using LogExpert.Config;
 using LogExpert.Controls.LogTabWindow;
+using LogExpert.Core.Classes;
+using LogExpert.Core.Config;
 using LogExpert.Dialogs;
 
 using LogexpertGRPCService.Services;
@@ -99,6 +101,7 @@ namespace LogExpert
                     MessageBox.Show(@"Config file not found", @"LogExpert");
                 }
             }
+            PluginRegistry.PluginRegistry.Instance.Create(ConfigManager.ConfigDir, ConfigManager.Settings.Preferences.pollingInterval);
 
             int pId = Process.GetCurrentProcess().SessionId;
 

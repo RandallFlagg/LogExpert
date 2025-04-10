@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
-using LogExpert.Controls.LogWindow;
+﻿using LogExpert.Controls.LogWindow;
+
+using System.Collections.Generic;
 
 namespace LogExpert.Classes.ILogLineColumnizerCallback
 {

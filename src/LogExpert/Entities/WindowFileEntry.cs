@@ -1,11 +1,13 @@
 ﻿using LogExpert.Controls.LogWindow;
 
+using System;
+
 namespace LogExpert.Entities
 {
     /// <summary>
     /// Represents a log file and its window. Used as a kind of handle for menus or list of open files.
     /// </summary>
-    internal class WindowFileEntry
+    public class WindowFileEntry
     {
         #region Fields
 
@@ -29,9 +31,10 @@ namespace LogExpert.Entities
             get
             {
                 string title = LogWindow.Text;
+
                 if (title.Length > MAX_LEN)
                 {
-                    title = "..." + title.Substring(title.Length - MAX_LEN);
+                    title = string.Concat("...", title.AsSpan(title.Length - MAX_LEN));
                 }
                 return title;
             }

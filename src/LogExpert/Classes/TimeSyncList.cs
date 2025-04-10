@@ -1,13 +1,14 @@
-﻿using System;
+﻿using LogExpert.Controls.LogWindow;
+
+using System;
 using System.Collections.Generic;
-using LogExpert.Controls.LogWindow;
 
 namespace LogExpert.Classes
 {
     /// <summary>
     /// Holds all windows which are in sync via timestamp
     /// </summary>
-    internal class TimeSyncList
+    public class TimeSyncList
     {
         #region Fields
 
@@ -33,7 +34,7 @@ namespace LogExpert.Classes
 
         public int Count
         {
-            get { return this.logWindowList.Count; }
+            get { return logWindowList.Count; }
         }
 
         #endregion
@@ -42,11 +43,11 @@ namespace LogExpert.Classes
 
         public void AddWindow(LogWindow logWindow)
         {
-            lock (this.logWindowList)
+            lock (logWindowList)
             {
-                if (!this.logWindowList.Contains(logWindow))
+                if (!logWindowList.Contains(logWindow))
                 {
-                    this.logWindowList.Add(logWindow);
+                    logWindowList.Add(logWindow);
                 }
             }
         }
@@ -54,9 +55,9 @@ namespace LogExpert.Classes
 
         public void RemoveWindow(LogWindow logWindow)
         {
-            lock (this.logWindowList)
+            lock (logWindowList)
             {
-                this.logWindowList.Remove(logWindow);
+                logWindowList.Remove(logWindow);
             }
             OnWindowRemoved();
         }
@@ -69,10 +70,10 @@ namespace LogExpert.Classes
         /// <param name="sender"></param>
         public void NavigateToTimestamp(DateTime timestamp, LogWindow sender)
         {
-            this.CurrentTimestamp = timestamp;
-            lock (this.logWindowList)
+            CurrentTimestamp = timestamp;
+            lock (logWindowList)
             {
-                foreach (LogWindow logWindow in this.logWindowList)
+                foreach (LogWindow logWindow in logWindowList)
                 {
                     if (sender != logWindow)
                     {
@@ -85,7 +86,7 @@ namespace LogExpert.Classes
 
         public bool Contains(LogWindow logWindow)
         {
-            return this.logWindowList.Contains(logWindow);
+            return logWindowList.Contains(logWindow);
         }
 
         #endregion

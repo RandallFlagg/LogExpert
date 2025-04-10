@@ -1,5 +1,7 @@
-﻿using LogExpert.Classes.DateTimeParser;
+﻿using LogExpert.Core.Classes.DateTimeParser;
+
 using NUnit.Framework;
+
 using System;
 using System.Collections.Generic;
 using System.Globalization;

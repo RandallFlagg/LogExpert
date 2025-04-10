@@ -1,8 +1,10 @@
-﻿using LogExpert.Classes.Log;
+﻿using LogExpert.Core.Classes.Log;
+using LogExpert.Core.Entities;
+
 using NUnit.Framework;
+
 using System.IO;
 using System.Text;
-using LogExpert.Entities;
 
 namespace LogExpert.Tests
 {

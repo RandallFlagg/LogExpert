@@ -1,30 +1,32 @@
-﻿using System.Drawing;
+﻿using LogExpert.Core.Config;
+
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace LogExpert.Extensions.Forms
 {
     public class MenuSelectedColors : ProfessionalColorTable
     {
-        public override Color ImageMarginGradientBegin => Config.ColorMode.MenuBackgroundColor;
+        public override Color ImageMarginGradientBegin => ColorMode.MenuBackgroundColor;
 
-        public override Color ImageMarginGradientMiddle => Config.ColorMode.MenuBackgroundColor;
+        public override Color ImageMarginGradientMiddle => ColorMode.MenuBackgroundColor;
 
-        public override Color ImageMarginGradientEnd => Config.ColorMode.MenuBackgroundColor;
+        public override Color ImageMarginGradientEnd => ColorMode.MenuBackgroundColor;
 
-        public override Color ToolStripDropDownBackground => Config.ColorMode.MenuBackgroundColor;
+        public override Color ToolStripDropDownBackground => ColorMode.MenuBackgroundColor;
 
-        public override Color MenuBorder => Config.ColorMode.MenuBackgroundColor;
+        public override Color MenuBorder => ColorMode.MenuBackgroundColor;
 
-        public override Color MenuItemBorder => Config.ColorMode.MenuBackgroundColor;
+        public override Color MenuItemBorder => ColorMode.MenuBackgroundColor;
 
-        public override Color MenuItemSelected => Config.ColorMode.HoverMenuBackgroundColor;
+        public override Color MenuItemSelected => ColorMode.HoverMenuBackgroundColor;
 
-        public override Color MenuItemSelectedGradientBegin => Config.ColorMode.HoverMenuBackgroundColor;
+        public override Color MenuItemSelectedGradientBegin => ColorMode.HoverMenuBackgroundColor;
 
-        public override Color MenuItemSelectedGradientEnd => Config.ColorMode.HoverMenuBackgroundColor;
+        public override Color MenuItemSelectedGradientEnd => ColorMode.HoverMenuBackgroundColor;
 
-        public override Color MenuItemPressedGradientBegin => Config.ColorMode.MenuBackgroundColor;
+        public override Color MenuItemPressedGradientBegin => ColorMode.MenuBackgroundColor;
 
-        public override Color MenuItemPressedGradientEnd => Config.ColorMode.MenuBackgroundColor;
+        public override Color MenuItemPressedGradientEnd => ColorMode.MenuBackgroundColor;
     }
 }

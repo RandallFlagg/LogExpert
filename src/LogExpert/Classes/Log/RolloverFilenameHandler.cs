@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
-using LogExpert.Entities;
+﻿using LogExpert.Core.Classes.Log;
+using LogExpert.Core.Entities;
+
+using System.Collections.Generic;
 
 namespace LogExpert.Classes.Log
 {
@@ -99,7 +101,7 @@ namespace LogExpert.Classes.Log
 
         private bool FileExists(string filePath)
         {
-            IFileSystemPlugin fs = PluginRegistry.Instance.FindFileSystemForUri(filePath);
+            IFileSystemPlugin fs = PluginRegistry.PluginRegistry.Instance.FindFileSystemForUri(filePath);
             ILogFileInfo info = fs.GetLogfileInfo(filePath);
             return info.FileExists;
         }

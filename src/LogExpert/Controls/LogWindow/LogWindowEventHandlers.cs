@@ -2,14 +2,20 @@
 
 using LogExpert.Classes;
 using LogExpert.Classes.Filter;
-using LogExpert.Classes.Highlight;
 using LogExpert.Classes.ILogLineColumnizerCallback;
 using LogExpert.Config;
+using LogExpert.Core.Classes;
+using LogExpert.Core.Classes.Filter;
+using LogExpert.Core.Classes.Highlight;
+using LogExpert.Core.Config;
+using LogExpert.Core.Entities;
+using LogExpert.Core.Entities.EventArgs;
+using LogExpert.Core.Interface;
 using LogExpert.Dialogs;
 using LogExpert.Entities;
 using LogExpert.Entities.EventArgs;
 using LogExpert.Extensions;
-using LogExpert.Interface;
+using LogExpert.UI.Dialogs;
 
 using System;
 using System.Collections.Generic;
@@ -21,7 +27,7 @@ using System.Windows.Forms;
 
 namespace LogExpert.Controls.LogWindow
 {
-    internal partial class LogWindow
+    public partial class LogWindow
     {
         private void AutoResizeFilterBox()
         {
@@ -791,11 +797,11 @@ namespace LogExpert.Controls.LogWindow
 
             // Add plugin entries
             bool isAdded = false;
-            if (PluginRegistry.Instance.RegisteredContextMenuPlugins.Count > 0)
+            if (PluginRegistry.PluginRegistry.Instance.RegisteredContextMenuPlugins.Count > 0)
             {
                 //string line = this.logFileReader.GetLogLine(lineNum);
                 IList<int> lines = GetSelectedContent();
-                foreach (IContextMenuEntry entry in PluginRegistry.Instance.RegisteredContextMenuPlugins)
+                foreach (IContextMenuEntry entry in PluginRegistry.PluginRegistry.Instance.RegisteredContextMenuPlugins)
                 {
                     LogExpertCallback callback = new(this);
                     ContextMenuPluginEventArgs evArgs = new(entry, lines, CurrentColumnizer, callback);
@@ -1301,16 +1307,24 @@ namespace LogExpert.Controls.LogWindow
         {
             if (e.Button == MouseButtons.Right)
             {
-                RegexHelperDialog dlg = new();
-                dlg.Owner = this;
-                dlg.CaseSensitive = filterCaseSensitiveCheckBox.Checked;
-                dlg.Pattern = filterComboBox.Text;
-                DialogResult res = dlg.ShowDialog();
-
-                if (res == DialogResult.OK)
+                RegexHelperDialog dlg = new()
                 {
+                    ExpressionHistoryList = ConfigManager.Settings.RegexHistory.ExpressionHistoryList,
+                    TesttextHistoryList = ConfigManager.Settings.RegexHistory.TesttextHistoryList,
+                    Owner = this,
+                    CaseSensitive = filterCaseSensitiveCheckBox.Checked,
+                    Pattern = filterComboBox.Text
+                };
+
+                if (dlg.ShowDialog() == DialogResult.OK)
+                {
+                    ConfigManager.Settings.RegexHistory.ExpressionHistoryList = dlg.ExpressionHistoryList;
+                    ConfigManager.Settings.RegexHistory.TesttextHistoryList = dlg.TesttextHistoryList;
+
                     filterCaseSensitiveCheckBox.Checked = dlg.CaseSensitive;
                     filterComboBox.Text = dlg.Pattern;
+
+                    ConfigManager.Save(SettingsFlags.RegexHistory);
                 }
             }
         }

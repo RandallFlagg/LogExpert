@@ -1,4 +1,4 @@
-﻿using LogExpert.Classes.Highlight;
+﻿using LogExpert.Core.Classes.Highlight;
 
 using System;
 using System.Collections.Generic;

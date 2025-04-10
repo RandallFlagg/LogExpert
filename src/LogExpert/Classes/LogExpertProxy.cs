@@ -1,10 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Windows.Forms;
-using LogExpert.Controls.LogTabWindow;
+﻿using LogExpert.Controls.LogTabWindow;
 using LogExpert.Grpc;
 using LogExpert.Interface;
+
 using NLog;
+
+using System;
+using System.Collections.Generic;
+using System.Windows.Forms;
 
 namespace LogExpert.Classes
 {
@@ -127,7 +129,7 @@ namespace LogExpert.Classes
             if (_windowList.Count == 0)
             {
                 _logger.Info("Last LogTabWindow was closed");
-                PluginRegistry.Instance.CleanupPlugins();
+                PluginRegistry.PluginRegistry.Instance.CleanupPlugins();
                 OnLastWindowClosed();
             }
             else
