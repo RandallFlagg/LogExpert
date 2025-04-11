@@ -26,7 +26,7 @@ namespace CsvColumnizer
 
         private static readonly string _configFileName = "csvcolumnizer.json";
 
-        private readonly IList<CsvColumn> _columnList = new List<CsvColumn>();
+        private readonly IList<CsvColumn> _columnList = [];
         private CsvColumnizerConfig _config;
 
         private ILogLine _firstLine;
@@ -47,14 +47,12 @@ namespace CsvColumnizer
 
                 if (_config.MinColumns > 0)
                 {
-                    using (CsvReader csv = new CsvReader(new StringReader(logLine), _config.ReaderConfiguration))
+                    using CsvReader csv = new(new StringReader(logLine), _config.ReaderConfiguration);
+                    if (csv.Parser.Count < _config.MinColumns)
                     {
-                        if (csv.Parser.Count < _config.MinColumns)
-                        {
-                            // on invalid CSV don't hide the first line from LogExpert, since the file will be displayed in plain mode
-                            _isValidCsv = false;
-                            return logLine;
-                        }
+                        // on invalid CSV don't hide the first line from LogExpert, since the file will be displayed in plain mode
+                        _isValidCsv = false;
+                        return logLine;
                     }
                 }
 
@@ -120,9 +118,11 @@ namespace CsvColumnizer
 
         private static ColumnizedLogLine CreateColumnizedLogLine(ILogLine line)
         {
-            ColumnizedLogLine cLogLine = new ColumnizedLogLine();
-            cLogLine.LogLine = line;
-            cLogLine.ColumnValues = new IColumn[] { new Column { FullValue = line.FullLine, Parent = cLogLine } };
+            ColumnizedLogLine cLogLine = new()
+            {
+                LogLine = line
+            };
+            cLogLine.ColumnValues = [new Column { FullValue = line.FullLine, Parent = cLogLine }];
             return cLogLine;
         }
 
@@ -194,16 +194,16 @@ namespace CsvColumnizer
         public void Configure(ILogLineColumnizerCallback callback, string configDir)
         {
             string configPath = configDir + "\\" + _configFileName;
-            FileInfo fileInfo = new FileInfo(configPath);
+            FileInfo fileInfo = new(configPath);
 
-            CsvColumnizerConfigDlg dlg = new CsvColumnizerConfigDlg(_config);
+            CsvColumnizerConfigDlg dlg = new(_config);
             if (dlg.ShowDialog() == DialogResult.OK)
             {
                 _config.VersionBuild = Assembly.GetExecutingAssembly().GetName().Version.Build;
 
-                using (StreamWriter sw = new StreamWriter(fileInfo.Create()))
+                using (StreamWriter sw = new(fileInfo.Create()))
                 {
-                    JsonSerializer serializer = new JsonSerializer();
+                    JsonSerializer serializer = new();
                     serializer.Serialize(sw, _config);
                 }
 
@@ -256,31 +256,31 @@ namespace CsvColumnizer
 
         private IColumnizedLogLine SplitCsvLine(ILogLine line)
         {
-            ColumnizedLogLine cLogLine = new ColumnizedLogLine();
-            cLogLine.LogLine = line;
-
-            using (CsvReader csv = new CsvReader(new StringReader(line.FullLine), _config.ReaderConfiguration))
+            ColumnizedLogLine cLogLine = new()
             {
-                csv.Read();
-                csv.ReadHeader();
+                LogLine = line
+            };
 
-                //we only read line by line and not the whole file so it is always the header
-                string[] records = csv.HeaderRecord;
+            using CsvReader csv = new(new StringReader(line.FullLine), _config.ReaderConfiguration);
+            csv.Read();
+            csv.ReadHeader();
 
-                if (records != null)
+            //we only read line by line and not the whole file so it is always the header
+            string[] records = csv.HeaderRecord;
+
+            if (records != null)
+            {
+                List<Column> columns = [];
+
+                foreach (string record in records)
                 {
-                    List<Column> columns = new List<Column>();
-
-                    foreach (string record in records)
-                    {
-                        columns.Add(new Column { FullValue = record, Parent = cLogLine });
-                    }
-
-                    cLogLine.ColumnValues = columns.Select(a => a as IColumn).ToArray();
+                    columns.Add(new Column { FullValue = record, Parent = cLogLine });
                 }
 
-                return cLogLine;
+                cLogLine.ColumnValues = columns.Select(a => a as IColumn).ToArray();
             }
+
+            return cLogLine;
         }
 
         #endregion

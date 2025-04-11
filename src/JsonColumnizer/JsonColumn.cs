@@ -1,6 +1,6 @@
-﻿namespace CsvColumnizer
+﻿namespace JsonColumnizer
 {
-    internal class CsvColumn(string name)
+    public class JsonColumn(string name)
     {
         #region Properties
 

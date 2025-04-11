@@ -35,12 +35,13 @@ namespace FlashIconHighlighter
 
         private void FlashWindow(Form form)
         {
-            FLASHWINFO fw = new FLASHWINFO();
-
-            fw.cbSize = Convert.ToUInt32(Marshal.SizeOf(typeof(FLASHWINFO)));
-            fw.hwnd = form.Handle;
-            fw.dwFlags = 14;
-            fw.uCount = 0;
+            FLASHWINFO fw = new()
+            {
+                cbSize = Convert.ToUInt32(Marshal.SizeOf(typeof(FLASHWINFO))),
+                hwnd = form.Handle,
+                dwFlags = 14,
+                uCount = 0
+            };
 
             Win32Stuff.FlashWindowEx(ref fw);
         }

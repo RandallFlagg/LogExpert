@@ -1,12 +1,13 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+
+using System;
 using System.Collections.Generic;
-using System.Xml;
-using System.Windows.Forms;
-using System.Net.Sockets;
 using System.IO;
+using System.Net.Sockets;
 using System.Runtime.Serialization;
-using Newtonsoft.Json;
 using System.Runtime.Versioning;
+using System.Windows.Forms;
+using System.Xml;
 
 [assembly: SupportedOSPlatform("windows")]
 namespace LogExpert
@@ -26,10 +27,7 @@ namespace LogExpert
 
         #region Properties
 
-        public string Text
-        {
-            get { return "eminus"; }
-        }
+        public string Text => "eminus";
 
         #endregion
 
@@ -49,7 +47,7 @@ namespace LogExpert
 
                 pos += "created in ".Length;
                 int endPos = temp.IndexOf(dot, pos);
-                
+
                 if (endPos == -1)
                 {
                     return null;
@@ -57,7 +55,7 @@ namespace LogExpert
 
                 string className = temp[pos..endPos];
                 pos = temp.IndexOf(doubleDot, pos);
-                
+
                 if (pos == -1)
                 {
                     return null;
@@ -76,7 +74,7 @@ namespace LogExpert
                 int pos = str.IndexOf("at ") + 3;
                 str = str[pos..]; // remove 'at '
                 int idx = str.IndexOfAny(['(', '$', '<']);
-                
+
                 if (idx != -1)
                 {
                     if (str[idx] == '$')
@@ -94,19 +92,19 @@ namespace LogExpert
                     }
 
                     idx = str.LastIndexOf(':');
-                    
+
                     if (idx == -1)
                     {
                         return null;
                     }
 
                     pos = str.IndexOf(')', idx);
-                    
+
                     if (pos == -1)
                     {
                         return null;
                     }
-                    
+
                     lineNum = str.Substring(idx + 1, pos - idx - 1);
                 }
                 /*
@@ -230,9 +228,9 @@ namespace LogExpert
             FileInfo fileInfo = new(configDir + Path.DirectorySeparatorChar + CFG_FILE_NAME);
 
             dlg?.ApplyChanges();
-            
+
             _config = tmpConfig.Clone();
-            
+
             using StreamWriter sw = new(fileInfo.Create());
             JsonSerializer serializer = new();
             serializer.Serialize(sw, _config);
@@ -245,8 +243,10 @@ namespace LogExpert
 
         public void ShowConfigForm(object panel)
         {
-            dlg = new EminusConfigDlg(tmpConfig);
-            dlg.Parent = (Panel)panel;
+            dlg = new EminusConfigDlg(tmpConfig)
+            {
+                Parent = (Panel)panel
+            };
             dlg.Show();
         }
 
@@ -257,9 +257,12 @@ namespace LogExpert
         /// <param name="owner"></param>
         public void ShowConfigDialog(object owner)
         {
-            dlg = new EminusConfigDlg(tmpConfig);
-            dlg.TopLevel = true;
-            dlg.Owner = (Form)owner;
+            dlg = new EminusConfigDlg(tmpConfig)
+            {
+                TopLevel = true,
+                Owner = (Form)owner
+            };
+
             dlg.ShowDialog();
             dlg.ApplyChanges();
         }

@@ -17,10 +17,12 @@ namespace LogExpert
 
         public EminusConfig Clone()
         {
-            EminusConfig config = new();
-            config.host = host;
-            config.port = port;
-            config.password = password;
+            EminusConfig config = new()
+            {
+                host = host,
+                port = port,
+                password = password
+            };
             return config;
         }
 

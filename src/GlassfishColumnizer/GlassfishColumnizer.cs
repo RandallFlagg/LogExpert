@@ -1,27 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using LogExpert;
+﻿using LogExpert;
+
+using System;
 using System.Globalization;
 using System.Linq;
 
 namespace GlassfishColumnizer
 {
-    internal class XmlConfig : IXmlLogConfiguration
-    {
-        #region Properties
-
-        public string XmlStartTag { get; } = "[#|";
-
-        public string XmlEndTag { get; } = "|#]";
-
-        public string Stylesheet { get; } = null;
-
-        public string[] Namespace => null;
-
-        #endregion
-    }
-
     internal class GlassfishColumnizer : ILogLineXmlColumnizer
     {
         #region Fields
@@ -30,10 +14,10 @@ namespace GlassfishColumnizer
         protected const string DATETIME_FORMAT = "yyyy-MM-ddTHH:mm:ss.fffzzzz";
         protected const string DATETIME_FORMAT_OUT = "yyyy-MM-dd HH:mm:ss.fff";
 
-        private static readonly XmlConfig xmlConfig = new XmlConfig();
+        private static readonly XmlConfig xmlConfig = new();
         private readonly char separatorChar = '|';
-        private readonly char[] trimChars = new char[] {'|'};
-        protected CultureInfo cultureInfo = new CultureInfo("en-US");
+        private readonly char[] trimChars = ['|'];
+        protected CultureInfo cultureInfo = new("en-US");
         protected int timeOffset = 0;
 
         #endregion
@@ -55,7 +39,7 @@ namespace GlassfishColumnizer
 
         public ILogLine GetLineTextForClipboard(ILogLine logLine, ILogLineColumnizerCallback callback)
         {
-            GlassFishLogLine line = new GlassFishLogLine
+            GlassFishLogLine line = new()
             {
                 FullLine = logLine.FullLine.Replace(separatorChar, '|'),
                 LineNumber = logLine.LineNumber
@@ -81,12 +65,12 @@ namespace GlassfishColumnizer
 
         public string[] GetColumnNames()
         {
-            return new string[] {"Date/Time", "Message"};
+            return ["Date/Time", "Message"];
         }
 
         public IColumnizedLogLine SplitLine(ILogLineColumnizerCallback callback, ILogLine line)
         {
-            ColumnizedLogLine cLogLine = new ColumnizedLogLine();
+            ColumnizedLogLine cLogLine = new();
             cLogLine.LogLine = line;
 
             string temp = line.FullLine;
@@ -97,12 +81,12 @@ namespace GlassfishColumnizer
             // delete '[#|' and '|#]'
             if (temp.StartsWith("[#|"))
             {
-                temp = temp.Substring(3);
+                temp = temp[3..];
             }
 
             if (temp.EndsWith("|#]"))
             {
-                temp = temp.Substring(0, temp.Length - 3);
+                temp = temp[..^3];
             }
 
             // If the line is too short (i.e. does not follow the format for this columnizer) return the whole line content
@@ -171,12 +155,12 @@ namespace GlassfishColumnizer
             // delete '[#|' and '|#]'
             if (temp.StartsWith("[#|"))
             {
-                temp = temp.Substring(3);
+                temp = temp[3..];
             }
 
             if (temp.EndsWith("|#]"))
             {
-                temp = temp.Substring(0, temp.Length - 3);
+                temp = temp[..^3];
             }
 
             if (temp.Length < 28)
@@ -190,7 +174,7 @@ namespace GlassfishColumnizer
                 return DateTime.MinValue;
             }
 
-            string value = temp.Substring(0, endIndex);
+            string value = temp[..endIndex];
 
             try
             {
@@ -218,7 +202,7 @@ namespace GlassfishColumnizer
                     DateTime oldDateTime = DateTime.ParseExact(oldValue, DATETIME_FORMAT_OUT, cultureInfo);
                     long mSecsOld = oldDateTime.Ticks / TimeSpan.TicksPerMillisecond;
                     long mSecsNew = newDateTime.Ticks / TimeSpan.TicksPerMillisecond;
-                    timeOffset = (int) (mSecsNew - mSecsOld);
+                    timeOffset = (int)(mSecsNew - mSecsOld);
                 }
                 catch (FormatException)
                 {
@@ -227,18 +211,5 @@ namespace GlassfishColumnizer
         }
 
         #endregion
-
-        private class GlassFishLogLine : ILogLine
-        {
-            #region Properties
-
-            public string FullLine { get; set; }
-
-            public int LineNumber { get; set; }
-
-            string ITextValue.Text => FullLine;
-
-            #endregion
-        }
     }
 }
