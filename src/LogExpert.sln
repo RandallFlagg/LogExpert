@@ -24,6 +24,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{DE6375A4-B4C4-4620-8FFB-B9D5A4E21144}"
 	ProjectSection(SolutionItems) = preProject
 		Solution Items\AssemblyVersion.cs = Solution Items\AssemblyVersion.cs
+		Solution Items\usedComponents.json = Solution Items\usedComponents.json
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonColumnizer", "JsonColumnizer\JsonColumnizer.csproj", "{4C899885-E361-410A-B6AC-C2F236C436FA}"

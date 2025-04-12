@@ -1,4 +1,8 @@
-﻿using System.Diagnostics;
+﻿using LogExpert.Core.Classes;
+
+using Newtonsoft.Json;
+
+using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.Versioning;
 
@@ -27,14 +31,21 @@ namespace LogExpert.UI.Dialogs
             labelProductName.Text = AssemblyProduct;
             labelVersion.Text = AssemblyVersion;
             labelCopyright.Text = AssemblyCopyright;
-            //this.labelCompanyName.Text = AssemblyCompany;
-            textBoxDescription.Text = AssemblyDescription +
-                                           "\r\n\r\nCredits:\r\n\r\n" +
-                                           "LogExpert uses modules from:\r\n" +
-                                           "https://github.com/dockpanelsuite/dockpanelsuite\r\n";
             string link = "https://github.com/LogExperts/LogExpert";
             linkLabelURL.Links.Add(new LinkLabel.Link(0, link.Length, link));
+            LoadUsedComponents();
         }
+
+        //Name, Version, License, Download, Source
+
+        private void LoadUsedComponents()
+        {
+            string json = File.ReadAllText($"{Application.StartupPath}files\\json\\usedComponents.json");
+            var usedComponents = JsonConvert.DeserializeObject<UsedComponents[]>(json);
+            usedComponents = usedComponents?.OrderBy(x => x.PackageId).ToArray();
+            usedComponentsDataGrid.DataSource = usedComponents;
+        }
+
 
         private void LoadResources()
         {

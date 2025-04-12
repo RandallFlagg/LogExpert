@@ -5,6 +5,7 @@ using LogExpert.Core.Classes.Columnizer;
 using LogExpert.Core.Config;
 using LogExpert.Core.Entities;
 using LogExpert.Core.Enums;
+using LogExpert.UI.Dialogs;
 
 using System;
 using System.Collections.Generic;

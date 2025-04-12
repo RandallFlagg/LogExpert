@@ -197,6 +197,7 @@ namespace CsvColumnizer
             FileInfo fileInfo = new(configPath);
 
             CsvColumnizerConfigDlg dlg = new(_config);
+
             if (dlg.ShowDialog() == DialogResult.OK)
             {
                 _config.VersionBuild = Assembly.GetExecutingAssembly().GetName().Version.Build;

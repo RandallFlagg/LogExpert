@@ -26,49 +26,44 @@
             fs.Close();
         }
 
-        public static void ImportBookmarkList(string logfileName, string fileName,
-            SortedList<int, Entities.Bookmark> bookmarkList)
+        public static void ImportBookmarkList(string logfileName, string fileName, SortedList<int, Entities.Bookmark> bookmarkList)
         {
-            using (FileStream fs = new(fileName, FileMode.Open, FileAccess.Read))
+            using FileStream fs = new(fileName, FileMode.Open, FileAccess.Read);
+            using StreamReader reader = new(fs);
+            if (!reader.EndOfStream)
             {
-                using (StreamReader reader = new(fs))
+                reader.ReadLine(); // skip "Log file name;Line number;Comment"
+            }
+
+            while (!reader.EndOfStream)
+            {
+                try
                 {
-                    if (!reader.EndOfStream)
+                    string line = reader.ReadLine();
+                    line = line.Replace(replacementForNewLine, "\r\n").Replace("\\\r\n", replacementForNewLine);
+
+                    // Line is formatted: logfileName ";" bookmark.LineNum ";" bookmark.Text;
+                    int firstSeparator = line.IndexOf(';');
+                    int secondSeparator = line.IndexOf(';', firstSeparator + 1);
+
+                    string fileStr = line.Substring(0, firstSeparator);
+                    string lineStr = line.Substring(firstSeparator + 1, secondSeparator - firstSeparator - 1);
+                    string comment = line.Substring(secondSeparator + 1);
+
+                    int lineNum;
+                    if (int.TryParse(lineStr, out lineNum))
                     {
-                        reader.ReadLine(); // skip "Log file name;Line number;Comment"
+                        Entities.Bookmark bookmark = new(lineNum, comment);
+                        bookmarkList.Add(lineNum, bookmark);
                     }
-
-                    while (!reader.EndOfStream)
+                    else
                     {
-                        try
-                        {
-                            string line = reader.ReadLine();
-                            line = line.Replace(replacementForNewLine, "\r\n").Replace("\\\r\n", replacementForNewLine);
-
-                            // Line is formatted: logfileName ";" bookmark.LineNum ";" bookmark.Text;
-                            int firstSeparator = line.IndexOf(';');
-                            int secondSeparator = line.IndexOf(';', firstSeparator + 1);
-
-                            string fileStr = line.Substring(0, firstSeparator);
-                            string lineStr = line.Substring(firstSeparator + 1, secondSeparator - firstSeparator - 1);
-                            string comment = line.Substring(secondSeparator + 1);
-
-                            int lineNum;
-                            if (int.TryParse(lineStr, out lineNum))
-                            {
-                                Entities.Bookmark bookmark = new(lineNum, comment);
-                                bookmarkList.Add(lineNum, bookmark);
-                            }
-                            else
-                            {
-                                //!!!log error: skipping a line entry
-                            }
-                        }
-                        catch
-                        {
-                            //!!!
-                        }
+                        //!!!log error: skipping a line entry
                     }
+                }
+                catch
+                {
+                    //!!!
                 }
             }
         }

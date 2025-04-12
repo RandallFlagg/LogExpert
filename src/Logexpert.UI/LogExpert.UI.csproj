@@ -8,6 +8,7 @@
 	<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 	<SignAssembly>True</SignAssembly>
 	<AssemblyOriginatorKeyFile>..\Solution Items\Key.snk</AssemblyOriginatorKeyFile>
+  <ForceDesignerDPIUnaware>true</ForceDesignerDPIUnaware>
   </PropertyGroup>
 
 	<ItemGroup>
@@ -21,6 +22,12 @@
 
   <ItemGroup>
     <Compile Update="Dialogs\AboutBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Dialogs\ChooseIconDlg.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Dialogs\OpenUriDialog.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="Dialogs\RegexHelperDialog.cs">

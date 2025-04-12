@@ -14,6 +14,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="..\Solution Items\usedComponents.json" Link="files\json\usedComponents.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="files\json\" />
     <Folder Include="strings\de\" />
     <Folder Include="strings\en\" />
     <Folder Include="strings\" />

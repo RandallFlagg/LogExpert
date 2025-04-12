@@ -971,8 +971,10 @@ namespace LogExpert.Controls.LogTabWindow
 
         private void OnOpenURIToolStripMenuItemClick(object sender, EventArgs e)
         {
-            OpenUriDialog dlg = new();
-            dlg.UriHistory = ConfigManager.Settings.uriHistoryList;
+            OpenUriDialog dlg = new()
+            {
+                UriHistory = ConfigManager.Settings.uriHistoryList
+            };
 
             if (DialogResult.OK == dlg.ShowDialog())
             {

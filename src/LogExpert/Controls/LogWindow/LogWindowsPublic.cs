@@ -1634,13 +1634,16 @@ namespace LogExpert.Controls.LogWindow
 
         public void ExportBookmarkList()
         {
-            SaveFileDialog dlg = new SaveFileDialog();
-            dlg.Title = "Choose a file to save bookmarks into";
-            dlg.AddExtension = true;
-            dlg.DefaultExt = "csv";
-            dlg.Filter = "CSV file (*.csv)|*.csv|Bookmark file (*.bmk)|*.bmk";
-            dlg.FilterIndex = 1;
-            dlg.FileName = Path.GetFileNameWithoutExtension(FileName);
+            SaveFileDialog dlg = new()
+            {
+                Title = "Choose a file to save bookmarks into",
+                AddExtension = true,
+                DefaultExt = "csv",
+                Filter = "CSV file (*.csv)|*.csv|Bookmark file (*.bmk)|*.bmk",
+                FilterIndex = 1,
+                FileName = Path.GetFileNameWithoutExtension(FileName)
+            };
+
             if (dlg.ShowDialog() == DialogResult.OK)
             {
                 try
@@ -1658,20 +1661,22 @@ namespace LogExpert.Controls.LogWindow
 
         public void ImportBookmarkList()
         {
-            OpenFileDialog dlg = new OpenFileDialog();
-            dlg.Title = "Choose a file to load bookmarks from";
-            dlg.AddExtension = true;
-            dlg.DefaultExt = "csv";
-            dlg.DefaultExt = "csv";
-            dlg.Filter = "CSV file (*.csv)|*.csv|Bookmark file (*.bmk)|*.bmk";
-            dlg.FilterIndex = 1;
-            dlg.FileName = Path.GetFileNameWithoutExtension(FileName);
+            OpenFileDialog dlg = new()
+            {
+                Title = "Choose a file to load bookmarks from",
+                AddExtension = true,
+                DefaultExt = "csv",
+                Filter = "CSV file (*.csv)|*.csv|Bookmark file (*.bmk)|*.bmk",
+                FilterIndex = 1,
+                FileName = Path.GetFileNameWithoutExtension(FileName)
+            };
+
             if (dlg.ShowDialog() == DialogResult.OK)
             {
                 try
                 {
                     // add to the existing bookmarks
-                    SortedList<int, Bookmark> newBookmarks = new SortedList<int, Bookmark>();
+                    SortedList<int, Bookmark> newBookmarks = [];
                     BookmarkExporter.ImportBookmarkList(FileName, dlg.FileName, newBookmarks);
 
                     // Add (or replace) to existing bookmark list
@@ -1703,7 +1708,7 @@ namespace LogExpert.Controls.LogWindow
                 catch (IOException e)
                 {
                     _logger.Error(e);
-                    MessageBox.Show("Error while importing bookmark list: " + e.Message, "LogExpert");
+                    MessageBox.Show($"Error while importing bookmark list: {e.Message}", "LogExpert");
                 }
             }
         }

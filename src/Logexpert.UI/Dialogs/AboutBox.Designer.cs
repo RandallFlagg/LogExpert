@@ -34,13 +34,14 @@ namespace LogExpert.UI.Dialogs
             labelProductName = new Label();
             labelVersion = new Label();
             labelCopyright = new Label();
-            textBoxDescription = new TextBox();
             linkLabelURL = new LinkLabel();
-            panel1 = new Panel();
+            okPanel = new Panel();
             okButton = new Button();
+            usedComponentsDataGrid = new DataGridView();
             tableLayoutPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)logoPictureBox).BeginInit();
-            panel1.SuspendLayout();
+            okPanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)usedComponentsDataGrid).BeginInit();
             SuspendLayout();
             // 
             // tableLayoutPanel
@@ -52,9 +53,9 @@ namespace LogExpert.UI.Dialogs
             tableLayoutPanel.Controls.Add(labelProductName, 1, 0);
             tableLayoutPanel.Controls.Add(labelVersion, 1, 1);
             tableLayoutPanel.Controls.Add(labelCopyright, 1, 2);
-            tableLayoutPanel.Controls.Add(textBoxDescription, 1, 4);
             tableLayoutPanel.Controls.Add(linkLabelURL, 1, 3);
-            tableLayoutPanel.Controls.Add(panel1, 1, 5);
+            tableLayoutPanel.Controls.Add(okPanel, 1, 5);
+            tableLayoutPanel.Controls.Add(usedComponentsDataGrid, 1, 4);
             tableLayoutPanel.Dock = DockStyle.Fill;
             tableLayoutPanel.Location = new Point(14, 14);
             tableLayoutPanel.Margin = new Padding(4, 5, 4, 5);
@@ -117,20 +118,6 @@ namespace LogExpert.UI.Dialogs
             labelCopyright.Text = "Copyright";
             labelCopyright.TextAlign = ContentAlignment.MiddleLeft;
             // 
-            // textBoxDescription
-            // 
-            textBoxDescription.Dock = DockStyle.Fill;
-            textBoxDescription.Location = new Point(322, 270);
-            textBoxDescription.Margin = new Padding(9, 5, 4, 5);
-            textBoxDescription.Multiline = true;
-            textBoxDescription.Name = "textBoxDescription";
-            textBoxDescription.ReadOnly = true;
-            textBoxDescription.ScrollBars = ScrollBars.Both;
-            textBoxDescription.Size = new Size(588, 292);
-            textBoxDescription.TabIndex = 23;
-            textBoxDescription.TabStop = false;
-            textBoxDescription.Text = "Description";
-            // 
             // linkLabelURL
             // 
             linkLabelURL.AutoSize = true;
@@ -145,15 +132,15 @@ namespace LogExpert.UI.Dialogs
             linkLabelURL.TextAlign = ContentAlignment.MiddleLeft;
             linkLabelURL.LinkClicked += OnLinkLabelURLClicked;
             // 
-            // panel1
+            // okPanel
             // 
-            panel1.Controls.Add(okButton);
-            panel1.Dock = DockStyle.Fill;
-            panel1.Location = new Point(317, 572);
-            panel1.Margin = new Padding(4, 5, 4, 5);
-            panel1.Name = "panel1";
-            panel1.Size = new Size(593, 72);
-            panel1.TabIndex = 26;
+            okPanel.Controls.Add(okButton);
+            okPanel.Dock = DockStyle.Fill;
+            okPanel.Location = new Point(317, 572);
+            okPanel.Margin = new Padding(4, 5, 4, 5);
+            okPanel.Name = "okPanel";
+            okPanel.Size = new Size(593, 72);
+            okPanel.TabIndex = 26;
             // 
             // okButton
             // 
@@ -167,11 +154,23 @@ namespace LogExpert.UI.Dialogs
             okButton.Text = "&OK";
             okButton.UseVisualStyleBackColor = true;
             // 
+            // usedComponentsDataGrid
+            // 
+            usedComponentsDataGrid.AllowUserToAddRows = false;
+            usedComponentsDataGrid.AllowUserToDeleteRows = false;
+            usedComponentsDataGrid.BackgroundColor = SystemColors.Control;
+            usedComponentsDataGrid.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            usedComponentsDataGrid.Dock = DockStyle.Fill;
+            usedComponentsDataGrid.Location = new Point(316, 268);
+            usedComponentsDataGrid.Name = "usedComponentsDataGrid";
+            usedComponentsDataGrid.ReadOnly = true;
+            usedComponentsDataGrid.Size = new Size(595, 296);
+            usedComponentsDataGrid.TabIndex = 27;
+            // 
             // AboutBox
             // 
             ClientSize = new Size(942, 677);
             Controls.Add(tableLayoutPanel);
-            FormBorderStyle = FormBorderStyle.FixedDialog;
             Margin = new Padding(4, 5, 4, 5);
             MaximizeBox = false;
             MinimizeBox = false;
@@ -184,7 +183,8 @@ namespace LogExpert.UI.Dialogs
             tableLayoutPanel.ResumeLayout(false);
             tableLayoutPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)logoPictureBox).EndInit();
-            panel1.ResumeLayout(false);
+            okPanel.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)usedComponentsDataGrid).EndInit();
             ResumeLayout(false);
         }
 
@@ -195,9 +195,9 @@ namespace LogExpert.UI.Dialogs
 		private System.Windows.Forms.Label labelProductName;
 		private System.Windows.Forms.Label labelVersion;
 		private System.Windows.Forms.Label labelCopyright;
-		private System.Windows.Forms.TextBox textBoxDescription;
 		private System.Windows.Forms.LinkLabel linkLabelURL;
-		private System.Windows.Forms.Panel panel1;
+		private System.Windows.Forms.Panel okPanel;
 		private System.Windows.Forms.Button okButton;
-	}
+        private DataGridView usedComponentsDataGrid;
+    }
 }
