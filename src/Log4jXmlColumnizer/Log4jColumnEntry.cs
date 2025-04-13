@@ -3,7 +3,7 @@
 namespace Log4jXmlColumnizer
 {
     /// <summary>
-    /// Helper class for configuration of the colums.
+    /// Helper class for configuration of the columns.
     /// </summary>
     [Serializable]
     public class Log4jColumnEntry(string name, int index, int maxLen)

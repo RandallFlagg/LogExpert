@@ -53,7 +53,7 @@ namespace JsonColumnizer
                     if (json != null)
                     {
                         var columns = SplitJsonLine(samples.First(), json);
-                        if (columns.ColumnValues.Count() > 0 && Array.Exists(columns.ColumnValues, x => !string.IsNullOrEmpty(x.FullValue)))
+                        if (columns.ColumnValues.Length > 0 && Array.Exists(columns.ColumnValues, x => !string.IsNullOrEmpty(x.FullValue)))
                         {
                             result = Priority.PerfectlySupport;
                         }
@@ -85,10 +85,10 @@ namespace JsonColumnizer
 
         protected override IColumnizedLogLine SplitJsonLine(ILogLine line, JObject json)
         {
-            List<IColumn> returnColumns = new();
+            List<IColumn> returnColumns = [];
             var cLogLine = new ColumnizedLogLine { LogLine = line };
 
-            var columns = json.Properties().Select(property => new ColumnWithName { FullValue = property.Value.ToString(), ColumneName = property.Name.ToString(), Parent = cLogLine }).ToList();
+            var columns = json.Properties().Select(property => new ColumnWithName { FullValue = property.Value.ToString(), ColumnName = property.Name.ToString(), Parent = cLogLine }).ToList();
 
             //
             // Always rearrage the order of all json fields within a line to follow the sequence of columnNameList.
@@ -98,7 +98,7 @@ namespace JsonColumnizer
             {
                 if (column.StartsWith('@'))
                 {
-                    var existingColumn = columns.Find(x => x.ColumneName == column);
+                    var existingColumn = columns.Find(x => x.ColumnName == column);
 
                     if (existingColumn != null)
                     {
@@ -111,7 +111,7 @@ namespace JsonColumnizer
                 }
             }
 
-            cLogLine.ColumnValues = returnColumns.ToArray();
+            cLogLine.ColumnValues = [.. returnColumns];
 
             return cLogLine;
         }

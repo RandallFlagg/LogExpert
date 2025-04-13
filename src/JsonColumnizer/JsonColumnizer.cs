@@ -174,7 +174,7 @@ namespace JsonColumnizer
 
         public class ColumnWithName : Column
         {
-            public string ColumneName { get; set; }
+            public string ColumnName { get; set; }
         }
 
         //
@@ -186,20 +186,20 @@ namespace JsonColumnizer
         {
             var cLogLine = new ColumnizedLogLine { LogLine = line };
 
-            var columns = json.Properties().Select(property => new ColumnWithName { FullValue = property.Value.ToString(), ColumneName = property.Name.ToString(), Parent = cLogLine }).ToList();
+            var columns = json.Properties().Select(property => new ColumnWithName { FullValue = property.Value.ToString(), ColumnName = property.Name.ToString(), Parent = cLogLine }).ToList();
 
             foreach (var jsonColumn in columns)
             {
                 // When find new column in a log line, add a new column in the end of the list.
-                if (!ColumnSet.Contains(jsonColumn.ColumneName))
+                if (!ColumnSet.Contains(jsonColumn.ColumnName))
                 {
                     if (ColumnList.Count == 1 && !ColumnSet.Contains(ColumnList[0].Name))
                     {
                         ColumnList.Clear();
                     }
 
-                    ColumnSet.Add(jsonColumn.ColumneName);
-                    ColumnList.Add(new JsonColumn(jsonColumn.ColumneName));
+                    ColumnSet.Add(jsonColumn.ColumnName);
+                    ColumnList.Add(new JsonColumn(jsonColumn.ColumnName));
                 }
             }
 
@@ -210,7 +210,7 @@ namespace JsonColumnizer
             List<IColumn> returnColumns = [];
             foreach (var column in ColumnList)
             {
-                var existingColumn = columns.Find(x => x.ColumneName == column.Name);
+                var existingColumn = columns.Find(x => x.ColumnName == column.Name);
                 if (existingColumn != null)
                 {
                     returnColumns.Add(new Column() { FullValue = existingColumn.FullValue, Parent = cLogLine });
