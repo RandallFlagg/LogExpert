@@ -21,13 +21,52 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Controls\ColorComboBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="Controls\KnobControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="Controls\LogCellEditingControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="Controls\LogTabControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Update="Dialogs\AboutBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Dialogs\BookmarkCommentDlg.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="Dialogs\ChooseIconDlg.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Update="Dialogs\ExceptionWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Dialogs\FilterColumnChooser.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Dialogs\GotoLineDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Dialogs\ImportSettingsDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Dialogs\KeywordActionDlg.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Dialogs\MultiFileMaskDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Dialogs\MultiLoadRequestDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="Dialogs\OpenUriDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Dialogs\ProjectLoadDlg.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="Dialogs\RegexHelperDialog.cs">
@@ -36,8 +75,17 @@
     <Compile Update="Dialogs\SearchDialog.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Update="Dialogs\SearchProgressDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="Dialogs\TabRenameDialog.cs">
       <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Extensions\Forms\LineToolStripSeparatorExtension.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="Extensions\Forms\MenuToolStripSeparatorExtension.cs">
+      <SubType>Component</SubType>
     </Compile>
   </ItemGroup>
 
@@ -47,6 +95,10 @@
 
   <ItemGroup>
     <None Include="..\Solution Items\Key.snk" Link="Key.snk" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DockPanelSuite" />
   </ItemGroup>
 
 </Project>

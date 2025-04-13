@@ -1,5 +1,6 @@
 ﻿using LogExpert.Core.Classes;
-using LogExpert.Core.Entities.EventArgs;
+using LogExpert.Core.EventArgs;
+using LogExpert.Dialogs;
 
 using System;
 using System.Collections.Generic;
@@ -215,8 +216,8 @@ namespace LogExpert.Controls
             if (e.ColumnIndex == 1)
             {
                 e.PaintBackground(e.CellBounds, false);
-                int selCount = patternArgs.endLine - patternArgs.startLine;
-                int maxWeight = patternArgs.maxDiffInBlock * selCount + selCount;
+                int selCount = patternArgs.EndLine - patternArgs.StartLine;
+                int maxWeight = patternArgs.MaxDiffInBlock * selCount + selCount;
                 if (maxWeight > 0)
                 {
                     int width = (int)((double)(int)e.Value / (double)maxWeight * (double)e.CellBounds.Width);
@@ -233,7 +234,7 @@ namespace LogExpert.Controls
             }
             else
             {
-                DataGridView gridView = (DataGridView)sender;
+                BufferedDataGridView gridView = (BufferedDataGridView)sender;
                 int rowIndex = GetLineForHitGrid(e.RowIndex);
                 logWindow.CellPainting(gridView, rowIndex, e);
             }
@@ -302,7 +303,7 @@ namespace LogExpert.Controls
             {
                 return;
             }
-            DataGridView gridView = (DataGridView)sender;
+            BufferedDataGridView gridView = (BufferedDataGridView)sender;
             int rowIndex = GetLineForContentGrid(e.RowIndex);
             logWindow.CellPainting(gridView, rowIndex, e);
         }
@@ -320,10 +321,10 @@ namespace LogExpert.Controls
 
         private void recalcButton_Click(object sender, EventArgs e)
         {
-            patternArgs.fuzzy = fuzzyKnobControl.Value;
-            patternArgs.maxDiffInBlock = maxDiffKnobControl.Value;
-            patternArgs.maxMisses = maxMissesKnobControl.Value;
-            patternArgs.minWeight = weigthKnobControl.Value;
+            patternArgs.Fuzzy = fuzzyKnobControl.Value;
+            patternArgs.MaxDiffInBlock = maxDiffKnobControl.Value;
+            patternArgs.MaxMisses = maxMissesKnobControl.Value;
+            patternArgs.MinWeight = weigthKnobControl.Value;
             logWindow.PatternStatistic(patternArgs);
             recalcButton.Enabled = false;
             setRangeButton.Enabled = false;
@@ -352,7 +353,7 @@ namespace LogExpert.Controls
         {
             logWindow.PatternStatisticSelectRange(patternArgs);
             recalcButton.Enabled = true;
-            rangeLabel.Text = "Start: " + patternArgs.startLine + "\r\nEnd: " + patternArgs.endLine;
+            rangeLabel.Text = "Start: " + patternArgs.StartLine + "\r\nEnd: " + patternArgs.EndLine;
         }
 
         #endregion

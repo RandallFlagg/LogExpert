@@ -7,20 +7,14 @@ namespace LogExpert.Entities
     /// <summary>
     /// Represents a log file and its window. Used as a kind of handle for menus or list of open files.
     /// </summary>
-    public class WindowFileEntry
+    public class WindowFileEntry(LogWindow logWindow)
     {
         #region Fields
 
         private const int MAX_LEN = 40;
 
         #endregion
-
         #region cTor
-
-        public WindowFileEntry(LogWindow logWindow)
-        {
-            LogWindow = logWindow;
-        }
 
         #endregion
 
@@ -43,7 +37,7 @@ namespace LogExpert.Entities
         public string FileName => LogWindow.FileName;
 
 
-        public LogWindow LogWindow { get; }
+        public LogWindow LogWindow { get; } = logWindow;
 
         #endregion
     }

@@ -30,28 +30,16 @@
     <Compile Include="..\Solution Items\AssemblyVersion.cs">
       <Link>Properties\AssemblyVersion.cs</Link>
     </Compile>
-    <Compile Update="Dialogs\LogCellEditingControl.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Update="Dialogs\DateTimeDragControl.cs">
+    <Compile Update="Controls\DateTimeDragControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Update="Dialogs\TimeSpreadigControl.cs">
+    <Compile Update="Controls\TimeSpreadigControl.cs">
       <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Controls\KnobControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Controls\LogTabControl.cs">
-      <SubType>Component</SubType>
     </Compile>
     <Compile Update="Controls\LogTabPage.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Update="Dialogs\BufferedDataGridView.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Update="Dialogs\ColorComboBox.cs">
       <SubType>Component</SubType>
     </Compile>
     <None Include="..\Solution Items\Key.snk">

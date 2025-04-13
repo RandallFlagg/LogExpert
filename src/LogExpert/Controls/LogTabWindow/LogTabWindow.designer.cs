@@ -2,7 +2,7 @@
 
 using LogExpert.Core.Enums;
 using LogExpert.Dialogs;
-using LogExpert.Extensions.Forms;
+using LogExpert.UI.Extensions.Forms;
 
 using WeifenLuo.WinFormsUI.Docking;
 

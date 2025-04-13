@@ -2,7 +2,7 @@
 using LogExpert.Core.Classes.Log;
 using LogExpert.Core.Classes.xml;
 using LogExpert.Core.Entities;
-using LogExpert.Core.Entities.EventArgs;
+using LogExpert.Core.EventArgs;
 using LogExpert.Core.Interface;
 
 using NLog;

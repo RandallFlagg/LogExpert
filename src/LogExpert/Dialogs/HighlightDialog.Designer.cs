@@ -1,4 +1,6 @@
-﻿using System.Drawing;
+﻿using LogExpert.UI.Controls;
+
+using System.Drawing;
 
 namespace LogExpert.Dialogs
 {

@@ -9,13 +9,13 @@ using LogExpert.Core.Classes.Filter;
 using LogExpert.Core.Classes.Highlight;
 using LogExpert.Core.Config;
 using LogExpert.Core.Entities;
-using LogExpert.Core.Entities.EventArgs;
+using LogExpert.Core.EventArgs;
 using LogExpert.Core.Interface;
 using LogExpert.Dialogs;
 using LogExpert.Entities;
 using LogExpert.Entities.EventArgs;
-using LogExpert.Extensions;
 using LogExpert.UI.Dialogs;
+using LogExpert.UI.Extensions;
 
 using System;
 using System.Collections.Generic;
@@ -369,7 +369,7 @@ namespace LogExpert.Controls.LogWindow
 
         private void OnFilterGridViewCellPainting(object sender, DataGridViewCellPaintingEventArgs e)
         {
-            DataGridView gridView = (DataGridView)sender;
+            BufferedDataGridView gridView = (BufferedDataGridView)sender;
 
             if (e.RowIndex < 0 || e.ColumnIndex < 0 || _filterResultList.Count <= e.RowIndex)
             {
@@ -379,6 +379,7 @@ namespace LogExpert.Controls.LogWindow
 
             int lineNum = _filterResultList[e.RowIndex];
             ILogLine line = _logFileReader.GetLogLineWithWait(lineNum).Result;
+
             if (line != null)
             {
                 HilightEntry entry = FindFirstNoWordMatchHilightEntry(line);
@@ -387,6 +388,7 @@ namespace LogExpert.Controls.LogWindow
                 {
                     Color backColor = e.CellStyle.SelectionBackColor;
                     Brush brush;
+
                     if (gridView.Focused)
                     {
                         brush = new SolidBrush(e.CellStyle.SelectionBackColor);
@@ -1029,7 +1031,7 @@ namespace LogExpert.Controls.LogWindow
         private void OnColumnContextMenuStripOpening(object sender, CancelEventArgs e)
         {
             Control ctl = columnContextMenuStrip.SourceControl;
-            DataGridView gridView = ctl as DataGridView;
+            BufferedDataGridView gridView = ctl as BufferedDataGridView;
             bool frozen = false;
             if (_freezeStateMap.ContainsKey(ctl))
             {
@@ -1044,7 +1046,7 @@ namespace LogExpert.Controls.LogWindow
             }
             else
             {
-                if (ctl is DataGridView)
+                if (ctl is BufferedDataGridView)
                 {
                     freezeLeftColumnsUntilHereToolStripMenuItem.Text = $"Freeze left columns until here ({gridView.Columns[_selectedCol].HeaderText})";
                 }
@@ -1112,7 +1114,7 @@ namespace LogExpert.Controls.LogWindow
             _freezeStateMap[ctl] = frozen;
 
             DataGridViewColumn senderCol = sender as DataGridViewColumn;
-            if (ctl is DataGridView gridView)
+            if (ctl is BufferedDataGridView gridView)
             {
                 ApplyFrozenState(gridView);
             }
@@ -1120,7 +1122,7 @@ namespace LogExpert.Controls.LogWindow
 
         private void OnMoveToLastColumnToolStripMenuItemClick(object sender, EventArgs e)
         {
-            DataGridView gridView = columnContextMenuStrip.SourceControl as DataGridView;
+            BufferedDataGridView gridView = columnContextMenuStrip.SourceControl as BufferedDataGridView;
             DataGridViewColumn col = gridView.Columns[_selectedCol];
             if (col != null)
             {
@@ -1130,7 +1132,7 @@ namespace LogExpert.Controls.LogWindow
 
         private void OnMoveLeftToolStripMenuItemClick(object sender, EventArgs e)
         {
-            DataGridView gridView = columnContextMenuStrip.SourceControl as DataGridView;
+            BufferedDataGridView gridView = columnContextMenuStrip.SourceControl as BufferedDataGridView;
             DataGridViewColumn col = gridView.Columns[_selectedCol];
             if (col != null && col.DisplayIndex > 0)
             {
@@ -1140,7 +1142,7 @@ namespace LogExpert.Controls.LogWindow
 
         private void OnMoveRightToolStripMenuItemClick(object sender, EventArgs e)
         {
-            DataGridView gridView = columnContextMenuStrip.SourceControl as DataGridView;
+            BufferedDataGridView gridView = columnContextMenuStrip.SourceControl as BufferedDataGridView;
             DataGridViewColumn col = gridView.Columns[_selectedCol];
             if (col != null && col.DisplayIndex < gridView.Columns.Count - 1)
             {
@@ -1150,14 +1152,14 @@ namespace LogExpert.Controls.LogWindow
 
         private void OnHideColumnToolStripMenuItemClick(object sender, EventArgs e)
         {
-            DataGridView gridView = columnContextMenuStrip.SourceControl as DataGridView;
+            BufferedDataGridView gridView = columnContextMenuStrip.SourceControl as BufferedDataGridView;
             DataGridViewColumn col = gridView.Columns[_selectedCol];
             col.Visible = false;
         }
 
         private void OnRestoreColumnsToolStripMenuItemClick(object sender, EventArgs e)
         {
-            DataGridView gridView = columnContextMenuStrip.SourceControl as DataGridView;
+            BufferedDataGridView gridView = columnContextMenuStrip.SourceControl as BufferedDataGridView;
             foreach (DataGridViewColumn col in gridView.Columns)
             {
                 col.Visible = true;

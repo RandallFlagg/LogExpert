@@ -3,7 +3,7 @@ using LogExpert.Core.Classes;
 using LogExpert.Core.Classes.Persister;
 using LogExpert.Core.Config;
 using LogExpert.Core.Entities;
-using LogExpert.Core.Entities.EventArgs;
+using LogExpert.Core.EventArgs;
 using LogExpert.Dialogs;
 using LogExpert.Entities.EventArgs;
 using LogExpert.UI.Dialogs;

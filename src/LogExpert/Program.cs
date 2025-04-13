@@ -7,6 +7,7 @@ using LogExpert.Controls.LogTabWindow;
 using LogExpert.Core.Classes;
 using LogExpert.Core.Config;
 using LogExpert.Dialogs;
+using LogExpert.UI.Dialogs;
 
 using LogexpertGRPCService.Services;
 

@@ -1,5 +1,6 @@
 ﻿using LogExpert.Classes.ILogLineColumnizerCallback;
 using LogExpert.Controls.LogWindow;
+using LogExpert.Core.Classes;
 
 using NLog;
 
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace LogExpert.Classes
 {
-    internal class TimeSpreadCalculator
+    internal partial class TimeSpreadCalculator
     {
         #region Fields
 
@@ -25,6 +26,7 @@ namespace LogExpert.Classes
         private readonly object _diffListLock = new();
         private readonly EventWaitHandle _lineCountEvent = new ManualResetEvent(false);
 
+        //TODO Refactor that it does not need LogWindow
         private readonly LogWindow _logWindow;
 
         // for DoCalc_via_Time
@@ -211,12 +213,14 @@ namespace LogExpert.Classes
         {
             OnStartCalc(EventArgs.Empty);
             _logger.Debug("TimeSpreadCalculator.DoCalc() begin");
+
             if (_callback.GetLineCount() < 1)
             {
                 OnCalcDone(EventArgs.Empty);
                 _logger.Debug("TimeSpreadCalculator.DoCalc() end because of line count < 1");
                 return;
             }
+
             int lineNum = 0;
             int lastLineNum = _callback.GetLineCount() - 1;
             _startTimestamp = _logWindow.GetTimestampForLineForward(ref lineNum, false);
@@ -231,6 +235,7 @@ namespace LogExpert.Classes
                 _timePerLine = (int)Math.Round(overallSpanMillis / (double)_lineCount);
                 DateTime oldTime = _logWindow.GetTimestampForLineForward(ref lineNum, false);
                 int step;
+
                 if (_lineCount > _displayHeight)
                 {
                     step = (int)Math.Round(_lineCount / (double)_displayHeight);
@@ -245,6 +250,7 @@ namespace LogExpert.Classes
                 List<SpreadEntry> newDiffList = [];
                 List<TimeSpan> maxList = [];
                 lineNum++;
+
                 for (int i = lineNum; i < lastLineNum; i += step)
                 {
                     int currLineNum = i;
@@ -259,11 +265,13 @@ namespace LogExpert.Classes
                         _logger.Debug("TimeSpreadCalculator.DoCalc() time diff {0}", span);
                     }
                 }
+
                 if (maxList.Count > 3)
                 {
                     maxList.Sort();
                     _maxSpan = maxList[^3];
                 }
+
                 lock (_diffListLock)
                 {
                     DiffList = newDiffList;
@@ -280,12 +288,14 @@ namespace LogExpert.Classes
         {
             OnStartCalc(EventArgs.Empty);
             _logger.Debug("TimeSpreadCalculator.DoCalc_via_Time() begin");
+
             if (_callback.GetLineCount() < 1)
             {
                 OnCalcDone(EventArgs.Empty);
                 _logger.Debug("TimeSpreadCalculator.DoCalc() end because of line count < 1");
                 return;
             }
+
             int lineNum = 0;
             int lastLineNum = _callback.GetLineCount() - 1;
             _startTimestamp = _logWindow.GetTimestampForLineForward(ref lineNum, false);
@@ -296,8 +306,9 @@ namespace LogExpert.Classes
                 TimeSpan overallSpan = _endTimestamp - _startTimestamp;
                 long overallSpanMillis = overallSpan.Ticks / TimeSpan.TicksPerMillisecond;
                 //int timePerLine = (int)Math.Round((double)overallSpanMillis / (double)this.lineCount);
-                DateTime oldTime = _logWindow.GetTimestampForLineForward(ref lineNum, false);
+
                 long step;
+
                 if (overallSpanMillis > _displayHeight)
                 {
                     step = (long)Math.Round(overallSpanMillis / (double)_displayHeight);
@@ -318,6 +329,7 @@ namespace LogExpert.Classes
                 _maxDiff = 0;
                 List<int> maxList = [];
                 List<SpreadEntry> newDiffList = [];
+
                 while (searchTimeStamp.CompareTo(_endTimestamp) <= 0)
                 {
                     lineNum = _logWindow.FindTimestampLine_Internal(lineNum, lineNum, lastLineNum, searchTimeStamp, false);
@@ -351,11 +363,13 @@ namespace LogExpert.Classes
                     oldLineNum = lineNum;
                     //lineNum++;
                 }
+
                 if (maxList.Count > 3)
                 {
                     maxList.Sort();
                     _maxDiff = maxList[^3];
                 }
+
                 _average = lineDiffSum / (double)loopCount;
                 //double average = maxList[maxList.Count / 2];
                 _logger.Debug("Average diff={0} minDiff={1} maxDiff={2}", _average, minDiff, _maxDiff);
@@ -383,9 +397,11 @@ namespace LogExpert.Classes
         private DateTime CalcValuesViaLines(int timePerLine, TimeSpan maxSpan)
         {
             DateTime oldTime = DateTime.MinValue;
+
             if (DiffList.Count > 0)
             {
                 oldTime = DiffList[0].Timestamp;
+
                 foreach (SpreadEntry entry in DiffList)
                 {
                     TimeSpan span = entry.Timestamp - oldTime;
@@ -401,6 +417,7 @@ namespace LogExpert.Classes
                     oldTime = entry.Timestamp;
                 }
             }
+
             return oldTime;
         }
 
@@ -410,12 +427,14 @@ namespace LogExpert.Classes
             {
                 int lineDiff = entry.Diff;
                 double diffFromAverage = entry.Diff - average;
+
                 if (diffFromAverage < 0)
                 {
                     diffFromAverage = 0;
                 }
                 int value = (int)(diffFromAverage / maxDiff * _contrast);
                 entry.Value = 255 - value;
+
                 _logger.Debug("TimeSpreadCalculator.DoCalc() test time {0:HH:mm:ss.fff} line diff={1} value={2}", entry.Timestamp, lineDiff, value);
             }
         }
@@ -431,31 +450,5 @@ namespace LogExpert.Classes
         }
 
         #endregion
-
-        public class SpreadEntry
-        {
-            #region Fields
-
-            public int Diff { get; set; }
-
-            public DateTime Timestamp { get; set; }
-
-            public int LineNum { get; set; }
-
-            public int Value { get; set; }
-
-            #endregion
-
-            #region cTor
-
-            public SpreadEntry(int lineNum, int diff, DateTime timestamp)
-            {
-                LineNum = lineNum;
-                Diff = diff;
-                Timestamp = timestamp;
-            }
-
-            #endregion
-        }
     }
 }

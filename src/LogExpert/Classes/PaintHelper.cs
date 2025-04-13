@@ -33,7 +33,7 @@ namespace LogExpert.Classes
 
         #region Public methods
 
-        public static void CellPainting(ILogPaintContext logPaintCtx, DataGridView gridView, int rowIndex,
+        public static void CellPainting(ILogPaintContext logPaintCtx, BufferedDataGridView gridView, int rowIndex,
             DataGridViewCellPaintingEventArgs e)
         {
             if (rowIndex < 0 || e.ColumnIndex < 0)
@@ -122,7 +122,6 @@ namespace LogExpert.Classes
             }
         }
 
-
         public static DataGridViewTextBoxColumn CreateMarkerColumn()
         {
             DataGridViewTextBoxColumn markerColumn = new();
@@ -161,7 +160,7 @@ namespace LogExpert.Classes
             return titleColumn;
         }
 
-        public static void SetColumnizer(ILogLineColumnizer columnizer, DataGridView gridView)
+        public static void SetColumnizer(ILogLineColumnizer columnizer, BufferedDataGridView gridView)
         {
             int rowCount = gridView.RowCount;
             int currLine = gridView.CurrentCellAddress.Y;
@@ -200,7 +199,7 @@ namespace LogExpert.Classes
             //AutoResizeColumns(gridView);
         }
 
-        public static void AutoResizeColumns(DataGridView gridView)
+        public static void AutoResizeColumns(BufferedDataGridView gridView)
         {
             try
             {
@@ -224,7 +223,7 @@ namespace LogExpert.Classes
             }
         }
 
-        public static void ApplyDataGridViewPrefs(DataGridView dataGridView, Preferences prefs)
+        public static void ApplyDataGridViewPrefs(BufferedDataGridView dataGridView, Preferences prefs)
         {
             if (dataGridView.Columns.Count > 1)
             {
@@ -291,12 +290,12 @@ namespace LogExpert.Classes
 
         #region Private Methods
 
-        private static void PaintCell(ILogPaintContext logPaintCtx, DataGridViewCellPaintingEventArgs e, DataGridView gridView, bool noBackgroundFill, HilightEntry groundEntry)
+        private static void PaintCell(ILogPaintContext logPaintCtx, DataGridViewCellPaintingEventArgs e, BufferedDataGridView gridView, bool noBackgroundFill, HilightEntry groundEntry)
         {
             PaintHighlightedCell(logPaintCtx, e, gridView, noBackgroundFill, groundEntry);
         }
 
-        private static void PaintHighlightedCell(ILogPaintContext logPaintCtx, DataGridViewCellPaintingEventArgs e, DataGridView gridView, bool noBackgroundFill, HilightEntry groundEntry)
+        private static void PaintHighlightedCell(ILogPaintContext logPaintCtx, DataGridViewCellPaintingEventArgs e, BufferedDataGridView gridView, bool noBackgroundFill, HilightEntry groundEntry)
         {
             object value = e.Value ?? string.Empty;
 

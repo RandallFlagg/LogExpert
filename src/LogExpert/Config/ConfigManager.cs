@@ -2,7 +2,7 @@ using LogExpert.Core.Classes;
 using LogExpert.Core.Classes.Filter;
 using LogExpert.Core.Config;
 using LogExpert.Core.Entities;
-using LogExpert.Core.Entities.EventArgs;
+using LogExpert.Core.EventArgs;
 
 using Newtonsoft.Json;
 

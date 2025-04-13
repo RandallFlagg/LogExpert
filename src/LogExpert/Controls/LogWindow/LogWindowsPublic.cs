@@ -10,7 +10,8 @@ using LogExpert.Core.Classes.Highlight;
 using LogExpert.Core.Classes.Persister;
 using LogExpert.Core.Config;
 using LogExpert.Core.Entities;
-using LogExpert.Core.Entities.EventArgs;
+using LogExpert.Core.EventArgs;
+using LogExpert.Dialogs;
 
 using System;
 using System.Collections.Generic;
@@ -343,7 +344,7 @@ namespace LogExpert.Controls.LogWindow
             SetColumnizerInternal(CurrentColumnizer);
         }
 
-        public void SetColumnizer(ILogLineColumnizer columnizer, DataGridView gridView)
+        public void SetColumnizer(ILogLineColumnizer columnizer, BufferedDataGridView gridView)
         {
             PaintHelper.SetColumnizer(columnizer, gridView);
 
@@ -399,7 +400,7 @@ namespace LogExpert.Controls.LogWindow
             return Column.EmptyColumn;
         }
 
-        public void CellPainting(DataGridView gridView, int rowIndex, DataGridViewCellPaintingEventArgs e)
+        public void CellPainting(BufferedDataGridView gridView, int rowIndex, DataGridViewCellPaintingEventArgs e)
         {
             if (rowIndex < 0 || e.ColumnIndex < 0)
             {
@@ -500,7 +501,7 @@ namespace LogExpert.Controls.LogWindow
 
         public void OnDataGridView_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)
         {
-            DataGridView gridView = (DataGridView)sender;
+            BufferedDataGridView gridView = (BufferedDataGridView)sender;
             CellPainting(gridView, e.RowIndex, e);
         }
 
@@ -870,7 +871,7 @@ namespace LogExpert.Controls.LogWindow
 
         public void ToggleBookmark()
         {
-            DataGridView gridView;
+            BufferedDataGridView gridView;
             int lineNum;
 
             if (filterGridView.Focused)
@@ -1600,7 +1601,7 @@ namespace LogExpert.Controls.LogWindow
         {
             if (dataGridView.SelectionMode == DataGridViewSelectionMode.FullRowSelect)
             {
-                List<int> lineNumList = new List<int>();
+                List<int> lineNumList = [];
                 foreach (DataGridViewRow row in dataGridView.SelectedRows)
                 {
                     if (row.Index != -1)
@@ -1609,20 +1610,20 @@ namespace LogExpert.Controls.LogWindow
                     }
                 }
                 lineNumList.Sort();
-                patternArgs.startLine = lineNumList[0];
-                patternArgs.endLine = lineNumList[lineNumList.Count - 1];
+                patternArgs.StartLine = lineNumList[0];
+                patternArgs.EndLine = lineNumList[^1];
             }
             else
             {
                 if (dataGridView.CurrentCellAddress.Y != -1)
                 {
-                    patternArgs.startLine = dataGridView.CurrentCellAddress.Y;
+                    patternArgs.StartLine = dataGridView.CurrentCellAddress.Y;
                 }
                 else
                 {
-                    patternArgs.startLine = 0;
+                    patternArgs.StartLine = 0;
                 }
-                patternArgs.endLine = dataGridView.RowCount - 1;
+                patternArgs.EndLine = dataGridView.RowCount - 1;
             }
         }
 
