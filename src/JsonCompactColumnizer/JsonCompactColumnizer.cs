@@ -1,5 +1,7 @@
 ﻿using LogExpert;
+
 using Newtonsoft.Json.Linq;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,7 +44,7 @@ namespace JsonColumnizer
                 result = Priority.WellSupport;
             }
 
-            if (samples != null && samples.Count() > 0)
+            if (samples != null && samples.Any())
             {
                 try
                 {
@@ -51,7 +53,7 @@ namespace JsonColumnizer
                     if (json != null)
                     {
                         var columns = SplitJsonLine(samples.First(), json);
-                        if (columns.ColumnValues.Count() > 0 && Array.Exists(columns.ColumnValues, x => !string.IsNullOrEmpty(x.FullValue)))
+                        if (columns.ColumnValues.Length > 0 && Array.Exists(columns.ColumnValues, x => !string.IsNullOrEmpty(x.FullValue)))
                         {
                             result = Priority.PerfectlySupport;
                         }
@@ -70,7 +72,7 @@ namespace JsonColumnizer
 
         #region Private Methods
 
-        protected Dictionary<string, string> _tagDict = new Dictionary<string, string>()
+        protected Dictionary<string, string> _tagDict = new()
         {
             {"@t", "Timestamp"},
             {"@l", "Level"},
@@ -83,10 +85,10 @@ namespace JsonColumnizer
 
         protected override IColumnizedLogLine SplitJsonLine(ILogLine line, JObject json)
         {
-            List<IColumn> returnColumns = new List<IColumn>();
-            var cLogLine = new ColumnizedLogLine {LogLine = line};
+            List<IColumn> returnColumns = [];
+            var cLogLine = new ColumnizedLogLine { LogLine = line };
 
-            var columns = json.Properties().Select(property => new ColumnWithName {FullValue = property.Value.ToString(), ColumneName = property.Name.ToString(), Parent = cLogLine}).ToList();
+            var columns = json.Properties().Select(property => new ColumnWithName { FullValue = property.Value.ToString(), ColumnName = property.Name.ToString(), Parent = cLogLine }).ToList();
 
             //
             // Always rearrage the order of all json fields within a line to follow the sequence of columnNameList.
@@ -94,22 +96,22 @@ namespace JsonColumnizer
             //
             foreach (var column in _tagDict.Keys)
             {
-                if (column.StartsWith("@"))
+                if (column.StartsWith('@'))
                 {
-                    var existingColumn = columns.Find(x => x.ColumneName == column);
+                    var existingColumn = columns.Find(x => x.ColumnName == column);
 
                     if (existingColumn != null)
                     {
-                        returnColumns.Add(new Column() {FullValue = existingColumn.FullValue, Parent = cLogLine});
+                        returnColumns.Add(new Column() { FullValue = existingColumn.FullValue, Parent = cLogLine });
                         continue;
                     }
 
                     // Fields that is missing in current line should be shown as empty.
-                    returnColumns.Add(new Column() {FullValue = "", Parent = cLogLine});
+                    returnColumns.Add(new Column() { FullValue = "", Parent = cLogLine });
                 }
             }
 
-            cLogLine.ColumnValues = returnColumns.ToArray();
+            cLogLine.ColumnValues = [.. returnColumns];
 
             return cLogLine;
         }

@@ -1,9 +1,6 @@
-using System;
-using System.Collections.Generic;
-
 /*
  * Taken from https://cmdline.codeplex.com/
- * 
+ *
  */
 
 namespace LogExpert.Core.Classes
@@ -31,7 +28,7 @@ namespace LogExpert.Core.Classes
     }
 
     /// <summary>
-    /// Represents a command line parameter. 
+    /// Represents a command line parameter.
     /// Parameters are words in the command line beginning with a hyphen (-).
     /// The value of the parameter is the next word in
     /// </summary>
@@ -103,7 +100,7 @@ namespace LogExpert.Core.Classes
     }
 
     /// <summary>
-    /// Represents an integer command line parameter. 
+    /// Represents an integer command line parameter.
     /// </summary>
     public class CmdLineInt : CmdLineParameter
     {
@@ -343,7 +340,7 @@ namespace LogExpert.Core.Classes
             }
 
 
-            // Check that required parameters are present in the command line. 
+            // Check that required parameters are present in the command line.
             foreach (string key in parameters.Keys)
             {
                 if (parameters[key].Required && !parameters[key].Exists)
@@ -404,7 +401,9 @@ namespace LogExpert.Core.Classes
         public new string[] Parse(string[] args)
         {
             string[] ret = null;
+
             string error = "";
+
             try
             {
                 ret = base.Parse(args);
@@ -428,6 +427,7 @@ namespace LogExpert.Core.Classes
                 Console.WriteLine("Use -help for more information.");
                 Environment.Exit(1);
             }
+
             return ret;
         }
 

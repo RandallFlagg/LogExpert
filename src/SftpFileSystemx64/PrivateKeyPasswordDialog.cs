@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace SftpFileSystem
@@ -9,7 +10,11 @@ namespace SftpFileSystem
 
         public PrivateKeyPasswordDialog()
         {
+            SuspendLayout();
+            AutoScaleDimensions = new SizeF(96F, 96F);
+            AutoScaleMode = AutoScaleMode.Dpi;
             InitializeComponent();
+            ResumeLayout();
         }
 
         #endregion

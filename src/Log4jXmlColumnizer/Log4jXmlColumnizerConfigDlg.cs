@@ -45,9 +45,9 @@ namespace LogExpert
                 row.Cells.Add(new DataGridViewCheckBoxCell());
                 row.Cells.Add(new DataGridViewTextBoxCell());
                 row.Cells.Add(new DataGridViewTextBoxCell());
-                row.Cells[0].Value = entry.visible;
-                row.Cells[1].Value = entry.columnName;
-                row.Cells[2].Value = entry.maxLen > 0 ? "" + entry.maxLen : "";
+                row.Cells[0].Value = entry.Visible;
+                row.Cells[1].Value = entry.ColumnName;
+                row.Cells[2].Value = entry.MaxLen > 0 ? "" + entry.MaxLen : "";
                 columnGridView.Rows.Add(row);
             }
         }
@@ -64,16 +64,16 @@ namespace LogExpert
             //  }
             for (int i = 0; i < columnGridView.Rows.Count; ++i)
             {
-                _config.columnList[i].visible = (bool)columnGridView.Rows[i].Cells[0].Value;
+                _config.columnList[i].Visible = (bool)columnGridView.Rows[i].Cells[0].Value;
                 string sLen = (string)columnGridView.Rows[i].Cells[2].Value;
 
                 if (int.TryParse(sLen, out int len))
                 {
-                    _config.columnList[i].maxLen = len;
+                    _config.columnList[i].MaxLen = len;
                 }
                 else
                 {
-                    _config.columnList[i].maxLen = 0;
+                    _config.columnList[i].MaxLen = 0;
                 }
             }
             _config.localTimestamps = localTimeCheckBox.Checked;

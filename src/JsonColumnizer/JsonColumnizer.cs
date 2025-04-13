@@ -1,30 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using LogExpert;
+﻿using LogExpert;
+
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
 namespace JsonColumnizer
 {
-    public class JsonColumn
-    {
-        #region cTor
-
-        public JsonColumn(string name)
-        {
-            Name = name;
-        }
-
-        #endregion
-
-        #region Properties
-
-        public string Name { get; }
-
-        #endregion
-    }
-
     /// <summary>
     ///     This Columnizer can parse JSON files.
     /// </summary>
@@ -34,13 +18,13 @@ namespace JsonColumnizer
 
         private static readonly JsonColumn _initialColumn = new JsonColumn("Text");
 
-        private readonly IList<JsonColumn> _columnList = new List<JsonColumn>(new[] {InitialColumn});
+        private readonly IList<JsonColumn> _columnList = new List<JsonColumn>([InitialColumn]);
 
         #endregion
 
         #region Properties
 
-        public HashSet<string> ColumnSet { get; set; } = new HashSet<string>();
+        public HashSet<string> ColumnSet { get; set; } = [];
 
         protected IList<JsonColumn> ColumnList => _columnList;
 
@@ -90,7 +74,7 @@ namespace JsonColumnizer
 
         public virtual void DeSelected(ILogLineColumnizerCallback callback)
         {
-            // nothing to do 
+            // nothing to do
         }
 
         public virtual string GetName()
@@ -129,13 +113,13 @@ namespace JsonColumnizer
                 return SplitJsonLine(line, json);
             }
 
-            var cLogLine = new ColumnizedLogLine {LogLine = line};
+            var cLogLine = new ColumnizedLogLine { LogLine = line };
 
             var columns = Column.CreateColumns(ColumnList.Count, cLogLine);
 
             columns.Last().FullValue = line.FullLine;
 
-            cLogLine.ColumnValues = columns.Select(a => (IColumn) a).ToArray();
+            cLogLine.ColumnValues = columns.Select(a => (IColumn)a).ToArray();
 
             return cLogLine;
         }
@@ -190,7 +174,7 @@ namespace JsonColumnizer
 
         public class ColumnWithName : Column
         {
-            public string ColumneName { get; set; }
+            public string ColumnName { get; set; }
         }
 
         //
@@ -200,22 +184,22 @@ namespace JsonColumnizer
         //
         protected virtual IColumnizedLogLine SplitJsonLine(ILogLine line, JObject json)
         {
-            var cLogLine = new ColumnizedLogLine {LogLine = line};
+            var cLogLine = new ColumnizedLogLine { LogLine = line };
 
-            var columns = json.Properties().Select(property => new ColumnWithName {FullValue = property.Value.ToString(), ColumneName = property.Name.ToString(), Parent = cLogLine}).ToList();
+            var columns = json.Properties().Select(property => new ColumnWithName { FullValue = property.Value.ToString(), ColumnName = property.Name.ToString(), Parent = cLogLine }).ToList();
 
             foreach (var jsonColumn in columns)
             {
                 // When find new column in a log line, add a new column in the end of the list.
-                if (!ColumnSet.Contains(jsonColumn.ColumneName))
+                if (!ColumnSet.Contains(jsonColumn.ColumnName))
                 {
                     if (ColumnList.Count == 1 && !ColumnSet.Contains(ColumnList[0].Name))
                     {
                         ColumnList.Clear();
                     }
 
-                    ColumnSet.Add(jsonColumn.ColumneName);
-                    ColumnList.Add(new JsonColumn(jsonColumn.ColumneName));
+                    ColumnSet.Add(jsonColumn.ColumnName);
+                    ColumnList.Add(new JsonColumn(jsonColumn.ColumnName));
                 }
             }
 
@@ -223,21 +207,21 @@ namespace JsonColumnizer
             // Always rearrage the order of all json fields within a line to follow the sequence of columnNameList.
             // This will make sure the log line displayed correct even the order of json fields changed.
             //
-            List<IColumn> returnColumns = new List<IColumn>();
+            List<IColumn> returnColumns = [];
             foreach (var column in ColumnList)
             {
-                var existingColumn = columns.Find(x => x.ColumneName == column.Name);
+                var existingColumn = columns.Find(x => x.ColumnName == column.Name);
                 if (existingColumn != null)
                 {
-                    returnColumns.Add(new Column() {FullValue = existingColumn.FullValue, Parent = cLogLine});
+                    returnColumns.Add(new Column() { FullValue = existingColumn.FullValue, Parent = cLogLine });
                     continue;
                 }
 
                 // Fields that is missing in current line should be shown as empty.
-                returnColumns.Add(new Column() {FullValue = "", Parent = cLogLine});
+                returnColumns.Add(new Column() { FullValue = "", Parent = cLogLine });
             }
 
-            cLogLine.ColumnValues = returnColumns.ToArray();
+            cLogLine.ColumnValues = [.. returnColumns];
 
             return cLogLine;
         }

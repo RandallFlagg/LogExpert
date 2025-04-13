@@ -2,8 +2,8 @@
 using LogExpert.Core.Config;
 using LogExpert.Core.Entities;
 using LogExpert.Dialogs;
-using LogExpert.Extensions.Forms;
 using LogExpert.Interface;
+using LogExpert.UI.Extensions.Forms;
 
 using NLog;
 

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace LogExpert.Core.Classes.Highlight
+﻿namespace LogExpert.Core.Classes.Highlight
 {
     [Serializable]
     public class ActionEntry : ICloneable

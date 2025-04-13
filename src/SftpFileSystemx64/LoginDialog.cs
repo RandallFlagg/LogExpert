@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace SftpFileSystem
@@ -16,6 +17,10 @@ namespace SftpFileSystem
 
         public LoginDialog(string host, IList<string> userNames, bool hidePasswordField)
         {
+            SuspendLayout();
+            AutoScaleDimensions = new SizeF(96F, 96F);
+            AutoScaleMode = AutoScaleMode.Dpi;
+
             InitializeComponent();
             serverNameLabel.Text = host;
             if (userNames != null)
@@ -34,6 +39,8 @@ namespace SftpFileSystem
                 txtBoxPassword.Enabled = false;
                 lblPassword.Enabled = false;
             }
+
+            ResumeLayout();
         }
 
         #endregion

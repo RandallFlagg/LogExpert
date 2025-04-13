@@ -5,10 +5,11 @@ using LogExpert.Core.Classes.Columnizer;
 using LogExpert.Core.Classes.Persister;
 using LogExpert.Core.Config;
 using LogExpert.Core.Entities;
-using LogExpert.Core.Entities.EventArgs;
 using LogExpert.Core.Enums;
+using LogExpert.Core.EventArgs;
 using LogExpert.Dialogs;
 using LogExpert.PluginRegistry.FileSystem;
+using LogExpert.UI.Dialogs;
 
 using System;
 using System.Collections.Generic;
@@ -69,9 +70,12 @@ namespace LogExpert.Controls.LogTabWindow
 
         private void InitBookmarkWindow()
         {
-            _bookmarkWindow = new BookmarkWindow();
-            _bookmarkWindow.HideOnClose = true;
-            _bookmarkWindow.ShowHint = DockState.DockBottom;
+            _bookmarkWindow = new BookmarkWindow
+            {
+                HideOnClose = true,
+                ShowHint = DockState.DockBottom
+            };
+
             _bookmarkWindow.PreferencesChanged(ConfigManager.Settings.Preferences, false, SettingsFlags.All);
             _bookmarkWindow.VisibleChanged += OnBookmarkWindowVisibleChanged;
             _firstBookmarkWindowShow = true;
@@ -1124,7 +1128,7 @@ namespace LogExpert.Controls.LogTabWindow
 
         private void CloseAllTabs()
         {
-            IList<Form> closeList = new List<Form>();
+            IList<Form> closeList = [];
             lock (_logWindowList)
             {
                 foreach (DockContent content in dockPanel.Contents)

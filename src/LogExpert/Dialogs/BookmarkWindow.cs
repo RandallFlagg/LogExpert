@@ -3,7 +3,7 @@ using LogExpert.Core.Config;
 using LogExpert.Core.Entities;
 using LogExpert.Core.Enums;
 using LogExpert.Core.Interface;
-using LogExpert.Extensions.Forms;
+using LogExpert.UI.Extensions.Forms;
 
 using NLog;
 
@@ -16,6 +16,7 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace LogExpert.Dialogs
 {
+    //TODO can be moved to Logexpert.UI if the PaintHelper has been refactored
     public partial class BookmarkWindow : DockContent, ISharedToolWindow, IBookmarkView
     {
         #region Fields
@@ -37,7 +38,7 @@ namespace LogExpert.Dialogs
             AutoScaleDimensions = new SizeF(96F, 96F);
             AutoScaleMode = AutoScaleMode.Dpi;
 
-            bookmarkDataGridView.CellValueNeeded += boomarkDataGridView_CellValueNeeded;
+            bookmarkDataGridView.CellValueNeeded += OnBoomarkDataGridViewCellValueNeeded;
             bookmarkDataGridView.CellPainting += boomarkDataGridView_CellPainting;
 
             ChangeTheme(Controls);
@@ -277,8 +278,7 @@ namespace LogExpert.Dialogs
             bookmarkDataGridView.Refresh();
         }
 
-
-        private void CommentPainting(DataGridView gridView, int rowIndex, DataGridViewCellPaintingEventArgs e)
+        private void CommentPainting(BufferedDataGridView gridView, int rowIndex, DataGridViewCellPaintingEventArgs e)
         {
             Color backColor = ColorMode.DockBackgroundColor;
 
@@ -323,7 +323,7 @@ namespace LogExpert.Dialogs
             logView?.DeleteBookmarks(lineNumList);
         }
 
-        private static void InvalidateCurrentRow(DataGridView gridView)
+        private static void InvalidateCurrentRow(BufferedDataGridView gridView)
         {
             if (gridView.CurrentCellAddress.Y > -1)
             {
@@ -348,7 +348,6 @@ namespace LogExpert.Dialogs
                 bookmarkTextBox.Enabled = true;
             }
         }
-
 
         private void ShowCommentColumn(bool show)
         {
@@ -399,7 +398,7 @@ namespace LogExpert.Dialogs
             }
         }
 
-        private void boomarkDataGridView_CellValueNeeded(object sender, DataGridViewCellValueEventArgs e)
+        private void OnBoomarkDataGridViewCellValueNeeded(object sender, DataGridViewCellValueEventArgs e)
         {
             if (bookmarkData == null)
             {

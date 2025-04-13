@@ -81,8 +81,7 @@ namespace LogExpert.Dialogs
                 if (line != null && info != null)
                 {
                     ArgParser parser = new(textBoxArguments.Text);
-                    string args = parser.BuildArgs(line, logTabWin.CurrentLogWindow.GetRealLineNum() + 1, info,
-                        this);
+                    string args = parser.BuildArgs(line, logTabWin.CurrentLogWindow.GetRealLineNum() + 1, info, this);
                     labelTestResult.Text = args;
                 }
             }

@@ -14,8 +14,8 @@ namespace LogExpert.Controls
         private const int DIFF_MAX = 100;
         private int _diffSum = 0;
         private readonly object _diffSumLock = new();
-        private readonly Thread ledThread;
-        private bool shouldStop = false;
+        private readonly Thread _ledThread;
+        private bool _shouldStop = false;
 
         #endregion
 
@@ -29,9 +29,12 @@ namespace LogExpert.Controls
             LogWindow = logWindow;
             LogWindow.FileSizeChanged += FileSizeChanged;
             LogWindow.TailFollowed += TailFollowed;
-            ledThread = new Thread(new ThreadStart(LedThreadProc));
-            ledThread.IsBackground = true;
-            ledThread.Start();
+            _ledThread = new Thread(new ThreadStart(LedThreadProc))
+            {
+                IsBackground = true
+            };
+
+            _ledThread.Start();
         }
 
         #endregion
@@ -64,9 +67,9 @@ namespace LogExpert.Controls
 
         public void Delete()
         {
-            shouldStop = true;
-            ledThread.Interrupt();
-            ledThread.Join();
+            _shouldStop = true;
+            _ledThread.Interrupt();
+            _ledThread.Join();
         }
 
         #endregion
@@ -75,7 +78,7 @@ namespace LogExpert.Controls
 
         private void LedThreadProc()
         {
-            while (!shouldStop)
+            while (!_shouldStop)
             {
                 try
                 {

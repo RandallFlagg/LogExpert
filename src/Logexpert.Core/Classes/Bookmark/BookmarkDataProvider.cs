@@ -29,11 +29,11 @@ namespace LogExpert.Core.Classes.Bookmark
 
         #region Delegates
 
-        public delegate void AllBookmarksRemovedEventHandler(object sender, EventArgs e);
+        public delegate void AllBookmarksRemovedEventHandler(object sender, System.EventArgs e);
 
-        public delegate void BookmarkAddedEventHandler(object sender, EventArgs e);
+        public delegate void BookmarkAddedEventHandler(object sender, System.EventArgs e);
 
-        public delegate void BookmarkRemovedEventHandler(object sender, EventArgs e);
+        public delegate void BookmarkRemovedEventHandler(object sender, System.EventArgs e);
 
         #endregion
 
@@ -160,17 +160,17 @@ namespace LogExpert.Core.Classes.Bookmark
 
         protected void OnBookmarkAdded()
         {
-            BookmarkAdded?.Invoke(this, EventArgs.Empty);
+            BookmarkAdded?.Invoke(this, System.EventArgs.Empty);
         }
 
         protected void OnBookmarkRemoved()
         {
-            BookmarkRemoved?.Invoke(this, EventArgs.Empty);
+            BookmarkRemoved?.Invoke(this, System.EventArgs.Empty);
         }
 
         protected void OnAllBookmarksRemoved()
         {
-            AllBookmarksRemoved?.Invoke(this, EventArgs.Empty);
+            AllBookmarksRemoved?.Invoke(this, System.EventArgs.Empty);
         }
     }
 }

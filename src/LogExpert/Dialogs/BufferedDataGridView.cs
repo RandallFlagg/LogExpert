@@ -1,4 +1,6 @@
 ﻿using LogExpert.Core.Entities;
+using LogExpert.Core.EventArgs;
+using LogExpert.UI.Controls;
 
 using NLog;
 
@@ -216,61 +218,60 @@ namespace LogExpert.Dialogs
         private void PaintOverlays(PaintEventArgs e)
         {
             BufferedGraphicsContext currentContext = BufferedGraphicsManager.Current;
-            using (BufferedGraphics myBuffer = currentContext.Allocate(CreateGraphics(), ClientRectangle))
+
+            using BufferedGraphics myBuffer = currentContext.Allocate(CreateGraphics(), ClientRectangle);
+            lock (_overlayList)
             {
-                lock (_overlayList)
+                _overlayList.Clear();
+            }
+
+            myBuffer.Graphics.SetClip(ClientRectangle, CombineMode.Union);
+            e.Graphics.SetClip(ClientRectangle, CombineMode.Union);
+
+            PaintEventArgs args = new(myBuffer.Graphics, e.ClipRectangle);
+
+            base.OnPaint(args);
+
+            StringFormat format = new();
+            format.LineAlignment = StringAlignment.Center;
+            format.Alignment = StringAlignment.Near;
+
+            myBuffer.Graphics.SetClip(DisplayRectangle, CombineMode.Intersect);
+
+            // Remove Columnheader from Clippingarea
+            Rectangle rectTableHeader = new(DisplayRectangle.X, DisplayRectangle.Y, DisplayRectangle.Width, ColumnHeadersHeight);
+            myBuffer.Graphics.SetClip(rectTableHeader, CombineMode.Exclude);
+
+            //e.Graphics.SetClip(rect, CombineMode.Union);
+
+            lock (_overlayList)
+            {
+                foreach (BookmarkOverlay overlay in _overlayList.Values)
                 {
-                    _overlayList.Clear();
-                }
+                    SizeF textSize = myBuffer.Graphics.MeasureString(overlay.Bookmark.Text, _font, 300);
+                    Rectangle rectBubble = new(overlay.Position,
+                        new Size((int)textSize.Width, (int)textSize.Height));
+                    rectBubble.Offset(60, -(rectBubble.Height + 40));
+                    rectBubble.Inflate(3, 3);
+                    rectBubble.Location += overlay.Bookmark.OverlayOffset;
+                    overlay.BubbleRect = rectBubble;
+                    myBuffer.Graphics.SetClip(rectBubble, CombineMode.Union); // Bubble to clip
+                    myBuffer.Graphics.SetClip(rectTableHeader, CombineMode.Exclude);
+                    e.Graphics.SetClip(rectBubble, CombineMode.Union);
+                    RectangleF textRect = new(rectBubble.X, rectBubble.Y, rectBubble.Width, rectBubble.Height);
+                    myBuffer.Graphics.FillRectangle(_brush, rectBubble);
+                    //myBuffer.Graphics.DrawLine(_pen, overlay.Position, new Point(rect.X, rect.Y + rect.Height / 2));
+                    myBuffer.Graphics.DrawLine(_pen, overlay.Position, new Point(rectBubble.X, rectBubble.Y + rectBubble.Height));
+                    myBuffer.Graphics.DrawString(overlay.Bookmark.Text, _font, _textBrush, textRect, format);
 
-                myBuffer.Graphics.SetClip(ClientRectangle, CombineMode.Union);
-                e.Graphics.SetClip(ClientRectangle, CombineMode.Union);
-
-                PaintEventArgs args = new(myBuffer.Graphics, e.ClipRectangle);
-
-                base.OnPaint(args);
-
-                StringFormat format = new();
-                format.LineAlignment = StringAlignment.Center;
-                format.Alignment = StringAlignment.Near;
-
-                myBuffer.Graphics.SetClip(DisplayRectangle, CombineMode.Intersect);
-
-                // Remove Columnheader from Clippingarea
-                Rectangle rectTableHeader = new(DisplayRectangle.X, DisplayRectangle.Y, DisplayRectangle.Width, ColumnHeadersHeight);
-                myBuffer.Graphics.SetClip(rectTableHeader, CombineMode.Exclude);
-
-                //e.Graphics.SetClip(rect, CombineMode.Union);
-
-                lock (_overlayList)
-                {
-                    foreach (BookmarkOverlay overlay in _overlayList.Values)
+                    if (_logger.IsDebugEnabled)
                     {
-                        SizeF textSize = myBuffer.Graphics.MeasureString(overlay.Bookmark.Text, _font, 300);
-                        Rectangle rectBubble = new(overlay.Position,
-                            new Size((int)textSize.Width, (int)textSize.Height));
-                        rectBubble.Offset(60, -(rectBubble.Height + 40));
-                        rectBubble.Inflate(3, 3);
-                        rectBubble.Location += overlay.Bookmark.OverlayOffset;
-                        overlay.BubbleRect = rectBubble;
-                        myBuffer.Graphics.SetClip(rectBubble, CombineMode.Union); // Bubble to clip
-                        myBuffer.Graphics.SetClip(rectTableHeader, CombineMode.Exclude);
-                        e.Graphics.SetClip(rectBubble, CombineMode.Union);
-                        RectangleF textRect = new(rectBubble.X, rectBubble.Y, rectBubble.Width, rectBubble.Height);
-                        myBuffer.Graphics.FillRectangle(_brush, rectBubble);
-                        //myBuffer.Graphics.DrawLine(_pen, overlay.Position, new Point(rect.X, rect.Y + rect.Height / 2));
-                        myBuffer.Graphics.DrawLine(_pen, overlay.Position, new Point(rectBubble.X, rectBubble.Y + rectBubble.Height));
-                        myBuffer.Graphics.DrawString(overlay.Bookmark.Text, _font, _textBrush, textRect, format);
-
-                        if (_logger.IsDebugEnabled)
-                        {
-                            _logger.Debug("ClipRgn: {0},{1},{2},{3}", myBuffer.Graphics.ClipBounds.Left, myBuffer.Graphics.ClipBounds.Top, myBuffer.Graphics.ClipBounds.Width, myBuffer.Graphics.ClipBounds.Height);
-                        }
+                        _logger.Debug("ClipRgn: {0},{1},{2},{3}", myBuffer.Graphics.ClipBounds.Left, myBuffer.Graphics.ClipBounds.Top, myBuffer.Graphics.ClipBounds.Width, myBuffer.Graphics.ClipBounds.Height);
                     }
                 }
-
-                myBuffer.Render(e.Graphics);
             }
+
+            myBuffer.Render(e.Graphics);
         }
 
         #endregion

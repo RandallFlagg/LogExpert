@@ -23,10 +23,14 @@ namespace LogExpert.Core.Classes
             this.sysout = sysout;
             FileName = Path.GetTempFileName();
             _logger.Info("sysoutPipe created temp file: {0}", FileName);
+
             FileStream fStream = new(FileName, FileMode.Append, FileAccess.Write, FileShare.Read);
             writer = new StreamWriter(fStream, Encoding.Unicode);
-            Thread thread = new(new ThreadStart(ReaderThread));
-            thread.IsBackground = true;
+
+            Thread thread = new(new ThreadStart(ReaderThread))
+            {
+                IsBackground = true
+            };
             thread.Start();
         }
 
@@ -52,7 +56,7 @@ namespace LogExpert.Core.Classes
             writer.WriteLine(e.Data);
         }
 
-        public void ProcessExitedEventHandler(object sender, EventArgs e)
+        public void ProcessExitedEventHandler(object sender, System.EventArgs e)
         {
             //ClosePipe();
             if (sender.GetType() == typeof(Process))
@@ -67,6 +71,7 @@ namespace LogExpert.Core.Classes
         protected void ReaderThread()
         {
             char[] buff = new char[256];
+
             while (true)
             {
                 try
@@ -84,6 +89,7 @@ namespace LogExpert.Core.Classes
                     break;
                 }
             }
+
             ClosePipe();
         }
     }

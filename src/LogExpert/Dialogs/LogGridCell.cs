@@ -1,4 +1,6 @@
-﻿using System;
+﻿using LogExpert.UI.Controls;
+
+using System;
 using System.Windows.Forms;
 
 namespace LogExpert.Dialogs

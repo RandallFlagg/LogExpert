@@ -3,7 +3,7 @@ using LogExpert.Core.Classes;
 using LogExpert.Core.Classes.Persister;
 using LogExpert.Core.Config;
 using LogExpert.Core.Entities;
-using LogExpert.Core.Entities.EventArgs;
+using LogExpert.Core.EventArgs;
 using LogExpert.Dialogs;
 using LogExpert.Entities.EventArgs;
 using LogExpert.UI.Dialogs;
@@ -971,8 +971,10 @@ namespace LogExpert.Controls.LogTabWindow
 
         private void OnOpenURIToolStripMenuItemClick(object sender, EventArgs e)
         {
-            OpenUriDialog dlg = new();
-            dlg.UriHistory = ConfigManager.Settings.uriHistoryList;
+            OpenUriDialog dlg = new()
+            {
+                UriHistory = ConfigManager.Settings.uriHistoryList
+            };
 
             if (DialogResult.OK == dlg.ShowDialog())
             {

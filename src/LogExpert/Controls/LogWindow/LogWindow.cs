@@ -9,11 +9,12 @@ using LogExpert.Core.Classes.Highlight;
 using LogExpert.Core.Classes.Persister;
 using LogExpert.Core.Config;
 using LogExpert.Core.Entities;
-using LogExpert.Core.Entities.EventArgs;
+using LogExpert.Core.EventArgs;
 using LogExpert.Core.Interface;
 using LogExpert.Dialogs;
 using LogExpert.Entities.EventArgs;
-using LogExpert.Extensions.Forms;
+using LogExpert.UI.Dialogs;
+using LogExpert.UI.Extensions.Forms;
 
 using NLog;
 
@@ -183,10 +184,10 @@ namespace LogExpert.Controls.LogWindow
             _parentLogTabWin.HighlightSettingsChanged += OnParentHighlightSettingsChanged;
             SetColumnizer(PluginRegistry.PluginRegistry.Instance.RegisteredColumnizers[0]);
 
-            _patternArgs.maxMisses = 5;
-            _patternArgs.minWeight = 1;
-            _patternArgs.maxDiffInBlock = 5;
-            _patternArgs.fuzzy = 5;
+            _patternArgs.MaxMisses = 5;
+            _patternArgs.MinWeight = 1;
+            _patternArgs.MaxDiffInBlock = 5;
+            _patternArgs.Fuzzy = 5;
 
             //InitPatternWindow();
 
@@ -559,10 +560,13 @@ namespace LogExpert.Controls.LogWindow
 
         internal void ChangeMultifileMask()
         {
-            MultiFileMaskDialog dlg = new(this, FileName);
-            dlg.Owner = this;
-            dlg.MaxDays = _multiFileOptions.MaxDayTry;
-            dlg.FileNamePattern = _multiFileOptions.FormatPattern;
+            MultiFileMaskDialog dlg = new(this, FileName)
+            {
+                Owner = this,
+                MaxDays = _multiFileOptions.MaxDayTry,
+                FileNamePattern = _multiFileOptions.FormatPattern
+            };
+
             if (dlg.ShowDialog() == DialogResult.OK)
             {
                 _multiFileOptions.FormatPattern = dlg.FileNamePattern;
@@ -638,7 +642,7 @@ namespace LogExpert.Controls.LogWindow
 
         private delegate void PositionAfterReloadFx(ReloadMemento reloadMemento);
 
-        private delegate void AutoResizeColumnsFx(DataGridView gridView);
+        private delegate void AutoResizeColumnsFx(BufferedDataGridView gridView);
 
         private delegate bool BoolReturnDelegate();
 
