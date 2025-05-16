@@ -481,7 +481,7 @@ namespace LogExpert.Controls.LogTabWindow
         private void OnLogWindowCurrentHighlightGroupChanged(object sender, CurrentHighlightGroupChangedEventArgs e)
         {
             OnHighlightSettingsChanged();
-            ConfigManager.Settings.hilightGroupList = HilightGroupList;
+            ConfigManager.Settings.Preferences.HighlightGroupList = HighlightGroupList;
             ConfigManager.Save(SettingsFlags.HighlightSettings);
         }
 

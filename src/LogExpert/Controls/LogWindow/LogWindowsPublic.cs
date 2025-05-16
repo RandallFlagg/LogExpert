@@ -412,7 +412,7 @@ namespace LogExpert.Controls.LogWindow
 
             if (line != null)
             {
-                HilightEntry entry = FindFirstNoWordMatchHilightEntry(line);
+                HighlightEntry entry = FindFirstNoWordMatchHilightEntry(line);
                 e.Graphics.SetClip(e.CellBounds);
 
                 if ((e.State & DataGridViewElementStates.Selected) == DataGridViewElementStates.Selected)
@@ -511,12 +511,12 @@ namespace LogExpert.Controls.LogWindow
         /// <param name="line"></param>
         /// <param name="noWordMatches"></param>
         /// <returns></returns>
-        public HilightEntry FindHighlightEntry(ITextValue line, bool noWordMatches)
+        public HighlightEntry FindHighlightEntry(ITextValue line, bool noWordMatches)
         {
             // first check the temp entries
             lock (_tempHighlightEntryListLock)
             {
-                foreach (HilightEntry entry in _tempHighlightEntryList)
+                foreach (HighlightEntry entry in _tempHighlightEntryList)
                 {
                     if (noWordMatches && entry.IsWordMatch)
                     {
@@ -531,7 +531,7 @@ namespace LogExpert.Controls.LogWindow
 
             lock (_currentHighlightGroupLock)
             {
-                foreach (HilightEntry entry in _currentHighlightGroup.HilightEntryList)
+                foreach (HighlightEntry entry in _currentHighlightGroup.HighlightEntryList)
                 {
                     if (noWordMatches && entry.IsWordMatch)
                     {
@@ -553,7 +553,7 @@ namespace LogExpert.Controls.LogWindow
             {
                 lock (_currentHighlightGroupLock)
                 {
-                    GetHighlightEntryMatches(column, _currentHighlightGroup.HilightEntryList, resultList);
+                    GetHighlightEntryMatches(column, _currentHighlightGroup.HighlightEntryList, resultList);
                 }
                 lock (_tempHighlightEntryList)
                 {
@@ -1754,13 +1754,13 @@ namespace LogExpert.Controls.LogWindow
                 _currentHighlightGroup = _parentLogTabWin.FindHighlightGroup(groupName);
                 if (_currentHighlightGroup == null)
                 {
-                    if (_parentLogTabWin.HilightGroupList.Count > 0)
+                    if (_parentLogTabWin.HighlightGroupList.Count > 0)
                     {
-                        _currentHighlightGroup = _parentLogTabWin.HilightGroupList[0];
+                        _currentHighlightGroup = _parentLogTabWin.HighlightGroupList[0];
                     }
                     else
                     {
-                        _currentHighlightGroup = new HilightGroup();
+                        _currentHighlightGroup = new HighlightGroup();
                     }
                 }
                 _guiStateArgs.HighlightGroupName = _currentHighlightGroup.GroupName;

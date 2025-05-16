@@ -259,7 +259,7 @@ namespace LogExpert.Controls.LogTabWindow
             return null;
         }
 
-        public HilightGroup FindHighlightGroupByFileMask(string fileName)
+        public HighlightGroup FindHighlightGroupByFileMask(string fileName)
         {
             foreach (HighlightMaskEntry entry in ConfigManager.Settings.Preferences.highlightMaskList)
             {
@@ -269,7 +269,7 @@ namespace LogExpert.Controls.LogTabWindow
                     {
                         if (Regex.IsMatch(fileName, entry.mask))
                         {
-                            HilightGroup group = FindHighlightGroup(entry.highlightGroupName);
+                            HighlightGroup group = FindHighlightGroup(entry.highlightGroupName);
                             return group;
                         }
                     }
@@ -333,9 +333,9 @@ namespace LogExpert.Controls.LogTabWindow
             }
         }
 
-        public void NotifySettingsChanged(object cookie, SettingsFlags flags)
+        public void NotifySettingsChanged(object sender, SettingsFlags flags)
         {
-            if (cookie != this)
+            if (sender != this)
             {
                 NotifyWindowsForChangedPrefs(flags);
             }
