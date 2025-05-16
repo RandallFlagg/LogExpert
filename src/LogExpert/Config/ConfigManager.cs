@@ -89,6 +89,11 @@ namespace LogExpert.Config
             Instance.Save(fileInfo, Settings);
         }
 
+        public static void Export(FileInfo fileInfo, SettingsFlags flags)
+        {
+            Instance.Save(fileInfo, Settings, flags);
+        }
+
         public static void Import(FileInfo fileInfo, ExportImportFlags flags)
         {
             Instance._settings = Instance.Import(Instance._settings, fileInfo, flags);
@@ -288,13 +293,32 @@ namespace LogExpert.Config
             SaveAsJSON(fileInfo, settings);
         }
 
-        private void SaveAsJSON(FileInfo fileInfo, Settings settings)
+        private void Save(FileInfo fileInfo, Settings settings, SettingsFlags flags)
+        {
+            switch (flags)
+            {
+                case SettingsFlags.HighlightSettings:
+                    SaveHighlightgroupsAsJSON(fileInfo, settings.Preferences.HighlightGroupList);
+                    break;
+            }
+
+            OnConfigChanged(flags);
+        }
+
+        private static void SaveAsJSON(FileInfo fileInfo, Settings settings)
         {
             settings.versionBuild = Assembly.GetExecutingAssembly().GetName().Version.Build;
 
             using StreamWriter sw = new(fileInfo.Create());
             JsonSerializer serializer = new();
             serializer.Serialize(sw, settings);
+        }
+
+        private static void SaveHighlightgroupsAsJSON(FileInfo fileInfo, List<HighlightGroup> groups)
+        {
+            using StreamWriter sw = new(fileInfo.Create());
+            JsonSerializer serializer = new();
+            serializer.Serialize(sw, groups);
         }
 
         private List<HighlightGroup> Import(List<HighlightGroup> currentGroups, FileInfo fileInfo, ExportImportFlags flags)

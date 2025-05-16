@@ -156,7 +156,7 @@ namespace LogExpert.Dialogs
             if (dlg.ShowDialog() == DialogResult.OK)
             {
                 FileInfo fileInfo = new(dlg.FileName);
-                ConfigManager.Export(fileInfo);
+                ConfigManager.Export(fileInfo, Core.Config.SettingsFlags.HighlightSettings);
             }
         }
 
