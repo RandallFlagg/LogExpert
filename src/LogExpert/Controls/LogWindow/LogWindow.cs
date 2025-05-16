@@ -92,7 +92,7 @@ namespace LogExpert.Controls.LogWindow
         private ILogLineColumnizer _currentColumnizer;
 
         //List<HilightEntry> currentHilightEntryList = new List<HilightEntry>();
-        private HilightGroup _currentHighlightGroup = new();
+        private HighlightGroup _currentHighlightGroup = new();
 
         private SearchParams _currentSearchParams;
 
@@ -131,7 +131,7 @@ namespace LogExpert.Controls.LogWindow
         private bool _shouldCancel;
         private bool _shouldTimestampDisplaySyncingCancel;
         private bool _showAdvanced;
-        private List<HilightEntry> _tempHighlightEntryList = [];
+        private List<HighlightEntry> _tempHighlightEntryList = [];
         private int _timeShiftSyncLine = 0;
 
         private bool _waitingForClose;

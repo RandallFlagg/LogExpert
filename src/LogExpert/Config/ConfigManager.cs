@@ -95,6 +95,12 @@ namespace LogExpert.Config
             Save(SettingsFlags.All);
         }
 
+        public static void ImportHighlightSettings(FileInfo fileInfo, ExportImportFlags flags)
+        {
+            Instance._settings.Preferences.HighlightGroupList = Instance.Import(Instance._settings.Preferences.HighlightGroupList, fileInfo, flags);
+            Save(SettingsFlags.All);
+        }
+
         #endregion
 
         #region Private Methods
@@ -144,7 +150,7 @@ namespace LogExpert.Config
         /// </summary>
         /// <param name="fileInfo">file that has settings saved</param>
         /// <returns>loaded or created settings</returns>
-        private Settings LoadOrCreateNew(FileSystemInfo fileInfo)
+        private Settings LoadOrCreateNew(FileInfo fileInfo)
         {
             lock (_loadSaveLock)
             {
@@ -212,17 +218,9 @@ namespace LogExpert.Config
                     filterParams.Init();
                 }
 
-                if (settings.hilightGroupList == null)
+                if (settings.Preferences.HighlightGroupList == null)
                 {
-                    settings.hilightGroupList = [];
-                    // migrate old non-grouped entries
-                    HilightGroup defaultGroup = new()
-                    {
-                        GroupName = "[Default]",
-                        HilightEntryList = settings.hilightEntryList
-                    };
-
-                    settings.hilightGroupList.Add(defaultGroup);
+                    settings.Preferences.HighlightGroupList = [];
                 }
 
                 settings.Preferences.highlightMaskList ??= [];
@@ -247,8 +245,6 @@ namespace LogExpert.Config
                 }
 
                 SetBoundsWithinVirtualScreen(settings);
-
-                ConvertSettings(settings);
 
                 return settings;
             }
@@ -301,55 +297,32 @@ namespace LogExpert.Config
             serializer.Serialize(sw, settings);
         }
 
-        /// <summary>
-        /// Convert settings loaded from previous versions.
-        /// </summary>
-        /// <param name="settings"></param>
-        private void ConvertSettings(Settings settings)
+        private List<HighlightGroup> Import(List<HighlightGroup> currentGroups, FileInfo fileInfo, ExportImportFlags flags)
         {
-            //int oldBuildNumber = settings.versionBuild;
+            List<HighlightGroup> newGroups;
 
-            //// All Versions before 3583
-            //if (oldBuildNumber < 3584)
-            //{
-            //    // External tools
-            //    List<ToolEntry> newList = [];
-            //    foreach (ToolEntry tool in settings.preferences.toolEntries)
-            //    {
-            //        // set favourite to true only when name is empty, because there are always version released without this conversion fx
-            //        // remove empty tool entries (there were always 3 entries before, which can be empty if not used)
-            //        if (Util.IsNull(tool.name))
-            //        {
-            //            if (!Util.IsNull(tool.cmd))
-            //            {
-            //                tool.name = tool.cmd;
-            //                tool.isFavourite = true;
-            //                newList.Add(tool);
-            //            }
-            //        }
-            //        else
-            //        {
-            //            newList.Add(tool);
-            //        }
-            //        if (Util.IsNull(tool.iconFile))
-            //        {
-            //            tool.iconFile = tool.cmd;
-            //            tool.iconIndex = 0;
-            //        }
-            //    }
-            //    settings.preferences.toolEntries = newList;
-            //}
+            try
+            {
+                newGroups = JsonConvert.DeserializeObject<List<HighlightGroup>>(File.ReadAllText($"{fileInfo.FullName}"));
+            }
+            catch (Exception e)
+            {
+                _logger.Error($"Error while deserializing config data: {e}");
+                newGroups = [];
+            }
 
-            //if (oldBuildNumber < 3584)
-            //{
-            //    // Set the color for the FilterList entries to default (black)
-            //    foreach (FilterParams filterParam in settings.filterList)
-            //    {
-            //        filterParam.color = Color.FromKnownColor(KnownColor.Black);
-            //    }
-            //}
+            if (flags.HasFlag(ExportImportFlags.KeepExisting))
+            {
+                currentGroups.AddRange(newGroups);
+            }
+            else
+            {
+                currentGroups.Clear();
+                currentGroups.AddRange(newGroups);
+            }
+
+            return currentGroups;
         }
-
 
         /// <summary>
         /// Imports all or some of the settings/prefs stored in the input stream.
@@ -371,7 +344,7 @@ namespace LogExpert.Config
                 newSettings.Preferences = ObjectClone.Clone(importSettings.Preferences);
                 newSettings.Preferences.columnizerMaskList = ownSettings.Preferences.columnizerMaskList;
                 newSettings.Preferences.highlightMaskList = ownSettings.Preferences.highlightMaskList;
-                newSettings.hilightGroupList = ownSettings.hilightGroupList;
+                newSettings.Preferences.HighlightGroupList = ownSettings.Preferences.HighlightGroupList;
                 newSettings.Preferences.toolEntries = ownSettings.Preferences.toolEntries;
             }
             else
@@ -389,7 +362,7 @@ namespace LogExpert.Config
             }
             if ((flags & ExportImportFlags.HighlightSettings) == ExportImportFlags.HighlightSettings)
             {
-                newSettings.hilightGroupList = ReplaceOrKeepExisting(flags, ownSettings.hilightGroupList, importSettings.hilightGroupList);
+                newSettings.Preferences.HighlightGroupList = ReplaceOrKeepExisting(flags, ownSettings.Preferences.HighlightGroupList, importSettings.Preferences.HighlightGroupList);
             }
             if ((flags & ExportImportFlags.ToolEntries) == ExportImportFlags.ToolEntries)
             {
@@ -424,13 +397,7 @@ namespace LogExpert.Config
 
         protected void OnConfigChanged(SettingsFlags flags)
         {
-            ConfigChangedEventHandler handler = ConfigChanged;
-
-            if (handler != null)
-            {
-                _logger.Info("Fire config changed event");
-                handler(this, new ConfigChangedEventArgs(flags));
-            }
+            ConfigChanged?.Invoke(this, new ConfigChangedEventArgs(flags));
         }
 
         public delegate void ConfigChangedEventHandler(object sender, ConfigChangedEventArgs e);
