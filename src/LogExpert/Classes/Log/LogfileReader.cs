@@ -53,8 +53,6 @@ namespace LogExpert.Classes.Log
 
         private ReaderWriterLock _lruCacheDictLock;
 
-        private readonly FileSystemWatcher _fileWatcher;
-
         private bool _shouldStop;
         private ILogFileInfo _watchedILogFileInfo;
 
@@ -78,22 +76,6 @@ namespace LogExpert.Classes.Log
             _logLineFx = GetLogLineInternal;
             InitLruBuffers();
 
-
-
-            _fileWatcher = new FileSystemWatcher
-            {
-                Path = Path.GetDirectoryName(fileName),
-                Filter = Path.GetFileName(fileName),
-                NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.Size
-            };
-
-            _fileWatcher.Changed += OnChanged;
-            _fileWatcher.Deleted += OnDeleted;
-            _fileWatcher.Renamed += OnRenamed;
-            _fileWatcher.Error += OnError;
-
-            _fileWatcher.EnableRaisingEvents = true;
-
             if (multiFile)
             {
                 ILogFileInfo info = GetLogFileInfo(fileName);
@@ -114,34 +96,6 @@ namespace LogExpert.Classes.Log
             }
 
             StartGCThread();
-        }
-
-        private void OnChanged(object sender, FileSystemEventArgs e)
-        {
-            if (e.ChangeType != WatcherChangeTypes.Changed)
-            {
-                return;
-            }
-        }
-
-        private void OnCreated(object sender, FileSystemEventArgs e)
-        {
-            string value = $"Created: {e.FullPath}";
-        }
-
-        private void OnDeleted(object sender, FileSystemEventArgs e)
-        {
-            _isDeleted = true;
-
-        }
-
-        private void OnRenamed(object sender, RenamedEventArgs e)
-        {
-        }
-
-        private void OnError(object sender, ErrorEventArgs e)
-        {
-
         }
 
         public LogfileReader(string[] fileNames, EncodingOptions encodingOptions, int bufferCount, int linesPerBuffer, MultiFileOptions multiFileOptions)
