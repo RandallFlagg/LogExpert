@@ -934,7 +934,7 @@ namespace LogExpert.Controls.LogTabWindow
 
         private void OnDisableWordHighlightModeToolStripMenuItemClick(object sender, EventArgs e)
         {
-            DebugOptions.disableWordHighlight = disableWordHighlightModeToolStripMenuItem.Checked;
+            DebugOptions.DisableWordHighlight = disableWordHighlightModeToolStripMenuItem.Checked;
             CurrentLogWindow?.RefreshAllGrids();
         }
 

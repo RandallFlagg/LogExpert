@@ -25,7 +25,7 @@ namespace LogExpert.Classes
 
         public RangeFinder(FilterParams filterParams, ColumnizerCallback callback)
         {
-            _filterParams = filterParams.CreateCopy2();
+            _filterParams = filterParams.Copy();
             _callback = callback;
         }
 
@@ -35,26 +35,26 @@ namespace LogExpert.Classes
 
         public Range FindRange(int startLine)
         {
-            _logger.Info($"Starting range search for {_filterParams.searchText} ... {_filterParams.rangeSearchText}");
-            if (_filterParams.rangeSearchText == null || _filterParams.rangeSearchText.Trim().Length == 0)
+            _logger.Info($"Starting range search for {_filterParams.SearchText} ... {_filterParams.RangeSearchText}");
+            if (_filterParams.RangeSearchText == null || _filterParams.RangeSearchText.Trim().Length == 0)
             {
                 _logger.Info("Range search text not set. Cancelling range search.");
                 return null;
             }
-            if (_filterParams.searchText == null || _filterParams.searchText.Trim().Length == 0)
+            if (_filterParams.SearchText == null || _filterParams.SearchText.Trim().Length == 0)
             {
                 _logger.Info("Search text not set. Cancelling range search.");
                 return null;
             }
 
-            _filterParams.isRangeSearch = false;
-            _filterParams.isInRange = false;
+            _filterParams.IsRangeSearch = false;
+            _filterParams.IsInRange = false;
             int lineCount = _callback.GetLineCount();
             int lineNum = startLine;
             bool foundStartLine = false;
             Range range = new();
-            FilterParams tmpParam = _filterParams.CreateCopy2();
-            tmpParam.searchText = _filterParams.rangeSearchText;
+            FilterParams tmpParam = _filterParams.Copy();
+            tmpParam.SearchText = _filterParams.RangeSearchText;
 
             // search backward for starting keyword
             var line = _callback.GetLogLine(lineNum);
@@ -81,8 +81,8 @@ namespace LogExpert.Classes
                 return null;
             }
             range.StartLine = lineNum;
-            _filterParams.isRangeSearch = true;
-            _filterParams.isInRange = true;
+            _filterParams.IsRangeSearch = true;
+            _filterParams.IsInRange = true;
             lineNum++;
             while (lineNum < lineCount)
             {

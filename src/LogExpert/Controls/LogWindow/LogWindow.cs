@@ -203,9 +203,9 @@ namespace LogExpert.Controls.LogWindow
             filterComboBox.DropDownHeight = filterComboBox.ItemHeight * ConfigManager.Settings.Preferences.maximumFilterEntriesDisplayed;
             AutoResizeFilterBox();
 
-            filterRegexCheckBox.Checked = _filterParams.isRegex;
-            filterCaseSensitiveCheckBox.Checked = _filterParams.isCaseSensitive;
-            filterTailCheckBox.Checked = _filterParams.isFilterTail;
+            filterRegexCheckBox.Checked = _filterParams.IsRegex;
+            filterCaseSensitiveCheckBox.Checked = _filterParams.IsCaseSensitive;
+            filterTailCheckBox.Checked = _filterParams.IsFilterTail;
 
             splitContainerLogWindow.Panel2Collapsed = true;
             advancedFilterSplitContainer.SplitterDistance = FILTER_ADVANCED_SPLITTER_DISTANCE;
