@@ -246,9 +246,11 @@ namespace LogExpert.Controls.LogWindow
 
                 foreach (FilterPipe filterPipe in _filterPipeList)
                 {
-                    FilterTabData data = new();
-                    data.persistenceData = filterPipe.OwnLogWindow.GetPersistenceData();
-                    data.filterParams = filterPipe.FilterParams;
+                    FilterTabData data = new()
+                    {
+                        PersistenceData = filterPipe.OwnLogWindow.GetPersistenceData(),
+                        FilterParams = filterPipe.FilterParams
+                    };
                     persistenceData.filterTabDataList.Add(data);
                 }
             }
@@ -486,9 +488,11 @@ namespace LogExpert.Controls.LogWindow
 
                         if (bookmark.Text.Length > 0)
                         {
-                            StringFormat format = new();
-                            format.LineAlignment = StringAlignment.Center;
-                            format.Alignment = StringAlignment.Center;
+                            StringFormat format = new()
+                            {
+                                LineAlignment = StringAlignment.Center,
+                                Alignment = StringAlignment.Center
+                            };
                             Brush brush2 = new SolidBrush(Color.FromArgb(255, 190, 100, 0));
                             Font font = new("Courier New", Preferences.fontSize, FontStyle.Bold);
                             e.Graphics.DrawString("i", font, brush2, new RectangleF(r.Left, r.Top, r.Width, r.Height),
@@ -1190,8 +1194,10 @@ namespace LogExpert.Controls.LogWindow
                 lineNumList.Sort();
                 // create dummy FilterPipe for connecting line numbers to original window
                 // setting IsStopped to true prevents further filter processing
-                FilterPipe pipe = new FilterPipe(new FilterParams(), this);
-                pipe.IsStopped = true;
+                FilterPipe pipe = new FilterPipe(new FilterParams(), this)
+                {
+                    IsStopped = true
+                };
                 WritePipeToTab(pipe, lineNumList, Text + "->C", null);
             }
             else
@@ -1235,9 +1241,11 @@ namespace LogExpert.Controls.LogWindow
         {
             SavePersistenceData(false);
 
-            _reloadMemento = new ReloadMemento();
-            _reloadMemento.CurrentLine = dataGridView.CurrentCellAddress.Y;
-            _reloadMemento.FirstDisplayedLine = dataGridView.FirstDisplayedScrollingRowIndex;
+            _reloadMemento = new ReloadMemento
+            {
+                CurrentLine = dataGridView.CurrentCellAddress.Y,
+                FirstDisplayedLine = dataGridView.FirstDisplayedScrollingRowIndex
+            };
             _forcedColumnizerForLoading = CurrentColumnizer;
 
             if (_fileNames == null || !IsMultiFile)

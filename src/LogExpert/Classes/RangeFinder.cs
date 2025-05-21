@@ -15,7 +15,7 @@ namespace LogExpert.Classes
         #region Fields
 
         private static readonly ILogger _logger = LogManager.GetCurrentClassLogger();
-        private readonly FilterParams _filterParams = filterParams.CopyCurrentColumnizer();
+        private readonly FilterParams _filterParams = filterParams.CloneWithCurrentColumnizer();
 
         #endregion
 
@@ -44,7 +44,7 @@ namespace LogExpert.Classes
             bool foundStartLine = false;
 
             Range range = new();
-            FilterParams tmpParam = _filterParams.CopyCurrentColumnizer();
+            FilterParams tmpParam = _filterParams.CloneWithCurrentColumnizer();
 
             tmpParam.SearchText = _filterParams.RangeSearchText;
 

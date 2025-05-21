@@ -47,6 +47,7 @@ namespace LogExpert.Core.Classes.Persister
         #endregion
     }
 
+    //TODO Rewrite as json Persister, xml is outdated and difficult to parse and write
     public class Persister
     {
         #region Fields
@@ -245,7 +246,7 @@ namespace LogExpert.Core.Classes.Persister
                 rootElement.AppendChild(filterTabsElement);
                 foreach (FilterTabData data in dataList)
                 {
-                    PersistenceData persistenceData = data.persistenceData;
+                    PersistenceData persistenceData = data.PersistenceData;
                     XmlElement filterTabElement = xmlDoc.CreateElement("filterTab");
                     filterTabsElement.AppendChild(filterTabElement);
                     WriteBookmarks(xmlDoc, filterTabElement, persistenceData.bookmarkList);
@@ -255,7 +256,7 @@ namespace LogExpert.Core.Classes.Persister
                     WriteFilterTabs(xmlDoc, filterTabElement, persistenceData.filterTabDataList);
                     XmlElement filterElement = xmlDoc.CreateElement("tabFilter");
                     filterTabElement.AppendChild(filterElement);
-                    List<FilterParams> filterList = [data.filterParams];
+                    List<FilterParams> filterList = [data.FilterParams];
                     WriteFilter(xmlDoc, filterElement, filterList);
                 }
             }
@@ -276,8 +277,8 @@ namespace LogExpert.Core.Classes.Persister
                     {
                         List<FilterParams> filterList = ReadFilter(filterNode as XmlElement);
                         FilterTabData data = new();
-                        data.persistenceData = persistenceData;
-                        data.filterParams = filterList[0]; // there's only 1
+                        data.PersistenceData = persistenceData;
+                        data.FilterParams = filterList[0]; // there's only 1
                         dataList.Add(data);
                     }
                 }
@@ -426,6 +427,7 @@ namespace LogExpert.Core.Classes.Persister
                     string posX = null;
                     string posY = null;
                     string line = null;
+
                     foreach (XmlAttribute attr in node.Attributes)
                     {
                         if (attr.Name.Equals("line"))
@@ -454,8 +456,12 @@ namespace LogExpert.Core.Classes.Persister
                         continue;
                     }
                     int lineNum = int.Parse(line);
-                    Entities.Bookmark bookmark = new(lineNum);
-                    bookmark.OverlayOffset = new Size(int.Parse(posX), int.Parse(posY));
+
+                    Entities.Bookmark bookmark = new(lineNum)
+                    {
+                        OverlayOffset = new Size(int.Parse(posX), int.Parse(posY))
+                    };
+
                     if (text != null)
                     {
                         bookmark.Text = text;
@@ -466,8 +472,7 @@ namespace LogExpert.Core.Classes.Persister
             return bookmarkList;
         }
 
-        private static void WriteRowHeightList(XmlDocument xmlDoc, XmlElement rootElement,
-            SortedList<int, RowHeightEntry> rowHeightList)
+        private static void WriteRowHeightList(XmlDocument xmlDoc, XmlElement rootElement, SortedList<int, RowHeightEntry> rowHeightList)
         {
             XmlElement rowheightElement = xmlDoc.CreateElement("rowheights");
             rootElement.AppendChild(rowheightElement);

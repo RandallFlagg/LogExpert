@@ -1343,7 +1343,7 @@ namespace LogExpert.Controls.LogWindow
 
         private void OnSaveFilterButtonClick(object sender, EventArgs e)
         {
-            FilterParams newParams = _filterParams.MemberwiseCopy();
+            FilterParams newParams = _filterParams.Clone();
             newParams.Color = Color.FromKnownColor(KnownColor.Black);
             ConfigManager.Settings.filterList.Add(newParams);
             OnFilterListChanged(this);
@@ -1402,7 +1402,7 @@ namespace LogExpert.Controls.LogWindow
             if (filterListBox.SelectedIndex >= 0)
             {
                 FilterParams filterParams = (FilterParams)filterListBox.Items[filterListBox.SelectedIndex];
-                FilterParams newParams = filterParams.MemberwiseCopy();
+                FilterParams newParams = filterParams.Clone();
                 //newParams.historyList = ConfigManager.Settings.filterHistoryList;
                 this._filterParams = newParams;
                 ReInitFilterParams(this._filterParams);

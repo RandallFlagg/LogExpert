@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 namespace LogExpert.Core.Classes.Filter
 {
     [Serializable]
-    public class FilterParams
+    public class FilterParams : ICloneable
     {
         #region Fields
 
@@ -105,9 +105,13 @@ namespace LogExpert.Core.Classes.Filter
 
         #region Public methods
 
-        public FilterParams CopyCurrentColumnizer()
+        /// <summary>
+        /// Returns a new FilterParams object with the current columnizer set to the one used in this object.
+        /// </summary>
+        /// <returns></returns>
+        public FilterParams CloneWithCurrentColumnizer()
         {
-            FilterParams newParams = MemberwiseCopy();
+            FilterParams newParams = Clone();
             newParams.Init();
             // removed cloning of columnizer for filtering, because this causes issues with columnizers that hold internal states (like CsvColumnizer)
             // newParams.currentColumnizer = Util.CloneColumnizer(this.currentColumnizer);
@@ -147,9 +151,18 @@ namespace LogExpert.Core.Classes.Filter
         /// Shallow Copy
         /// </summary>
         /// <returns></returns>
-        public FilterParams MemberwiseCopy()
+        public FilterParams Clone()
         {
             return (FilterParams)MemberwiseClone();
+        }
+
+        /// <summary>
+        /// Shallow Copy
+        /// </summary>
+        /// <returns></returns>
+        object ICloneable.Clone()
+        {
+            return Clone();
         }
 
         #endregion

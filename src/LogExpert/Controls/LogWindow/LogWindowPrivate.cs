@@ -291,14 +291,14 @@ namespace LogExpert.Controls.LogWindow
         {
             foreach (FilterTabData data in persistenceData.filterTabDataList)
             {
-                FilterParams persistFilterParams = data.filterParams;
+                FilterParams persistFilterParams = data.FilterParams;
                 ReInitFilterParams(persistFilterParams);
                 List<int> filterResultList = [];
                 //List<int> lastFilterResultList = new List<int>();
                 List<int> filterHitList = [];
                 Filter(persistFilterParams, filterResultList, _lastFilterLinesList, filterHitList);
-                FilterPipe pipe = new(persistFilterParams.MemberwiseCopy(), this);
-                WritePipeToTab(pipe, filterResultList, data.persistenceData.tabName, data.persistenceData);
+                FilterPipe pipe = new(persistFilterParams.Clone(), this);
+                WritePipeToTab(pipe, filterResultList, data.PersistenceData.tabName, data.PersistenceData);
             }
         }
 
@@ -2680,7 +2680,7 @@ namespace LogExpert.Controls.LogWindow
 
         private void WriteFilterToTab()
         {
-            FilterPipe pipe = new(_filterParams.MemberwiseCopy(), this);
+            FilterPipe pipe = new(_filterParams.Clone(), this);
             lock (_filterResultList)
             {
                 string namePrefix = "->F";
