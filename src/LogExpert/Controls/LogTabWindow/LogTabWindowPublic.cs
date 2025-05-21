@@ -31,13 +31,13 @@ namespace LogExpert.Controls.LogTabWindow
         public LogWindow.LogWindow AddFilterTab(FilterPipe pipe, string title, ILogLineColumnizer preProcessColumnizer)
         {
             LogWindow.LogWindow logWin = AddFileTab(pipe.FileName, true, title, false, preProcessColumnizer);
-            if (pipe.FilterParams.searchText.Length > 0)
+            if (pipe.FilterParams.SearchText.Length > 0)
             {
                 ToolTip tip = new(components);
                 tip.SetToolTip(logWin,
-                    "Filter: \"" + pipe.FilterParams.searchText + "\"" +
-                    (pipe.FilterParams.isInvert ? " (Invert match)" : "") +
-                    (pipe.FilterParams.columnRestrict ? "\nColumn restrict" : "")
+                    "Filter: \"" + pipe.FilterParams.SearchText + "\"" +
+                    (pipe.FilterParams.IsInvert ? " (Invert match)" : "") +
+                    (pipe.FilterParams.ColumnRestrict ? "\nColumn restrict" : "")
                 );
                 tip.AutomaticDelay = 10;
                 tip.AutoPopDelay = 5000;
@@ -156,13 +156,13 @@ namespace LogExpert.Controls.LogTabWindow
             SearchDialog dlg = new();
             AddOwnedForm(dlg);
             dlg.TopMost = TopMost;
-            SearchParams.historyList = ConfigManager.Settings.searchHistoryList;
+            SearchParams.HistoryList = ConfigManager.Settings.searchHistoryList;
             dlg.SearchParams = SearchParams;
             DialogResult res = dlg.ShowDialog();
-            if (res == DialogResult.OK && dlg.SearchParams != null && !string.IsNullOrWhiteSpace(dlg.SearchParams.searchText))
+            if (res == DialogResult.OK && dlg.SearchParams != null && !string.IsNullOrWhiteSpace(dlg.SearchParams.SearchText))
             {
                 SearchParams = dlg.SearchParams;
-                SearchParams.isFindNext = false;
+                SearchParams.IsFindNext = false;
                 CurrentLogWindow.StartSearch();
             }
         }

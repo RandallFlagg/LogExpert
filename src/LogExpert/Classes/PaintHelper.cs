@@ -65,7 +65,7 @@ namespace LogExpert.Classes
                 else
                 {
                     Color bgColor = ColorMode.DockBackgroundColor;
-                    if (!DebugOptions.disableWordHighlight)
+                    if (!DebugOptions.DisableWordHighlight)
                     {
                         if (entry != null)
                         {
@@ -83,7 +83,7 @@ namespace LogExpert.Classes
                     e.PaintBackground(e.ClipBounds, false);
                 }
 
-                if (DebugOptions.disableWordHighlight)
+                if (DebugOptions.DisableWordHighlight)
                 {
                     e.PaintContent(e.CellBounds);
                 }
