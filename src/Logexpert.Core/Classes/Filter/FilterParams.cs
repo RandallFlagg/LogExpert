@@ -9,8 +9,8 @@ namespace LogExpert.Core.Classes.Filter
     {
         #region Fields
 
-        private string _rangeSearchText = "";
-        private string _searchText = "";
+        private string _rangeSearchText = string.Empty;
+        private string _searchText = string.Empty;
 
         //public List<string> historyList = new List<string>();
         //public List<string> rangeHistoryList = new List<string>();
@@ -25,7 +25,7 @@ namespace LogExpert.Core.Classes.Filter
             set
             {
                 _searchText = value;
-                LowerSearchText = _searchText.ToLower();
+                LowerSearchText = _searchText.ToLowerInvariant();
             }
         }
 
@@ -35,7 +35,7 @@ namespace LogExpert.Core.Classes.Filter
             set
             {
                 _rangeSearchText = value;
-                LowerRangeSearchText = _rangeSearchText.ToLower();
+                LowerRangeSearchText = _rangeSearchText.ToLowerInvariant();
             }
         }
 
@@ -105,7 +105,7 @@ namespace LogExpert.Core.Classes.Filter
 
         #region Public methods
 
-        public FilterParams Copy()
+        public FilterParams CopyCurrentColumnizer()
         {
             FilterParams newParams = MemberwiseCopy();
             newParams.Init();
@@ -143,6 +143,10 @@ namespace LogExpert.Core.Classes.Filter
             }
         }
 
+        /// <summary>
+        /// Shallow Copy
+        /// </summary>
+        /// <returns></returns>
         public FilterParams MemberwiseCopy()
         {
             return (FilterParams)MemberwiseClone();
