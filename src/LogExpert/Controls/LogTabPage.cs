@@ -1,8 +1,9 @@
+using LogExpert.Core.Classes;
+using LogExpert.Core.Entities;
+
 using System;
 using System.Threading;
 using System.Windows.Forms;
-using LogExpert.Classes;
-using LogExpert.Entities;
 
 namespace LogExpert.Controls
 {
@@ -11,29 +12,29 @@ namespace LogExpert.Controls
         #region Fields
 
         private const int DIFF_MAX = 100;
-        private int diffSum = 0;
-        private readonly object diffSumLock = new();
-        private readonly Thread ledThread;
-        private bool shouldStop = false;
+        private int _diffSum = 0;
+        private readonly object _diffSumLock = new();
+        private readonly Thread _ledThread;
+        private bool _shouldStop = false;
 
         #endregion
 
         #region cTor
 
         public LogTabPage(LogWindow.LogWindow logWindow, string title)
-            : base("MMi" + (title == null ? Util.GetNameFromPath(logWindow.FileName) : title))
+            : base("MMi" + (title ?? Util.GetNameFromPath(logWindow.FileName)))
         {
-            this.TabTitle = title;
-            if (this.TabTitle == null)
+            TabTitle = title;
+            TabTitle ??= Util.GetNameFromPath(logWindow.FileName);
+            LogWindow = logWindow;
+            LogWindow.FileSizeChanged += FileSizeChanged;
+            LogWindow.TailFollowed += TailFollowed;
+            _ledThread = new Thread(new ThreadStart(LedThreadProc))
             {
-                this.TabTitle = Util.GetNameFromPath(logWindow.FileName);
-            }
-            this.LogWindow = logWindow;
-            this.LogWindow.FileSizeChanged += FileSizeChanged;
-            this.LogWindow.TailFollowed += TailFollowed;
-            this.ledThread = new Thread(new ThreadStart(this.LedThreadProc));
-            this.ledThread.IsBackground = true;
-            this.ledThread.Start();
+                IsBackground = true
+            };
+
+            _ledThread.Start();
         }
 
         #endregion
@@ -47,9 +48,9 @@ namespace LogExpert.Controls
         {
             get
             {
-                lock (this.diffSumLock)
+                lock (_diffSumLock)
                 {
-                    return this.diffSum;
+                    return _diffSum;
                 }
             }
         }
@@ -66,9 +67,9 @@ namespace LogExpert.Controls
 
         public void Delete()
         {
-            this.shouldStop = true;
-            this.ledThread.Interrupt();
-            this.ledThread.Join();
+            _shouldStop = true;
+            _ledThread.Interrupt();
+            _ledThread.Join();
         }
 
         #endregion
@@ -77,7 +78,7 @@ namespace LogExpert.Controls
 
         private void LedThreadProc()
         {
-            while (!this.shouldStop)
+            while (!_shouldStop)
             {
                 try
                 {
@@ -87,19 +88,17 @@ namespace LogExpert.Controls
                 {
                     return;
                 }
-                lock (this.diffSumLock)
+                lock (_diffSumLock)
                 {
-                    if (this.diffSum > 0)
+                    if (_diffSum > 0)
                     {
-                        this.diffSum -= 10;
-                        if (this.diffSum < 0)
+                        _diffSum -= 10;
+                        if (_diffSum < 0)
                         {
-                            this.diffSum = 0;
+                            _diffSum = 0;
                         }
-                        if (Parent != null)
-                        {
-                            Parent.Invalidate(); // redraw LEDs
-                        }
+
+                        Parent?.Invalidate(); // redraw LEDs
                     }
                 }
             }
@@ -117,12 +116,12 @@ namespace LogExpert.Controls
                 diff = DIFF_MAX;
                 return;
             }
-            lock (this.diffSumLock)
+            lock (_diffSumLock)
             {
-                this.diffSum = this.diffSum + diff;
-                if (this.diffSum > DIFF_MAX)
+                _diffSum += diff;
+                if (_diffSum > DIFF_MAX)
                 {
-                    this.diffSum = DIFF_MAX;
+                    _diffSum = DIFF_MAX;
                 }
             }
             Dirty = true;
@@ -131,7 +130,7 @@ namespace LogExpert.Controls
 
         private void TailFollowed(object sender, EventArgs e)
         {
-            if (this.IsActiveTab)
+            if (IsActiveTab)
             {
                 Dirty = false;
                 Parent.Invalidate();

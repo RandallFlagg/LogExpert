@@ -1,5 +1,8 @@
 ﻿using LogExpert.Classes.ILogLineColumnizerCallback;
+using LogExpert.Core.Classes.Filter;
+
 using NLog;
+
 using System;
 using System.Collections.Generic;
 using System.Threading;

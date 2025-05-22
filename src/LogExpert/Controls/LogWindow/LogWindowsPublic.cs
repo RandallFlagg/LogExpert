@@ -1,13 +1,18 @@
 ﻿using LogExpert.Classes;
-using LogExpert.Classes.Bookmark;
-using LogExpert.Classes.Columnizer;
 using LogExpert.Classes.Filter;
-using LogExpert.Classes.Highlight;
 using LogExpert.Classes.Log;
-using LogExpert.Classes.Persister;
 using LogExpert.Config;
-using LogExpert.Entities;
-using LogExpert.Entities.EventArgs;
+using LogExpert.Core.Classes;
+using LogExpert.Core.Classes.Bookmark;
+using LogExpert.Core.Classes.Columnizer;
+using LogExpert.Core.Classes.Filter;
+using LogExpert.Core.Classes.Highlight;
+using LogExpert.Core.Classes.Persister;
+using LogExpert.Core.Config;
+using LogExpert.Core.Entities;
+using LogExpert.Core.EventArgs;
+using LogExpert.Dialogs;
+
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -18,7 +23,7 @@ using System.Windows.Forms;
 
 namespace LogExpert.Controls.LogWindow
 {
-    internal partial class LogWindow
+    public partial class LogWindow
     {
         #region Public methods
 
@@ -56,7 +61,10 @@ namespace LogExpert.Controls.LogWindow
                         {
                             if (_reloadMemento == null)
                             {
-                                columnizer = ColumnizerPicker.CloneColumnizer(columnizer);
+                                //TODO this needs to be refactored
+                                var directory = ConfigManager.Settings.Preferences.PortableMode ? ConfigManager.PortableModeDir : ConfigManager.ConfigDir;
+
+                                columnizer = ColumnizerPicker.CloneColumnizer(columnizer, directory);
                             }
                         }
                         else
@@ -121,7 +129,7 @@ namespace LogExpert.Controls.LogWindow
                 {
                     if (Preferences.autoPick)
                     {
-                        ILogLineColumnizer newColumnizer = ColumnizerPicker.FindBetterColumnizer(FileName, _logFileReader, CurrentColumnizer);
+                        ILogLineColumnizer newColumnizer = ColumnizerPicker.FindBetterColumnizer(FileName, _logFileReader, CurrentColumnizer, PluginRegistry.PluginRegistry.Instance.RegisteredColumnizers);
 
                         if (newColumnizer != null)
                         {
@@ -307,19 +315,28 @@ namespace LogExpert.Controls.LogWindow
 
         public void ForceColumnizer(ILogLineColumnizer columnizer)
         {
-            _forcedColumnizer = ColumnizerPicker.CloneColumnizer(columnizer);
+            //TODO this needs to be refactored
+            var directory = ConfigManager.Settings.Preferences.PortableMode ? ConfigManager.PortableModeDir : ConfigManager.ConfigDir;
+
+            _forcedColumnizer = ColumnizerPicker.CloneColumnizer(columnizer, directory);
             SetColumnizer(_forcedColumnizer);
         }
 
         public void ForceColumnizerForLoading(ILogLineColumnizer columnizer)
         {
-            _forcedColumnizerForLoading = ColumnizerPicker.CloneColumnizer(columnizer);
+            //TODO this needs to be refactored
+            var directory = ConfigManager.Settings.Preferences.PortableMode ? ConfigManager.PortableModeDir : ConfigManager.ConfigDir;
+
+            _forcedColumnizerForLoading = ColumnizerPicker.CloneColumnizer(columnizer, directory);
         }
 
         public void PreselectColumnizer(string columnizerName)
         {
-            ILogLineColumnizer columnizer = ColumnizerPicker.FindColumnizerByName(columnizerName, PluginRegistry.Instance.RegisteredColumnizers);
-            PreSelectColumnizer(ColumnizerPicker.CloneColumnizer(columnizer));
+            //TODO this needs to be refactored
+            var directory = ConfigManager.Settings.Preferences.PortableMode ? ConfigManager.PortableModeDir : ConfigManager.ConfigDir;
+
+            ILogLineColumnizer columnizer = ColumnizerPicker.FindColumnizerByName(columnizerName, PluginRegistry.PluginRegistry.Instance.RegisteredColumnizers);
+            PreSelectColumnizer(ColumnizerPicker.CloneColumnizer(columnizer, directory));
         }
 
         public void ColumnizerConfigChanged()
@@ -327,7 +344,7 @@ namespace LogExpert.Controls.LogWindow
             SetColumnizerInternal(CurrentColumnizer);
         }
 
-        public void SetColumnizer(ILogLineColumnizer columnizer, DataGridView gridView)
+        public void SetColumnizer(ILogLineColumnizer columnizer, BufferedDataGridView gridView)
         {
             PaintHelper.SetColumnizer(columnizer, gridView);
 
@@ -383,7 +400,7 @@ namespace LogExpert.Controls.LogWindow
             return Column.EmptyColumn;
         }
 
-        public void CellPainting(DataGridView gridView, int rowIndex, DataGridViewCellPaintingEventArgs e)
+        public void CellPainting(BufferedDataGridView gridView, int rowIndex, DataGridViewCellPaintingEventArgs e)
         {
             if (rowIndex < 0 || e.ColumnIndex < 0)
             {
@@ -484,7 +501,7 @@ namespace LogExpert.Controls.LogWindow
 
         public void OnDataGridView_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)
         {
-            DataGridView gridView = (DataGridView)sender;
+            BufferedDataGridView gridView = (BufferedDataGridView)sender;
             CellPainting(gridView, e.RowIndex, e);
         }
 
@@ -854,7 +871,7 @@ namespace LogExpert.Controls.LogWindow
 
         public void ToggleBookmark()
         {
-            DataGridView gridView;
+            BufferedDataGridView gridView;
             int lineNum;
 
             if (filterGridView.Focused)
@@ -1584,7 +1601,7 @@ namespace LogExpert.Controls.LogWindow
         {
             if (dataGridView.SelectionMode == DataGridViewSelectionMode.FullRowSelect)
             {
-                List<int> lineNumList = new List<int>();
+                List<int> lineNumList = [];
                 foreach (DataGridViewRow row in dataGridView.SelectedRows)
                 {
                     if (row.Index != -1)
@@ -1593,20 +1610,20 @@ namespace LogExpert.Controls.LogWindow
                     }
                 }
                 lineNumList.Sort();
-                patternArgs.startLine = lineNumList[0];
-                patternArgs.endLine = lineNumList[lineNumList.Count - 1];
+                patternArgs.StartLine = lineNumList[0];
+                patternArgs.EndLine = lineNumList[^1];
             }
             else
             {
                 if (dataGridView.CurrentCellAddress.Y != -1)
                 {
-                    patternArgs.startLine = dataGridView.CurrentCellAddress.Y;
+                    patternArgs.StartLine = dataGridView.CurrentCellAddress.Y;
                 }
                 else
                 {
-                    patternArgs.startLine = 0;
+                    patternArgs.StartLine = 0;
                 }
-                patternArgs.endLine = dataGridView.RowCount - 1;
+                patternArgs.EndLine = dataGridView.RowCount - 1;
             }
         }
 
@@ -1618,13 +1635,16 @@ namespace LogExpert.Controls.LogWindow
 
         public void ExportBookmarkList()
         {
-            SaveFileDialog dlg = new SaveFileDialog();
-            dlg.Title = "Choose a file to save bookmarks into";
-            dlg.AddExtension = true;
-            dlg.DefaultExt = "csv";
-            dlg.Filter = "CSV file (*.csv)|*.csv|Bookmark file (*.bmk)|*.bmk";
-            dlg.FilterIndex = 1;
-            dlg.FileName = Path.GetFileNameWithoutExtension(FileName);
+            SaveFileDialog dlg = new()
+            {
+                Title = "Choose a file to save bookmarks into",
+                AddExtension = true,
+                DefaultExt = "csv",
+                Filter = "CSV file (*.csv)|*.csv|Bookmark file (*.bmk)|*.bmk",
+                FilterIndex = 1,
+                FileName = Path.GetFileNameWithoutExtension(FileName)
+            };
+
             if (dlg.ShowDialog() == DialogResult.OK)
             {
                 try
@@ -1642,20 +1662,22 @@ namespace LogExpert.Controls.LogWindow
 
         public void ImportBookmarkList()
         {
-            OpenFileDialog dlg = new OpenFileDialog();
-            dlg.Title = "Choose a file to load bookmarks from";
-            dlg.AddExtension = true;
-            dlg.DefaultExt = "csv";
-            dlg.DefaultExt = "csv";
-            dlg.Filter = "CSV file (*.csv)|*.csv|Bookmark file (*.bmk)|*.bmk";
-            dlg.FilterIndex = 1;
-            dlg.FileName = Path.GetFileNameWithoutExtension(FileName);
+            OpenFileDialog dlg = new()
+            {
+                Title = "Choose a file to load bookmarks from",
+                AddExtension = true,
+                DefaultExt = "csv",
+                Filter = "CSV file (*.csv)|*.csv|Bookmark file (*.bmk)|*.bmk",
+                FilterIndex = 1,
+                FileName = Path.GetFileNameWithoutExtension(FileName)
+            };
+
             if (dlg.ShowDialog() == DialogResult.OK)
             {
                 try
                 {
                     // add to the existing bookmarks
-                    SortedList<int, Bookmark> newBookmarks = new SortedList<int, Bookmark>();
+                    SortedList<int, Bookmark> newBookmarks = [];
                     BookmarkExporter.ImportBookmarkList(FileName, dlg.FileName, newBookmarks);
 
                     // Add (or replace) to existing bookmark list
@@ -1687,7 +1709,7 @@ namespace LogExpert.Controls.LogWindow
                 catch (IOException e)
                 {
                     _logger.Error(e);
-                    MessageBox.Show("Error while importing bookmark list: " + e.Message, "LogExpert");
+                    MessageBox.Show($"Error while importing bookmark list: {e.Message}", "LogExpert");
                 }
             }
         }

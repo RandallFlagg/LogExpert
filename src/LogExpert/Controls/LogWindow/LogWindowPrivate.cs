@@ -1,14 +1,19 @@
 ﻿using LogExpert.Classes;
-using LogExpert.Classes.Columnizer;
 using LogExpert.Classes.Filter;
-using LogExpert.Classes.Highlight;
 using LogExpert.Classes.ILogLineColumnizerCallback;
-using LogExpert.Classes.Persister;
 using LogExpert.Config;
+using LogExpert.Core.Classes;
+using LogExpert.Core.Classes.Columnizer;
+using LogExpert.Core.Classes.Filter;
+using LogExpert.Core.Classes.Highlight;
+using LogExpert.Core.Classes.Persister;
+using LogExpert.Core.Config;
+using LogExpert.Core.Entities;
+using LogExpert.Core.EventArgs;
+using LogExpert.Core.Interface;
 using LogExpert.Dialogs;
-using LogExpert.Entities;
-using LogExpert.Entities.EventArgs;
-using LogExpert.Interface;
+using LogExpert.Extensions;
+using LogExpert.UI.Controls;
 
 using System;
 using System.Collections.Generic;
@@ -25,7 +30,7 @@ using System.Windows.Forms;
 
 namespace LogExpert.Controls.LogWindow
 {
-    internal partial class LogWindow
+    public partial class LogWindow
     {
         #region Private Methods
 
@@ -424,13 +429,19 @@ namespace LogExpert.Controls.LogWindow
                     {
                         if (_reloadMemento == null)
                         {
-                            columnizer = ColumnizerPicker.CloneColumnizer(columnizer);
+                            //TODO this needs to be refactored
+                            var directory = ConfigManager.Settings.Preferences.PortableMode ? ConfigManager.PortableModeDir : ConfigManager.ConfigDir;
+
+                            columnizer = ColumnizerPicker.CloneColumnizer(columnizer, directory);
                         }
                     }
                     else
                     {
+                        //TODO this needs to be refactored
+                        var directory = ConfigManager.Settings.Preferences.PortableMode ? ConfigManager.PortableModeDir : ConfigManager.ConfigDir;
+
                         // Default Columnizers
-                        columnizer = ColumnizerPicker.CloneColumnizer(ColumnizerPicker.FindColumnizer(FileName, _logFileReader));
+                        columnizer = ColumnizerPicker.CloneColumnizer(ColumnizerPicker.FindColumnizer(FileName, _logFileReader, PluginRegistry.PluginRegistry.Instance.RegisteredColumnizers), directory);
                     }
                 }
 
@@ -895,8 +906,7 @@ namespace LogExpert.Controls.LogWindow
             {
                 if (entry.IsActionEntry && entry.ActionEntry.PluginName != null)
                 {
-                    IKeywordAction plugin =
-                        PluginRegistry.Instance.FindKeywordActionPluginByName(entry.ActionEntry.PluginName);
+                    IKeywordAction plugin = PluginRegistry.PluginRegistry.Instance.FindKeywordActionPluginByName(entry.ActionEntry.PluginName);
                     if (plugin != null)
                     {
                         ActionPluginExecuteFx fx = plugin.Execute;
@@ -916,13 +926,13 @@ namespace LogExpert.Controls.LogWindow
             else
             {
                 CurrentColumnizer = _forcedColumnizerForLoading =
-                    ColumnizerPicker.FindColumnizer(FileName, _logFileReader);
+                    ColumnizerPicker.FindColumnizer(FileName, _logFileReader, PluginRegistry.PluginRegistry.Instance.RegisteredColumnizers);
             }
         }
 
         private void SetColumnizer(ILogLineColumnizer columnizer)
         {
-            columnizer = ColumnizerPicker.FindReplacementForAutoColumnizer(FileName, _logFileReader, columnizer);
+            columnizer = ColumnizerPicker.FindReplacementForAutoColumnizer(FileName, _logFileReader, columnizer, PluginRegistry.PluginRegistry.Instance.RegisteredColumnizers);
 
             int timeDiff = 0;
             if (CurrentColumnizer != null && CurrentColumnizer.IsTimeshiftImplemented())
@@ -1084,7 +1094,7 @@ namespace LogExpert.Controls.LogWindow
             OnColumnizerChanged(CurrentColumnizer);
         }
 
-        private void AutoResizeColumns(DataGridView gridView)
+        private void AutoResizeColumns(BufferedDataGridView gridView)
         {
             try
             {
@@ -1108,13 +1118,13 @@ namespace LogExpert.Controls.LogWindow
             }
         }
 
-        private void PaintCell(DataGridViewCellPaintingEventArgs e, DataGridView gridView, bool noBackgroundFill,
+        private void PaintCell(DataGridViewCellPaintingEventArgs e, BufferedDataGridView gridView, bool noBackgroundFill,
             HilightEntry groundEntry)
         {
             PaintHighlightedCell(e, gridView, noBackgroundFill, groundEntry);
         }
 
-        private void PaintHighlightedCell(DataGridViewCellPaintingEventArgs e, DataGridView gridView,
+        private void PaintHighlightedCell(DataGridViewCellPaintingEventArgs e, BufferedDataGridView gridView,
             bool noBackgroundFill,
             HilightEntry groundEntry)
         {
@@ -2531,7 +2541,7 @@ namespace LogExpert.Controls.LogWindow
             }
         }
 
-        private void InvalidateCurrentRow(DataGridView gridView)
+        private void InvalidateCurrentRow(BufferedDataGridView gridView)
         {
             if (gridView.CurrentCellAddress.Y > -1)
             {
@@ -2788,7 +2798,7 @@ namespace LogExpert.Controls.LogWindow
         {
             newWin.WaitForLoadingFinished();
             ILogLineColumnizer columnizer = ColumnizerPicker.FindColumnizerByName(persistenceData.columnizerName,
-                PluginRegistry.Instance.RegisteredColumnizers);
+                PluginRegistry.PluginRegistry.Instance.RegisteredColumnizers);
             if (columnizer != null)
             {
                 SetColumnizerFx fx = newWin.ForceColumnizer;
@@ -2907,7 +2917,7 @@ namespace LogExpert.Controls.LogWindow
             EncodingOptions.Encoding = encoding;
         }
 
-        private void ApplyDataGridViewPrefs(DataGridView dataGridView, Preferences prefs)
+        private void ApplyDataGridViewPrefs(BufferedDataGridView dataGridView, Preferences prefs)
         {
             if (dataGridView.Columns.GetColumnCount(DataGridViewElementStates.None) > 1)
             {
@@ -3022,7 +3032,7 @@ namespace LogExpert.Controls.LogWindow
             return names;
         }
 
-        private void ApplyFrozenState(DataGridView gridView)
+        private void ApplyFrozenState(BufferedDataGridView gridView)
         {
             SortedDictionary<int, DataGridViewColumn> dict = [];
             foreach (DataGridViewColumn col in gridView.Columns)
@@ -3067,16 +3077,16 @@ namespace LogExpert.Controls.LogWindow
             _patternWindow.SetColumnizer(CurrentColumnizer);
             //this.patternWindow.SetBlockList(blockList);
             _patternWindow.SetFont(Preferences.fontName, Preferences.fontSize);
-            _patternWindow.Fuzzy = _patternArgs.fuzzy;
-            _patternWindow.MaxDiff = _patternArgs.maxDiffInBlock;
-            _patternWindow.MaxMisses = _patternArgs.maxMisses;
-            _patternWindow.Weight = _patternArgs.minWeight;
+            _patternWindow.Fuzzy = _patternArgs.Fuzzy;
+            _patternWindow.MaxDiff = _patternArgs.MaxDiffInBlock;
+            _patternWindow.MaxMisses = _patternArgs.MaxMisses;
+            _patternWindow.Weight = _patternArgs.MinWeight;
             //this.patternWindow.Show();
         }
 
         private void TestStatistic(PatternArgs patternArgs)
         {
-            int beginLine = patternArgs.startLine;
+            int beginLine = patternArgs.StartLine;
             _logger.Info("TestStatistics() called with start line {0}", beginLine);
 
             _patternArgs = patternArgs;
@@ -3106,7 +3116,7 @@ namespace LogExpert.Controls.LogWindow
                 }
 
                 PatternBlock block;
-                int maxBlockLen = patternArgs.endLine - patternArgs.startLine;
+                int maxBlockLen = patternArgs.EndLine - patternArgs.StartLine;
                 //int searchLine = i + 1;
                 _logger.Debug("TestStatistic(): i={0} searchLine={1}", i, searchLine);
                 //bool firstBlock = true;
@@ -3114,12 +3124,12 @@ namespace LogExpert.Controls.LogWindow
                 UpdateProgressBar(searchLine);
                 while (!_shouldCancel &&
                        (block =
-                           DetectBlock(i, searchLine, maxBlockLen, _patternArgs.maxDiffInBlock,
-                               _patternArgs.maxMisses,
+                           DetectBlock(i, searchLine, maxBlockLen, _patternArgs.MaxDiffInBlock,
+                               _patternArgs.MaxMisses,
                                processedLinesDict)) != null)
                 {
                     _logger.Debug("Found block: {0}", block);
-                    if (block.weigth >= _patternArgs.minWeight)
+                    if (block.weigth >= _patternArgs.MinWeight)
                     {
                         //PatternBlock existingBlock = FindExistingBlock(block, blockList);
                         //if (existingBlock != null)
@@ -3357,7 +3367,7 @@ namespace LogExpert.Controls.LogWindow
 
         private int FindSimilarLine(int srcLine, int startLine, Dictionary<int, int> processedLinesDict)
         {
-            int threshold = _patternArgs.fuzzy;
+            int threshold = _patternArgs.Fuzzy;
 
             bool prepared = false;
             Regex regex = null;
@@ -3534,7 +3544,7 @@ namespace LogExpert.Controls.LogWindow
             _filterParams.rangeSearchText = filterRangeComboBox.Text;
             ColumnizerCallback callback = new(this);
             RangeFinder rangeFinder = new(_filterParams, callback);
-            Entities.Range range = rangeFinder.FindRange(dataGridView.CurrentCellAddress.Y);
+            Core.Entities.Range range = rangeFinder.FindRange(dataGridView.CurrentCellAddress.Y);
             if (range != null)
             {
                 SetCellSelectionMode(false);
@@ -3709,7 +3719,7 @@ namespace LogExpert.Controls.LogWindow
             RefreshAllGrids();
         }
 
-        private DataGridViewColumn GetColumnByName(DataGridView dataGridView, string name)
+        private DataGridViewColumn GetColumnByName(BufferedDataGridView dataGridView, string name)
         {
             foreach (DataGridViewColumn col in dataGridView.Columns)
             {

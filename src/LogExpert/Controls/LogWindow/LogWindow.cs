@@ -1,16 +1,20 @@
 ﻿using LogExpert.Classes;
-using LogExpert.Classes.Bookmark;
 using LogExpert.Classes.Filter;
-using LogExpert.Classes.Highlight;
 using LogExpert.Classes.ILogLineColumnizerCallback;
 using LogExpert.Classes.Log;
-using LogExpert.Classes.Persister;
 using LogExpert.Config;
+using LogExpert.Core.Classes.Bookmark;
+using LogExpert.Core.Classes.Filter;
+using LogExpert.Core.Classes.Highlight;
+using LogExpert.Core.Classes.Persister;
+using LogExpert.Core.Config;
+using LogExpert.Core.Entities;
+using LogExpert.Core.EventArgs;
+using LogExpert.Core.Interface;
 using LogExpert.Dialogs;
-using LogExpert.Entities;
 using LogExpert.Entities.EventArgs;
-using LogExpert.Extensions.Forms;
-using LogExpert.Interface;
+using LogExpert.UI.Dialogs;
+using LogExpert.UI.Extensions.Forms;
 
 using NLog;
 
@@ -25,7 +29,7 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace LogExpert.Controls.LogWindow
 {
-    internal partial class LogWindow : DockContent, ILogPaintContext, ILogView
+    public partial class LogWindow : DockContent, ILogPaintContext, ILogView
     {
         #region Fields
 
@@ -178,12 +182,12 @@ namespace LogExpert.Controls.LogWindow
             tableLayoutPanel1.ColumnStyles[0].Width = 100;
 
             _parentLogTabWin.HighlightSettingsChanged += OnParentHighlightSettingsChanged;
-            SetColumnizer(PluginRegistry.Instance.RegisteredColumnizers[0]);
+            SetColumnizer(PluginRegistry.PluginRegistry.Instance.RegisteredColumnizers[0]);
 
-            _patternArgs.maxMisses = 5;
-            _patternArgs.minWeight = 1;
-            _patternArgs.maxDiffInBlock = 5;
-            _patternArgs.fuzzy = 5;
+            _patternArgs.MaxMisses = 5;
+            _patternArgs.MinWeight = 1;
+            _patternArgs.MaxDiffInBlock = 5;
+            _patternArgs.Fuzzy = 5;
 
             //InitPatternWindow();
 
@@ -556,10 +560,13 @@ namespace LogExpert.Controls.LogWindow
 
         internal void ChangeMultifileMask()
         {
-            MultiFileMaskDialog dlg = new(this, FileName);
-            dlg.Owner = this;
-            dlg.MaxDays = _multiFileOptions.MaxDayTry;
-            dlg.FileNamePattern = _multiFileOptions.FormatPattern;
+            MultiFileMaskDialog dlg = new(this, FileName)
+            {
+                Owner = this,
+                MaxDays = _multiFileOptions.MaxDayTry,
+                FileNamePattern = _multiFileOptions.FormatPattern
+            };
+
             if (dlg.ShowDialog() == DialogResult.OK)
             {
                 _multiFileOptions.FormatPattern = dlg.FileNamePattern;
@@ -635,7 +642,7 @@ namespace LogExpert.Controls.LogWindow
 
         private delegate void PositionAfterReloadFx(ReloadMemento reloadMemento);
 
-        private delegate void AutoResizeColumnsFx(DataGridView gridView);
+        private delegate void AutoResizeColumnsFx(BufferedDataGridView gridView);
 
         private delegate bool BoolReturnDelegate();
 

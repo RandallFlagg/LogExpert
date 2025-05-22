@@ -6,7 +6,7 @@ namespace SftpFileSystem
     {
         #region Private Fields
 
-        private readonly IList<Credentials> _credList = new List<Credentials>();
+        private readonly IList<Credentials> _credList = [];
 
         #endregion
 
@@ -25,7 +25,7 @@ namespace SftpFileSystem
 
         internal IList<string> GetUsersForHost(string host)
         {
-            IList<string> result = new List<string>();
+            IList<string> result = [];
 
             foreach (Credentials cred in _credList)
             {

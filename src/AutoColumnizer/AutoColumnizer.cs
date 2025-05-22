@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using LogExpert;
 
-namespace LogExpert
+using System;
+
+namespace AutoColumnizer
 {
     public class AutoColumnizer : ILogLineColumnizer
     {

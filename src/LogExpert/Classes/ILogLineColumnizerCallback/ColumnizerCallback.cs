@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
-using LogExpert.Controls.LogWindow;
+﻿using LogExpert.Controls.LogWindow;
+
+using System.Collections.Generic;
 
 namespace LogExpert.Classes.ILogLineColumnizerCallback
 {
-    internal class ColumnizerCallback : LogExpert.ILogLineColumnizerCallback, IAutoLogLineColumnizerCallback
+    public class ColumnizerCallback : LogExpert.ILogLineColumnizerCallback, IAutoLogLineColumnizerCallback
     {
         #region Fields
 
@@ -56,7 +57,7 @@ namespace LogExpert.Classes.ILogLineColumnizerCallback
 
         public IList<ILogLineColumnizer> GetRegisteredColumnizers()
         {
-            return PluginRegistry.Instance.RegisteredColumnizers;
+            return PluginRegistry.PluginRegistry.Instance.RegisteredColumnizers;
         }
 
         public int GetLineCount()
