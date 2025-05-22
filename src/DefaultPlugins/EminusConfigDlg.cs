@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace LogExpert
@@ -13,13 +14,21 @@ namespace LogExpert
 
         public EminusConfigDlg(EminusConfig config)
         {
+            SuspendLayout();
+
+            AutoScaleDimensions = new SizeF(96F, 96F);
+            AutoScaleMode = AutoScaleMode.Dpi;
+
             InitializeComponent();
+
             TopLevel = false;
             Config = config;
 
             hostTextBox.Text = config.host;
-            portTextBox.Text = "" + config.port;
+            portTextBox.Text = string.Empty + config.port;
             passwordTextBox.Text = config.password;
+
+            ResumeLayout();
         }
 
         #endregion

@@ -1,6 +1,10 @@
 ﻿using LogExpert.Config;
+using LogExpert.Core.Config;
+
 using Newtonsoft.Json;
+
 using NUnit.Framework;
+
 using System.IO;
 
 namespace LogExpert.Tests

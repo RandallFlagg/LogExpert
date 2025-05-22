@@ -1,7 +1,6 @@
-﻿
-using LogExpert.Classes.Columnizer;
-using LogExpert.Classes.Log;
-using LogExpert.Entities;
+﻿using LogExpert.Classes.Log;
+using LogExpert.Core.Classes.Columnizer;
+using LogExpert.Core.Entities;
 
 using NUnit.Framework;
 
@@ -9,7 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace LogExpert
+namespace LogExpert.Tests
 {
     [TestFixture]
     public class SquareBracketColumnizerTest

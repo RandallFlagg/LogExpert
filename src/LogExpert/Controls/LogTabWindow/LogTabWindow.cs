@@ -1,8 +1,9 @@
 ﻿using LogExpert.Config;
+using LogExpert.Core.Config;
+using LogExpert.Core.Entities;
 using LogExpert.Dialogs;
-using LogExpert.Entities;
-using LogExpert.Extensions.Forms;
 using LogExpert.Interface;
+using LogExpert.UI.Extensions.Forms;
 
 using NLog;
 
@@ -17,7 +18,7 @@ using System.Windows.Forms;
 
 namespace LogExpert.Controls.LogTabWindow
 {
-    internal partial class LogTabWindow : Form
+    public partial class LogTabWindow : Form
     {
         #region Fields
 
@@ -88,7 +89,7 @@ namespace LogExpert.Controls.LogTabWindow
             Load += OnLogTabWindowLoad;
 
             ConfigManager.Instance.ConfigChanged += OnConfigChanged;
-            HilightGroupList = ConfigManager.Settings.hilightGroupList;
+            HighlightGroupList = ConfigManager.Settings.Preferences.HighlightGroupList;
 
             Rectangle led = new(0, 0, 8, 2);
 
@@ -162,7 +163,7 @@ namespace LogExpert.Controls.LogTabWindow
         #region ColorTheme
         public void ChangeTheme(Control.ControlCollection container)
         {
-            ColorMode.LoadColorMode();
+            ColorMode.LoadColorMode(ConfigManager.Settings.Preferences.darkMode);
             ColorMode.UseImmersiveDarkMode(Handle, ColorMode.DarkModeEnabled);
 
             #region ApplyColorToAllControls
@@ -296,7 +297,7 @@ namespace LogExpert.Controls.LogTabWindow
 
         public Preferences Preferences => ConfigManager.Settings.Preferences;
 
-        public List<HilightGroup> HilightGroupList { get; private set; } = [];
+        public List<HighlightGroup> HighlightGroupList { get; private set; } = [];
 
         //public Settings Settings
         //{
@@ -311,11 +312,11 @@ namespace LogExpert.Controls.LogTabWindow
 
         #region Internals
 
-        internal HilightGroup FindHighlightGroup(string groupName)
+        internal HighlightGroup FindHighlightGroup(string groupName)
         {
-            lock (HilightGroupList)
+            lock (HighlightGroupList)
             {
-                foreach (HilightGroup group in HilightGroupList)
+                foreach (HighlightGroup group in HighlightGroupList)
                 {
                     if (group.GroupName.Equals(groupName))
                     {

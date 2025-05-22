@@ -1,5 +1,5 @@
 ﻿using LogExpert.Classes.Log;
-using LogExpert.Entities;
+using LogExpert.Core.Entities;
 
 using NUnit.Framework;
 

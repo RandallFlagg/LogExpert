@@ -1,9 +1,12 @@
-﻿using LogExpert.Classes;
-using LogExpert.Classes.Persister;
-using LogExpert.Config;
+﻿using LogExpert.Config;
+using LogExpert.Core.Classes;
+using LogExpert.Core.Classes.Persister;
+using LogExpert.Core.Config;
+using LogExpert.Core.Entities;
+using LogExpert.Core.EventArgs;
 using LogExpert.Dialogs;
-using LogExpert.Entities;
 using LogExpert.Entities.EventArgs;
+using LogExpert.UI.Dialogs;
 
 using System;
 using System.Collections.Generic;
@@ -18,7 +21,7 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace LogExpert.Controls.LogTabWindow
 {
-    internal partial class LogTabWindow
+    public partial class LogTabWindow
     {
         #region Events handler
 
@@ -155,7 +158,7 @@ namespace LogExpert.Controls.LogTabWindow
             }
 
             CurrentLogWindow.ColumnizerCallbackObject.LineNum = CurrentLogWindow.GetCurrentLineNum();
-            FilterSelectorForm form = new(PluginRegistry.Instance.RegisteredColumnizers, CurrentLogWindow.CurrentColumnizer, CurrentLogWindow.ColumnizerCallbackObject);
+            FilterSelectorForm form = new(PluginRegistry.PluginRegistry.Instance.RegisteredColumnizers, CurrentLogWindow.CurrentColumnizer, CurrentLogWindow.ColumnizerCallbackObject);
             form.Owner = this;
             form.TopMost = TopMost;
             DialogResult res = form.ShowDialog();
@@ -478,7 +481,7 @@ namespace LogExpert.Controls.LogTabWindow
         private void OnLogWindowCurrentHighlightGroupChanged(object sender, CurrentHighlightGroupChangedEventArgs e)
         {
             OnHighlightSettingsChanged();
-            ConfigManager.Settings.hilightGroupList = HilightGroupList;
+            ConfigManager.Settings.Preferences.HighlightGroupList = HighlightGroupList;
             ConfigManager.Save(SettingsFlags.HighlightSettings);
         }
 
@@ -936,7 +939,7 @@ namespace LogExpert.Controls.LogTabWindow
 
         private void OnDisableWordHighlightModeToolStripMenuItemClick(object sender, EventArgs e)
         {
-            DebugOptions.disableWordHighlight = disableWordHighlightModeToolStripMenuItem.Checked;
+            DebugOptions.DisableWordHighlight = disableWordHighlightModeToolStripMenuItem.Checked;
             CurrentLogWindow?.RefreshAllGrids();
         }
 
@@ -973,8 +976,10 @@ namespace LogExpert.Controls.LogTabWindow
 
         private void OnOpenURIToolStripMenuItemClick(object sender, EventArgs e)
         {
-            OpenUriDialog dlg = new();
-            dlg.UriHistory = ConfigManager.Settings.uriHistoryList;
+            OpenUriDialog dlg = new()
+            {
+                UriHistory = ConfigManager.Settings.uriHistoryList
+            };
 
             if (DialogResult.OK == dlg.ShowDialog())
             {
@@ -982,7 +987,7 @@ namespace LogExpert.Controls.LogTabWindow
                 {
                     ConfigManager.Settings.uriHistoryList = dlg.UriHistory;
                     ConfigManager.Save(SettingsFlags.FileHistory);
-                    LoadFiles(new[] { dlg.Uri }, false);
+                    LoadFiles([dlg.Uri], false);
                 }
             }
         }
