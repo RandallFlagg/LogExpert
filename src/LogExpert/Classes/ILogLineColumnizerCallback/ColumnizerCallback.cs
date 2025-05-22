@@ -1,13 +1,14 @@
-﻿using System.Collections.Generic;
-using LogExpert.Controls.LogWindow;
+﻿using LogExpert.Controls.LogWindow;
+
+using System.Collections.Generic;
 
 namespace LogExpert.Classes.ILogLineColumnizerCallback
 {
-    internal class ColumnizerCallback : LogExpert.ILogLineColumnizerCallback, IAutoLogLineColumnizerCallback
+    public class ColumnizerCallback : LogExpert.ILogLineColumnizerCallback, IAutoLogLineColumnizerCallback
     {
         #region Fields
 
-        protected LogWindow logWindow;
+        protected LogWindow _logWindow;
 
         #endregion
 
@@ -15,12 +16,12 @@ namespace LogExpert.Classes.ILogLineColumnizerCallback
 
         public ColumnizerCallback(LogWindow logWindow)
         {
-            this.logWindow = logWindow;
+            _logWindow = logWindow;
         }
 
         private ColumnizerCallback(ColumnizerCallback original)
         {
-            logWindow = original.logWindow;
+            _logWindow = original._logWindow;
             LineNum = original.LineNum;
         }
 
@@ -46,22 +47,22 @@ namespace LogExpert.Classes.ILogLineColumnizerCallback
 
         public string GetFileName()
         {
-            return logWindow.GetCurrentFileName(LineNum);
+            return _logWindow.GetCurrentFileName(LineNum);
         }
 
         public ILogLine GetLogLine(int lineNum)
         {
-            return logWindow.GetLine(lineNum);
+            return _logWindow.GetLine(lineNum);
         }
 
         public IList<ILogLineColumnizer> GetRegisteredColumnizers()
         {
-            return PluginRegistry.Instance.RegisteredColumnizers;
+            return PluginRegistry.PluginRegistry.Instance.RegisteredColumnizers;
         }
 
         public int GetLineCount()
         {
-            return logWindow._logFileReader.LineCount;
+            return _logWindow._logFileReader.LineCount;
         }
 
         #endregion

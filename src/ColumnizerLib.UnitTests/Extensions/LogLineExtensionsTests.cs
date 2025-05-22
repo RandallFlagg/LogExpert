@@ -1,4 +1,6 @@
 ﻿using LogExpert;
+using LogExpert.Extensions;
+
 using NUnit.Framework;
 
 namespace ColumnizerLib.UnitTests.Extensions

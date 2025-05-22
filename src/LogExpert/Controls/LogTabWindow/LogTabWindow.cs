@@ -1,9 +1,9 @@
 ﻿using LogExpert.Config;
+using LogExpert.Core.Config;
+using LogExpert.Core.Entities;
 using LogExpert.Dialogs;
-using LogExpert.Entities;
-using LogExpert.Entities.EventArgs;
-using LogExpert.Extensions.Forms;
 using LogExpert.Interface;
+using LogExpert.UI.Extensions.Forms;
 
 using NLog;
 
@@ -18,7 +18,7 @@ using System.Windows.Forms;
 
 namespace LogExpert.Controls.LogTabWindow
 {
-    internal partial class LogTabWindow : Form
+    public partial class LogTabWindow : Form
     {
         #region Fields
 
@@ -89,7 +89,7 @@ namespace LogExpert.Controls.LogTabWindow
             Load += OnLogTabWindowLoad;
 
             ConfigManager.Instance.ConfigChanged += OnConfigChanged;
-            HilightGroupList = ConfigManager.Settings.hilightGroupList;
+            HighlightGroupList = ConfigManager.Settings.Preferences.HighlightGroupList;
 
             Rectangle led = new(0, 0, 8, 2);
 
@@ -150,7 +150,7 @@ namespace LogExpert.Controls.LogTabWindow
             // get a list of resource names from the manifest
             string[] resNames = a.GetManifestResourceNames();
 
-            Bitmap bmp = Properties.Resources.Deceased;
+            Bitmap bmp = Resources.Resources.Deceased;
             _deadIcon = Icon.FromHandle(bmp.GetHicon());
             bmp.Dispose();
             Closing += OnLogTabWindowClosing;
@@ -163,7 +163,7 @@ namespace LogExpert.Controls.LogTabWindow
         #region ColorTheme
         public void ChangeTheme(Control.ControlCollection container)
         {
-            ColorMode.LoadColorMode();
+            ColorMode.LoadColorMode(ConfigManager.Settings.Preferences.darkMode);
             ColorMode.UseImmersiveDarkMode(Handle, ColorMode.DarkModeEnabled);
 
             #region ApplyColorToAllControls
@@ -237,24 +237,24 @@ namespace LogExpert.Controls.LogTabWindow
             }
 
             // Tabs line
-            dockPanel.Skin.DockPaneStripSkin.ToolWindowGradient.DockStripGradient.StartColor = ColorMode.TabsBackgroundStripColor;
-            dockPanel.Skin.DockPaneStripSkin.ToolWindowGradient.DockStripGradient.EndColor = ColorMode.TabsBackgroundStripColor;
+            dockPanel.Theme.Skin.DockPaneStripSkin.ToolWindowGradient.DockStripGradient.StartColor = ColorMode.TabsBackgroundStripColor;
+            dockPanel.Theme.Skin.DockPaneStripSkin.ToolWindowGradient.DockStripGradient.EndColor = ColorMode.TabsBackgroundStripColor;
 
-            dockPanel.Skin.DockPaneStripSkin.DocumentGradient.DockStripGradient.StartColor = ColorMode.TabsBackgroundStripColor;
-            dockPanel.Skin.DockPaneStripSkin.DocumentGradient.DockStripGradient.EndColor = ColorMode.TabsBackgroundStripColor;
+            dockPanel.Theme.Skin.DockPaneStripSkin.DocumentGradient.DockStripGradient.StartColor = ColorMode.TabsBackgroundStripColor;
+            dockPanel.Theme.Skin.DockPaneStripSkin.DocumentGradient.DockStripGradient.EndColor = ColorMode.TabsBackgroundStripColor;
 
             // Tabs
-            dockPanel.Skin.DockPaneStripSkin.ToolWindowGradient.ActiveTabGradient.StartColor = ColorMode.ActiveTabColor;
-            dockPanel.Skin.DockPaneStripSkin.ToolWindowGradient.ActiveTabGradient.EndColor = ColorMode.ActiveTabColor;
-            dockPanel.Skin.DockPaneStripSkin.ToolWindowGradient.ActiveTabGradient.TextColor = ColorMode.ForeColor;
+            dockPanel.Theme.Skin.DockPaneStripSkin.ToolWindowGradient.ActiveTabGradient.StartColor = ColorMode.ActiveTabColor;
+            dockPanel.Theme.Skin.DockPaneStripSkin.ToolWindowGradient.ActiveTabGradient.EndColor = ColorMode.ActiveTabColor;
+            dockPanel.Theme.Skin.DockPaneStripSkin.ToolWindowGradient.ActiveTabGradient.TextColor = ColorMode.ForeColor;
 
-            dockPanel.Skin.DockPaneStripSkin.DocumentGradient.ActiveTabGradient.StartColor = ColorMode.ActiveTabColor;
-            dockPanel.Skin.DockPaneStripSkin.DocumentGradient.ActiveTabGradient.EndColor = ColorMode.ActiveTabColor;
-            dockPanel.Skin.DockPaneStripSkin.DocumentGradient.ActiveTabGradient.TextColor = ColorMode.ForeColor;
+            dockPanel.Theme.Skin.DockPaneStripSkin.DocumentGradient.ActiveTabGradient.StartColor = ColorMode.ActiveTabColor;
+            dockPanel.Theme.Skin.DockPaneStripSkin.DocumentGradient.ActiveTabGradient.EndColor = ColorMode.ActiveTabColor;
+            dockPanel.Theme.Skin.DockPaneStripSkin.DocumentGradient.ActiveTabGradient.TextColor = ColorMode.ForeColor;
 
-            dockPanel.Skin.DockPaneStripSkin.DocumentGradient.InactiveTabGradient.StartColor = ColorMode.InactiveTabColor;
-            dockPanel.Skin.DockPaneStripSkin.DocumentGradient.InactiveTabGradient.EndColor = ColorMode.InactiveTabColor;
-            dockPanel.Skin.DockPaneStripSkin.DocumentGradient.InactiveTabGradient.TextColor = ColorMode.ForeColor;
+            dockPanel.Theme.Skin.DockPaneStripSkin.DocumentGradient.InactiveTabGradient.StartColor = ColorMode.InactiveTabColor;
+            dockPanel.Theme.Skin.DockPaneStripSkin.DocumentGradient.InactiveTabGradient.EndColor = ColorMode.InactiveTabColor;
+            dockPanel.Theme.Skin.DockPaneStripSkin.DocumentGradient.InactiveTabGradient.TextColor = ColorMode.ForeColor;
             #endregion Tabs
         }
         #endregion
@@ -297,7 +297,7 @@ namespace LogExpert.Controls.LogTabWindow
 
         public Preferences Preferences => ConfigManager.Settings.Preferences;
 
-        public List<HilightGroup> HilightGroupList { get; private set; } = [];
+        public List<HighlightGroup> HighlightGroupList { get; private set; } = [];
 
         //public Settings Settings
         //{
@@ -312,11 +312,11 @@ namespace LogExpert.Controls.LogTabWindow
 
         #region Internals
 
-        internal HilightGroup FindHighlightGroup(string groupName)
+        internal HighlightGroup FindHighlightGroup(string groupName)
         {
-            lock (HilightGroupList)
+            lock (HighlightGroupList)
             {
-                foreach (HilightGroup group in HilightGroupList)
+                foreach (HighlightGroup group in HighlightGroupList)
                 {
                     if (group.GroupName.Equals(groupName))
                     {

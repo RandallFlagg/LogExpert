@@ -1,4 +1,12 @@
-﻿using System;
+﻿using LogExpert.Classes.Filter;
+using LogExpert.Config;
+using LogExpert.Core.Classes.Columnizer;
+using LogExpert.Core.Config;
+using LogExpert.Core.Entities;
+using LogExpert.Dialogs;
+using LogExpert.Entities;
+
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.InteropServices;
@@ -6,17 +14,12 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using LogExpert.Classes;
-using LogExpert.Classes.Columnizer;
-using LogExpert.Classes.Filter;
-using LogExpert.Config;
-using LogExpert.Dialogs;
-using LogExpert.Entities;
+
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace LogExpert.Controls.LogTabWindow
 {
-    internal partial class LogTabWindow
+    public partial class LogTabWindow
     {
         #region Public methods
 
@@ -28,13 +31,13 @@ namespace LogExpert.Controls.LogTabWindow
         public LogWindow.LogWindow AddFilterTab(FilterPipe pipe, string title, ILogLineColumnizer preProcessColumnizer)
         {
             LogWindow.LogWindow logWin = AddFileTab(pipe.FileName, true, title, false, preProcessColumnizer);
-            if (pipe.FilterParams.searchText.Length > 0)
+            if (pipe.FilterParams.SearchText.Length > 0)
             {
                 ToolTip tip = new(components);
                 tip.SetToolTip(logWin,
-                    "Filter: \"" + pipe.FilterParams.searchText + "\"" +
-                    (pipe.FilterParams.isInvert ? " (Invert match)" : "") +
-                    (pipe.FilterParams.columnRestrict ? "\nColumn restrict" : "")
+                    "Filter: \"" + pipe.FilterParams.SearchText + "\"" +
+                    (pipe.FilterParams.IsInvert ? " (Invert match)" : "") +
+                    (pipe.FilterParams.ColumnRestrict ? "\nColumn restrict" : "")
                 );
                 tip.AutomaticDelay = 10;
                 tip.AutoPopDelay = 5000;
@@ -49,7 +52,7 @@ namespace LogExpert.Controls.LogTabWindow
         {
             return AddFileTab(givenFileName, isTempFile, title, forcePersistenceLoading, preProcessColumnizer, true);
         }
-        
+
         public LogWindow.LogWindow AddFileTab(string givenFileName, bool isTempFile, string title, bool forcePersistenceLoading, ILogLineColumnizer preProcessColumnizer, bool doNotAddToDockPanel = false)
         {
             string logFileName = FindFilenameForSettings(givenFileName);
@@ -88,7 +91,7 @@ namespace LogExpert.Controls.LogTabWindow
                 AddToFileHistory(givenFileName);
             }
 
-            LogWindowData data = logWindow.Tag as LogWindowData;            
+            LogWindowData data = logWindow.Tag as LogWindowData;
             data.color = _defaultTabColor;
             SetTabColor(logWindow, _defaultTabColor);
             //data.tabPage.BorderColor = this.defaultTabBorderColor;
@@ -153,13 +156,13 @@ namespace LogExpert.Controls.LogTabWindow
             SearchDialog dlg = new();
             AddOwnedForm(dlg);
             dlg.TopMost = TopMost;
-            SearchParams.historyList = ConfigManager.Settings.searchHistoryList;
+            SearchParams.HistoryList = ConfigManager.Settings.searchHistoryList;
             dlg.SearchParams = SearchParams;
             DialogResult res = dlg.ShowDialog();
-            if (res == DialogResult.OK && dlg.SearchParams != null && !string.IsNullOrWhiteSpace(dlg.SearchParams.searchText))
+            if (res == DialogResult.OK && dlg.SearchParams != null && !string.IsNullOrWhiteSpace(dlg.SearchParams.SearchText))
             {
                 SearchParams = dlg.SearchParams;
-                SearchParams.isFindNext = false;
+                SearchParams.IsFindNext = false;
                 CurrentLogWindow.StartSearch();
             }
         }
@@ -169,7 +172,7 @@ namespace LogExpert.Controls.LogTabWindow
             ColumnizerHistoryEntry entry = FindColumnizerHistoryEntry(fileName);
             if (entry != null)
             {
-                foreach (ILogLineColumnizer columnizer in PluginRegistry.Instance.RegisteredColumnizers)
+                foreach (ILogLineColumnizer columnizer in PluginRegistry.PluginRegistry.Instance.RegisteredColumnizers)
                 {
                     if (columnizer.GetName().Equals(entry.ColumnizerName))
                     {
@@ -241,7 +244,7 @@ namespace LogExpert.Controls.LogTabWindow
                     {
                         if (Regex.IsMatch(fileName, entry.mask))
                         {
-                            ILogLineColumnizer columnizer = ColumnizerPicker.FindColumnizerByName(entry.columnizerName, PluginRegistry.Instance.RegisteredColumnizers);
+                            ILogLineColumnizer columnizer = ColumnizerPicker.FindColumnizerByName(entry.columnizerName, PluginRegistry.PluginRegistry.Instance.RegisteredColumnizers);
                             return columnizer;
                         }
                     }
@@ -256,7 +259,7 @@ namespace LogExpert.Controls.LogTabWindow
             return null;
         }
 
-        public HilightGroup FindHighlightGroupByFileMask(string fileName)
+        public HighlightGroup FindHighlightGroupByFileMask(string fileName)
         {
             foreach (HighlightMaskEntry entry in ConfigManager.Settings.Preferences.highlightMaskList)
             {
@@ -266,7 +269,7 @@ namespace LogExpert.Controls.LogTabWindow
                     {
                         if (Regex.IsMatch(fileName, entry.mask))
                         {
-                            HilightGroup group = FindHighlightGroup(entry.highlightGroupName);
+                            HighlightGroup group = FindHighlightGroup(entry.highlightGroupName);
                             return group;
                         }
                     }
@@ -330,9 +333,9 @@ namespace LogExpert.Controls.LogTabWindow
             }
         }
 
-        public void NotifySettingsChanged(object cookie, SettingsFlags flags)
+        public void NotifySettingsChanged(object sender, SettingsFlags flags)
         {
-            if (cookie != this)
+            if (sender != this)
             {
                 NotifyWindowsForChangedPrefs(flags);
             }

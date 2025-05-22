@@ -1,13 +1,16 @@
+using LogExpert.Controls.LogWindow;
+using LogExpert.Core.Classes.Filter;
+
+using NLog;
+
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using LogExpert.Controls.LogWindow;
-using NLog;
 
 namespace LogExpert.Classes.Filter
 {
-    internal class FilterPipe
+    public class FilterPipe
     {
         #region Fields
 

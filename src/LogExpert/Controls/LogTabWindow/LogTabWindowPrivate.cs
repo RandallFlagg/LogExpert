@@ -1,10 +1,15 @@
 ﻿using LogExpert.Classes;
-using LogExpert.Classes.Columnizer;
-using LogExpert.Classes.Persister;
 using LogExpert.Config;
+using LogExpert.Core.Classes;
+using LogExpert.Core.Classes.Columnizer;
+using LogExpert.Core.Classes.Persister;
+using LogExpert.Core.Config;
+using LogExpert.Core.Entities;
+using LogExpert.Core.Enums;
+using LogExpert.Core.EventArgs;
 using LogExpert.Dialogs;
-using LogExpert.Entities;
-using LogExpert.Entities.EventArgs;
+using LogExpert.PluginRegistry.FileSystem;
+using LogExpert.UI.Dialogs;
 
 using System;
 using System.Collections.Generic;
@@ -22,7 +27,7 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace LogExpert.Controls.LogTabWindow
 {
-    internal partial class LogTabWindow
+    public partial class LogTabWindow
     {
         #region Private Methods
 
@@ -65,9 +70,12 @@ namespace LogExpert.Controls.LogTabWindow
 
         private void InitBookmarkWindow()
         {
-            _bookmarkWindow = new BookmarkWindow();
-            _bookmarkWindow.HideOnClose = true;
-            _bookmarkWindow.ShowHint = DockState.DockBottom;
+            _bookmarkWindow = new BookmarkWindow
+            {
+                HideOnClose = true,
+                ShowHint = DockState.DockBottom
+            };
+
             _bookmarkWindow.PreferencesChanged(ConfigManager.Settings.Preferences, false, SettingsFlags.All);
             _bookmarkWindow.VisibleChanged += OnBookmarkWindowVisibleChanged;
             _firstBookmarkWindowShow = true;
@@ -264,7 +272,7 @@ namespace LogExpert.Controls.LogTabWindow
 
                 if (!string.IsNullOrEmpty(persistenceData.fileName))
                 {
-                    IFileSystemPlugin fs = PluginRegistry.Instance.FindFileSystemForUri(persistenceData.fileName);
+                    IFileSystemPlugin fs = PluginRegistry.PluginRegistry.Instance.FindFileSystemForUri(persistenceData.fileName);
                     if (fs != null && !fs.GetType().Equals(typeof(LocalFileSystem)))
                     {
                         return persistenceData.fileName;
@@ -330,10 +338,10 @@ namespace LogExpert.Controls.LogTabWindow
         {
             HighlightDialog dlg = new()
             {
-                KeywordActionList = PluginRegistry.Instance.RegisteredKeywordActions,
+                KeywordActionList = PluginRegistry.PluginRegistry.Instance.RegisteredKeywordActions,
                 Owner = this,
                 TopMost = TopMost,
-                HighlightGroupList = HilightGroupList,
+                HighlightGroupList = HighlightGroupList,
                 PreSelectedGroupName = groupsComboBoxHighlightGroups.Text
             };
 
@@ -341,9 +349,9 @@ namespace LogExpert.Controls.LogTabWindow
 
             if (res == DialogResult.OK)
             {
-                HilightGroupList = dlg.HighlightGroupList;
+                HighlightGroupList = dlg.HighlightGroupList;
                 FillHighlightComboBox();
-                ConfigManager.Settings.hilightGroupList = HilightGroupList;
+                ConfigManager.Settings.Preferences.HighlightGroupList = HighlightGroupList;
                 ConfigManager.Save(SettingsFlags.HighlightSettings);
                 OnHighlightSettingsChanged();
             }
@@ -353,7 +361,7 @@ namespace LogExpert.Controls.LogTabWindow
         {
             string currentGroupName = groupsComboBoxHighlightGroups.Text;
             groupsComboBoxHighlightGroups.Items.Clear();
-            foreach (HilightGroup group in HilightGroupList)
+            foreach (HighlightGroup group in HighlightGroupList)
             {
                 groupsComboBoxHighlightGroups.Items.Add(group.GroupName);
                 if (group.GroupName.Equals(currentGroupName))
@@ -948,7 +956,7 @@ namespace LogExpert.Controls.LogTabWindow
 
             _bookmarkWindow.PreferencesChanged(ConfigManager.Settings.Preferences, false, flags);
 
-            HilightGroupList = ConfigManager.Settings.hilightGroupList;
+            HighlightGroupList = ConfigManager.Settings.Preferences.HighlightGroupList;
             if ((flags & SettingsFlags.HighlightSettings) == SettingsFlags.HighlightSettings)
             {
                 OnHighlightSettingsChanged();
@@ -1073,8 +1081,7 @@ namespace LogExpert.Controls.LogTabWindow
 
             if (sysoutPipe)
             {
-                ILogLineColumnizer columnizer = ColumnizerPicker.DecideColumnizerByName(columnizerName,
-                    PluginRegistry.Instance.RegisteredColumnizers);
+                ILogLineColumnizer columnizer = ColumnizerPicker.DecideColumnizerByName(columnizerName, PluginRegistry.PluginRegistry.Instance.RegisteredColumnizers);
 
                 _logger.Info("Starting external tool with sysout redirection: {0} {1}", cmd, args);
                 startInfo.UseShellExecute = false;
@@ -1121,7 +1128,7 @@ namespace LogExpert.Controls.LogTabWindow
 
         private void CloseAllTabs()
         {
-            IList<Form> closeList = new List<Form>();
+            IList<Form> closeList = [];
             lock (_logWindowList)
             {
                 foreach (DockContent content in dockPanel.Contents)

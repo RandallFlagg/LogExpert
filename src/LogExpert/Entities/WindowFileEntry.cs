@@ -1,24 +1,20 @@
 ﻿using LogExpert.Controls.LogWindow;
 
+using System;
+
 namespace LogExpert.Entities
 {
     /// <summary>
     /// Represents a log file and its window. Used as a kind of handle for menus or list of open files.
     /// </summary>
-    internal class WindowFileEntry
+    public class WindowFileEntry(LogWindow logWindow)
     {
         #region Fields
 
         private const int MAX_LEN = 40;
 
         #endregion
-
         #region cTor
-
-        public WindowFileEntry(LogWindow logWindow)
-        {
-            LogWindow = logWindow;
-        }
 
         #endregion
 
@@ -29,9 +25,10 @@ namespace LogExpert.Entities
             get
             {
                 string title = LogWindow.Text;
+
                 if (title.Length > MAX_LEN)
                 {
-                    title = "..." + title.Substring(title.Length - MAX_LEN);
+                    title = string.Concat("...", title.AsSpan(title.Length - MAX_LEN));
                 }
                 return title;
             }
@@ -40,7 +37,7 @@ namespace LogExpert.Entities
         public string FileName => LogWindow.FileName;
 
 
-        public LogWindow LogWindow { get; }
+        public LogWindow LogWindow { get; } = logWindow;
 
         #endregion
     }
