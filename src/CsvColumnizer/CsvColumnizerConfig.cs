@@ -1,7 +1,9 @@
-﻿using System;
-using System.Globalization;
-using CsvHelper.Configuration;
+﻿using CsvHelper.Configuration;
+
 using Newtonsoft.Json;
+
+using System;
+using System.Globalization;
 
 namespace CsvColumnizer
 {
@@ -13,13 +15,13 @@ namespace CsvColumnizer
         public char CommentChar { get; set; }
 
         public string DelimiterChar { get; set; }
-        
+
         public char EscapeChar { get; set; }
-        
+
         public bool HasFieldNames { get; set; }
-        
+
         public int MinColumns { get; set; }
-        
+
         public char QuoteChar { get; set; }
 
         public int VersionBuild { get; set; }

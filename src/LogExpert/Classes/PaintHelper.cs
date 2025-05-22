@@ -1,8 +1,9 @@
-﻿using LogExpert.Classes.Highlight;
-using LogExpert.Config;
+﻿using LogExpert.Config;
+using LogExpert.Core.Classes.Highlight;
+using LogExpert.Core.Config;
+using LogExpert.Core.Entities;
+using LogExpert.Core.Interface;
 using LogExpert.Dialogs;
-using LogExpert.Entities;
-using LogExpert.Interface;
 
 using NLog;
 
@@ -32,7 +33,7 @@ namespace LogExpert.Classes
 
         #region Public methods
 
-        public static void CellPainting(ILogPaintContext logPaintCtx, DataGridView gridView, int rowIndex,
+        public static void CellPainting(ILogPaintContext logPaintCtx, BufferedDataGridView gridView, int rowIndex,
             DataGridViewCellPaintingEventArgs e)
         {
             if (rowIndex < 0 || e.ColumnIndex < 0)
@@ -43,7 +44,7 @@ namespace LogExpert.Classes
             ILogLine line = logPaintCtx.GetLogLine(rowIndex);
             if (line != null)
             {
-                HilightEntry entry = logPaintCtx.FindHighlightEntry(line, true);
+                HighlightEntry entry = logPaintCtx.FindHighlightEntry(line, true);
                 e.Graphics.SetClip(e.CellBounds);
                 if ((e.State & DataGridViewElementStates.Selected) == DataGridViewElementStates.Selected)
                 {
@@ -63,8 +64,8 @@ namespace LogExpert.Classes
                 }
                 else
                 {
-                    Color bgColor = LogExpert.Config.ColorMode.DockBackgroundColor;
-                    if (!DebugOptions.disableWordHighlight)
+                    Color bgColor = ColorMode.DockBackgroundColor;
+                    if (!DebugOptions.DisableWordHighlight)
                     {
                         if (entry != null)
                         {
@@ -82,7 +83,7 @@ namespace LogExpert.Classes
                     e.PaintBackground(e.ClipBounds, false);
                 }
 
-                if (DebugOptions.disableWordHighlight)
+                if (DebugOptions.DisableWordHighlight)
                 {
                     e.PaintContent(e.CellBounds);
                 }
@@ -93,7 +94,7 @@ namespace LogExpert.Classes
 
                 if (e.ColumnIndex == 0)
                 {
-                    Entities.Bookmark bookmark = logPaintCtx.GetBookmarkForLine(rowIndex);
+                    Bookmark bookmark = logPaintCtx.GetBookmarkForLine(rowIndex);
                     if (bookmark != null)
                     {
                         Rectangle r; // = new Rectangle(e.CellBounds.Left + 2, e.CellBounds.Top + 2, 6, 6);
@@ -120,7 +121,6 @@ namespace LogExpert.Classes
                 e.Handled = true;
             }
         }
-
 
         public static DataGridViewTextBoxColumn CreateMarkerColumn()
         {
@@ -160,7 +160,7 @@ namespace LogExpert.Classes
             return titleColumn;
         }
 
-        public static void SetColumnizer(ILogLineColumnizer columnizer, DataGridView gridView)
+        public static void SetColumnizer(ILogLineColumnizer columnizer, BufferedDataGridView gridView)
         {
             int rowCount = gridView.RowCount;
             int currLine = gridView.CurrentCellAddress.Y;
@@ -199,7 +199,7 @@ namespace LogExpert.Classes
             //AutoResizeColumns(gridView);
         }
 
-        public static void AutoResizeColumns(DataGridView gridView)
+        public static void AutoResizeColumns(BufferedDataGridView gridView)
         {
             try
             {
@@ -223,7 +223,7 @@ namespace LogExpert.Classes
             }
         }
 
-        public static void ApplyDataGridViewPrefs(DataGridView dataGridView, Preferences prefs)
+        public static void ApplyDataGridViewPrefs(BufferedDataGridView dataGridView, Preferences prefs)
         {
             if (dataGridView.Columns.Count > 1)
             {
@@ -290,12 +290,12 @@ namespace LogExpert.Classes
 
         #region Private Methods
 
-        private static void PaintCell(ILogPaintContext logPaintCtx, DataGridViewCellPaintingEventArgs e, DataGridView gridView, bool noBackgroundFill, HilightEntry groundEntry)
+        private static void PaintCell(ILogPaintContext logPaintCtx, DataGridViewCellPaintingEventArgs e, BufferedDataGridView gridView, bool noBackgroundFill, HighlightEntry groundEntry)
         {
             PaintHighlightedCell(logPaintCtx, e, gridView, noBackgroundFill, groundEntry);
         }
 
-        private static void PaintHighlightedCell(ILogPaintContext logPaintCtx, DataGridViewCellPaintingEventArgs e, DataGridView gridView, bool noBackgroundFill, HilightEntry groundEntry)
+        private static void PaintHighlightedCell(ILogPaintContext logPaintCtx, DataGridViewCellPaintingEventArgs e, BufferedDataGridView gridView, bool noBackgroundFill, HighlightEntry groundEntry)
         {
             object value = e.Value ?? string.Empty;
 
@@ -314,7 +314,7 @@ namespace LogExpert.Classes
                     hme.StartPos = 0;
                     hme.Length = column.FullValue.Length;
 
-                    var he = new HilightEntry
+                    var he = new HighlightEntry
                     {
                         SearchText = column.FullValue,
                         ForegroundColor = groundEntry?.ForegroundColor ?? ColorMode.ForeColor,
@@ -427,7 +427,7 @@ namespace LogExpert.Classes
         private static IList<HilightMatchEntry> MergeHighlightMatchEntries(IList<HilightMatchEntry> matchList, HilightMatchEntry groundEntry)
         {
             // Fill an area with lenth of whole text with a default hilight entry
-            HilightEntry[] entryArray = new HilightEntry[groundEntry.Length];
+            HighlightEntry[] entryArray = new HighlightEntry[groundEntry.Length];
             for (int i = 0; i < entryArray.Length; ++i)
             {
                 entryArray[i] = groundEntry.HilightEntry;
@@ -455,7 +455,7 @@ namespace LogExpert.Classes
             IList<HilightMatchEntry> mergedList = new List<HilightMatchEntry>();
             if (entryArray.Length > 0)
             {
-                HilightEntry currentEntry = entryArray[0];
+                HighlightEntry currentEntry = entryArray[0];
                 int lastStartPos = 0;
                 int pos = 0;
                 for (; pos < entryArray.Length; ++pos)

@@ -1,10 +1,12 @@
-﻿using System;
+﻿using LogExpert;
+
+using Renci.SshNet;
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 using System.Xml.Serialization;
-using LogExpert;
-using Renci.SshNet;
 
 namespace SftpFileSystem
 {
@@ -142,8 +144,11 @@ namespace SftpFileSystem
 
         public void ShowConfigForm(object parentPanel)
         {
-            _configDialog = new ConfigDialog(ConfigData);
-            _configDialog.Parent = (Panel)parentPanel;
+            _configDialog = new ConfigDialog(ConfigData)
+            {
+                Parent = (Panel)parentPanel
+            };
+
             _configDialog.Show();
         }
 
@@ -169,7 +174,7 @@ namespace SftpFileSystem
 
         internal Credentials GetCredentials(Uri uri, bool cacheAllowed, bool hidePasswordField)
         {
-            // Synchronized access to the GetCredentials() method prevents multiple login dialogs when loading multiple files at once 
+            // Synchronized access to the GetCredentials() method prevents multiple login dialogs when loading multiple files at once
             // (e.g. on startup). So the user only needs to enter credentials once for the same host.
             lock (this)
             {
@@ -209,8 +214,11 @@ namespace SftpFileSystem
 
                 if (userName == null || password == null)
                 {
-                    LoginDialog dlg = new(uri.Host, usersForHost, hidePasswordField);
-                    dlg.Username = userName;
+                    LoginDialog dlg = new(uri.Host, usersForHost, hidePasswordField)
+                    {
+                        Username = userName
+                    };
+
                     if (DialogResult.OK == dlg.ShowDialog())
                     {
                         password = dlg.Password;

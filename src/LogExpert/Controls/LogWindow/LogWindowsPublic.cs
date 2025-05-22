@@ -1,13 +1,17 @@
 ﻿using LogExpert.Classes;
-using LogExpert.Classes.Bookmark;
-using LogExpert.Classes.Columnizer;
 using LogExpert.Classes.Filter;
-using LogExpert.Classes.Highlight;
-using LogExpert.Classes.Log;
-using LogExpert.Classes.Persister;
 using LogExpert.Config;
-using LogExpert.Entities;
-using LogExpert.Entities.EventArgs;
+using LogExpert.Core.Classes;
+using LogExpert.Core.Classes.Bookmark;
+using LogExpert.Core.Classes.Columnizer;
+using LogExpert.Core.Classes.Filter;
+using LogExpert.Core.Classes.Highlight;
+using LogExpert.Core.Classes.Persister;
+using LogExpert.Core.Config;
+using LogExpert.Core.Entities;
+using LogExpert.Core.EventArgs;
+using LogExpert.Dialogs;
+
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -18,7 +22,7 @@ using System.Windows.Forms;
 
 namespace LogExpert.Controls.LogWindow
 {
-    internal partial class LogWindow
+    public partial class LogWindow
     {
         #region Public methods
 
@@ -56,7 +60,10 @@ namespace LogExpert.Controls.LogWindow
                         {
                             if (_reloadMemento == null)
                             {
-                                columnizer = ColumnizerPicker.CloneColumnizer(columnizer);
+                                //TODO this needs to be refactored
+                                var directory = ConfigManager.Settings.Preferences.PortableMode ? ConfigManager.PortableModeDir : ConfigManager.ConfigDir;
+
+                                columnizer = ColumnizerPicker.CloneColumnizer(columnizer, directory);
                             }
                         }
                         else
@@ -79,7 +86,7 @@ namespace LogExpert.Controls.LogWindow
 
                 try
                 {
-                    _logFileReader = new LogfileReader(fileName, EncodingOptions, IsMultiFile, Preferences.bufferCount, Preferences.linesPerBuffer, _multiFileOptions)
+                    _logFileReader = new(fileName, EncodingOptions, IsMultiFile, Preferences.bufferCount, Preferences.linesPerBuffer, _multiFileOptions)
                     {
                         UseNewReader = !Preferences.useLegacyReader
                     };
@@ -121,7 +128,7 @@ namespace LogExpert.Controls.LogWindow
                 {
                     if (Preferences.autoPick)
                     {
-                        ILogLineColumnizer newColumnizer = ColumnizerPicker.FindBetterColumnizer(FileName, _logFileReader, CurrentColumnizer);
+                        ILogLineColumnizer newColumnizer = ColumnizerPicker.FindBetterColumnizer(FileName, _logFileReader, CurrentColumnizer, PluginRegistry.PluginRegistry.Instance.RegisteredColumnizers);
 
                         if (newColumnizer != null)
                         {
@@ -154,8 +161,11 @@ namespace LogExpert.Controls.LogWindow
             EncodingOptions = encodingOptions;
             _columnCache = new ColumnCache();
 
-            _logFileReader = new LogfileReader(fileNames, EncodingOptions, Preferences.bufferCount, Preferences.linesPerBuffer, _multiFileOptions);
-            _logFileReader.UseNewReader = !Preferences.useLegacyReader;
+            _logFileReader = new(fileNames, EncodingOptions, Preferences.bufferCount, Preferences.linesPerBuffer, _multiFileOptions)
+            {
+                UseNewReader = !Preferences.useLegacyReader
+            };
+
             RegisterLogFileReaderEvents();
             _logFileReader.StartMonitoring();
             FileName = fileNames[^1];
@@ -207,24 +217,27 @@ namespace LogExpert.Controls.LogWindow
 
         public PersistenceData GetPersistenceData()
         {
-            PersistenceData persistenceData = new();
-            persistenceData.bookmarkList = _bookmarkProvider.BookmarkList;
-            persistenceData.rowHeightList = _rowHeightList;
-            persistenceData.multiFile = IsMultiFile;
-            persistenceData.multiFilePattern = _multiFileOptions.FormatPattern;
-            persistenceData.multiFileMaxDays = _multiFileOptions.MaxDayTry;
-            persistenceData.currentLine = dataGridView.CurrentCellAddress.Y;
-            persistenceData.firstDisplayedLine = dataGridView.FirstDisplayedScrollingRowIndex;
-            persistenceData.filterVisible = !splitContainerLogWindow.Panel2Collapsed;
-            persistenceData.filterAdvanced = !advancedFilterSplitContainer.Panel1Collapsed;
-            persistenceData.filterPosition = splitContainerLogWindow.SplitterDistance;
-            persistenceData.followTail = _guiStateArgs.FollowTail;
-            persistenceData.fileName = FileName;
-            persistenceData.tabName = Text;
-            persistenceData.sessionFileName = SessionFileName;
-            persistenceData.columnizerName = CurrentColumnizer.GetName();
-            persistenceData.lineCount = _logFileReader.LineCount;
-            _filterParams.isFilterTail = filterTailCheckBox.Checked; // this option doesnt need a press on 'search'
+            PersistenceData persistenceData = new()
+            {
+                bookmarkList = _bookmarkProvider.BookmarkList,
+                rowHeightList = _rowHeightList,
+                multiFile = IsMultiFile,
+                multiFilePattern = _multiFileOptions.FormatPattern,
+                multiFileMaxDays = _multiFileOptions.MaxDayTry,
+                currentLine = dataGridView.CurrentCellAddress.Y,
+                firstDisplayedLine = dataGridView.FirstDisplayedScrollingRowIndex,
+                filterVisible = !splitContainerLogWindow.Panel2Collapsed,
+                filterAdvanced = !advancedFilterSplitContainer.Panel1Collapsed,
+                filterPosition = splitContainerLogWindow.SplitterDistance,
+                followTail = _guiStateArgs.FollowTail,
+                fileName = FileName,
+                tabName = Text,
+                sessionFileName = SessionFileName,
+                columnizerName = CurrentColumnizer.GetName(),
+                lineCount = _logFileReader.LineCount
+            };
+
+            _filterParams.IsFilterTail = filterTailCheckBox.Checked; // this option doesnt need a press on 'search'
 
             if (Preferences.saveFilters)
             {
@@ -233,9 +246,11 @@ namespace LogExpert.Controls.LogWindow
 
                 foreach (FilterPipe filterPipe in _filterPipeList)
                 {
-                    FilterTabData data = new();
-                    data.persistenceData = filterPipe.OwnLogWindow.GetPersistenceData();
-                    data.filterParams = filterPipe.FilterParams;
+                    FilterTabData data = new()
+                    {
+                        PersistenceData = filterPipe.OwnLogWindow.GetPersistenceData(),
+                        FilterParams = filterPipe.FilterParams
+                    };
                     persistenceData.filterTabDataList.Add(data);
                 }
             }
@@ -307,19 +322,28 @@ namespace LogExpert.Controls.LogWindow
 
         public void ForceColumnizer(ILogLineColumnizer columnizer)
         {
-            _forcedColumnizer = ColumnizerPicker.CloneColumnizer(columnizer);
+            //TODO this needs to be refactored
+            var directory = ConfigManager.Settings.Preferences.PortableMode ? ConfigManager.PortableModeDir : ConfigManager.ConfigDir;
+
+            _forcedColumnizer = ColumnizerPicker.CloneColumnizer(columnizer, directory);
             SetColumnizer(_forcedColumnizer);
         }
 
         public void ForceColumnizerForLoading(ILogLineColumnizer columnizer)
         {
-            _forcedColumnizerForLoading = ColumnizerPicker.CloneColumnizer(columnizer);
+            //TODO this needs to be refactored
+            var directory = ConfigManager.Settings.Preferences.PortableMode ? ConfigManager.PortableModeDir : ConfigManager.ConfigDir;
+
+            _forcedColumnizerForLoading = ColumnizerPicker.CloneColumnizer(columnizer, directory);
         }
 
         public void PreselectColumnizer(string columnizerName)
         {
-            ILogLineColumnizer columnizer = ColumnizerPicker.FindColumnizerByName(columnizerName, PluginRegistry.Instance.RegisteredColumnizers);
-            PreSelectColumnizer(ColumnizerPicker.CloneColumnizer(columnizer));
+            //TODO this needs to be refactored
+            var directory = ConfigManager.Settings.Preferences.PortableMode ? ConfigManager.PortableModeDir : ConfigManager.ConfigDir;
+
+            ILogLineColumnizer columnizer = ColumnizerPicker.FindColumnizerByName(columnizerName, PluginRegistry.PluginRegistry.Instance.RegisteredColumnizers);
+            PreSelectColumnizer(ColumnizerPicker.CloneColumnizer(columnizer, directory));
         }
 
         public void ColumnizerConfigChanged()
@@ -327,7 +351,7 @@ namespace LogExpert.Controls.LogWindow
             SetColumnizerInternal(CurrentColumnizer);
         }
 
-        public void SetColumnizer(ILogLineColumnizer columnizer, DataGridView gridView)
+        public void SetColumnizer(ILogLineColumnizer columnizer, BufferedDataGridView gridView)
         {
             PaintHelper.SetColumnizer(columnizer, gridView);
 
@@ -383,7 +407,7 @@ namespace LogExpert.Controls.LogWindow
             return Column.EmptyColumn;
         }
 
-        public void CellPainting(DataGridView gridView, int rowIndex, DataGridViewCellPaintingEventArgs e)
+        public void CellPainting(BufferedDataGridView gridView, int rowIndex, DataGridViewCellPaintingEventArgs e)
         {
             if (rowIndex < 0 || e.ColumnIndex < 0)
             {
@@ -395,7 +419,7 @@ namespace LogExpert.Controls.LogWindow
 
             if (line != null)
             {
-                HilightEntry entry = FindFirstNoWordMatchHilightEntry(line);
+                HighlightEntry entry = FindFirstNoWordMatchHilightEntry(line);
                 e.Graphics.SetClip(e.CellBounds);
 
                 if ((e.State & DataGridViewElementStates.Selected) == DataGridViewElementStates.Selected)
@@ -421,7 +445,7 @@ namespace LogExpert.Controls.LogWindow
                 {
                     Color bgColor = ColorMode.DockBackgroundColor;
 
-                    if (!DebugOptions.disableWordHighlight)
+                    if (!DebugOptions.DisableWordHighlight)
                     {
                         if (entry != null)
                         {
@@ -441,7 +465,7 @@ namespace LogExpert.Controls.LogWindow
                     e.PaintBackground(e.ClipBounds, false);
                 }
 
-                if (DebugOptions.disableWordHighlight)
+                if (DebugOptions.DisableWordHighlight)
                 {
                     e.PaintContent(e.CellBounds);
                 }
@@ -464,9 +488,11 @@ namespace LogExpert.Controls.LogWindow
 
                         if (bookmark.Text.Length > 0)
                         {
-                            StringFormat format = new();
-                            format.LineAlignment = StringAlignment.Center;
-                            format.Alignment = StringAlignment.Center;
+                            StringFormat format = new()
+                            {
+                                LineAlignment = StringAlignment.Center,
+                                Alignment = StringAlignment.Center
+                            };
                             Brush brush2 = new SolidBrush(Color.FromArgb(255, 190, 100, 0));
                             Font font = new("Courier New", Preferences.fontSize, FontStyle.Bold);
                             e.Graphics.DrawString("i", font, brush2, new RectangleF(r.Left, r.Top, r.Width, r.Height),
@@ -484,7 +510,7 @@ namespace LogExpert.Controls.LogWindow
 
         public void OnDataGridView_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)
         {
-            DataGridView gridView = (DataGridView)sender;
+            BufferedDataGridView gridView = (BufferedDataGridView)sender;
             CellPainting(gridView, e.RowIndex, e);
         }
 
@@ -494,12 +520,12 @@ namespace LogExpert.Controls.LogWindow
         /// <param name="line"></param>
         /// <param name="noWordMatches"></param>
         /// <returns></returns>
-        public HilightEntry FindHighlightEntry(ITextValue line, bool noWordMatches)
+        public HighlightEntry FindHighlightEntry(ITextValue line, bool noWordMatches)
         {
             // first check the temp entries
             lock (_tempHighlightEntryListLock)
             {
-                foreach (HilightEntry entry in _tempHighlightEntryList)
+                foreach (HighlightEntry entry in _tempHighlightEntryList)
                 {
                     if (noWordMatches && entry.IsWordMatch)
                     {
@@ -514,7 +540,7 @@ namespace LogExpert.Controls.LogWindow
 
             lock (_currentHighlightGroupLock)
             {
-                foreach (HilightEntry entry in _currentHighlightGroup.HilightEntryList)
+                foreach (HighlightEntry entry in _currentHighlightGroup.HighlightEntryList)
                 {
                     if (noWordMatches && entry.IsWordMatch)
                     {
@@ -536,7 +562,7 @@ namespace LogExpert.Controls.LogWindow
             {
                 lock (_currentHighlightGroupLock)
                 {
-                    GetHighlightEntryMatches(column, _currentHighlightGroup.HilightEntryList, resultList);
+                    GetHighlightEntryMatches(column, _currentHighlightGroup.HighlightEntryList, resultList);
                 }
                 lock (_tempHighlightEntryList)
                 {
@@ -585,13 +611,13 @@ namespace LogExpert.Controls.LogWindow
             GuiStateUpdate(this, _guiStateArgs);
             SearchParams searchParams = _parentLogTabWin.SearchParams;
 
-            if ((searchParams.isForward || searchParams.isFindNext) && !searchParams.isShiftF3Pressed)
+            if ((searchParams.IsForward || searchParams.IsFindNext) && !searchParams.IsShiftF3Pressed)
             {
-                searchParams.currentLine = dataGridView.CurrentCellAddress.Y + 1;
+                searchParams.CurrentLine = dataGridView.CurrentCellAddress.Y + 1;
             }
             else
             {
-                searchParams.currentLine = dataGridView.CurrentCellAddress.Y - 1;
+                searchParams.CurrentLine = dataGridView.CurrentCellAddress.Y - 1;
             }
 
             _currentSearchParams = searchParams; // remember for async "not found" messages
@@ -682,14 +708,14 @@ namespace LogExpert.Controls.LogWindow
 
             switch (e.KeyCode)
             {
-                case Keys.F3 when _parentLogTabWin.SearchParams?.searchText == null || _parentLogTabWin.SearchParams.searchText.Length == 0:
+                case Keys.F3 when _parentLogTabWin.SearchParams?.SearchText == null || _parentLogTabWin.SearchParams.SearchText.Length == 0:
                     {
                         return;
                     }
                 case Keys.F3:
                     {
-                        _parentLogTabWin.SearchParams.isFindNext = true;
-                        _parentLogTabWin.SearchParams.isShiftF3Pressed = (e.Modifiers & Keys.Shift) == Keys.Shift;
+                        _parentLogTabWin.SearchParams.IsFindNext = true;
+                        _parentLogTabWin.SearchParams.IsShiftF3Pressed = (e.Modifiers & Keys.Shift) == Keys.Shift;
                         StartSearch();
                         break;
                     }
@@ -854,7 +880,7 @@ namespace LogExpert.Controls.LogWindow
 
         public void ToggleBookmark()
         {
-            DataGridView gridView;
+            BufferedDataGridView gridView;
             int lineNum;
 
             if (filterGridView.Focused)
@@ -1168,8 +1194,10 @@ namespace LogExpert.Controls.LogWindow
                 lineNumList.Sort();
                 // create dummy FilterPipe for connecting line numbers to original window
                 // setting IsStopped to true prevents further filter processing
-                FilterPipe pipe = new FilterPipe(new FilterParams(), this);
-                pipe.IsStopped = true;
+                FilterPipe pipe = new FilterPipe(new FilterParams(), this)
+                {
+                    IsStopped = true
+                };
                 WritePipeToTab(pipe, lineNumList, Text + "->C", null);
             }
             else
@@ -1213,9 +1241,11 @@ namespace LogExpert.Controls.LogWindow
         {
             SavePersistenceData(false);
 
-            _reloadMemento = new ReloadMemento();
-            _reloadMemento.currentLine = dataGridView.CurrentCellAddress.Y;
-            _reloadMemento.firstDisplayedLine = dataGridView.FirstDisplayedScrollingRowIndex;
+            _reloadMemento = new ReloadMemento
+            {
+                CurrentLine = dataGridView.CurrentCellAddress.Y,
+                FirstDisplayedLine = dataGridView.FirstDisplayedScrollingRowIndex
+            };
             _forcedColumnizerForLoading = CurrentColumnizer;
 
             if (_fileNames == null || !IsMultiFile)
@@ -1584,7 +1614,7 @@ namespace LogExpert.Controls.LogWindow
         {
             if (dataGridView.SelectionMode == DataGridViewSelectionMode.FullRowSelect)
             {
-                List<int> lineNumList = new List<int>();
+                List<int> lineNumList = [];
                 foreach (DataGridViewRow row in dataGridView.SelectedRows)
                 {
                     if (row.Index != -1)
@@ -1593,20 +1623,20 @@ namespace LogExpert.Controls.LogWindow
                     }
                 }
                 lineNumList.Sort();
-                patternArgs.startLine = lineNumList[0];
-                patternArgs.endLine = lineNumList[lineNumList.Count - 1];
+                patternArgs.StartLine = lineNumList[0];
+                patternArgs.EndLine = lineNumList[^1];
             }
             else
             {
                 if (dataGridView.CurrentCellAddress.Y != -1)
                 {
-                    patternArgs.startLine = dataGridView.CurrentCellAddress.Y;
+                    patternArgs.StartLine = dataGridView.CurrentCellAddress.Y;
                 }
                 else
                 {
-                    patternArgs.startLine = 0;
+                    patternArgs.StartLine = 0;
                 }
-                patternArgs.endLine = dataGridView.RowCount - 1;
+                patternArgs.EndLine = dataGridView.RowCount - 1;
             }
         }
 
@@ -1618,13 +1648,16 @@ namespace LogExpert.Controls.LogWindow
 
         public void ExportBookmarkList()
         {
-            SaveFileDialog dlg = new SaveFileDialog();
-            dlg.Title = "Choose a file to save bookmarks into";
-            dlg.AddExtension = true;
-            dlg.DefaultExt = "csv";
-            dlg.Filter = "CSV file (*.csv)|*.csv|Bookmark file (*.bmk)|*.bmk";
-            dlg.FilterIndex = 1;
-            dlg.FileName = Path.GetFileNameWithoutExtension(FileName);
+            SaveFileDialog dlg = new()
+            {
+                Title = "Choose a file to save bookmarks into",
+                AddExtension = true,
+                DefaultExt = "csv",
+                Filter = "CSV file (*.csv)|*.csv|Bookmark file (*.bmk)|*.bmk",
+                FilterIndex = 1,
+                FileName = Path.GetFileNameWithoutExtension(FileName)
+            };
+
             if (dlg.ShowDialog() == DialogResult.OK)
             {
                 try
@@ -1642,20 +1675,22 @@ namespace LogExpert.Controls.LogWindow
 
         public void ImportBookmarkList()
         {
-            OpenFileDialog dlg = new OpenFileDialog();
-            dlg.Title = "Choose a file to load bookmarks from";
-            dlg.AddExtension = true;
-            dlg.DefaultExt = "csv";
-            dlg.DefaultExt = "csv";
-            dlg.Filter = "CSV file (*.csv)|*.csv|Bookmark file (*.bmk)|*.bmk";
-            dlg.FilterIndex = 1;
-            dlg.FileName = Path.GetFileNameWithoutExtension(FileName);
+            OpenFileDialog dlg = new()
+            {
+                Title = "Choose a file to load bookmarks from",
+                AddExtension = true,
+                DefaultExt = "csv",
+                Filter = "CSV file (*.csv)|*.csv|Bookmark file (*.bmk)|*.bmk",
+                FilterIndex = 1,
+                FileName = Path.GetFileNameWithoutExtension(FileName)
+            };
+
             if (dlg.ShowDialog() == DialogResult.OK)
             {
                 try
                 {
                     // add to the existing bookmarks
-                    SortedList<int, Bookmark> newBookmarks = new SortedList<int, Bookmark>();
+                    SortedList<int, Bookmark> newBookmarks = [];
                     BookmarkExporter.ImportBookmarkList(FileName, dlg.FileName, newBookmarks);
 
                     // Add (or replace) to existing bookmark list
@@ -1687,7 +1722,7 @@ namespace LogExpert.Controls.LogWindow
                 catch (IOException e)
                 {
                     _logger.Error(e);
-                    MessageBox.Show("Error while importing bookmark list: " + e.Message, "LogExpert");
+                    MessageBox.Show($"Error while importing bookmark list: {e.Message}", "LogExpert");
                 }
             }
         }
@@ -1732,13 +1767,13 @@ namespace LogExpert.Controls.LogWindow
                 _currentHighlightGroup = _parentLogTabWin.FindHighlightGroup(groupName);
                 if (_currentHighlightGroup == null)
                 {
-                    if (_parentLogTabWin.HilightGroupList.Count > 0)
+                    if (_parentLogTabWin.HighlightGroupList.Count > 0)
                     {
-                        _currentHighlightGroup = _parentLogTabWin.HilightGroupList[0];
+                        _currentHighlightGroup = _parentLogTabWin.HighlightGroupList[0];
                     }
                     else
                     {
-                        _currentHighlightGroup = new HilightGroup();
+                        _currentHighlightGroup = new HighlightGroup();
                     }
                 }
                 _guiStateArgs.HighlightGroupName = _currentHighlightGroup.GroupName;

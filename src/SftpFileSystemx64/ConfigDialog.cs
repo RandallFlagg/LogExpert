@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Runtime.Versioning;
 using System.Windows.Forms;
 
@@ -11,6 +12,9 @@ namespace SftpFileSystem
 
         public ConfigDialog(ConfigData configData)
         {
+            SuspendLayout();
+            AutoScaleDimensions = new SizeF(96F, 96F);
+            AutoScaleMode = AutoScaleMode.Dpi;
             InitializeComponent();
             TopLevel = false;
             ConfigData = configData;
@@ -18,6 +22,7 @@ namespace SftpFileSystem
             radioBtnPuttyKey.Checked = ConfigData.KeyType == KeyType.Putty;
             radioBtnSSHKey.Checked = ConfigData.KeyType == KeyType.Ssh;
             lblFile.Text = ConfigData.KeyFile;
+            ResumeLayout();
         }
 
         #endregion

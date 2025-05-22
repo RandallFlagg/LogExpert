@@ -1,10 +1,13 @@
 ﻿using JsonColumnizer;
-using LogExpert.Classes;
-using LogExpert.Classes.Columnizer;
+
 using LogExpert.Classes.Log;
-using LogExpert.Entities;
+using LogExpert.Core.Classes.Columnizer;
+using LogExpert.Core.Entities;
+
 using Moq;
+
 using NUnit.Framework;
+
 using System;
 using System.IO;
 
@@ -55,7 +58,7 @@ namespace LogExpert.Tests
                 LineNumber = 4
             });
 
-            var result = ColumnizerPicker.FindColumnizer(path, autoLogLineColumnizerCallbackMock.Object);
+            var result = ColumnizerPicker.FindColumnizer(path, autoLogLineColumnizerCallbackMock.Object, PluginRegistry.PluginRegistry.Instance.RegisteredColumnizers);
 
             Assert.That(result.GetName(), Is.EqualTo(expectedColumnizerName));
         }
@@ -74,8 +77,8 @@ namespace LogExpert.Tests
             autoColumnizer.Setup(a => a.GetName()).Returns("Auto Columnizer");
 
             // TODO: When DI container is ready, we can mock this set up.
-            PluginRegistry.Instance.RegisteredColumnizers.Add(new JsonCompactColumnizer());
-            var result = ColumnizerPicker.FindReplacementForAutoColumnizer(fileName, reader, autoColumnizer.Object);
+            PluginRegistry.PluginRegistry.Instance.RegisteredColumnizers.Add(new JsonCompactColumnizer());
+            var result = ColumnizerPicker.FindReplacementForAutoColumnizer(fileName, reader, autoColumnizer.Object, PluginRegistry.PluginRegistry.Instance.RegisteredColumnizers);
 
             Assert.That(columnizerType, Is.EqualTo(result.GetType()));
         }
@@ -87,9 +90,8 @@ namespace LogExpert.Tests
             string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName);
 
             // TODO: When DI container is ready, we can mock this set up.
-            PluginRegistry.Instance.RegisteredColumnizers.Add(new JsonCompactColumnizer());
-            var result = ColumnizerPicker.DecideColumnizerByName(fileName,
-                PluginRegistry.Instance.RegisteredColumnizers);
+            PluginRegistry.PluginRegistry.Instance.RegisteredColumnizers.Add(new JsonCompactColumnizer());
+            var result = ColumnizerPicker.DecideColumnizerByName(fileName, PluginRegistry.PluginRegistry.Instance.RegisteredColumnizers);
 
             Assert.That(columnizerType, Is.EqualTo(result.GetType()));
         }
@@ -102,10 +104,9 @@ namespace LogExpert.Tests
             string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, columnizerName);
 
             // TODO: When DI container is ready, we can mock this set up.
-            PluginRegistry.Instance.RegisteredColumnizers.Add(new JsonColumnizer.JsonColumnizer());
+            PluginRegistry.PluginRegistry.Instance.RegisteredColumnizers.Add(new JsonColumnizer.JsonColumnizer());
 
-            var result = ColumnizerPicker.DecideColumnizerByName(columnizerName,
-                PluginRegistry.Instance.RegisteredColumnizers);
+            var result = ColumnizerPicker.DecideColumnizerByName(columnizerName, PluginRegistry.PluginRegistry.Instance.RegisteredColumnizers);
 
             Assert.That(columnizerType, Is.EqualTo(result.GetType()));
         }

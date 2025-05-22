@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
 namespace LogExpert
 {
@@ -19,34 +18,37 @@ namespace LogExpert
         {
             int start = 0;
             int end = 0;
-            if (param.StartsWith("\""))
+
+            if (param.StartsWith('"'))
             {
                 start = 1;
-                end = param.IndexOf("\"", start, StringComparison.Ordinal);
+                end = param.IndexOf('"', start);
             }
             else
             {
-                end = param.IndexOf(" ", StringComparison.Ordinal);
+                end = param.IndexOf(' ');
             }
+
             if (end == -1)
             {
                 end = param.Length;
             }
-            string procName = param.Substring(start, end - start);
-            
-            lock(_callbackLock)
+
+            string procName = param[start..end];
+
+            lock (_callbackLock)
             {
-                string parameters = param.Substring(end).Trim();
+                string parameters = param[end..].Trim();
                 parameters = parameters.Replace("%F", callback.GetFileName());
                 parameters = parameters.Replace("%K", keyword);
-                
+
                 int lineNumber = callback.GetLineNum(); //Line Numbers start at 0, but are displayed (+1)
                 string logline = callback.GetLogLine(lineNumber).FullLine;
                 parameters = parameters.Replace("%L", string.Empty + lineNumber);
                 parameters = parameters.Replace("%T", callback.GetTabTitle());
                 parameters = parameters.Replace("%C", logline);
 
-                Process explorer = new Process();
+                Process explorer = new();
                 explorer.StartInfo.FileName = procName;
                 explorer.StartInfo.Arguments = parameters;
                 explorer.StartInfo.UseShellExecute = false;

@@ -1,5 +1,5 @@
 ﻿using LogExpert.Dialogs;
-using LogExpert.Extensions.Forms;
+using LogExpert.UI.Extensions.Forms;
 
 using System;
 using System.Drawing;

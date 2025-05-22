@@ -1,10 +1,12 @@
-﻿using System;
+﻿using LogExpert.Core.Classes;
+using LogExpert.Core.EventArgs;
+using LogExpert.Dialogs;
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
-using LogExpert.Classes;
-using LogExpert.Entities.EventArgs;
 
 namespace LogExpert.Controls
 {
@@ -32,7 +34,7 @@ namespace LogExpert.Controls
         {
             this.logWindow = logWindow;
             InitializeComponent();
-            this.recalcButton.Enabled = false;
+            recalcButton.Enabled = false;
         }
 
         #endregion
@@ -42,29 +44,29 @@ namespace LogExpert.Controls
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public int Fuzzy
         {
-            set { this.fuzzyKnobControl.Value = value; }
-            get { return this.fuzzyKnobControl.Value; }
+            set { fuzzyKnobControl.Value = value; }
+            get { return fuzzyKnobControl.Value; }
         }
 
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public int MaxDiff
         {
-            set { this.maxDiffKnobControl.Value = value; }
-            get { return this.maxDiffKnobControl.Value; }
+            set { maxDiffKnobControl.Value = value; }
+            get { return maxDiffKnobControl.Value; }
         }
 
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public int MaxMisses
         {
-            set { this.maxMissesKnobControl.Value = value; }
-            get { return this.maxMissesKnobControl.Value; }
+            set { maxMissesKnobControl.Value = value; }
+            get { return maxMissesKnobControl.Value; }
         }
 
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public int Weight
         {
-            set { this.weigthKnobControl.Value = value; }
-            get { return this.weigthKnobControl.Value; }
+            set { weigthKnobControl.Value = value; }
+            get { return weigthKnobControl.Value; }
         }
 
         #endregion
@@ -98,17 +100,17 @@ namespace LogExpert.Controls
                 //  singeList.Add(block);
                 //}
             }
-            this.blockList.Add(singeList);
-            this.Invoke(new MethodInvoker(SetBlockListGuiStuff));
+            blockList.Add(singeList);
+            Invoke(new MethodInvoker(SetBlockListGuiStuff));
         }
 
 
         public void SetColumnizer(ILogLineColumnizer columnizer)
         {
-            this.logWindow.SetColumnizer(columnizer, this.patternHitsDataGridView);
-            this.logWindow.SetColumnizer(columnizer, this.contentDataGridView);
-            this.patternHitsDataGridView.Columns[0].Width = 20;
-            this.contentDataGridView.Columns[0].Width = 20;
+            logWindow.SetColumnizer(columnizer, patternHitsDataGridView);
+            logWindow.SetColumnizer(columnizer, contentDataGridView);
+            patternHitsDataGridView.Columns[0].Width = 20;
+            contentDataGridView.Columns[0].Width = 20;
 
             DataGridViewTextBoxColumn blockInfoColumn = new();
             blockInfoColumn.HeaderText = "Weight";
@@ -126,8 +128,8 @@ namespace LogExpert.Controls
             contentInfoColumn.ReadOnly = true;
             contentInfoColumn.Width = 50;
 
-            this.patternHitsDataGridView.Columns.Insert(1, blockInfoColumn);
-            this.contentDataGridView.Columns.Insert(1, contentInfoColumn);
+            patternHitsDataGridView.Columns.Insert(1, blockInfoColumn);
+            contentDataGridView.Columns.Insert(1, contentInfoColumn);
         }
 
         public void SetFont(string fontName, float fontSize)
@@ -136,11 +138,11 @@ namespace LogExpert.Controls
             int lineSpacing = font.FontFamily.GetLineSpacing(FontStyle.Regular);
             float lineSpacingPixel = font.Size * lineSpacing / font.FontFamily.GetEmHeight(FontStyle.Regular);
 
-            this.patternHitsDataGridView.DefaultCellStyle.Font = font;
-            this.contentDataGridView.DefaultCellStyle.Font = font;
+            patternHitsDataGridView.DefaultCellStyle.Font = font;
+            contentDataGridView.DefaultCellStyle.Font = font;
             //this.lineHeight = font.Height + 4;
-            this.patternHitsDataGridView.RowTemplate.Height = font.Height + 4;
-            this.contentDataGridView.RowTemplate.Height = font.Height + 4;
+            patternHitsDataGridView.RowTemplate.Height = font.Height + 4;
+            contentDataGridView.RowTemplate.Height = font.Height + 4;
         }
 
         #endregion
@@ -149,25 +151,25 @@ namespace LogExpert.Controls
 
         private void SetBlockListGuiStuff()
         {
-            this.patternHitsDataGridView.RowCount = 0;
-            this.blockCountLabel.Text = "0";
-            this.contentDataGridView.RowCount = 0;
-            this.blockLinesLabel.Text = "0";
-            this.recalcButton.Enabled = true;
-            this.setRangeButton.Enabled = true;
-            if (this.blockList.Count > 0)
+            patternHitsDataGridView.RowCount = 0;
+            blockCountLabel.Text = "0";
+            contentDataGridView.RowCount = 0;
+            blockLinesLabel.Text = "0";
+            recalcButton.Enabled = true;
+            setRangeButton.Enabled = true;
+            if (blockList.Count > 0)
             {
-                SetCurrentList(this.blockList[0]);
+                SetCurrentList(blockList[0]);
             }
         }
 
         private void SetCurrentList(List<PatternBlock> patternList)
         {
-            this.patternHitsDataGridView.RowCount = 0;
-            this.currentList = patternList;
-            this.patternHitsDataGridView.RowCount = this.currentList.Count;
-            this.patternHitsDataGridView.Refresh();
-            this.blockCountLabel.Text = "" + this.currentList.Count;
+            patternHitsDataGridView.RowCount = 0;
+            currentList = patternList;
+            patternHitsDataGridView.RowCount = currentList.Count;
+            patternHitsDataGridView.Refresh();
+            blockCountLabel.Text = "" + currentList.Count;
         }
 
         private int GetLineForHitGrid(int rowIndex)
@@ -190,7 +192,7 @@ namespace LogExpert.Controls
 
         private void patternHitsDataGridView_CellValueNeeded(object sender, DataGridViewCellValueEventArgs e)
         {
-            if (this.currentList == null || e.RowIndex < 0)
+            if (currentList == null || e.RowIndex < 0)
             {
                 return;
             }
@@ -206,26 +208,26 @@ namespace LogExpert.Controls
                 {
                     colIndex--; // correct the additional inserted col
                 }
-                e.Value = this.logWindow.GetCellValue(rowIndex, colIndex);
+                e.Value = logWindow.GetCellValue(rowIndex, colIndex);
             }
         }
 
         private void patternHitsDataGridView_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)
         {
-            if (this.currentList == null || e.RowIndex < 0)
+            if (currentList == null || e.RowIndex < 0)
             {
                 return;
             }
             if (e.ColumnIndex == 1)
             {
                 e.PaintBackground(e.CellBounds, false);
-                int selCount = this.patternArgs.endLine - this.patternArgs.startLine;
-                int maxWeight = this.patternArgs.maxDiffInBlock * selCount + selCount;
+                int selCount = patternArgs.EndLine - patternArgs.StartLine;
+                int maxWeight = patternArgs.MaxDiffInBlock * selCount + selCount;
                 if (maxWeight > 0)
                 {
-                    int width = (int) ((double) (int) e.Value / (double) maxWeight * (double) e.CellBounds.Width);
+                    int width = (int)((double)(int)e.Value / (double)maxWeight * (double)e.CellBounds.Width);
                     Rectangle rect = new(e.CellBounds.X, e.CellBounds.Y, width, e.CellBounds.Height);
-                    int alpha = 90 + (int) ((double) (int) e.Value / (double) maxWeight * (double) 165);
+                    int alpha = 90 + (int)((double)(int)e.Value / (double)maxWeight * (double)165);
                     Color color = Color.FromArgb(alpha, 170, 180, 150);
                     Brush brush = new SolidBrush(color);
                     rect.Inflate(-2, -1);
@@ -237,9 +239,9 @@ namespace LogExpert.Controls
             }
             else
             {
-                DataGridView gridView = (DataGridView) sender;
+                BufferedDataGridView gridView = (BufferedDataGridView)sender;
                 int rowIndex = GetLineForHitGrid(e.RowIndex);
-                this.logWindow.CellPainting(gridView, rowIndex, e);
+                logWindow.CellPainting(gridView, rowIndex, e);
             }
         }
 
@@ -254,25 +256,25 @@ namespace LogExpert.Controls
 
         private void patternHitsDataGridView_CurrentCellChanged(object sender, EventArgs e)
         {
-            if (this.currentList == null || patternHitsDataGridView.CurrentRow == null)
+            if (currentList == null || patternHitsDataGridView.CurrentRow == null)
             {
                 return;
             }
-            if (patternHitsDataGridView.CurrentRow.Index > this.currentList.Count - 1)
+            if (patternHitsDataGridView.CurrentRow.Index > currentList.Count - 1)
             {
                 return;
             }
-            this.contentDataGridView.RowCount = 0;
-            this.currentBlock = this.currentList[patternHitsDataGridView.CurrentRow.Index];
-            this.contentDataGridView.RowCount = this.currentBlock.targetEnd - this.currentBlock.targetStart + 1;
-            this.contentDataGridView.Refresh();
-            this.contentDataGridView.CurrentCell = this.contentDataGridView.Rows[0].Cells[0];
-            this.blockLinesLabel.Text = "" + this.contentDataGridView.RowCount;
+            contentDataGridView.RowCount = 0;
+            currentBlock = currentList[patternHitsDataGridView.CurrentRow.Index];
+            contentDataGridView.RowCount = currentBlock.targetEnd - currentBlock.targetStart + 1;
+            contentDataGridView.Refresh();
+            contentDataGridView.CurrentCell = contentDataGridView.Rows[0].Cells[0];
+            blockLinesLabel.Text = "" + contentDataGridView.RowCount;
         }
 
         private void contentDataGridView_CellValueNeeded(object sender, DataGridViewCellValueEventArgs e)
         {
-            if (this.currentBlock == null || e.RowIndex < 0)
+            if (currentBlock == null || e.RowIndex < 0)
             {
                 return;
             }
@@ -281,7 +283,7 @@ namespace LogExpert.Controls
             if (colIndex == 1)
             {
                 QualityInfo qi;
-                if (this.currentBlock.qualityInfoList.TryGetValue(rowIndex, out qi))
+                if (currentBlock.qualityInfoList.TryGetValue(rowIndex, out qi))
                 {
                     e.Value = qi.quality;
                 }
@@ -296,41 +298,41 @@ namespace LogExpert.Controls
                 {
                     colIndex--; // adjust the inserted column
                 }
-                e.Value = this.logWindow.GetCellValue(rowIndex, colIndex);
+                e.Value = logWindow.GetCellValue(rowIndex, colIndex);
             }
         }
 
         private void contentDataGridView_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)
         {
-            if (this.currentBlock == null || e.RowIndex < 0)
+            if (currentBlock == null || e.RowIndex < 0)
             {
                 return;
             }
-            DataGridView gridView = (DataGridView) sender;
+            BufferedDataGridView gridView = (BufferedDataGridView)sender;
             int rowIndex = GetLineForContentGrid(e.RowIndex);
-            this.logWindow.CellPainting(gridView, rowIndex, e);
+            logWindow.CellPainting(gridView, rowIndex, e);
         }
 
         private void contentDataGridView_CellMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
         {
-            if (this.currentBlock == null || contentDataGridView.CurrentRow == null)
+            if (currentBlock == null || contentDataGridView.CurrentRow == null)
             {
                 return;
             }
             int rowIndex = GetLineForContentGrid(contentDataGridView.CurrentRow.Index);
 
-            this.logWindow.SelectLogLine(rowIndex);
+            logWindow.SelectLogLine(rowIndex);
         }
 
         private void recalcButton_Click(object sender, EventArgs e)
         {
-            patternArgs.fuzzy = this.fuzzyKnobControl.Value;
-            patternArgs.maxDiffInBlock = this.maxDiffKnobControl.Value;
-            patternArgs.maxMisses = this.maxMissesKnobControl.Value;
-            patternArgs.minWeight = this.weigthKnobControl.Value;
-            this.logWindow.PatternStatistic(patternArgs);
-            this.recalcButton.Enabled = false;
-            this.setRangeButton.Enabled = false;
+            patternArgs.Fuzzy = fuzzyKnobControl.Value;
+            patternArgs.MaxDiffInBlock = maxDiffKnobControl.Value;
+            patternArgs.MaxMisses = maxMissesKnobControl.Value;
+            patternArgs.MinWeight = weigthKnobControl.Value;
+            logWindow.PatternStatistic(patternArgs);
+            recalcButton.Enabled = false;
+            setRangeButton.Enabled = false;
         }
 
         private void closeButton_Click(object sender, EventArgs e)
@@ -342,21 +344,21 @@ namespace LogExpert.Controls
             DataGridViewColumnDividerDoubleClickEventArgs e)
         {
             e.Handled = true;
-            this.contentDataGridView.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.DisplayedCells);
+            contentDataGridView.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.DisplayedCells);
         }
 
         private void patternHitsDataGridView_ColumnDividerDoubleClick(object sender,
             DataGridViewColumnDividerDoubleClickEventArgs e)
         {
             e.Handled = true;
-            this.patternHitsDataGridView.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.DisplayedCells);
+            patternHitsDataGridView.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.DisplayedCells);
         }
 
         private void setRangeButton_Click(object sender, EventArgs e)
         {
-            this.logWindow.PatternStatisticSelectRange(patternArgs);
-            this.recalcButton.Enabled = true;
-            this.rangeLabel.Text = "Start: " + patternArgs.startLine + "\r\nEnd: " + patternArgs.endLine;
+            logWindow.PatternStatisticSelectRange(patternArgs);
+            recalcButton.Enabled = true;
+            rangeLabel.Text = "Start: " + patternArgs.StartLine + "\r\nEnd: " + patternArgs.EndLine;
         }
 
         #endregion
