@@ -371,8 +371,8 @@ namespace LogExpert.Dialogs
                 row.Cells[0].Value = maskEntry.mask;
 
                 HighlightGroup currentGroup = _logTabWin.FindHighlightGroup(maskEntry.highlightGroupName);
-                currentGroup ??= ((IList<HighlightGroup>)_logTabWin.HighlightGroupList)[0];
-                currentGroup ??= new HighlightGroup();
+                var highlightGroupList = _logTabWin.HighlightGroupList;
+                currentGroup ??= highlightGroupList.Count > 0 ? highlightGroupList[0] : new HighlightGroup();
 
                 row.Cells[1].Value = currentGroup.GroupName;
                 dataGridViewHighlightMask.Rows.Add(row);
