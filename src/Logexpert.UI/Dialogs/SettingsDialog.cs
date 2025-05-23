@@ -511,7 +511,7 @@ namespace LogExpert.Dialogs
                     }
             }
 
-            textBoxMultifilePattern.Text = Preferences.multiFileOptions.FormatPattern;
+            textBoxMultifilePattern.Text = Preferences.multiFileOptions.FormatPattern; //TODO: Impport settings file throws an exception. Fix or I caused it?
             upDownMultifileDays.Value = Preferences.multiFileOptions.MaxDayTry;
         }
 

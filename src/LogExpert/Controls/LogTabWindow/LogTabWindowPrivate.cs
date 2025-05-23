@@ -930,8 +930,10 @@ namespace LogExpert.Controls.LogTabWindow
 
         private void OpenSettings(int tabToOpen)
         {
-            SettingsDialog dlg = new(ConfigManager.Settings.Preferences, this, tabToOpen);
-            dlg.TopMost = TopMost;
+            SettingsDialog dlg = new(ConfigManager.Settings.Preferences, this, tabToOpen)
+            {
+                TopMost = TopMost
+            };
 
             if (DialogResult.OK == dlg.ShowDialog())
             {

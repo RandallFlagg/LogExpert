@@ -107,7 +107,10 @@ namespace LogExpert.PluginRegistry
 
             AppDomain.CurrentDomain.AssemblyResolve += ColumnizerResolveEventHandler;
 
-            string interfaceName = typeof(ILogLineColumnizer).FullName;
+            var interfaceName = typeof(ILogLineColumnizer).FullName;
+            if (interfaceName == null) { 
+                throw new NotImplementedException("The interface name is null. How did this happen? Let's fix this.");
+            }
             foreach (string dllName in Directory.EnumerateFiles(pluginDir, "*.dll"))
             {
                 try
