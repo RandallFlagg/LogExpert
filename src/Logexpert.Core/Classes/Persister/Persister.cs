@@ -52,7 +52,7 @@ namespace LogExpert.Core.Classes.Persister
     {
         #region Fields
 
-        private static readonly ILogger _logger = LogManager.GetCurrentClassLogger();
+        private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
         #endregion
 
@@ -322,9 +322,16 @@ namespace LogExpert.Core.Classes.Persister
                             string base64Text = subNode.InnerText;
                             byte[] data = Convert.FromBase64String(base64Text);
                             MemoryStream stream = new(data);
-                            FilterParams filterParams = JsonSerializer.Deserialize<FilterParams>(stream);
-                            filterParams.Init();
-                            filterList.Add(filterParams);
+                            try
+                            {
+                                FilterParams filterParams = JsonSerializer.Deserialize<FilterParams>(stream);
+                                filterParams.Init();
+                                filterList.Add(filterParams);
+                            }
+                            catch (Exception ex)
+                            {
+                                _logger.Error("Error while deserializing filter params");
+                            }
                         }
                     }
                 }
