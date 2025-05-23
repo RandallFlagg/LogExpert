@@ -39,9 +39,6 @@
     <Compile Update="Controls\LogTabPage.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Update="Dialogs\BufferedDataGridView.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <None Include="..\Solution Items\Key.snk">
       <Link>Key.snk</Link>
     </None>

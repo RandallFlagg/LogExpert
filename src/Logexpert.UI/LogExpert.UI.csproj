@@ -21,6 +21,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Controls\BufferedDataGridView.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Update="Controls\ColorComboBox.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -36,7 +39,13 @@
     <Compile Update="Dialogs\AboutBox.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Update="Dialogs\AllowOnlyOneInstanceErrorDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="Dialogs\BookmarkCommentDlg.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Dialogs\BookmarkWindow.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="Dialogs\ChooseIconDlg.cs">
@@ -48,7 +57,13 @@
     <Compile Update="Dialogs\FilterColumnChooser.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Update="Dialogs\FilterSelectorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="Dialogs\GotoLineDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Dialogs\HighlightDialog.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="Dialogs\ImportSettingsDialog.cs">
@@ -66,6 +81,9 @@
     <Compile Update="Dialogs\OpenUriDialog.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Update="Dialogs\ParamRequesterDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="Dialogs\ProjectLoadDlg.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -78,7 +96,13 @@
     <Compile Update="Dialogs\SearchProgressDialog.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Update="Dialogs\SettingsDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="Dialogs\TabRenameDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Dialogs\ToolArgsDialog.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="Extensions\Forms\LineToolStripSeparatorExtension.cs">
@@ -99,6 +123,12 @@
 
   <ItemGroup>
     <PackageReference Include="DockPanelSuite" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Dialogs\SettingsDialog.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>
