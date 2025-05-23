@@ -269,16 +269,21 @@ namespace LogExpert.Core.Classes.Persister
             if (filterTabsNode != null)
             {
                 XmlNodeList filterTabNodeList = filterTabsNode.ChildNodes; // all "filterTab" nodes
+
                 foreach (XmlNode node in filterTabNodeList)
                 {
                     PersistenceData persistenceData = ReadPersistenceDataFromNode(node);
                     XmlNode filterNode = node.SelectSingleNode("tabFilter");
+
                     if (filterNode != null)
                     {
                         List<FilterParams> filterList = ReadFilter(filterNode as XmlElement);
-                        FilterTabData data = new();
-                        data.PersistenceData = persistenceData;
-                        data.FilterParams = filterList[0]; // there's only 1
+                        FilterTabData data = new()
+                        {
+                            PersistenceData = persistenceData,
+                            FilterParams = filterList[0] // there's only 1
+                        };
+
                         dataList.Add(data);
                     }
                 }
@@ -329,9 +334,9 @@ namespace LogExpert.Core.Classes.Persister
                                 filterParams.Init();
                                 filterList.Add(filterParams);
                             }
-                            catch (Exception ex)
+                            catch (JsonException ex)
                             {
-                                _logger.Error($"Error while deserializing filter params. {ex}");
+                                _logger.Error($"Error while deserializing filter params. Exception Message: {ex.Message}");
                             }
                         }
                     }
