@@ -2,7 +2,7 @@ using NLog;
 
 using System.Runtime.Versioning;
 
-namespace LogExpert.Controls;
+namespace LogExpert.UI.Controls;
 
 [SupportedOSPlatform("windows")]
 public partial class KnobControl : UserControl

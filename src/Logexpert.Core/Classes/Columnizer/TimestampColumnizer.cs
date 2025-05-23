@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using static LogExpert.Core.Classes.Columnizer.TimeFormatDeterminer;
 
 namespace LogExpert.Core.Classes.Columnizer
 {
-    using static TimeFormatDeterminer;
-
     public class TimestampColumnizer : ILogLineColumnizer, IColumnizerPriority
     {
-
         #region ILogLineColumnizer implementation
 
         protected int timeOffset = 0;

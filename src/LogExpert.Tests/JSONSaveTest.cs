@@ -15,9 +15,9 @@ namespace LogExpert.Tests
         [Test(Author = "Hirogen", Description = "Save Options as JSON and Check if the written file can be cast again into the settings object")]
         public void SaveOptionsAsJSON()
         {
-            ConfigManager.Settings.alwaysOnTop = true;
-            ConfigManager.Save(SettingsFlags.All);
-            string configDir = ConfigManager.ConfigDir;
+            ConfigManager.Instance.Settings.alwaysOnTop = true;
+            ConfigManager.Instance.Save(SettingsFlags.All);
+            string configDir = ConfigManager.Instance.ConfigDir;
             string settingsFile = configDir + "\\settings.json";
 
             Settings settings = null;
@@ -26,8 +26,8 @@ namespace LogExpert.Tests
             Assert.That(settings, Is.Not.Null);
             Assert.That(settings.alwaysOnTop, Is.True);
 
-            ConfigManager.Settings.alwaysOnTop = false;
-            ConfigManager.Save(SettingsFlags.All);
+            ConfigManager.Instance.Settings.alwaysOnTop = false;
+            ConfigManager.Instance.Save(SettingsFlags.All);
             
             settings = null;
             Assert.DoesNotThrow(CastSettings);

@@ -1,10 +1,7 @@
-﻿using LogExpert.Classes.Log;
-using LogExpert.Core.Classes.Log;
+﻿using LogExpert.Core.Classes.Log;
 using LogExpert.Core.Entities;
 using LogExpert.PluginRegistry.FileSystem;
-
 using NUnit.Framework;
-
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -43,7 +40,7 @@ namespace LogExpert.Tests
             };
 
             PluginRegistry.PluginRegistry.Instance.Create(testDirectory.FullName, 500);
-            LogfileReader reader = new(files.Last.Value, encodingOptions, true, 40, 50, options);
+            LogfileReader reader = new(files.Last.Value, encodingOptions, true, 40, 50, options, PluginRegistry.PluginRegistry.Instance);
             reader.ReadFiles();
 
             IList<ILogFileInfo> lil = reader.GetLogFileInfoList();

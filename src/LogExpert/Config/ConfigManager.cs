@@ -2,8 +2,9 @@ using LogExpert.Core.Classes;
 using LogExpert.Core.Classes.Filter;
 using LogExpert.Core.Config;
 using LogExpert.Core.Entities;
-using LogExpert.Core.EventArgs;
-
+using LogExpert.Core.EventArguments;
+using LogExpert.Core.EventHandlers;
+using LogExpert.Core.Interface;
 using Newtonsoft.Json;
 
 using NLog;
@@ -19,7 +20,7 @@ using System.Windows.Forms;
 
 namespace LogExpert.Config
 {
-    public class ConfigManager
+    public class ConfigManager : IConfigManager
     {
         #region Fields
 
@@ -61,46 +62,52 @@ namespace LogExpert.Config
             }
         }
 
-        public static string ConfigDir => Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + Path.DirectorySeparatorChar + "LogExpert";
+        public string ConfigDir => Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + Path.DirectorySeparatorChar + "LogExpert"; //TODO: change to Path.Combine
 
         /// <summary>
         /// Application.StartupPath + portable
         /// </summary>
-        public static string PortableModeDir => Application.StartupPath + Path.DirectorySeparatorChar + "portable";
+        public string PortableModeDir => Application.StartupPath + Path.DirectorySeparatorChar + "portable";
 
         /// <summary>
         /// portableMode.json
         /// </summary>
-        public static string PortableModeSettingsFileName => "portableMode.json";
+        public string PortableModeSettingsFileName => "portableMode.json";
 
-        public static Settings Settings => Instance._settings;
+        public Settings Settings => Instance._settings;
+
+        IConfigManager IConfigManager.Instance => Instance;
+
+//        Action<object, ConfigChangedEventArgs> IConfigManager.ConfigChanged { get => ((IConfigManager)_instance).ConfigChanged; set => ((IConfigManager)_instance).ConfigChanged = value; }
+
+        //public string PortableModeSettingsFileName => ((IConfigManager)_instance).PortableModeSettingsFileName;
 
         #endregion
 
         #region Public methods
 
-        public static void Save(SettingsFlags flags)
+        public void Save(SettingsFlags flags)
         {
             Instance.Save(Settings, flags);
         }
 
-        public static void Export(FileInfo fileInfo)
+        public void Export(FileInfo fileInfo)
         {
             Instance.Save(fileInfo, Settings);
         }
 
-        public static void Export(FileInfo fileInfo, SettingsFlags flags)
+        public void Export(FileInfo fileInfo, SettingsFlags flags)
         {
             Instance.Save(fileInfo, Settings, flags);
         }
 
-        public static void Import(FileInfo fileInfo, ExportImportFlags flags)
+        public void Import(FileInfo fileInfo, ExportImportFlags flags)
         {
             Instance._settings = Instance.Import(Instance._settings, fileInfo, flags);
             Save(SettingsFlags.All);
         }
 
-        public static void ImportHighlightSettings(FileInfo fileInfo, ExportImportFlags flags)
+        public void ImportHighlightSettings(FileInfo fileInfo, ExportImportFlags flags)
         {
             Instance._settings.Preferences.HighlightGroupList = Instance.Import(Instance._settings.Preferences.HighlightGroupList, fileInfo, flags);
             Save(SettingsFlags.All);
@@ -423,7 +430,5 @@ namespace LogExpert.Config
         {
             ConfigChanged?.Invoke(this, new ConfigChangedEventArgs(flags));
         }
-
-        public delegate void ConfigChangedEventHandler(object sender, ConfigChangedEventArgs e);
     }
 }

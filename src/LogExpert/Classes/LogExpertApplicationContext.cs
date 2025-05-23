@@ -1,5 +1,4 @@
-﻿using LogExpert.Controls.LogTabWindow;
-
+﻿using LogExpert.Core.Interface;
 using System;
 using System.Windows.Forms;
 
@@ -15,7 +14,7 @@ namespace LogExpert.Classes
 
         #region cTor
 
-        public LogExpertApplicationContext(LogExpertProxy proxy, LogTabWindow firstLogWin)
+        public LogExpertApplicationContext(LogExpertProxy proxy, ILogTabWindow firstLogWin)
         {
             _proxy = proxy;
             _proxy.LastWindowClosed += new LogExpertProxy.LastWindowClosedEventHandler(OnProxyLastWindowClosed);

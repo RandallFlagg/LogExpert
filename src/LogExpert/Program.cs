@@ -1,17 +1,15 @@
 ﻿using LogExpert.Classes;
 using LogExpert.Config;
-using LogExpert.Controls.LogTabWindow;
 using LogExpert.Core.Classes;
 using LogExpert.Core.Classes.IPC;
 using LogExpert.Core.Config;
+using LogExpert.Core.Interface;
 using LogExpert.Dialogs;
+using LogExpert.UI.Controls.LogTabWindow;
 using LogExpert.UI.Dialogs;
-
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-
 using NLog;
-
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -61,6 +59,7 @@ namespace LogExpert
         {
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             Application.ThreadException += Application_ThreadException;
+
             ApplicationConfiguration.Initialize();
 
             Application.EnableVisualStyles();
@@ -71,39 +70,37 @@ namespace LogExpert
             CmdLine cmdLine = new();
             CmdLineString configFile = new("config", false, "A configuration (settings) file");
             cmdLine.RegisterParameter(configFile);
-            string[] remainingArgs = cmdLine.Parse(orgArgs);
-            string[] absoluteFilePaths = GenerateAbsoluteFilePaths(remainingArgs);
-
             if (configFile.Exists)
             {
                 FileInfo cfgFileInfo = new(configFile.Value);
 
                 if (cfgFileInfo.Exists)
                 {
-                    ConfigManager.Import(cfgFileInfo, ExportImportFlags.All);
+                    ConfigManager.Instance.Import(cfgFileInfo, ExportImportFlags.All);
                 }
                 else
                 {
                     MessageBox.Show(@"Config file not found", @"LogExpert");
                 }
             }
-
-            PluginRegistry.PluginRegistry.Instance.Create(ConfigManager.ConfigDir, ConfigManager.Settings.Preferences.pollingInterval);
+            PluginRegistry.PluginRegistry.Instance.Create(ConfigManager.Instance.ConfigDir, ConfigManager.Instance.Settings.Preferences.pollingInterval);
 
             int pId = Process.GetCurrentProcess().SessionId;
 
             try
             {
-                Settings settings = ConfigManager.Settings;
+                Settings settings = ConfigManager.Instance.Settings;
 
                 Mutex mutex = new(false, "Local\\LogExpertInstanceMutex" + pId, out var isCreated);
 
+                var remainingArgs = cmdLine.Parse(orgArgs);
+                var absoluteFilePaths = GenerateAbsoluteFilePaths(remainingArgs);
                 if (isCreated)
                 {
                     // first application instance
                     Application.EnableVisualStyles();
                     Application.SetCompatibleTextRenderingDefault(false);
-                    LogTabWindow logWin = new(absoluteFilePaths.Length > 0 ? absoluteFilePaths : null, 1, false);
+                    ILogTabWindow logWin = AbstractLogTabWindow.Create(absoluteFilePaths.Length > 0 ? absoluteFilePaths : null, 1, false, ConfigManager.Instance);
 
                     // first instance
                     WindowsIdentity wi = WindowsIdentity.GetCurrent();
@@ -149,7 +146,7 @@ namespace LogExpert
                         if (a.ShowDialog() == DialogResult.OK)
                         {
                             settings.Preferences.ShowErrorMessageAllowOnlyOneInstances = !a.DoNotShowThisMessageAgain;
-                            ConfigManager.Save(SettingsFlags.All);
+                            ConfigManager.Instance.Save(SettingsFlags.All);
                         }
                     }
                 }

@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Drawing;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 
 namespace LogExpert.Core.Classes.Filter
@@ -70,6 +71,7 @@ namespace LogExpert.Core.Classes.Filter
         // list of columns in which to search
         public List<int> ColumnList { get; set; } = [];
 
+        [JsonIgnore]
         [field: NonSerialized]
         public ILogLineColumnizer CurrentColumnizer { get; set; }
 

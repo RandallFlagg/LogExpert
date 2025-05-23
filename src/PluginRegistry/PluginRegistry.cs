@@ -1,6 +1,7 @@
 ﻿using LogExpert.Core.Classes;
 using LogExpert.Core.Classes.Columnizer;
 using LogExpert.Core.Entities;
+using LogExpert.Core.Interface;
 using LogExpert.PluginRegistry.FileSystem;
 
 using NLog;
@@ -16,7 +17,7 @@ namespace LogExpert.PluginRegistry
     /// It all has started with Columnizers only. So the different types of plugins have no common super interface. I didn't change it
     /// to keep existing plugin API stable. In a future version this may change.
     /// </remarks>
-    public class PluginRegistry
+    public class PluginRegistry : IPluginRegistry
     {
         #region Fields
 
@@ -107,7 +108,10 @@ namespace LogExpert.PluginRegistry
 
             AppDomain.CurrentDomain.AssemblyResolve += ColumnizerResolveEventHandler;
 
-            string interfaceName = typeof(ILogLineColumnizer).FullName;
+            var interfaceName = typeof(ILogLineColumnizer).FullName;
+            if (interfaceName == null) { 
+                throw new NotImplementedException("The interface name is null. How did this happen? Let's fix this.");
+            }
             foreach (string dllName in Directory.EnumerateFiles(pluginDir, "*.dll"))
             {
                 try

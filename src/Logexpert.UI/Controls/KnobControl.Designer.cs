@@ -1,4 +1,4 @@
-namespace LogExpert.Controls;
+namespace LogExpert.UI.Controls;
 
 partial class KnobControl
 {

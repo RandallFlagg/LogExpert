@@ -1,4 +1,4 @@
-﻿using LogExpert.Classes.Log;
+﻿using LogExpert.Core.Classes.Log;
 using LogExpert.Core.Entities;
 
 using NUnit.Framework;
@@ -18,7 +18,7 @@ namespace LogExpert.Tests
         {
             CsvColumnizer.CsvColumnizer csvColumnizer = new();
             string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, filename);
-            LogfileReader reader = new(path, new EncodingOptions(), true, 40, 50, new MultiFileOptions());
+            LogfileReader reader = new(path, new EncodingOptions(), true, 40, 50, new MultiFileOptions(), PluginRegistry.PluginRegistry.Instance);
             reader.ReadFiles();
             ILogLine line = reader.GetLogLine(0);
             IColumnizedLogLine logline = new ColumnizedLogLine();

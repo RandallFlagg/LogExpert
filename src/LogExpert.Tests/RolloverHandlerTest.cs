@@ -1,4 +1,4 @@
-﻿using LogExpert.Classes.Log;
+﻿using LogExpert.Core.Classes.Log;
 using LogExpert.Core.Entities;
 using LogExpert.PluginRegistry.FileSystem;
 
@@ -26,7 +26,7 @@ namespace LogExpert.Tests
 
             ILogFileInfo info = new LogFileInfo(new Uri(firstFile));
             RolloverFilenameHandler handler = new(info, options);
-            LinkedList<string> fileList = handler.GetNameList();
+            LinkedList<string> fileList = handler.GetNameList(PluginRegistry.PluginRegistry.Instance);
 
             Assert.That(fileList, Is.EqualTo(files));
 
@@ -47,7 +47,7 @@ namespace LogExpert.Tests
 
             ILogFileInfo info = new LogFileInfo(new Uri(firstFile));
             RolloverFilenameHandler handler = new(info, options);
-            LinkedList<string> fileList = handler.GetNameList();
+            LinkedList<string> fileList = handler.GetNameList(PluginRegistry.PluginRegistry.Instance);
 
             Assert.That(fileList, Is.EqualTo(files));
 

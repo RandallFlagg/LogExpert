@@ -4,6 +4,7 @@ using LogExpert.Core.Interface;
 
 namespace LogExpert.Core.Classes.Bookmark
 {
+    //TODO: Not in use!
     internal class BookmarkView : IBookmarkView
     {
         #region Fields

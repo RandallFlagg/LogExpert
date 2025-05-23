@@ -1,4 +1,4 @@
-﻿using LogExpert.Classes.Log;
+﻿using LogExpert.Core.Classes.Log;
 using LogExpert.Core.Entities;
 
 using NUnit.Framework;
@@ -20,7 +20,7 @@ namespace LogExpert.Tests
         {
             var jsonCompactColumnizer = new JsonColumnizer.JsonCompactColumnizer();
             string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName);
-            LogfileReader logFileReader = new(path, new EncodingOptions(), true, 40, 50, new MultiFileOptions());
+            LogfileReader logFileReader = new(path, new EncodingOptions(), true, 40, 50, new MultiFileOptions(), PluginRegistry.PluginRegistry.Instance);
             logFileReader.ReadFiles();
             List<ILogLine> loglines = new()
             {
