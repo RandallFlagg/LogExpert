@@ -109,7 +109,7 @@ namespace LogExpert
                     LogExpertProxy proxy = new(logWin);
                     LogExpertApplicationContext context = new(proxy, logWin);
 
-                    Task.Run(() => RunServerLoopAsync(SendCommandToServer, proxy, _cts.Token));
+                    Task.Run(() => RunServerLoopAsync(SendMessageToProxy, proxy, _cts.Token));
 
                     Application.Run(context);
                 }
@@ -196,7 +196,7 @@ namespace LogExpert
             return [.. argsList];
         }
 
-        private static void SendCommandToServer(IpcMessage message, LogExpertProxy proxy)
+        private static void SendMessageToProxy(IpcMessage message, LogExpertProxy proxy)
         {
             switch (message.Type)
             {
