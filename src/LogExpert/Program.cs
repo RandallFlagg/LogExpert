@@ -33,6 +33,7 @@ namespace LogExpert
 
         private static readonly Logger _logger = LogManager.GetLogger("Program");
         private const string PIPE_SERVER_NAME = "LogExpert_IPC";
+        private const int PIPE_CONNECTION_TIMEOUT_IN_MS = 5000;
         private static readonly CancellationTokenSource _cts = new();
 
         #endregion
@@ -247,7 +248,27 @@ namespace LogExpert
         private static void SendCommandToServer(string command)
         {
             using var client = new NamedPipeClientStream(".", PIPE_SERVER_NAME, PipeDirection.Out);
-            client.Connect(5000); // 5 seconds timeout
+
+            try
+            {
+                client.Connect(PIPE_CONNECTION_TIMEOUT_IN_MS);
+            }
+            catch (TimeoutException)
+            {
+                _logger.Error("Timeout connecting to pipe server");
+                return;
+            }
+            catch (IOException ex)
+            {
+                _logger.Warn(ex, "An I/O error occurred while connecting to the pipe server.");
+                return;
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                _logger.Warn(ex, "Unauthorized access while connecting to the pipe server.");
+                return;
+            }
+
             using var writer = new StreamWriter(client, Encoding.UTF8) { AutoFlush = true };
             writer.WriteLine(command);
         }

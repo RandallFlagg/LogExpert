@@ -322,6 +322,7 @@ namespace LogExpert.Core.Classes.Persister
                             string base64Text = subNode.InnerText;
                             byte[] data = Convert.FromBase64String(base64Text);
                             MemoryStream stream = new(data);
+
                             try
                             {
                                 FilterParams filterParams = JsonSerializer.Deserialize<FilterParams>(stream);
@@ -330,7 +331,7 @@ namespace LogExpert.Core.Classes.Persister
                             }
                             catch (Exception ex)
                             {
-                                _logger.Error("Error while deserializing filter params");
+                                _logger.Error($"Error while deserializing filter params. {ex}");
                             }
                         }
                     }
