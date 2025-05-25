@@ -1,29 +1,30 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net8.0-windows</TargetFramework>
-    <EnableWindowsTargeting>True</EnableWindowsTargeting>
-    <OutputType>WinExe</OutputType>
-    <ApplicationIcon>logexpert.ico</ApplicationIcon>
-    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
-    <UseWindowsForms>False</UseWindowsForms>
-    <DocumentationFile>$(SolutionDir)..\bin\Docs\LogExpert.xml</DocumentationFile>
-    <IsTestProject>False</IsTestProject>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
-    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
-    <SignAssembly>True</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\Solution Items\Key.snk</AssemblyOriginatorKeyFile>
     <AppendTargetFrameworkToOutputPath>False</AppendTargetFrameworkToOutputPath>
-    <OutputPath>$(SolutionDir)..\bin\$(Configuration)</OutputPath>
-    <CopyLocalLockFileAssemblies>True</CopyLocalLockFileAssemblies>
     <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
+    <ApplicationIcon>logexpert.ico</ApplicationIcon>
+    <AssemblyOriginatorKeyFile>..\Solution Items\Key.snk</AssemblyOriginatorKeyFile>
+    <CopyLocalLockFileAssemblies>True</CopyLocalLockFileAssemblies>
+    <DocumentationFile>$(SolutionDir)..\bin\Docs\LogExpert.xml</DocumentationFile>
+    <EnableWindowsTargeting>True</EnableWindowsTargeting>
     <ForceDesignerDPIUnaware>True</ForceDesignerDPIUnaware>
+    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsTestProject>False</IsTestProject>
     <NoWarn>CS1591;</NoWarn>
+    <OutputPath>$(SolutionDir)..\bin\$(Configuration)</OutputPath>
+    <OutputType>WinExe</OutputType>
+    <SignAssembly>True</SignAssembly>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWindowsForms>False</UseWindowsForms>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <Optimize>False</Optimize>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)'=='Release|AnyCPU' ">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <Optimize>True</Optimize>
   </PropertyGroup>
 
