@@ -16,6 +16,7 @@ public partial class FilterColumnChooser : Form
 
     #region cTor
 
+    //TODO: add Suspend and ResumeLayout()
     public FilterColumnChooser(FilterParams filterParams)
     {
         InitializeComponent();

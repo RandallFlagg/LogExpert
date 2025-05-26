@@ -12,6 +12,7 @@ public partial class ExceptionWindow : Form
 
     #region cTor
 
+    //TODO: for HighDPI SuspendLayout() before InitializeComponent() and then ResumeLayout() as last command in the CTOR can help in complex forms to reduce flickering and miscalculations. Also, it is a good practice.
     public ExceptionWindow(string errorText, string stackTrace)
     {
         InitializeComponent();
