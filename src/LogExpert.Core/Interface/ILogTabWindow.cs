@@ -1,5 +1,6 @@
 ﻿namespace LogExpert.Core.Interface
 {
+    //TODO: Add documentation
     public interface ILogTabWindow
     {
         ILogExpertProxy LogExpertProxy { get; set; }

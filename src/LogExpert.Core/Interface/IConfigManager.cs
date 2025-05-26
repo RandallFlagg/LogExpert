@@ -4,6 +4,7 @@ using LogExpert.Core.EventHandlers;
 
 namespace LogExpert.Core.Interface
 {
+    //TODO: Add documentation
     public interface IConfigManager
     {
         Settings Settings { get; }

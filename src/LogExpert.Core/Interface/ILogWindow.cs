@@ -7,6 +7,7 @@ using static LogExpert.Core.Classes.Log.LogfileReader;
 
 namespace LogExpert.Core.Interface
 {
+    //TODO: Add documentation
     public interface ILogWindow
     {
         string GetCurrentFileName(int lineNum);

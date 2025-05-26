@@ -57,7 +57,7 @@ namespace LogExpert
                 if (configFile.Exists)
                 {
                     FileInfo cfgFileInfo = new(configFile.Value);
-
+                    //TODO: The config file import and the try catch for the primary instance and secondary instance should be separated functions
                     if (cfgFileInfo.Exists)
                     {
                         ConfigManager.Instance.Import(cfgFileInfo, ExportImportFlags.All);

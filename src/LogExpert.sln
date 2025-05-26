@@ -56,11 +56,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "setup", "setup", "{C625E7C2
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RegexColumnizer.UnitTests", "RegexColumnizer.UnitTests\RegexColumnizer.UnitTests.csproj", "{FBFB598D-B94A-4AD3-A355-0D5A618CEEE3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogExpert.Core", "Logexpert.Core\LogExpert.Core.csproj", "{F49C6738-3F62-4890-8FF2-1F53A0F0A2CD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogExpert.Core", "LogExpert.Core\LogExpert.Core.csproj", "{F49C6738-3F62-4890-8FF2-1F53A0F0A2CD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogExpert.Resources", "Logexpert.Resources\LogExpert.Resources.csproj", "{578CC5D5-1DCD-47C2-8BD3-B32C14635BEC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogExpert.Resources", "LogExpert.Resources\LogExpert.Resources.csproj", "{578CC5D5-1DCD-47C2-8BD3-B32C14635BEC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogExpert.UI", "Logexpert.UI\LogExpert.UI.csproj", "{5DB0B0F8-3C3E-4805-93A3-7E69AC45CD40}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogExpert.UI", "LogExpert.UI\LogExpert.UI.csproj", "{5DB0B0F8-3C3E-4805-93A3-7E69AC45CD40}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogExpert.PluginRegistry", "PluginRegistry\LogExpert.PluginRegistry.csproj", "{E2D8E653-B7DF-4ACE-8314-8059B1E20751}"
 EndProject
