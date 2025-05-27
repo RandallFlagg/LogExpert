@@ -1,5 +1,7 @@
-﻿using System.Drawing.Drawing2D;
+﻿using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Runtime.Versioning;
+using System.Windows.Forms;
 
 namespace LogExpert.UI.Controls;
 

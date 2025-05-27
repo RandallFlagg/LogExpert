@@ -10,7 +10,9 @@ using LogExpert.Core.Entities;
 using LogExpert.Core.EventArguments;
 using LogExpert.Dialogs;
 using LogExpert.UI.Entities;
+using System.Drawing;
 using System.Text;
+using System.Windows.Forms;
 
 namespace LogExpert.UI.Controls.LogWindow
 {

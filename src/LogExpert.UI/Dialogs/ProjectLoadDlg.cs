@@ -1,6 +1,7 @@
 ﻿using LogExpert.Core.Enums;
-
+using System.Drawing;
 using System.Runtime.Versioning;
+using System.Windows.Forms;
 
 namespace LogExpert.Dialogs;
 

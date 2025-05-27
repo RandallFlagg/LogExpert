@@ -1,6 +1,7 @@
 ﻿using LogExpert.Core.Config;
-
+using System.Drawing;
 using System.Runtime.Versioning;
+using System.Windows.Forms;
 
 namespace LogExpert.UI.Extensions.Forms;
 

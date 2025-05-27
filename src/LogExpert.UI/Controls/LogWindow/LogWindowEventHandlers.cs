@@ -11,6 +11,8 @@ using LogExpert.UI.Dialogs;
 using LogExpert.UI.Entities;
 using LogExpert.UI.Extensions;
 using System.ComponentModel;
+using System.Drawing;
+using System.Windows.Forms;
 
 namespace LogExpert.UI.Controls.LogWindow
 {

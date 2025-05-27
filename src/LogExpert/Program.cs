@@ -41,8 +41,19 @@ namespace LogExpert
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             Application.ThreadException += Application_ThreadException;
 
+#if WINDOWS && False
             ApplicationConfiguration.Initialize();
+#else
+            // Set High DPI Mode
+            //Application.SetHighDpiMode(HighDpiMode.SystemAware);
 
+            //// Set Default Font
+            //Application.SetDefaultFont(new Font("Segoe UI", 9));
+
+            //// Enable Visual Styles (This may not be necessary in your Linux setup)
+            //Application.EnableVisualStyles();
+            //Application.SetCompatibleTextRenderingDefault(false);
+#endif
             Application.EnableVisualStyles();
             Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
 
@@ -322,7 +333,7 @@ namespace LogExpert
             _ = win.ShowDialog();
         }
 
-        #endregion
+#endregion
 
         #region Events handler
 

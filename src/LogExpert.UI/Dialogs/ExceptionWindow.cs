@@ -1,4 +1,7 @@
-﻿namespace LogExpert.UI.Dialogs;
+﻿using System.Drawing;
+using System.Windows.Forms;
+
+namespace LogExpert.UI.Dialogs;
 
 public partial class ExceptionWindow : Form
 {

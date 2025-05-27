@@ -11,9 +11,11 @@ using LogExpert.PluginRegistry.FileSystem;
 using LogExpert.UI.Dialogs;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
+using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace LogExpert.UI.Controls.LogTabWindow;

@@ -15,6 +15,8 @@ using LogExpert.UI.Controls.LogTabWindow;
 using LogExpert.UI.Dialogs;
 using LogExpert.UI.Extensions.Forms;
 using NLog;
+using System.Drawing;
+using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
 //using static LogExpert.PluginRegistry.PluginRegistry; //TODO: Adjust the instance name so using static can be used.
 

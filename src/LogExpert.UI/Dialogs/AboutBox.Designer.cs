@@ -1,25 +1,27 @@
-﻿using System.Runtime.Versioning;
+﻿using System.Drawing;
+using System.Runtime.Versioning;
+using System.Windows.Forms;
 
 namespace LogExpert.UI.Dialogs;
 
 partial class AboutBox
-	{
-		/// <summary>
-		/// Required designer variable.
-		/// </summary>
-		private System.ComponentModel.IContainer components = null;
+{
+    /// <summary>
+    /// Required designer variable.
+    /// </summary>
+    private System.ComponentModel.IContainer components = null;
 
-		/// <summary>
-		/// Clean up any resources being used.
-		/// </summary>
-		protected override void Dispose(bool disposing)
-		{
-			if (disposing && (components != null))
-			{
-				components.Dispose();
-			}
-			base.Dispose(disposing);
-		}
+    /// <summary>
+    /// Clean up any resources being used.
+    /// </summary>
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing && (components != null))
+        {
+            components.Dispose();
+        }
+        base.Dispose(disposing);
+    }
 
     #region Windows Form Designer generated code
 
@@ -191,12 +193,12 @@ partial class AboutBox
     #endregion
 
     private System.Windows.Forms.TableLayoutPanel tableLayoutPanel;
-		private System.Windows.Forms.PictureBox logoPictureBox;
-		private System.Windows.Forms.Label labelProductName;
-		private System.Windows.Forms.Label labelVersion;
-		private System.Windows.Forms.Label labelCopyright;
-		private System.Windows.Forms.LinkLabel linkLabelURL;
-		private System.Windows.Forms.Panel okPanel;
-		private System.Windows.Forms.Button okButton;
+    private System.Windows.Forms.PictureBox logoPictureBox;
+    private System.Windows.Forms.Label labelProductName;
+    private System.Windows.Forms.Label labelVersion;
+    private System.Windows.Forms.Label labelCopyright;
+    private System.Windows.Forms.LinkLabel linkLabelURL;
+    private System.Windows.Forms.Panel okPanel;
+    private System.Windows.Forms.Button okButton;
     private DataGridView usedComponentsDataGrid;
 }

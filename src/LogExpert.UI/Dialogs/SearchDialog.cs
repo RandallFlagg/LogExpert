@@ -1,8 +1,9 @@
 ﻿using LogExpert.Core.Entities;
 using LogExpert.UI.Dialogs;
-
+using System.Drawing;
 using System.Runtime.Versioning;
 using System.Text.RegularExpressions;
+using System.Windows.Forms;
 
 namespace LogExpert.Dialogs;
 

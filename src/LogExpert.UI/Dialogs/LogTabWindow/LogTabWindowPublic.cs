@@ -5,9 +5,11 @@ using LogExpert.Core.Entities;
 using LogExpert.Core.Interface;
 using LogExpert.Dialogs;
 using LogExpert.UI.Entities;
+using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace LogExpert.UI.Controls.LogTabWindow;

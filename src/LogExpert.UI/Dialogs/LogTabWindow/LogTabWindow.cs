@@ -4,9 +4,10 @@ using LogExpert.Core.Interface;
 using LogExpert.Dialogs;
 using LogExpert.UI.Extensions.Forms;
 using NLog;
+using System.Drawing;
 using System.Reflection;
 using System.Text;
-using static LogExpert.UI.Controls.LogTabWindow.LogTabWindow;
+using System.Windows.Forms;
 
 namespace LogExpert.UI.Controls.LogTabWindow;
 

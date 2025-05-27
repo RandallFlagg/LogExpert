@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <SignAssembly>True</SignAssembly>
+    <SignAssembly>False</SignAssembly>
     <AssemblyOriginatorKeyFile>..\Solution Items\Key.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
@@ -21,10 +21,10 @@
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="NLog" />
-    <PackageReference Include="System.Drawing.Common" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\External\System.Windows.Forms\System.Drawing.Design\System.Drawing.Design.csproj" />
     <ProjectReference Include="..\ColumnizerLib\ColumnizerLib.csproj" />
   </ItemGroup>
 

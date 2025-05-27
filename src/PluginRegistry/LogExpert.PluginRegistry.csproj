@@ -5,7 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <Nullable>enable</Nullable>
-    <SignAssembly>True</SignAssembly>
+    <SignAssembly>False</SignAssembly>
     <AssemblyOriginatorKeyFile>..\Solution Items\Key.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
@@ -22,7 +22,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Logexpert.Core\LogExpert.Core.csproj" />
+    <ProjectReference Include="..\ColumnizerLib\ColumnizerLib.csproj" />
+    <ProjectReference Include="..\LogExpert.Core\LogExpert.Core.csproj" />
   </ItemGroup>
 
 </Project>

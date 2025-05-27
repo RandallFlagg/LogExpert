@@ -1,12 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <Nullable>disable</Nullable>
-    <UseWindowsForms>true</UseWindowsForms>
+    <UseWindowsForms>false</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <SignAssembly>True</SignAssembly>
+    <SignAssembly>False</SignAssembly>
     <AssemblyOriginatorKeyFile>..\Solution Items\Key.snk</AssemblyOriginatorKeyFile>
     <ForceDesignerDPIUnaware>true</ForceDesignerDPIUnaware>
   </PropertyGroup>
@@ -16,9 +16,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Logexpert.Core\LogExpert.Core.csproj" />
-    <ProjectReference Include="..\Logexpert.Resources\LogExpert.Resources.csproj" />
+    <ProjectReference Include="..\..\External\dockpanelsuite\WinFormsUI\ThemeVS2015.csproj" />
+    <ProjectReference Include="..\..\External\System.Windows.Forms\System.Windows.Forms\System.Windows.Forms.csproj" />
+    <ProjectReference Include="..\LogExpert.Core\LogExpert.Core.csproj" />
+    <ProjectReference Include="..\LogExpert.Resources\LogExpert.Resources.csproj" />
     <ProjectReference Include="..\PluginRegistry\LogExpert.PluginRegistry.csproj" />
+    <!--<ProjectReference Include="../../External/dockpanelsuite/WinFormsUI/WinFormsUI.csproj" />-->
   </ItemGroup>
 
   <ItemGroup>
@@ -34,7 +37,7 @@
     <Content Include="..\..\Licenses\WinformsUI.Docking.license.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <PackageReference Include="DockPanelSuite.ThemeVS2015" />
+<!--    <PackageReference Include="DockPanelSuite.ThemeVS2015" />-->
   </ItemGroup>
 
   <ItemGroup>

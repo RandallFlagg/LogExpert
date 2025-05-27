@@ -9,7 +9,7 @@
     <license type="expression">MIT</license>
     <projectUrl>https://github.com/zarunbal/LogExpert</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>Columnizer Lib for Logexpert plugins</description>
+    <description>Columnizer Lib for LogExpert plugins</description>
     <releaseNotes>See https://github.com/zarunbal/LogExpert/releases/tag/v$version$</releaseNotes>
     <copyright>Copyright 2019</copyright>
     <tags>LogExpert Columnizer</tags>

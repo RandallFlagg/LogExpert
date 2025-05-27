@@ -16,7 +16,7 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace LogExpert.Dialogs;
 
-//TODO can be moved to Logexpert.UI if the PaintHelper has been refactored
+//TODO can be moved to LogExpert.UI if the PaintHelper has been refactored
 public partial class BookmarkWindow : DockContent, ISharedToolWindow, IBookmarkView
 {
     #region Fields

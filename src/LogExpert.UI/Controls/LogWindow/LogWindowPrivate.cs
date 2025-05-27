@@ -11,9 +11,11 @@ using LogExpert.Core.EventArguments;
 using LogExpert.Dialogs;
 using LogExpert.Extensions;
 using LogExpert.UI.Entities;
+using System.Drawing;
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Windows.Forms;
 
 namespace LogExpert.UI.Controls.LogWindow
 {

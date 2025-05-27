@@ -5,6 +5,8 @@ using LogExpert.Core.Interface;
 using LogExpert.Dialogs;
 using LogExpert.UI.Controls;
 using NLog;
+using System.Drawing;
+using System.Windows.Forms;
 
 namespace LogExpert.UI.Entities
 {

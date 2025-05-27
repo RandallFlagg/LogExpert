@@ -1,6 +1,7 @@
 ﻿using LogExpert.Core.Classes.Highlight;
-
+using System.Drawing;
 using System.Runtime.Versioning;
+using System.Windows.Forms;
 
 namespace LogExpert.UI.Dialogs;
 

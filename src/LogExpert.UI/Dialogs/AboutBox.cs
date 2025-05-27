@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.Versioning;
+using System.Windows.Forms;
 
 namespace LogExpert.UI.Dialogs;
 
