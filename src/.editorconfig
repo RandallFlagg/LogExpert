@@ -95,7 +95,7 @@ csharp_style_var_when_type_is_apparent = true:warning
 
 # Expression-bodied members
 csharp_style_expression_bodied_accessors = true:suggestion
-csharp_style_expression_bodied_constructors = true:suggestion
+csharp_style_expression_bodied_constructors = false:warning
 csharp_style_expression_bodied_indexers = true:suggestion
 csharp_style_expression_bodied_lambdas = true:suggestion
 csharp_style_expression_bodied_local_functions = true:suggestion
@@ -301,7 +301,7 @@ dotnet_diagnostic.IDE0020.severity = warning
 dotnet_diagnostic.IDE0021.severity = suggestion
 
 # IDE0022: Use expression body for methods
-dotnet_diagnostic.IDE0022.severity = suggestion
+dotnet_diagnostic.IDE0022.severity = none
 
 # IDE0023: Use expression body for conversion operators
 dotnet_diagnostic.IDE0023.severity = suggestion
