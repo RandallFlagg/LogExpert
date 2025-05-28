@@ -1,0 +1,55 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>disable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <SignAssembly>True</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\Solution Items\Key.snk</AssemblyOriginatorKeyFile>
+    <ForceDesignerDPIUnaware>true</ForceDesignerDPIUnaware>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\Solution Items\Key.snk" Link="Key.snk" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Logexpert.Core\LogExpert.Core.csproj" />
+    <ProjectReference Include="..\Logexpert.Resources\LogExpert.Resources.csproj" />
+    <ProjectReference Include="..\PluginRegistry\LogExpert.PluginRegistry.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Remove="Dialogs\LogTabWindow\LogTabWindowEventHandlers.resx" />
+    <EmbeddedResource Remove="Dialogs\LogTabWindow\LogTabWindowPrivate.resx" />
+    <EmbeddedResource Remove="Dialogs\LogTabWindow\LogTabWindowPublic.resx" />
+    <EmbeddedResource Remove="Controls\LogWindow\LogWindowEventHandlers.resx" />
+    <EmbeddedResource Remove="Controls\LogWindow\LogWindowPrivate.resx" />
+    <EmbeddedResource Remove="Controls\LogWindow\LogWindowPublic.resx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="..\..\Licenses\WinformsUI.Docking.license.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <PackageReference Include="DockPanelSuite.ThemeVS2015" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+</Project>

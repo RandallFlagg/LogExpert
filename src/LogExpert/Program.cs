@@ -1,28 +1,21 @@
 ﻿using LogExpert.Classes;
+using LogExpert.Classes.CommandLine;
 using LogExpert.Config;
-using LogExpert.Controls.LogTabWindow;
-using LogExpert.Core.Classes;
 using LogExpert.Core.Classes.IPC;
 using LogExpert.Core.Config;
+using LogExpert.Core.Interface;
 using LogExpert.Dialogs;
+using LogExpert.UI.Controls.LogTabWindow;
 using LogExpert.UI.Dialogs;
-
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-
 using NLog;
-
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.IO.Pipes;
 using System.Reflection;
 using System.Security;
 using System.Security.Principal;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace LogExpert
@@ -34,7 +27,6 @@ namespace LogExpert
         private static readonly Logger _logger = LogManager.GetLogger("Program");
         private const string PIPE_SERVER_NAME = "LogExpert_IPC";
         private const int PIPE_CONNECTION_TIMEOUT_IN_MS = 5000;
-        private static readonly CancellationTokenSource _cts = new();
 
         #endregion
 
@@ -44,23 +36,11 @@ namespace LogExpert
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        private static void Main(string[] orgArgs)
-        {
-            try
-            {
-                Sub_Main(orgArgs);
-            }
-            catch (SecurityException se)
-            {
-                MessageBox.Show("Insufficient system rights for LogExpert. Maybe you have started it from a network drive. Please start LogExpert from a local drive.\n(" + se.Message + ")", "LogExpert Error");
-                _cts.Cancel();
-            }
-        }
-
-        private static void Sub_Main(string[] orgArgs)
+        private static void Main(string[] args)
         {
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             Application.ThreadException += Application_ThreadException;
+
             ApplicationConfiguration.Initialize();
 
             Application.EnableVisualStyles();
@@ -68,100 +48,106 @@ namespace LogExpert
 
             _logger.Info("\r\n============================================================================\r\nLogExpert {0} started.\r\n============================================================================", Assembly.GetExecutingAssembly().GetName().Version.ToString(3));
 
-            CmdLine cmdLine = new();
-            CmdLineString configFile = new("config", false, "A configuration (settings) file");
-            cmdLine.RegisterParameter(configFile);
-            string[] remainingArgs = cmdLine.Parse(orgArgs);
-            string[] absoluteFilePaths = GenerateAbsoluteFilePaths(remainingArgs);
-
-            if (configFile.Exists)
-            {
-                FileInfo cfgFileInfo = new(configFile.Value);
-
-                if (cfgFileInfo.Exists)
-                {
-                    ConfigManager.Import(cfgFileInfo, ExportImportFlags.All);
-                }
-                else
-                {
-                    MessageBox.Show(@"Config file not found", @"LogExpert");
-                }
-            }
-
-            PluginRegistry.PluginRegistry.Instance.Create(ConfigManager.ConfigDir, ConfigManager.Settings.Preferences.pollingInterval);
-
-            int pId = Process.GetCurrentProcess().SessionId;
-
+            CancellationTokenSource cts = new();
             try
             {
-                Settings settings = ConfigManager.Settings;
-
-                Mutex mutex = new(false, "Local\\LogExpertInstanceMutex" + pId, out var isCreated);
-
-                if (isCreated)
+                CmdLineString configFile = new("config", false, "A configuration (settings) file");
+                CmdLine cmdLine = new();
+                cmdLine.RegisterParameter(configFile);
+                if (configFile.Exists)
                 {
-                    // first application instance
-                    Application.EnableVisualStyles();
-                    Application.SetCompatibleTextRenderingDefault(false);
-                    LogTabWindow logWin = new(absoluteFilePaths.Length > 0 ? absoluteFilePaths : null, 1, false);
-
-                    // first instance
-                    WindowsIdentity wi = WindowsIdentity.GetCurrent();
-                    LogExpertProxy proxy = new(logWin);
-                    LogExpertApplicationContext context = new(proxy, logWin);
-
-                    Task.Run(() => RunServerLoopAsync(SendMessageToProxy, proxy, _cts.Token));
-
-                    Application.Run(context);
-                }
-                else
-                {
-                    int counter = 3;
-                    Exception errMsg = null;
-
-                    while (counter > 0)
+                    FileInfo cfgFileInfo = new(configFile.Value);
+                    //TODO: The config file import and the try catch for the primary instance and secondary instance should be separated functions
+                    if (cfgFileInfo.Exists)
                     {
-                        try
-                        {
-                            WindowsIdentity wi = WindowsIdentity.GetCurrent();
-                            var command = SerializeCommandIntoNonFormattedJSON(absoluteFilePaths, settings.Preferences.allowOnlyOneInstance);
-                            SendCommandToServer(command);
-                            break;
-                        }
-                        catch (Exception e)
-                        {
-                            _logger.Warn(e, "IpcClientChannel error: ");
-                            errMsg = e;
-                            counter--;
-                            Thread.Sleep(500);
-                        }
+                        ConfigManager.Instance.Import(cfgFileInfo, ExportImportFlags.All);
                     }
-
-                    if (counter == 0)
+                    else
                     {
-                        _logger.Error(errMsg, "IpcClientChannel error, giving up: ");
-                        MessageBox.Show($"Cannot open connection to first instance ({errMsg})", "LogExpert");
-                    }
-
-                    if (settings.Preferences.allowOnlyOneInstance && settings.Preferences.ShowErrorMessageAllowOnlyOneInstances)
-                    {
-                        AllowOnlyOneInstanceErrorDialog a = new();
-                        if (a.ShowDialog() == DialogResult.OK)
-                        {
-                            settings.Preferences.ShowErrorMessageAllowOnlyOneInstances = !a.DoNotShowThisMessageAgain;
-                            ConfigManager.Save(SettingsFlags.All);
-                        }
+                        MessageBox.Show(@"Config file not found", @"LogExpert");
                     }
                 }
+                PluginRegistry.PluginRegistry.Instance.Create(ConfigManager.Instance.ConfigDir, ConfigManager.Instance.Settings.Preferences.pollingInterval);
 
-                mutex.Close();
-                _cts.Cancel();
+                var pId = Process.GetCurrentProcess().SessionId;
+
+                try
+                {
+                    Mutex mutex = new(false, "Local\\LogExpertInstanceMutex" + pId, out var isCreated);
+                    var remainingArgs = cmdLine.Parse(args);
+                    var absoluteFilePaths = GenerateAbsoluteFilePaths(remainingArgs);
+
+                    if (isCreated)
+                    {
+                        // first application instance
+                        Application.EnableVisualStyles();
+                        Application.SetCompatibleTextRenderingDefault(false);
+                        ILogTabWindow logWin = AbstractLogTabWindow.Create(absoluteFilePaths.Length > 0 ? absoluteFilePaths : null, 1, false, ConfigManager.Instance);
+
+                        // first instance
+                        var wi = WindowsIdentity.GetCurrent();
+                        LogExpertProxy proxy = new(logWin);
+                        LogExpertApplicationContext context = new(proxy, logWin);
+
+                        Task.Run(() => RunServerLoopAsync(SendMessageToProxy, proxy, cts.Token));
+
+                        Application.Run(context);
+                    }
+                    else
+                    {
+                        int counter = 3;
+                        Exception errMsg = null;
+
+                        Settings settings = ConfigManager.Instance.Settings;
+                        while (counter > 0)
+                        {
+                            try
+                            {
+                                WindowsIdentity wi = WindowsIdentity.GetCurrent();
+                                var command = SerializeCommandIntoNonFormattedJSON(absoluteFilePaths, settings.Preferences.allowOnlyOneInstance);
+                                SendCommandToServer(command);
+                                break;
+                            }
+                            catch (Exception e)
+                            {
+                                _logger.Warn(e, "IpcClientChannel error: ");
+                                errMsg = e;
+                                counter--;
+                                Thread.Sleep(500);
+                            }
+                        }
+
+                        if (counter == 0)
+                        {
+                            _logger.Error(errMsg, "IpcClientChannel error, giving up: ");
+                            MessageBox.Show($"Cannot open connection to first instance ({errMsg})", "LogExpert");
+                        }
+
+                        if (settings.Preferences.allowOnlyOneInstance && settings.Preferences.ShowErrorMessageAllowOnlyOneInstances)
+                        {
+                            AllowOnlyOneInstanceErrorDialog a = new();
+                            if (a.ShowDialog() == DialogResult.OK)
+                            {
+                                settings.Preferences.ShowErrorMessageAllowOnlyOneInstances = !a.DoNotShowThisMessageAgain;
+                                ConfigManager.Instance.Save(SettingsFlags.All);
+                            }
+                        }
+                    }
+
+                    mutex.Close();
+                    cts.Cancel();
+                }
+                catch (Exception ex)
+                {
+                    _logger.Error(ex, "Mutex error, giving up: ");
+                    cts.Cancel();
+                    MessageBox.Show($"Cannot open connection to first instance ({ex.Message})", "LogExpert");
+                }
             }
-            catch (Exception ex)
+            catch (SecurityException se)
             {
-                _logger.Error(ex, "Mutex error, giving up: ");
-                _cts.Cancel();
-                MessageBox.Show($"Cannot open connection to first instance ({ex.Message})", "LogExpert");
+                MessageBox.Show("Insufficient system rights for LogExpert. Maybe you have started it from a network drive. Please start LogExpert from a local drive.\n(" + se.Message + ")", "LogExpert Error");
+                cts.Cancel();
             }
         }
 

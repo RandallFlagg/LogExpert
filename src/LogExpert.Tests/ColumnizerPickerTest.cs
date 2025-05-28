@@ -1,13 +1,9 @@
 ﻿using JsonColumnizer;
-
-using LogExpert.Classes.Log;
 using LogExpert.Core.Classes.Columnizer;
+using LogExpert.Core.Classes.Log;
 using LogExpert.Core.Entities;
-
 using Moq;
-
 using NUnit.Framework;
-
 using System;
 using System.IO;
 
@@ -70,7 +66,7 @@ namespace LogExpert.Tests
             string fileName, Type columnizerType)
         {
             string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName);
-            LogfileReader reader = new(path, new EncodingOptions(), true, 40, 50, new MultiFileOptions());
+            LogfileReader reader = new(path, new EncodingOptions(), true, 40, 50, new MultiFileOptions(), PluginRegistry.PluginRegistry.Instance);
             reader.ReadFiles();
 
             Mock<ILogLineColumnizer> autoColumnizer = new();

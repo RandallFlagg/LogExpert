@@ -1,8 +1,7 @@
-﻿using LogExpert.Controls.LogTabWindow;
-using LogExpert.Interface;
-
+﻿using LogExpert.Config;
+using LogExpert.Core.Interface;
+using LogExpert.UI.Controls.LogTabWindow;
 using NLog;
-
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
@@ -15,9 +14,9 @@ namespace LogExpert.Classes
 
         private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
-        [NonSerialized] private readonly List<LogTabWindow> _windowList = [];
+        [NonSerialized] private readonly List<ILogTabWindow> _windowList = [];
 
-        [NonSerialized] private LogTabWindow _firstLogTabWindow;
+        [NonSerialized] private ILogTabWindow _firstLogTabWindow;
 
         [NonSerialized] private int _logWindowIndex = 1;
 
@@ -25,7 +24,7 @@ namespace LogExpert.Classes
 
         #region cTor
 
-        public LogExpertProxy(LogTabWindow logTabWindow)
+        public LogExpertProxy(ILogTabWindow logTabWindow)
         {
             AddWindow(logTabWindow);
             logTabWindow.LogExpertProxy = this;
@@ -63,7 +62,7 @@ namespace LogExpert.Classes
         public void LoadFiles(string[] fileNames)
         {
             _logger.Info("Loading files into existing LogTabWindow");
-            LogTabWindow logWin = _windowList[^1];
+            ILogTabWindow logWin = _windowList[^1];
             _ = logWin.Invoke(new MethodInvoker(logWin.SetForeground));
             logWin.LoadFiles(fileNames);
         }
@@ -95,9 +94,9 @@ namespace LogExpert.Classes
 
         public void NewWindowOrLockedWindow(string[] fileNames)
         {
-            foreach (LogTabWindow logWin in _windowList)
+            foreach (var logWin in _windowList)
             {
-                if (LogTabWindow.StaticData.CurrentLockedMainWindow == logWin)
+                if (AbstractLogTabWindow.StaticData.CurrentLockedMainWindow == logWin)
                 {
                     _ = logWin.Invoke(new MethodInvoker(logWin.SetForeground));
                     logWin.LoadFiles(fileNames);
@@ -112,17 +111,16 @@ namespace LogExpert.Classes
         public void NewWindowWorker(string[] fileNames)
         {
             _logger.Info("Creating new LogTabWindow");
-            LogTabWindow logWin = new(fileNames?.Length > 0 ? fileNames : null, _logWindowIndex++, true)
-            {
-                LogExpertProxy = this
-            };
+            IConfigManager configManager = ConfigManager.Instance;
+            ILogTabWindow logWin = AbstractLogTabWindow.Create(fileNames.Length > 0 ? fileNames : null, _logWindowIndex++, true, configManager);
+            logWin.LogExpertProxy = this;
             AddWindow(logWin);
             logWin.Show();
             logWin.Activate();
         }
 
 
-        public void WindowClosed(LogTabWindow logWin)
+        public void WindowClosed(ILogTabWindow logWin)
         {
             RemoveWindow(logWin);
             if (_windowList.Count == 0)
@@ -155,13 +153,13 @@ namespace LogExpert.Classes
 
         #region Private Methods
 
-        private void AddWindow(LogTabWindow window)
+        private void AddWindow(ILogTabWindow window)
         {
             _logger.Info("Adding window to list");
             _windowList.Add(window);
         }
 
-        private void RemoveWindow(LogTabWindow window)
+        private void RemoveWindow(ILogTabWindow window)
         {
             _logger.Info("Removing window from list");
             _ = _windowList.Remove(window);

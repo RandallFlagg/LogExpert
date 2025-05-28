@@ -1,46 +1,36 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net8.0-windows</TargetFramework>
-    <EnableWindowsTargeting>true</EnableWindowsTargeting>
-    <OutputType>WinExe</OutputType>
-    <ApplicationIcon>logexpert.ico</ApplicationIcon>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <UseWindowsForms>true</UseWindowsForms>
-    <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
-    <DocumentationFile>$(SolutionDir)..\bin\Docs\LogExpert.xml</DocumentationFile>
-	<IsTestProject>false</IsTestProject>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
-    <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\Solution Items\Key.snk</AssemblyOriginatorKeyFile>
-    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-    <OutputPath>$(SolutionDir)..\bin\$(Configuration)</OutputPath>
-    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <AppendTargetFrameworkToOutputPath>False</AppendTargetFrameworkToOutputPath>
     <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
-    <ForceDesignerDPIUnaware>true</ForceDesignerDPIUnaware>
+    <ApplicationIcon>logexpert.ico</ApplicationIcon>
+    <AssemblyOriginatorKeyFile>..\Solution Items\Key.snk</AssemblyOriginatorKeyFile>
+    <CopyLocalLockFileAssemblies>True</CopyLocalLockFileAssemblies>
+    <DocumentationFile>$(SolutionDir)..\bin\Docs\LogExpert.xml</DocumentationFile>
+    <EnableWindowsTargeting>True</EnableWindowsTargeting>
+    <ForceDesignerDPIUnaware>True</ForceDesignerDPIUnaware>
+    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsTestProject>False</IsTestProject>
     <NoWarn>CS1591;</NoWarn>
+    <OutputPath>$(SolutionDir)..\bin\$(Configuration)</OutputPath>
+    <OutputType>WinExe</OutputType>
+    <SignAssembly>True</SignAssembly>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWindowsForms>False</UseWindowsForms>
   </PropertyGroup>
+
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <Optimize>False</Optimize>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)'=='Release|AnyCPU' ">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <Optimize>True</Optimize>
   </PropertyGroup>
+
   <ItemGroup>
     <Compile Include="..\Solution Items\AssemblyVersion.cs">
       <Link>Properties\AssemblyVersion.cs</Link>
-    </Compile>
-    <Compile Update="Controls\DateTimeDragControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Controls\TimeSpreadigControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Controls\LogTabPage.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Update="Dialogs\BufferedDataGridView.cs">
-      <SubType>Component</SubType>
     </Compile>
     <None Include="..\Solution Items\Key.snk">
       <Link>Key.snk</Link>
@@ -53,14 +43,9 @@
     <None Update="Licenses\Nlog.license.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <Content Include="Licenses\WinformsUI.Docking.license.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="logexpert.ico" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="DockPanelSuite" />
-    <PackageReference Include="DockPanelSuite.ThemeVS2015" />
     <PackageReference Include="System.Text.Encoding" />
     <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="NLog" />
@@ -71,6 +56,7 @@
     <ProjectReference Include="..\PluginRegistry\LogExpert.PluginRegistry.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Remove="Controls\LogTabPage.cs" />
     <Compile Remove="DebugWindow.Designer.cs" />
     <Compile Remove="HighlightThread.cs" />
   </ItemGroup>
