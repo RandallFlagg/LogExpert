@@ -9,6 +9,7 @@ using LogExpert.Core.EventArguments;
 using LogExpert.Dialogs;
 using LogExpert.PluginRegistry.FileSystem;
 using LogExpert.UI.Dialogs;
+using LogExpert.UI.Extensions;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;

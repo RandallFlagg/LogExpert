@@ -6,14 +6,9 @@ using LogExpert.Core.Enums;
 using LogExpert.Core.Interface;
 using LogExpert.UI.Controls.LogTabWindow;
 using LogExpert.UI.Dialogs;
-
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
+using LogExpert.UI.Extensions;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Windows.Forms;
 
 namespace LogExpert.Dialogs;
 
