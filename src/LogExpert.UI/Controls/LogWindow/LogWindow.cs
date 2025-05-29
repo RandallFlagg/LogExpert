@@ -1,4 +1,5 @@
-﻿using LogExpert.Classes.Filter;
+﻿#define NOT_DOCK
+using LogExpert.Classes.Filter;
 using LogExpert.Classes.ILogLineColumnizerCallback;
 using LogExpert.Core.Classes.Bookmark;
 using LogExpert.Core.Classes.Filter;
@@ -17,13 +18,15 @@ using LogExpert.UI.Extensions.Forms;
 using NLog;
 using System.Drawing;
 using System.Windows.Forms;
-using WeifenLuo.WinFormsUI.Docking;
+//using WeifenLuo.WinFormsUI.Docking;
 //using static LogExpert.PluginRegistry.PluginRegistry; //TODO: Adjust the instance name so using static can be used.
 
 namespace LogExpert.UI.Controls.LogWindow
 {
     //TODO: Implemented 4 interfaces explicitly. Find them by searcginh: ILogWindow.<method name>
-    internal partial class LogWindow : DockContent, ILogPaintContext, ILogView, ILogWindow
+    //TODO: dockContent - Do we need this?
+    //TODO: Define #DOCK
+    internal partial class LogWindow :  Form, ILogPaintContext, ILogView, ILogWindow //DockContent,
     {
         #region Fields
 
@@ -626,14 +629,14 @@ namespace LogExpert.UI.Controls.LogWindow
 
         #endregion
 
-        #region Overrides
-
+#region Overrides
+#if DOCK
         protected override string GetPersistString()
         {
             return "LogWindow#" + FileName;
         }
-
-        #endregion
+#endif
+#endregion
 
         private void OnButtonSizeChanged(object sender, EventArgs e)
         {

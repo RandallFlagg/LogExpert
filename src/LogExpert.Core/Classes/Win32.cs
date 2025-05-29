@@ -17,7 +17,7 @@ namespace LogExpert.Core.Classes
         #endregion
 
         #region Public methods
-
+        //TODO: Take out all the dllimport out of LogExpert.Core.
         [DllImport("user32.dll")]
         public static extern bool DestroyIcon(nint hIcon);
 

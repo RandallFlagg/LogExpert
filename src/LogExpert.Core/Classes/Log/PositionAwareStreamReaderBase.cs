@@ -91,8 +91,7 @@ namespace LogExpert.Core.Classes.Log
             }
         }
 
-        //TODO This is unsafe and should be refactored
-        public override unsafe int ReadChar()
+        public override int ReadChar()
         {
             //ObjectDisposedException.ThrowIf
             if (IsDisposed)
@@ -112,7 +111,7 @@ namespace LogExpert.Core.Classes.Log
                     }
                     else
                     {
-                        _position += _reader.CurrentEncoding.GetByteCount(&readChar, 1);
+                        _position += _reader.CurrentEncoding.GetByteCount([readChar], 0, 1); //TODO: This line was changed. Need to test to make sure the change is good.
                     }
                 }
                 return readInt;

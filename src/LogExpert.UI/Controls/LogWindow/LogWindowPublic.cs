@@ -1773,7 +1773,14 @@ namespace LogExpert.UI.Controls.LogWindow
                 _guiStateArgs.HighlightGroupName = _currentHighlightGroup.GroupName;
             }
             SendGuiStateUpdate();
-            BeginInvoke(new MethodInvoker(RefreshAllGrids));
+#if !DOCK
+            if (InvokeRequired)
+            {
+#endif
+                BeginInvoke(new MethodInvoker(RefreshAllGrids));
+#if !DOCK
+            }
+#endif
         }
 
         public void SwitchMultiFile(bool enabled)
@@ -1839,6 +1846,6 @@ namespace LogExpert.UI.Controls.LogWindow
             RefreshAllGrids();
         }
 
-        #endregion
+#endregion
     }
 }

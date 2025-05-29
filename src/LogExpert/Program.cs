@@ -40,7 +40,6 @@ namespace LogExpert
         {
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             Application.ThreadException += Application_ThreadException;
-
 #if WINDOWS && False
             ApplicationConfiguration.Initialize();
 #else

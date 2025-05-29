@@ -10,7 +10,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
-using WeifenLuo.WinFormsUI.Docking;
+//using WeifenLuo.WinFormsUI.Docking;
 
 namespace LogExpert.UI.Controls.LogTabWindow;
 partial class LogTabWindow
@@ -479,6 +479,7 @@ partial class LogTabWindow
 
     private void OnTailFollowed(object sender, EventArgs e)
     {
+        #if DOCK
         if (dockPanel.ActiveContent == null)
         {
             return;
@@ -493,6 +494,7 @@ partial class LogTabWindow
                 BeginInvoke(new SetTabIconDelegate(SetTabIcon), (LogWindow.LogWindow)sender, icon);
             }
         }
+#endif
     }
 
     private void OnLogWindowSyncModeChanged(object sender, SyncModeEventArgs e)
@@ -600,11 +602,14 @@ partial class LogTabWindow
             // strange: on very first Show() now bookmarks are displayed. after a hide it will work.
             if (_firstBookmarkWindowShow)
             {
+                #if DOCK
                 _bookmarkWindow.Show(dockPanel);
+#endif
                 _bookmarkWindow.Hide();
             }
-
+#if DOCK
             _bookmarkWindow.Show(dockPanel);
+#endif
         }
     }
 
@@ -662,14 +667,18 @@ partial class LogTabWindow
 
     private void OnCloseThisTabToolStripMenuItemClick(object sender, EventArgs e)
     {
+        #if DOCK
         (dockPanel.ActiveContent as LogWindow.LogWindow).Close();
+#endif
     }
 
     private void OnCloseOtherTabsToolStripMenuItemClick(object sender, EventArgs e)
     {
+        #if DOCK
         IList<Form> closeList = new List<Form>();
         lock (_logWindowList)
         {
+
             foreach (DockContent content in dockPanel.Contents)
             {
                 if (content != dockPanel.ActiveContent && content is LogWindow.LogWindow)
@@ -682,6 +691,7 @@ partial class LogTabWindow
         {
             form.Close();
         }
+#endif
     }
 
     private void OnCloseAllTabsToolStripMenuItemClick(object sender, EventArgs e)
@@ -691,6 +701,7 @@ partial class LogTabWindow
 
     private void OnTabColorToolStripMenuItemClick(object sender, EventArgs e)
     {
+        #if DOCK
         LogWindow.LogWindow logWindow = dockPanel.ActiveContent as LogWindow.LogWindow;
 
         LogWindowData data = logWindow.Tag as LogWindowData;
@@ -727,6 +738,7 @@ partial class LogTabWindow
         {
             ConfigManager.Settings.fileColors.RemoveAt(0);
         }
+#endif
     }
 
     private void OnLogTabWindowSizeChanged(object sender, EventArgs e)
@@ -739,6 +751,7 @@ partial class LogTabWindow
 
     private void OnSaveProjectToolStripMenuItemClick(object sender, EventArgs e)
     {
+        #if DOCK
         SaveFileDialog dlg = new();
         dlg.DefaultExt = "lxj";
         dlg.Filter = @"LogExpert session (*.lxj)|*.lxj";
@@ -766,6 +779,7 @@ partial class LogTabWindow
             projectData.tabLayoutXml = SaveLayout();
             ProjectPersister.SaveProjectData(fileName, projectData);
         }
+#endif
     }
 
     private void OnLoadProjectToolStripMenuItemClick(object sender, EventArgs e)
@@ -791,12 +805,15 @@ partial class LogTabWindow
 
     private void OnCopyPathToClipboardToolStripMenuItemClick(object sender, EventArgs e)
     {
+        #if DOCK
         LogWindow.LogWindow logWindow = dockPanel.ActiveContent as LogWindow.LogWindow;
         Clipboard.SetText(logWindow.Title);
+#endif
     }
 
     private void OnFindInExplorerToolStripMenuItemClick(object sender, EventArgs e)
     {
+        #if DOCK
         LogWindow.LogWindow logWindow = dockPanel.ActiveContent as LogWindow.LogWindow;
 
         Process explorer = new();
@@ -804,6 +821,7 @@ partial class LogTabWindow
         explorer.StartInfo.Arguments = "/e,/select," + logWindow.Title;
         explorer.StartInfo.UseShellExecute = false;
         explorer.Start();
+#endif
     }
 
     private void OnExportBookmarksToolStripMenuItemClick(object sender, EventArgs e)
@@ -989,12 +1007,14 @@ partial class LogTabWindow
 
     private void OnDockPanelActiveContentChanged(object sender, EventArgs e)
     {
+        #if DOCK
         if (dockPanel.ActiveContent is LogWindow.LogWindow window)
         {
             CurrentLogWindow = window;
             CurrentLogWindow.LogWindowActivated();
             ConnectToolWindows(CurrentLogWindow);
         }
+#endif
     }
 
     private void OnTabRenameToolStripMenuItemClick(object sender, EventArgs e)
@@ -1013,5 +1033,5 @@ partial class LogTabWindow
         }
     }
 
-    #endregion
+#endregion
 }

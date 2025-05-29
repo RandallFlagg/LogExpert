@@ -66,8 +66,8 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.CSharp" />
+<!--    <PackageReference Include="Microsoft.CSharp" />-->
     <PackageReference Include="SSH.NET" />
-    <PackageReference Include="System.Data.DataSetExtensions" />
+<!--    <PackageReference Include="System.Data.DataSetExtensions" />-->
   </ItemGroup>
 </Project>

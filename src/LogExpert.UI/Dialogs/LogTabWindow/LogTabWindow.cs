@@ -11,6 +11,12 @@ using System.Windows.Forms;
 
 namespace LogExpert.UI.Controls.LogTabWindow;
 
+#if !DOCK
+internal class DockPanel {
+    public dynamic Theme;
+    public dynamic DockBackColor;
+}
+    #endif
 // Data shared over all LogTabWindow instances
 //TODO: Can we get rid of this class?
 internal partial class LogTabWindow : Form, ILogTabWindow
@@ -76,7 +82,8 @@ internal partial class LogTabWindow : Form, ILogTabWindow
         mainMenuStrip.Location = new Point(0, 0);
         externalToolsToolStrip.Location = new Point(0, 54);
 
-        ChangeTheme(Controls);
+        //TODO: Change theme
+        //ChangeTheme(Controls);
 
         _startupFileNames = fileNames;
         _instanceNumber = instanceNumber;

@@ -16,7 +16,7 @@ using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
 using System.Windows.Forms;
-using WeifenLuo.WinFormsUI.Docking;
+//using WeifenLuo.WinFormsUI.Docking;
 
 namespace LogExpert.UI.Controls.LogTabWindow;
 partial class LogTabWindow
@@ -64,8 +64,10 @@ partial class LogTabWindow
     {
         _bookmarkWindow = new BookmarkWindow
         {
+        #if DOCK
             HideOnClose = true,
             ShowHint = DockState.DockBottom
+#endif
         };
 
         _bookmarkWindow.PreferencesChanged(ConfigManager.Settings.Preferences, false, SettingsFlags.All, ConfigManager.Instance);
@@ -75,13 +77,16 @@ partial class LogTabWindow
 
     private void DestroyBookmarkWindow()
     {
+#if DOCK
         _bookmarkWindow.HideOnClose = false;
         _bookmarkWindow.Close();
+#endif
     }
 
     private void SaveLastOpenFilesList()
     {
         ConfigManager.Settings.lastOpenFilesList.Clear();
+#if DOCK
         foreach (DockContent content in dockPanel.Contents)
         {
             if (content is LogWindow.LogWindow logWin)
@@ -92,6 +97,7 @@ partial class LogTabWindow
                 }
             }
         }
+#endif
     }
 
     private void SaveWindowPosition()
@@ -115,7 +121,9 @@ partial class LogTabWindow
 
     private void SetTooltipText(LogWindow.LogWindow logWindow, string logFileName)
     {
+#if DOCK
         logWindow.ToolTipText = logFileName;
+#endif
     }
 
     private void FillDefaultEncodingFromSettings(EncodingOptions encodingOptions)
@@ -156,6 +164,7 @@ partial class LogTabWindow
 
     private void AddLogWindow(LogWindow.LogWindow logWindow, string title, bool doNotAddToPanel)
     {
+        #if DOCK
         logWindow.CloseButton = true;
         logWindow.TabPageContextMenuStrip = tabContextMenuStrip;
         SetTooltipText(logWindow, title);
@@ -184,6 +193,7 @@ partial class LogTabWindow
         logWindow.SyncModeChanged += OnLogWindowSyncModeChanged;
 
         logWindow.Visible = true;
+#endif
     }
 
     private void DisconnectEventHandlers(LogWindow.LogWindow logWindow)
@@ -869,7 +879,9 @@ partial class LogTabWindow
         if (logWindow != null)
         {
             logWindow.Icon = icon;
+#if DOCK
             logWindow.DockHandler.Pane?.TabStripControl.Invalidate(false);
+#endif
         }
     }
 
@@ -1122,6 +1134,7 @@ partial class LogTabWindow
 
     private void CloseAllTabs()
     {
+#if DOCK
         IList<Form> closeList = [];
         lock (_logWindowList)
         {
@@ -1138,6 +1151,7 @@ partial class LogTabWindow
         {
             form.Close();
         }
+#endif
     }
 
     private void SetTabColor(LogWindow.LogWindow logWindow, Color color)
@@ -1276,7 +1290,9 @@ partial class LogTabWindow
     {
         using MemoryStream memStream = new(2000);
         using StreamReader r = new(memStream);
+        #if DOCK
         dockPanel.SaveAsXml(memStream, Encoding.UTF8, true);
+#endif
 
         memStream.Seek(0, SeekOrigin.Begin);
         string resultXml = r.ReadToEnd();
@@ -1294,10 +1310,11 @@ partial class LogTabWindow
         w.Flush();
 
         memStream.Seek(0, SeekOrigin.Begin);
-
+#if DOCK
         dockPanel.LoadFromXml(memStream, DeserializeDockContent, true);
+#endif
     }
-
+#if DOCK
     private IDockContent DeserializeDockContent(string persistString)
     {
         if (persistString.Equals(WindowTypes.BookmarkWindow.ToString()))
@@ -1319,11 +1336,11 @@ partial class LogTabWindow
 
         return null;
     }
-
+#endif
     private void OnHighlightSettingsChanged()
     {
         HighlightSettingsChanged?.Invoke(this, EventArgs.Empty);
     }
 
-    #endregion
+#endregion
 }

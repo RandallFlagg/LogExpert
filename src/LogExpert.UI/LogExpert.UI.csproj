@@ -16,12 +16,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\External\dockpanelsuite\WinFormsUI\ThemeVS2015.csproj" />
+    <!--<ProjectReference Include="..\..\External\dockpanelsuite\WinFormsUI\ThemeVS2015.csproj" />-->
     <ProjectReference Include="..\..\External\System.Windows.Forms\System.Windows.Forms\System.Windows.Forms.csproj" />
     <ProjectReference Include="..\LogExpert.Core\LogExpert.Core.csproj" />
     <ProjectReference Include="..\LogExpert.Resources\LogExpert.Resources.csproj" />
     <ProjectReference Include="..\PluginRegistry\LogExpert.PluginRegistry.csproj" />
-    <!--<ProjectReference Include="../../External/dockpanelsuite/WinFormsUI/WinFormsUI.csproj" />-->
   </ItemGroup>
 
   <ItemGroup>
@@ -38,14 +37,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
 <!--    <PackageReference Include="DockPanelSuite.ThemeVS2015" />-->
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Update="Properties\Resources.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
   </ItemGroup>
 
   <ItemGroup>

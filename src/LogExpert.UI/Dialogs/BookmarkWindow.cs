@@ -12,12 +12,12 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
-using WeifenLuo.WinFormsUI.Docking;
+//using WeifenLuo.WinFormsUI.Docking;
 
 namespace LogExpert.Dialogs;
 
 //TODO can be moved to LogExpert.UI if the PaintHelper has been refactored
-public partial class BookmarkWindow : DockContent, ISharedToolWindow, IBookmarkView
+public partial class BookmarkWindow :  Form, ISharedToolWindow, IBookmarkView // DockContent,
 {
     #region Fields
 
@@ -247,13 +247,14 @@ public partial class BookmarkWindow : DockContent, ISharedToolWindow, IBookmarkV
 
     #endregion
 
-    #region Overrides
+#region Overrides
 
+#if DOCK
     protected override string GetPersistString()
     {
         return WindowTypes.BookmarkWindow.ToString();
     }
-
+#endif
     protected override void OnPaint(PaintEventArgs e)
     {
         if (!splitContainer1.Visible)
@@ -272,7 +273,7 @@ public partial class BookmarkWindow : DockContent, ISharedToolWindow, IBookmarkV
         }
     }
 
-    #endregion
+#endregion
 
     #region Private Methods
 

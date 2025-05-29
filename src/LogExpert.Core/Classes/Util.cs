@@ -148,7 +148,7 @@ namespace LogExpert.Core.Classes
             return d[str1.Length, str2.Length];
         }
 
-
+        //TODO: This can PROBABLY be changed to a safe version from this comment (update#2): https://stackoverflow.com/a/4508581
         public static unsafe int YetiLevenshtein(string s1, string s2)
         {
             fixed (char* p1 = s1)

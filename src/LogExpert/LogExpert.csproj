@@ -7,7 +7,7 @@
     <AssemblyOriginatorKeyFile>..\Solution Items\Key.snk</AssemblyOriginatorKeyFile>
     <CopyLocalLockFileAssemblies>True</CopyLocalLockFileAssemblies>
     <DocumentationFile>$(SolutionDir)..\bin\Docs\LogExpert.xml</DocumentationFile>
-    <EnableWindowsTargeting>True</EnableWindowsTargeting>
+    <EnableWindowsTargeting>False</EnableWindowsTargeting>
     <ForceDesignerDPIUnaware>True</ForceDesignerDPIUnaware>
     <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
     <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
@@ -19,6 +19,8 @@
     <SignAssembly>false</SignAssembly>
     <TargetFramework>net8.0</TargetFramework>
     <UseWindowsForms>False</UseWindowsForms>
+    <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
+
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using WeifenLuo.WinFormsUI.Docking;
+//using WeifenLuo.WinFormsUI.Docking;
 
 namespace LogExpert.UI.Controls.LogTabWindow;
 partial class LogTabWindow
@@ -85,6 +85,7 @@ partial class LogTabWindow
             AddToFileHistory(givenFileName);
         }
 
+        #if DOCK
         LogWindowData data = logWindow.Tag as LogWindowData;
         data.color = _defaultTabColor;
         SetTabColor(logWindow, _defaultTabColor);
@@ -101,7 +102,7 @@ partial class LogTabWindow
                 }
             }
         }
-
+#endif
         if (!isTempFile)
         {
             SetTooltipText(logWindow, logFileName);
@@ -182,6 +183,7 @@ partial class LogTabWindow
 
     public void SwitchTab(bool shiftPressed)
     {
+#if DOCK
         int index = dockPanel.Contents.IndexOf(dockPanel.ActiveContent);
         if (shiftPressed)
         {
@@ -209,6 +211,7 @@ partial class LogTabWindow
         {
             (dockPanel.Contents[index] as DockContent).Activate();
         }
+#endif
     }
 
     public void ScrollAllTabsToTimestamp(DateTime timestamp, LogWindow.LogWindow senderWindow)
@@ -349,5 +352,5 @@ partial class LogTabWindow
         return list;
     }
 
-    #endregion
+#endregion
 }
