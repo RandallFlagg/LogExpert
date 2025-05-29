@@ -1001,9 +1001,6 @@ partial class LogTabWindow
         }
     }
 
-    [DllImport("user32.dll", CharSet = CharSet.Auto)]
-    private static extern bool DestroyIcon(IntPtr handle);
-
     private void SetToolIcon(ToolEntry entry, ToolStripItem item)
     {
         Icon icon = Win32.LoadIconFromExe(entry.iconFile, entry.iconIndex);
@@ -1019,7 +1016,7 @@ partial class LogTabWindow
                 item.DisplayStyle = ToolStripItemDisplayStyle.Image;
             }
 
-            DestroyIcon(icon.Handle);
+            Win32.DestroyIcon(icon.Handle);
             icon.Dispose();
         }
 

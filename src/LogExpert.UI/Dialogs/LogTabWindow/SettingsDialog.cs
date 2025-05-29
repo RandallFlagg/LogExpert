@@ -56,9 +56,6 @@ internal partial class SettingsDialog : Form
 
     #region Private Methods
 
-    [DllImport("user32.dll", CharSet = CharSet.Auto)]
-    private static extern bool DestroyIcon(IntPtr handle);
-
     private void FillDialog()
     {
         Preferences ??= new Preferences();
@@ -564,7 +561,7 @@ internal partial class SettingsDialog : Form
             {
                 Image image = icon.ToBitmap();
                 buttonIcon.Image = image;
-                DestroyIcon(icon.Handle);
+                Win32.DestroyIcon(icon.Handle);
                 icon.Dispose();
             }
             else

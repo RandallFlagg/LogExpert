@@ -5,7 +5,7 @@ using System.Runtime.Versioning;
 namespace LogExpert.UI.Extensions
 {
     [SupportedOSPlatform("windows")]
-    internal static class Win32
+    internal static partial class Win32 //NativeMethods
     {
         #region Fields
 
@@ -13,13 +13,53 @@ namespace LogExpert.UI.Extensions
         public const long SM_CXHSCROLL = 21;
         public const long SM_CXVSCROLL = 2;
         public const long SM_CYHSCROLL = 3;
+        private const int DWMWA_USE_IMMERSIVE_DARK_MODE_BEFORE_20H1 = 19;
+        private const int DWMWA_USE_IMMERSIVE_DARK_MODE = 20;
 
         #endregion
 
-        #region Public methods
+        #region Library Imports
+        [LibraryImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static partial bool DestroyIcon(nint hIcon);
 
-        [DllImport("user32.dll")]
-        public static extern bool DestroyIcon(nint hIcon);
+        [LibraryImport("User32.dll")]
+        public static partial int SetForegroundWindow(nint hWnd);
+
+        [LibraryImport("user32.dll")]
+        public static partial long GetSystemMetricsForDpi(long index);
+
+        [LibraryImport("user32.dll")]
+        public static partial long GetSystemMetrics(long index);
+
+        [LibraryImport("user32.dll")]
+        public static partial short GetKeyState(int vKey);
+
+        /*
+        UINT ExtractIconEx(
+        LPCTSTR lpszFile,
+        int nIconIndex,
+        HICON *phiconLarge,
+        HICON *phiconSmall,
+        UINT nIcons
+        );
+        * */
+        [LibraryImport("shell32.dll", StringMarshalling = StringMarshalling.Utf16)]
+        public static partial uint ExtractIconEx(
+            string fileName,
+            int iconIndex,
+            ref nint iconsLarge,
+            ref nint iconsSmall,
+            uint numIcons
+        );
+
+        #region TitleBarDarkMode
+        [LibraryImport("dwmapi.dll")]
+        public static partial int DwmSetWindowAttribute(nint hwnd, int attr, ref int attrValue, int attrSize);
+        #endregion
+        #endregion
+
+        #region Public methods
 
         public static Icon LoadIconFromExe(string fileName, int index)
         {
@@ -42,7 +82,6 @@ namespace LogExpert.UI.Extensions
             }
             return null;
         }
-
 
         public static Icon[,] ExtractIcons(string fileName)
         {
@@ -83,44 +122,9 @@ namespace LogExpert.UI.Extensions
             return result;
         }
 
-        [DllImport("user32.dll")]
-        public static extern long GetSystemMetricsForDpi(long index);
-
-
-        [DllImport("user32.dll")]
-        public static extern long GetSystemMetrics(long index);
-
-        [DllImport("user32.dll")]
-        public static extern short GetKeyState(int vKey);
-
         #endregion
 
         #region Private Methods
-
-        /*
-  UINT ExtractIconEx(
-      LPCTSTR lpszFile,
-      int nIconIndex,
-      HICON *phiconLarge,
-      HICON *phiconSmall,
-      UINT nIcons
-  );
-       * */
-
-        [DllImport("shell32.dll")]
-        private static extern uint ExtractIconEx(string fileName,
-            int iconIndex,
-            ref nint iconsLarge,
-            ref nint iconsSmall,
-            uint numIcons
-        );
-
-        #region TitleBarDarkMode
-        [DllImport("dwmapi.dll")]
-        private static extern int DwmSetWindowAttribute(nint hwnd, int attr, ref int attrValue, int attrSize);
-
-        private const int DWMWA_USE_IMMERSIVE_DARK_MODE_BEFORE_20H1 = 19;
-        private const int DWMWA_USE_IMMERSIVE_DARK_MODE = 20;
 
         public static bool UseImmersiveDarkMode(nint handle, bool enabled)
         {
@@ -143,6 +147,5 @@ namespace LogExpert.UI.Extensions
 
         #endregion TitleBarDarkMode
 
-        #endregion
     }
 }
