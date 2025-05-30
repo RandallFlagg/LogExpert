@@ -31,8 +31,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Drawing.Common" />
-    <PackageReference Include="System.Resources.Extensions" />
+    <!--<PackageReference Include="System.Drawing.Common" />-->
+    <!--<PackageReference Include="System.Resources.Extensions" />-->
   </ItemGroup>
 
   <ItemGroup>
@@ -48,6 +48,10 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\External\System.Windows.Forms\System.Windows.Forms\System.Windows.Forms.csproj" />
   </ItemGroup>
 
 </Project>
