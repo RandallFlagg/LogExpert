@@ -1,4 +1,5 @@
 ﻿using LogExpert.Classes.ILogLineColumnizerCallback;
+using System.Collections.Generic;
 
 namespace LogExpert.UI.Controls.LogWindow
 {

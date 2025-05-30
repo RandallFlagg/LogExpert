@@ -7,8 +7,10 @@ using LogExpert.Core.Interface;
 using LogExpert.UI.Controls.LogTabWindow;
 using LogExpert.UI.Dialogs;
 using LogExpert.UI.Extensions;
+using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Windows.Forms;
 
 namespace LogExpert.Dialogs;
 

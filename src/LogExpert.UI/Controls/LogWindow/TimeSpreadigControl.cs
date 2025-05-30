@@ -2,6 +2,8 @@
 using LogExpert.Core.EventArguments;
 using LogExpert.UI.Extensions;
 using NLog;
+using System.Drawing;
+using System.Windows.Forms;
 
 namespace LogExpert.UI.Controls.LogWindow
 {

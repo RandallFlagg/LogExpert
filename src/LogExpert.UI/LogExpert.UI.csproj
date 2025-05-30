@@ -5,7 +5,7 @@
     <AssemblyOriginatorKeyFile>..\Solution Items\Key.snk</AssemblyOriginatorKeyFile>
     <ForceDesignerDPIUnaware>true</ForceDesignerDPIUnaware>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <ImplicitUsings>disable</ImplicitUsings>
+    <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>disable</Nullable>
     <SignAssembly>False</SignAssembly>
     <TargetFramework>net8.0</TargetFramework>
