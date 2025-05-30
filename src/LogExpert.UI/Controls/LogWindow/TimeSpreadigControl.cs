@@ -1,13 +1,7 @@
-﻿using LogExpert.Classes;
-using LogExpert.Core.Classes;
+﻿using LogExpert.Core.Classes;
 using LogExpert.Core.EventArguments;
-using LogExpert.UI.Controls.LogWindow;
+using LogExpert.UI.Extensions;
 using NLog;
-
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Windows.Forms;
 
 namespace LogExpert.UI.Controls.LogWindow
 {

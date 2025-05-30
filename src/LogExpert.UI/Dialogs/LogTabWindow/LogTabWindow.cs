@@ -1,7 +1,9 @@
-﻿using LogExpert.Core.Config;
+﻿using LogExpert.Core.Classes;
+using LogExpert.Core.Config;
 using LogExpert.Core.Entities;
 using LogExpert.Core.Interface;
 using LogExpert.Dialogs;
+using LogExpert.UI.Extensions;
 using LogExpert.UI.Extensions.Forms;
 using NLog;
 using System.Drawing;
@@ -167,7 +169,7 @@ internal partial class LogTabWindow : Form, ILogTabWindow
     public void ChangeTheme(Control.ControlCollection container)
     {
         ColorMode.LoadColorMode(ConfigManager.Settings.Preferences.darkMode);
-        ColorMode.UseImmersiveDarkMode(Handle, ColorMode.DarkModeEnabled);
+        Win32.UseImmersiveDarkMode(Handle, ColorMode.DarkModeEnabled);
 
         #region ApplyColorToAllControls
         foreach (Control component in container)

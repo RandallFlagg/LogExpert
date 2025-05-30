@@ -1,7 +1,5 @@
-﻿using LogExpert.Core.Classes;
-using System.Drawing;
+﻿using LogExpert.UI.Extensions;
 using System.Runtime.Versioning;
-using System.Windows.Forms;
 
 namespace LogExpert.UI.Dialogs;
 

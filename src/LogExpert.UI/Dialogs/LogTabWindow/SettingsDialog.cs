@@ -6,14 +6,9 @@ using LogExpert.Core.Enums;
 using LogExpert.Core.Interface;
 using LogExpert.UI.Controls.LogTabWindow;
 using LogExpert.UI.Dialogs;
-
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
+using LogExpert.UI.Extensions;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Windows.Forms;
 
 namespace LogExpert.Dialogs;
 
@@ -60,9 +55,6 @@ internal partial class SettingsDialog : Form
     #endregion
 
     #region Private Methods
-
-    [DllImport("user32.dll", CharSet = CharSet.Auto)]
-    private static extern bool DestroyIcon(IntPtr handle);
 
     private void FillDialog()
     {
@@ -569,7 +561,7 @@ internal partial class SettingsDialog : Form
             {
                 Image image = icon.ToBitmap();
                 buttonIcon.Image = image;
-                DestroyIcon(icon.Handle);
+                Win32.DestroyIcon(icon.Handle);
                 icon.Dispose();
             }
             else
