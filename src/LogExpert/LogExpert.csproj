@@ -46,13 +46,12 @@
     <Content Include="logexpert.ico" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="System.Text.Encoding" />
     <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="NLog" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ColumnizerLib\ColumnizerLib.csproj" />
-    <ProjectReference Include="..\Logexpert.UI\LogExpert.UI.csproj" />
+    <ProjectReference Include="..\LogExpert.UI\LogExpert.UI.csproj" />
     <ProjectReference Include="..\PluginRegistry\LogExpert.PluginRegistry.csproj" />
   </ItemGroup>
   <ItemGroup>

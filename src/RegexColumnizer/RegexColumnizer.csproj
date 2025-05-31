@@ -35,8 +35,4 @@
       <Link>Key.snk</Link>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.CSharp" />
-    <PackageReference Include="System.Data.DataSetExtensions" />
-  </ItemGroup>
 </Project>
