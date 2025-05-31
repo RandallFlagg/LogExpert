@@ -3,6 +3,7 @@
   <PropertyGroup>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <AssemblyOriginatorKeyFile>..\Solution Items\Key.snk</AssemblyOriginatorKeyFile>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
     <ForceDesignerDPIUnaware>true</ForceDesignerDPIUnaware>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <ImplicitUsings>enable</ImplicitUsings>
