@@ -19,8 +19,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Logexpert.Core\LogExpert.Core.csproj" />
-    <ProjectReference Include="..\Logexpert.Resources\LogExpert.Resources.csproj" />
+    <ProjectReference Include="..\LogExpert.Core\LogExpert.Core.csproj" />
+    <ProjectReference Include="..\LogExpert.Resources\LogExpert.Resources.csproj" />
     <ProjectReference Include="..\PluginRegistry\LogExpert.PluginRegistry.csproj" />
   </ItemGroup>
 
