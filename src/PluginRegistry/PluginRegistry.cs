@@ -3,9 +3,7 @@ using LogExpert.Core.Classes.Columnizer;
 using LogExpert.Core.Entities;
 using LogExpert.Core.Interface;
 using LogExpert.PluginRegistry.FileSystem;
-
 using NLog;
-
 using System.Reflection;
 
 namespace LogExpert.PluginRegistry

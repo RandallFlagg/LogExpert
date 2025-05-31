@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Logexpert.Core\LogExpert.Core.csproj" />
+    <ProjectReference Include="..\LogExpert.Core\LogExpert.Core.csproj" />
   </ItemGroup>
 
 </Project>
