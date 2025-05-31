@@ -1,5 +1,4 @@
 ﻿using LogExpert.Core.Config;
-using LogExpert.Core.Entities;
 
 namespace LogExpert.Core.Interface
 {
@@ -16,7 +15,7 @@ namespace LogExpert.Core.Interface
         /// Called when a file becomes the active file (e.g. when user selects a tab).
         /// </summary>
         /// <param name="ctx"></param>
-        void SetCurrentFile(FileViewContext ctx);
+        void SetCurrentFile(IFileViewContext ctx);
 
         /// <summary>
         /// Called whenever the current file has been changed.
