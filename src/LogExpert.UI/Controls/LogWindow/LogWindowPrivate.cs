@@ -198,12 +198,12 @@ namespace LogExpert.UI.Controls.LogWindow
                 {
                     // outdated persistence data (logfile rollover)
                     // MessageBox.Show(this, "Persistence data for " + this.FileName + " is outdated. It was discarded.", "Log Expert");
-                    _logger.Info("Persistence data for {0} is outdated. It was discarded.", FileName);
-                    LoadPersistenceOptions();
+                    _logger.Info($"Persistence data for {FileName} is outdated. It was discarded.");
+                    _ = LoadPersistenceOptions();
                     return;
                 }
 
-                _bookmarkProvider.BookmarkList = persistenceData.bookmarkList;
+                _bookmarkProvider.SetBookmarks(persistenceData.bookmarkList);
                 _rowHeightList = persistenceData.rowHeightList;
                 try
                 {
