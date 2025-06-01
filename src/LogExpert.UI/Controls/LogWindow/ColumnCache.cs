@@ -1,4 +1,4 @@
-using LogExpert.Classes.ILogLineColumnizerCallback;
+using LogExpert.Core.Callback;
 using LogExpert.Core.Classes.Log;
 
 namespace LogExpert.UI.Controls.LogWindow;

@@ -1,5 +1,5 @@
 ﻿using LogExpert.Classes.Filter;
-using LogExpert.Classes.ILogLineColumnizerCallback;
+using LogExpert.Core.Callback;
 using LogExpert.Core.Classes.Bookmark;
 using LogExpert.Core.Classes.Filter;
 using LogExpert.Core.Classes.Highlight;
@@ -14,7 +14,9 @@ using LogExpert.Dialogs;
 using LogExpert.UI.Controls.LogTabWindow;
 using LogExpert.UI.Dialogs;
 using LogExpert.UI.Extensions.Forms;
+
 using NLog;
+
 using WeifenLuo.WinFormsUI.Docking;
 //using static LogExpert.PluginRegistry.PluginRegistry; //TODO: Adjust the instance name so using static can be used.
 

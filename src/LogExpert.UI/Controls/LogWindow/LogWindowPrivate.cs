@@ -3,7 +3,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 using LogExpert.Classes.Filter;
-using LogExpert.Classes.ILogLineColumnizerCallback;
+using LogExpert.Core.Callback;
 using LogExpert.Core.Classes;
 using LogExpert.Core.Classes.Columnizer;
 using LogExpert.Core.Classes.Filter;
