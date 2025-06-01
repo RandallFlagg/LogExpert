@@ -2,7 +2,7 @@
 
 namespace LogExpert.Core.Entities
 {
-    public class FileViewContext(ILogPaintContext logPaintContext, ILogView logView)
+    public class FileViewContext(ILogPaintContext logPaintContext, ILogView logView) : IFileViewContext, ILogPaintContext
     {
         #region Properties
 

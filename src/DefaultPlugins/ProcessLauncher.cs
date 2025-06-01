@@ -2,7 +2,8 @@
 
 namespace LogExpert
 {
-    public class ProcessLauncher : IKeywordAction
+    //TODO: Not in use
+    internal class ProcessLauncher : IKeywordAction
     {
         #region Properties
 

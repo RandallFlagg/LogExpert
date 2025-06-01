@@ -14,7 +14,6 @@ using LogExpert.Dialogs;
 using LogExpert.UI.Controls.LogTabWindow;
 using LogExpert.UI.Dialogs;
 using LogExpert.UI.Extensions.Forms;
-
 using NLog;
 
 using WeifenLuo.WinFormsUI.Docking;
@@ -23,7 +22,7 @@ using WeifenLuo.WinFormsUI.Docking;
 namespace LogExpert.UI.Controls.LogWindow
 {
     //TODO: Implemented 4 interfaces explicitly. Find them by searcginh: ILogWindow.<method name>
-    internal partial class LogWindow : DockContent, ILogPaintContext, ILogView, ILogWindow
+    internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, ILogWindow
     {
         #region Fields
 

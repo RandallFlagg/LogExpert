@@ -1,7 +1,6 @@
 using LogExpert.Core.Callback;
 using LogExpert.Core.Classes;
 using LogExpert.Core.Classes.Filter;
-
 using NLog;
 
 namespace LogExpert.Classes.Filter
