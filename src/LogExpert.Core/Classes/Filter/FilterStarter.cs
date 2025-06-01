@@ -1,16 +1,11 @@
-﻿using LogExpert.Classes.ILogLineColumnizerCallback;
+using LogExpert.Core.Callback;
 using LogExpert.Core.Classes.Filter;
 
 using NLog;
 
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-
 namespace LogExpert.Classes.Filter
 {
-    public delegate void ProgressCallback(int lineCount);
+    public delegate void ProgressCallback (int lineCount);
 
     public class FilterStarter
     {
@@ -35,7 +30,7 @@ namespace LogExpert.Classes.Filter
 
         #region cTor
 
-        public FilterStarter(ColumnizerCallback callback, int minThreads)
+        public FilterStarter (ColumnizerCallback callback, int minThreads)
         {
             _callback = callback;
             FilterResultLines = [];
@@ -69,7 +64,7 @@ namespace LogExpert.Classes.Filter
 
         #region Public methods
 
-        public async void DoFilter(FilterParams filterParams, int startLine, int maxCount, ProgressCallback progressCallback)
+        public async void DoFilter (FilterParams filterParams, int startLine, int maxCount, ProgressCallback progressCallback)
         {
             FilterResultLines.Clear();
             LastFilterLinesList.Clear();
@@ -87,6 +82,7 @@ namespace LogExpert.Classes.Filter
             {
                 interval = 1;
             }
+
             int workStartLine = startLine;
             List<WaitHandle> handleList = [];
             _progressLineCount = 0;
@@ -121,7 +117,7 @@ namespace LogExpert.Classes.Filter
         /// Requests the FilterStarter to stop all filter threads. Call this from another thread (e.g. GUI). The function returns
         /// immediately without waiting for filter end.
         /// </summary>
-        public void CancelFilter()
+        public void CancelFilter ()
         {
             _shouldStop = true;
             lock (_filterWorkerList)
@@ -138,13 +134,13 @@ namespace LogExpert.Classes.Filter
 
         #region Private Methods
 
-        private void ThreadProgressCallback(int lineCount)
+        private void ThreadProgressCallback (int lineCount)
         {
             int count = Interlocked.Add(ref _progressLineCount, lineCount);
             _progressCallback(count);
         }
 
-        private Filter DoWork(FilterParams filterParams, int startLine, int maxCount, ProgressCallback progressCallback)
+        private Filter DoWork (FilterParams filterParams, int startLine, int maxCount, ProgressCallback progressCallback)
         {
             _logger.Info("Started Filter worker [{0}] for line {1}", Environment.CurrentManagedThreadId, startLine);
 
@@ -174,7 +170,7 @@ namespace LogExpert.Classes.Filter
             return filter;
         }
 
-        private void FilterDoneCallback(Task<Filter> filterTask)
+        private void FilterDoneCallback (Task<Filter> filterTask)
         {
             if (filterTask.IsCompleted)
             {
@@ -187,7 +183,7 @@ namespace LogExpert.Classes.Filter
             }
         }
 
-        private void MergeResults()
+        private void MergeResults ()
         {
             _logger.Info("Merging filter results.");
             foreach (Filter filter in _filterReadyList)

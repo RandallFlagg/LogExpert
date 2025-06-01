@@ -1,6 +1,3 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
 
 using static LogExpert.Core.Classes.Columnizer.TimeFormatDeterminer;
@@ -18,11 +15,11 @@ namespace LogExpert.Core.Classes.Columnizer
         private int _columnCount = 5;
         private bool _isTimeExists = false;
 
-        public SquareBracketColumnizer()
+        public SquareBracketColumnizer ()
         {
         }
 
-        public SquareBracketColumnizer(int columnCount, bool isTimeExists) : this()
+        public SquareBracketColumnizer (int columnCount, bool isTimeExists) : this()
         {
             // Add message column
             _columnCount = columnCount + 1;
@@ -34,22 +31,22 @@ namespace LogExpert.Core.Classes.Columnizer
             }
         }
 
-        public bool IsTimeshiftImplemented()
+        public bool IsTimeshiftImplemented ()
         {
             return true;
         }
 
-        public void SetTimeOffset(int msecOffset)
+        public void SetTimeOffset (int msecOffset)
         {
             timeOffset = msecOffset;
         }
 
-        public int GetTimeOffset()
+        public int GetTimeOffset ()
         {
             return timeOffset;
         }
 
-        public DateTime GetTimestamp(LogExpert.ILogLineColumnizerCallback callback, ILogLine line)
+        public DateTime GetTimestamp (LogExpert.ILogLineColumnizerCallback callback, ILogLine line)
         {
             IColumnizedLogLine cols = SplitLine(callback, line);
             if (cols == null || cols.ColumnValues == null || cols.ColumnValues.Length < 2)
@@ -81,7 +78,7 @@ namespace LogExpert.Core.Classes.Columnizer
             }
         }
 
-        public void PushValue(LogExpert.ILogLineColumnizerCallback callback, int column, string value, string oldValue)
+        public void PushValue (LogExpert.ILogLineColumnizerCallback callback, int column, string value, string oldValue)
         {
             if (column == 1)
             {
@@ -105,22 +102,22 @@ namespace LogExpert.Core.Classes.Columnizer
             }
         }
 
-        public string GetName()
+        public string GetName ()
         {
             return "Square Bracket Columnizer";
         }
 
-        public string GetDescription()
+        public string GetDescription ()
         {
             return "Splits every line into n fields: Date, Time and the rest of the log message";
         }
 
-        public int GetColumnCount()
+        public int GetColumnCount ()
         {
             return _columnCount;
         }
 
-        public string[] GetColumnNames()
+        public string[] GetColumnNames ()
         {
             var columnNames = new List<string>(GetColumnCount());
             if (_isTimeExists)
@@ -151,7 +148,7 @@ namespace LogExpert.Core.Classes.Columnizer
             return columnNames.ToArray();
         }
 
-        public IColumnizedLogLine SplitLine(LogExpert.ILogLineColumnizerCallback callback, ILogLine line)
+        public IColumnizedLogLine SplitLine (LogExpert.ILogLineColumnizerCallback callback, ILogLine line)
         {
             // 0         1         2         3         4         5         6         7         8         9         10        11        12        13        14        15        16
             // 012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789
@@ -217,7 +214,7 @@ namespace LogExpert.Core.Classes.Columnizer
             return clogLine;
         }
 
-        void SquareSplit(ref Column[] columns, string line, int dateLen, int timeLen, int dateTimeEndPos, ColumnizedLogLine clogLine)
+        void SquareSplit (ref Column[] columns, string line, int dateLen, int timeLen, int dateTimeEndPos, ColumnizedLogLine clogLine)
         {
             List<Column> columnList = [];
             int restColumn = _columnCount;
@@ -256,7 +253,7 @@ namespace LogExpert.Core.Classes.Columnizer
             columns = columnList.ToArray();
         }
 
-        public Priority GetPriority(string fileName, IEnumerable<ILogLine> samples)
+        public Priority GetPriority (string fileName, IEnumerable<ILogLine> samples)
         {
             Priority result = Priority.NotSupport;
             TimeFormatDeterminer timeDeterminer = new();

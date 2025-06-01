@@ -1,69 +1,70 @@
-﻿using LogExpert.Core.Interface;
+using LogExpert.Core.Interface;
 
-namespace LogExpert.Classes.ILogLineColumnizerCallback
+namespace LogExpert.Core.Callback;
+
+public class ColumnizerCallback : ILogLineColumnizerCallback, IAutoLogLineColumnizerCallback
 {
-    public class ColumnizerCallback : LogExpert.ILogLineColumnizerCallback, IAutoLogLineColumnizerCallback
+    #region cTor
+
+    public ColumnizerCallback (ILogWindow logWindow)
     {
-        #region Fields
-
-        protected ILogWindow _logWindow;
-        protected IPluginRegistry _pluginRegistry;
-
-        #endregion
-
-        #region cTor
-
-        public ColumnizerCallback(ILogWindow logWindow)
-        {
-            _logWindow = logWindow;
-        }
-
-        private ColumnizerCallback(ColumnizerCallback original)
-        {
-            _logWindow = original._logWindow;
-            LineNum = original.LineNum;
-        }
-
-        #endregion
-
-        #region Properties
-
-        public int LineNum { get; set; }
-
-        #endregion
-
-        #region Public methods
-
-        public ColumnizerCallback CreateCopy()
-        {
-            return new ColumnizerCallback(this);
-        }
-
-        public int GetLineNum()
-        {
-            return LineNum;
-        }
-
-        public string GetFileName()
-        {
-            return _logWindow.GetCurrentFileName(LineNum);
-        }
-
-        public ILogLine GetLogLine(int lineNum)
-        {
-            return _logWindow.GetLine(lineNum);
-        }
-
-        public IList<ILogLineColumnizer> GetRegisteredColumnizers()
-        {
-            return _pluginRegistry.RegisteredColumnizers;
-        }
-
-        public int GetLineCount()
-        {
-            return _logWindow._logFileReader.LineCount;
-        }
-
-        #endregion
+        LogWindow = logWindow;
     }
+
+    private ColumnizerCallback (ColumnizerCallback original)
+    {
+        LogWindow = original.LogWindow;
+        LineNum = original.GetLineNum();
+    }
+
+    #endregion
+
+    #region Properties
+
+    public int LineNum { get; set; }
+
+    protected ILogWindow LogWindow { get; set; }
+
+    protected IPluginRegistry PluginRegistry { get; set; }
+
+    #endregion
+
+    #region Public methods
+
+    public ColumnizerCallback CreateCopy ()
+    {
+        return new ColumnizerCallback(this);
+    }
+
+    public int GetLineNum ()
+    {
+        return LineNum;
+    }
+
+    public string GetFileName ()
+    {
+        return LogWindow.GetCurrentFileName(GetLineNum());
+    }
+
+    public ILogLine GetLogLine (int lineNum)
+    {
+        return LogWindow.GetLine(lineNum);
+    }
+
+    public IList<ILogLineColumnizer> GetRegisteredColumnizers ()
+    {
+        return PluginRegistry.RegisteredColumnizers;
+    }
+
+    public int GetLineCount ()
+    {
+        return LogWindow.LogFileReader.LineCount;
+    }
+
+    public void SetLineNum (int lineNum)
+    {
+        LineNum = lineNum;
+    }
+
+    #endregion
 }

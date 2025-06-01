@@ -3,7 +3,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 using LogExpert.Classes.Filter;
-using LogExpert.Classes.ILogLineColumnizerCallback;
+using LogExpert.Core.Callback;
 using LogExpert.Core.Classes;
 using LogExpert.Core.Classes.Columnizer;
 using LogExpert.Core.Classes.Filter;
@@ -612,7 +612,7 @@ namespace LogExpert.UI.Controls.LogWindow
                 while (true)
                 {
                     LogEventArgs e;
-                    int lastLineCount = 0;
+                    var lastLineCount = 0;
                     lock (_logEventArgsList)
                     {
                         _logger.Info("{0} events in queue", _logEventArgsList.Count);
@@ -663,8 +663,8 @@ namespace LogExpert.UI.Controls.LogWindow
 
         private void UpdateGrid (LogEventArgs e)
         {
-            int oldRowCount = dataGridView.RowCount;
-            int firstDisplayedLine = dataGridView.FirstDisplayedScrollingRowIndex;
+            var oldRowCount = dataGridView.RowCount;
+            var firstDisplayedLine = dataGridView.FirstDisplayedScrollingRowIndex;
 
             if (dataGridView.CurrentCellAddress.Y >= e.LineCount)
             {
@@ -676,7 +676,7 @@ namespace LogExpert.UI.Controls.LogWindow
             {
                 if (dataGridView.RowCount > e.LineCount)
                 {
-                    int currentLineNum = dataGridView.CurrentCellAddress.Y;
+                    var currentLineNum = dataGridView.CurrentCellAddress.Y;
                     dataGridView.RowCount = 0;
                     dataGridView.RowCount = e.LineCount;
                     if (_guiStateArgs.FollowTail == false)
@@ -702,7 +702,7 @@ namespace LogExpert.UI.Controls.LogWindow
                     // keep selection and view range, if no follow tail mode
                     if (!_guiStateArgs.FollowTail)
                     {
-                        int currentLineNum = dataGridView.CurrentCellAddress.Y;
+                        var currentLineNum = dataGridView.CurrentCellAddress.Y;
                         currentLineNum -= e.RolloverOffset;
                         if (currentLineNum < 0)
                         {
@@ -757,7 +757,7 @@ namespace LogExpert.UI.Controls.LogWindow
 
         private void CheckFilterAndHighlight (LogEventArgs e)
         {
-            bool noLed = true;
+            var noLed = true;
             bool suppressLed;
             bool setBookmark;
             bool stopTail;
@@ -765,17 +765,17 @@ namespace LogExpert.UI.Controls.LogWindow
 
             if (filterTailCheckBox.Checked || _filterPipeList.Count > 0)
             {
-                int filterStart = e.PrevLineCount;
+                var filterStart = e.PrevLineCount;
                 if (e.IsRollover)
                 {
                     ShiftFilterLines(e.RolloverOffset);
                     filterStart -= e.RolloverOffset;
                 }
 
-                bool firstStopTail = true;
+                var firstStopTail = true;
                 ColumnizerCallback callback = new(this);
-                bool filterLineAdded = false;
-                for (int i = filterStart; i < e.LineCount; ++i)
+                var filterLineAdded = false;
+                for (var i = filterStart; i < e.LineCount; ++i)
                 {
                     ILogLine line = _logFileReader.GetLogLine(i);
                     if (line == null)
@@ -785,7 +785,7 @@ namespace LogExpert.UI.Controls.LogWindow
 
                     if (filterTailCheckBox.Checked)
                     {
-                        callback.LineNum = i;
+                        callback.SetLineNum(i);
                         if (Util.TestFilterCondition(_filterParams, line, callback))
                         {
                             //AddFilterLineFx addFx = new AddFilterLineFx(AddFilterLine);
@@ -811,7 +811,7 @@ namespace LogExpert.UI.Controls.LogWindow
 
                     if (stopTail && _guiStateArgs.FollowTail)
                     {
-                        bool wasFollow = _guiStateArgs.FollowTail;
+                        var wasFollow = _guiStateArgs.FollowTail;
                         FollowTailChanged(false, true);
                         if (firstStopTail && wasFollow)
                         {
@@ -835,15 +835,15 @@ namespace LogExpert.UI.Controls.LogWindow
             }
             else
             {
-                bool firstStopTail = true;
-                int startLine = e.PrevLineCount;
+                var firstStopTail = true;
+                var startLine = e.PrevLineCount;
                 if (e.IsRollover)
                 {
                     ShiftFilterLines(e.RolloverOffset);
                     startLine -= e.RolloverOffset;
                 }
 
-                for (int i = startLine; i < e.LineCount; ++i)
+                for (var i = startLine; i < e.LineCount; ++i)
                 {
                     ILogLine line = _logFileReader.GetLogLine(i);
                     if (line != null)
@@ -860,7 +860,7 @@ namespace LogExpert.UI.Controls.LogWindow
 
                         if (stopTail && _guiStateArgs.FollowTail)
                         {
-                            bool wasFollow = _guiStateArgs.FollowTail;
+                            var wasFollow = _guiStateArgs.FollowTail;
                             FollowTailChanged(false, true);
                             if (firstStopTail && wasFollow)
                             {
@@ -898,8 +898,7 @@ namespace LogExpert.UI.Controls.LogWindow
                     if (plugin != null)
                     {
                         ActionPluginExecuteFx fx = plugin.Execute;
-                        fx.BeginInvoke(entry.SearchText, entry.ActionEntry.ActionParam, callback,
-                            CurrentColumnizer, null, null);
+                        fx.BeginInvoke(entry.SearchText, entry.ActionEntry.ActionParam, callback, CurrentColumnizer, null, null);
                     }
                 }
             }
@@ -907,22 +906,16 @@ namespace LogExpert.UI.Controls.LogWindow
 
         private void PreSelectColumnizer (ILogLineColumnizer columnizer)
         {
-            if (columnizer != null)
-            {
-                CurrentColumnizer = _forcedColumnizerForLoading = columnizer;
-            }
-            else
-            {
-                CurrentColumnizer = _forcedColumnizerForLoading =
-                    ColumnizerPicker.FindColumnizer(FileName, _logFileReader, PluginRegistry.PluginRegistry.Instance.RegisteredColumnizers);
-            }
+            CurrentColumnizer = columnizer != null
+                ? (_forcedColumnizerForLoading = columnizer)
+                : (_forcedColumnizerForLoading = ColumnizerPicker.FindColumnizer(FileName, _logFileReader, PluginRegistry.PluginRegistry.Instance.RegisteredColumnizers));
         }
 
         private void SetColumnizer (ILogLineColumnizer columnizer)
         {
             columnizer = ColumnizerPicker.FindReplacementForAutoColumnizer(FileName, _logFileReader, columnizer, PluginRegistry.PluginRegistry.Instance.RegisteredColumnizers);
 
-            int timeDiff = 0;
+            var timeDiff = 0;
             if (CurrentColumnizer != null && CurrentColumnizer.IsTimeshiftImplemented())
             {
                 timeDiff = CurrentColumnizer.GetTimeOffset();
@@ -941,19 +934,19 @@ namespace LogExpert.UI.Controls.LogWindow
             _logger.Info("SetColumnizerInternal(): {0}", columnizer.GetName());
 
             ILogLineColumnizer oldColumnizer = CurrentColumnizer;
-            bool oldColumnizerIsXmlType = CurrentColumnizer is ILogLineXmlColumnizer;
-            bool oldColumnizerIsPreProcess = CurrentColumnizer is IPreProcessColumnizer;
-            bool mustReload = false;
+            var oldColumnizerIsXmlType = CurrentColumnizer is ILogLineXmlColumnizer;
+            var oldColumnizerIsPreProcess = CurrentColumnizer is IPreProcessColumnizer;
+            var mustReload = false;
 
             // Check if the filtered columns disappeared, if so must refresh the UI
             if (_filterParams.ColumnRestrict)
             {
-                string[] newColumns = columnizer != null ? columnizer.GetColumnNames() : Array.Empty<string>();
-                bool colChanged = false;
+                var newColumns = columnizer != null ? columnizer.GetColumnNames() : Array.Empty<string>();
+                var colChanged = false;
 
                 if (dataGridView.ColumnCount - 2 == newColumns.Length) // two first columns are 'marker' and 'line number'
                 {
-                    for (int i = 0; i < newColumns.Length; i++)
+                    for (var i = 0; i < newColumns.Length; i++)
                     {
                         if (dataGridView.Columns[i].HeaderText != newColumns[i])
                         {
@@ -1072,7 +1065,7 @@ namespace LogExpert.UI.Controls.LogWindow
 
             columnComboBox.Items.Clear();
 
-            foreach (string columnName in columnizer.GetColumnNames())
+            foreach (var columnName in columnizer.GetColumnNames())
             {
                 columnComboBox.Items.Add(columnName);
             }
@@ -1149,7 +1142,7 @@ namespace LogExpert.UI.Controls.LogWindow
 
             matchList = MergeHighlightMatchEntries(matchList, hme);
 
-            int leftPad = e.CellStyle.Padding.Left;
+            var leftPad = e.CellStyle.Padding.Left;
             RectangleF rect = new(e.CellBounds.Left + leftPad, e.CellBounds.Top, e.CellBounds.Width,
                 e.CellBounds.Height);
             Rectangle borderWidths = PaintHelper.BorderWidths(e.AdvancedBorderStyle);
@@ -1192,7 +1185,7 @@ namespace LogExpert.UI.Controls.LogWindow
                 Brush bgBrush = matchEntry.HilightEntry.BackgroundColor != Color.Empty
                     ? new SolidBrush(matchEntry.HilightEntry.BackgroundColor)
                     : null;
-                string matchWord = column.DisplayValue.Substring(matchEntry.StartPos, matchEntry.Length);
+                var matchWord = column.DisplayValue.Substring(matchEntry.StartPos, matchEntry.Length);
                 Size wordSize = TextRenderer.MeasureText(e.Graphics, matchWord, font, proposedSize, flags);
                 wordSize.Height = e.CellBounds.Height;
                 Rectangle wordRect = new(wordPos, wordSize);
@@ -1232,8 +1225,8 @@ namespace LogExpert.UI.Controls.LogWindow
             HilightMatchEntry groundEntry)
         {
             // Fill an area with lenth of whole text with a default hilight entry
-            HighlightEntry[] entryArray = new HighlightEntry[groundEntry.Length];
-            for (int i = 0; i < entryArray.Length; ++i)
+            var entryArray = new HighlightEntry[groundEntry.Length];
+            for (var i = 0; i < entryArray.Length; ++i)
             {
                 entryArray[i] = groundEntry.HilightEntry;
             }
@@ -1242,8 +1235,8 @@ namespace LogExpert.UI.Controls.LogWindow
             // Non-word-mode matches will not overpaint because they use the groundEntry
             foreach (HilightMatchEntry me in matchList)
             {
-                int endPos = me.StartPos + me.Length;
-                for (int i = me.StartPos; i < endPos; ++i)
+                var endPos = me.StartPos + me.Length;
+                for (var i = me.StartPos; i < endPos; ++i)
                 {
                     if (me.HilightEntry.IsWordMatch)
                     {
@@ -1262,8 +1255,8 @@ namespace LogExpert.UI.Controls.LogWindow
             if (entryArray.Length > 0)
             {
                 HighlightEntry currentEntry = entryArray[0];
-                int lastStartPos = 0;
-                int pos = 0;
+                var lastStartPos = 0;
+                var pos = 0;
 
                 for (; pos < entryArray.Length; ++pos)
                 {
@@ -1474,7 +1467,7 @@ namespace LogExpert.UI.Controls.LogWindow
 
                 while (!_shouldTimestampDisplaySyncingCancel)
                 {
-                    bool signaled = _timeShiftSyncTimerEvent.WaitOne(WAIT_TIME, true);
+                    var signaled = _timeShiftSyncTimerEvent.WaitOne(WAIT_TIME, true);
                     _timeShiftSyncTimerEvent.Reset();
                     if (!signaled)
                     {
@@ -1483,10 +1476,10 @@ namespace LogExpert.UI.Controls.LogWindow
                 }
 
                 // timeout with no new Trigger -> update display
-                int lineNum = _timeShiftSyncLine;
+                var lineNum = _timeShiftSyncLine;
                 if (lineNum >= 0 && lineNum < dataGridView.RowCount)
                 {
-                    int refLine = lineNum;
+                    var refLine = lineNum;
                     DateTime timeStamp = GetTimestampForLine(ref refLine, true);
                     if (!timeStamp.Equals(DateTime.MinValue) && !_shouldTimestampDisplaySyncingCancel)
                     {
@@ -1505,14 +1498,14 @@ namespace LogExpert.UI.Controls.LogWindow
                 // show time difference between 2 selected lines
                 if (dataGridView.SelectedRows.Count == 2)
                 {
-                    int row1 = dataGridView.SelectedRows[0].Index;
-                    int row2 = dataGridView.SelectedRows[1].Index;
+                    var row1 = dataGridView.SelectedRows[0].Index;
+                    var row2 = dataGridView.SelectedRows[1].Index;
                     if (row1 > row2)
                     {
                         (row2, row1) = (row1, row2);
                     }
 
-                    int refLine = row1;
+                    var refLine = row1;
                     DateTime timeStamp1 = GetTimestampForLine(ref refLine, false);
                     refLine = row2;
                     DateTime timeStamp2 = GetTimestampForLine(ref refLine, false);
@@ -1545,7 +1538,7 @@ namespace LogExpert.UI.Controls.LogWindow
             {
                 if (_filterResultList.Count > 0)
                 {
-                    int index = _filterResultList.BinarySearch(dataGridView.CurrentRow.Index);
+                    var index = _filterResultList.BinarySearch(dataGridView.CurrentRow.Index);
                     if (index < 0)
                     {
                         index = ~index;
@@ -1584,13 +1577,13 @@ namespace LogExpert.UI.Controls.LogWindow
                 return -1;
             }
 
-            int lineNum = searchParams.IsFromTop && !searchParams.IsFindNext
+            var lineNum = searchParams.IsFromTop && !searchParams.IsFindNext
                 ? 0
                 : searchParams.CurrentLine;
 
-            string lowerSearchText = searchParams.SearchText.ToLower();
-            int count = 0;
-            bool hasWrapped = false;
+            var lowerSearchText = searchParams.SearchText.ToLower();
+            var count = 0;
+            var hasWrapped = false;
 
             while (true)
             {
@@ -1702,7 +1695,7 @@ namespace LogExpert.UI.Controls.LogWindow
             try
             {
                 _shouldCallTimeSync = triggerSyncCall;
-                bool wasCancelled = _shouldCancel;
+                var wasCancelled = _shouldCancel;
                 _shouldCancel = false;
                 _isSearching = false;
                 StatusLineText("");
@@ -1774,7 +1767,7 @@ namespace LogExpert.UI.Controls.LogWindow
             // prevents key events after edit mode has ended
             if (dataGridView.EditingControl != null)
             {
-                int pos = editControl.SelectionStart + editControl.SelectionLength;
+                var pos = editControl.SelectionStart + editControl.SelectionLength;
                 StatusLineText("   " + pos);
                 _logger.Debug("SelStart: {0}, SelLen: {1}", editControl.SelectionStart, editControl.SelectionLength);
             }
@@ -1782,7 +1775,7 @@ namespace LogExpert.UI.Controls.LogWindow
 
         private void SelectPrevHighlightLine ()
         {
-            int lineNum = dataGridView.CurrentCellAddress.Y;
+            var lineNum = dataGridView.CurrentCellAddress.Y;
             while (lineNum > 0)
             {
                 lineNum--;
@@ -1801,7 +1794,7 @@ namespace LogExpert.UI.Controls.LogWindow
 
         private void SelectNextHighlightLine ()
         {
-            int lineNum = dataGridView.CurrentCellAddress.Y;
+            var lineNum = dataGridView.CurrentCellAddress.Y;
             while (lineNum < _logFileReader.LineCount)
             {
                 lineNum++;
@@ -1861,7 +1854,7 @@ namespace LogExpert.UI.Controls.LogWindow
             SortedList<int, RowHeightEntry> newList = [];
             foreach (RowHeightEntry entry in _rowHeightList.Values)
             {
-                int line = entry.LineNum - offset;
+                var line = entry.LineNum - offset;
                 if (line >= 0)
                 {
                     entry.LineNum = line;
@@ -1895,7 +1888,7 @@ namespace LogExpert.UI.Controls.LogWindow
 
             if (_filterPipeList.Count > 0)
             {
-                for (int i = 0; i < dataGridView.RowCount; ++i)
+                for (var i = 0; i < dataGridView.RowCount; ++i)
                 {
                     ProcessFilterPipes(i);
                 }
@@ -1968,7 +1961,7 @@ namespace LogExpert.UI.Controls.LogWindow
             _filterParams.LowerSearchText = text.ToLower();
             ConfigManager.Settings.filterHistoryList.Remove(text);
             ConfigManager.Settings.filterHistoryList.Insert(0, text);
-            int maxHistory = ConfigManager.Settings.Preferences.maximumFilterEntries;
+            var maxHistory = ConfigManager.Settings.Preferences.maximumFilterEntries;
 
             if (ConfigManager.Settings.filterHistoryList.Count > maxHistory)
             {
@@ -1976,7 +1969,7 @@ namespace LogExpert.UI.Controls.LogWindow
             }
 
             filterComboBox.Items.Clear();
-            foreach (string item in ConfigManager.Settings.filterHistoryList)
+            foreach (var item in ConfigManager.Settings.filterHistoryList)
             {
                 filterComboBox.Items.Add(item);
             }
@@ -1995,7 +1988,7 @@ namespace LogExpert.UI.Controls.LogWindow
                 }
 
                 filterRangeComboBox.Items.Clear();
-                foreach (string item in ConfigManager.Settings.filterRangeHistoryList)
+                foreach (var item in ConfigManager.Settings.filterRangeHistoryList)
                 {
                     filterRangeComboBox.Items.Add(item);
                 }
@@ -2046,7 +2039,7 @@ namespace LogExpert.UI.Controls.LogWindow
             FilterFxAction = settings.Preferences.multiThreadFilter ? MultiThreadedFilter : Filter;
 
             //Task.Run(() => fx.Invoke(_filterParams, _filterResultList, _lastFilterLinesList, _filterHitList));
-            Task filterFxActionTask = Task.Run(() => Filter(_filterParams, _filterResultList, _lastFilterLinesList, _filterHitList));
+            var filterFxActionTask = Task.Run(() => Filter(_filterParams, _filterResultList, _lastFilterLinesList, _filterHitList));
 
             await filterFxActionTask;
             FilterComplete();
@@ -2089,7 +2082,7 @@ namespace LogExpert.UI.Controls.LogWindow
             try
             {
                 filterParams.Reset();
-                int lineNum = 0;
+                var lineNum = 0;
                 //AddFilterLineFx addFx = new AddFilterLineFx(AddFilterLine);
                 ColumnizerCallback callback = new(this);
                 while (true)
@@ -2157,7 +2150,7 @@ namespace LogExpert.UI.Controls.LogWindow
             }
 
             // back spread
-            for (int i = filterParams.SpreadBefore; i > 0; --i)
+            for (var i = filterParams.SpreadBefore; i > 0; --i)
             {
                 if (lineNum - i > 0)
                 {
@@ -2175,7 +2168,7 @@ namespace LogExpert.UI.Controls.LogWindow
             }
 
             // after spread
-            for (int i = 1; i <= filterParams.SpreadBehind; ++i)
+            for (var i = 1; i <= filterParams.SpreadBehind; ++i)
             {
                 if (lineNum + i < _logFileReader.LineCount)
                 {
@@ -2407,9 +2400,9 @@ namespace LogExpert.UI.Controls.LogWindow
             List<int> newFilterList = [];
             lock (_filterResultList)
             {
-                foreach (int lineNum in _filterResultList)
+                foreach (var lineNum in _filterResultList)
                 {
-                    int line = lineNum - offset;
+                    var line = lineNum - offset;
                     if (line >= 0)
                     {
                         newFilterList.Add(line);
@@ -2420,9 +2413,9 @@ namespace LogExpert.UI.Controls.LogWindow
             }
 
             newFilterList = [];
-            foreach (int lineNum in _filterHitList)
+            foreach (var lineNum in _filterHitList)
             {
-                int line = lineNum - offset;
+                var line = lineNum - offset;
                 if (line >= 0)
                 {
                     newFilterList.Add(line);
@@ -2431,7 +2424,7 @@ namespace LogExpert.UI.Controls.LogWindow
 
             _filterHitList = newFilterList;
 
-            int count = SPREAD_MAX;
+            var count = SPREAD_MAX;
             if (_filterResultList.Count < SPREAD_MAX)
             {
                 count = _filterResultList.Count;
@@ -2522,8 +2515,8 @@ namespace LogExpert.UI.Controls.LogWindow
                 //this.dataGridView.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.DisplayedCells);
                 AutoResizeColumns(dataGridView);
 
-                int width = dataGridView.Columns.GetColumnsWidth(DataGridViewElementStates.Visible);
-                int diff = dataGridView.Width - width;
+                var width = dataGridView.Columns.GetColumnsWidth(DataGridViewElementStates.Visible);
+                var diff = dataGridView.Width - width;
                 if (diff > 0)
                 {
                     diff -= dataGridView.RowHeadersWidth / 2;
@@ -2555,7 +2548,7 @@ namespace LogExpert.UI.Controls.LogWindow
                 {
                     if (dataGridView.CurrentRow != null && dataGridView.CurrentRow.Index > -1)
                     {
-                        string fileName = _logFileReader.GetLogFileNameForLine(dataGridView.CurrentRow.Index);
+                        var fileName = _logFileReader.GetLogFileNameForLine(dataGridView.CurrentRow.Index);
                         if (fileName != null)
                         {
                             StatusLineText(Util.GetNameFromPath(fileName));
@@ -2585,13 +2578,13 @@ namespace LogExpert.UI.Controls.LogWindow
         {
             ConfigManager.Settings.filterHistoryList = ConfigManager.Settings.filterHistoryList;
             filterComboBox.Items.Clear();
-            foreach (string item in ConfigManager.Settings.filterHistoryList)
+            foreach (var item in ConfigManager.Settings.filterHistoryList)
             {
                 filterComboBox.Items.Add(item);
             }
 
             filterRangeComboBox.Items.Clear();
-            foreach (string item in ConfigManager.Settings.filterRangeHistoryList)
+            foreach (var item in ConfigManager.Settings.filterRangeHistoryList)
             {
                 filterRangeComboBox.Items.Add(item);
             }
@@ -2671,7 +2664,7 @@ namespace LogExpert.UI.Controls.LogWindow
             FilterPipe pipe = new(_filterParams.Clone(), this);
             lock (_filterResultList)
             {
-                string namePrefix = "->F";
+                var namePrefix = "->F";
                 string title;
                 if (IsTempFile)
                 {
@@ -2706,10 +2699,10 @@ namespace LogExpert.UI.Controls.LogWindow
             }
 
             pipe.Closed += OnPipeDisconnected;
-            int count = 0;
+            var count = 0;
             pipe.OpenFile();
             LogExpertCallback callback = new(this);
-            foreach (int i in lineNumberList)
+            foreach (var i in lineNumberList)
             {
                 if (_shouldCancel)
                 {
@@ -2741,7 +2734,7 @@ namespace LogExpert.UI.Controls.LogWindow
             _isSearching = false;
             if (!_shouldCancel)
             {
-                string title = name;
+                var title = name;
                 ILogLineColumnizer preProcessColumnizer = null;
                 if (CurrentColumnizer is not ILogLineXmlColumnizer)
                 {
@@ -2830,7 +2823,7 @@ namespace LogExpert.UI.Controls.LogWindow
                         IList<int> filterResult =
                             GetAdditionalFilterResults(pipe.FilterParams, lineNum, pipe.LastLinesHistoryList);
                         pipe.OpenFile();
-                        foreach (int line in filterResult)
+                        foreach (var line in filterResult)
                         {
                             pipe.LastLinesHistoryList.Add(line);
                             if (pipe.LastLinesHistoryList.Count > SPREAD_MAX * 2)
@@ -2839,7 +2832,7 @@ namespace LogExpert.UI.Controls.LogWindow
                             }
 
                             ILogLine textLine = _logFileReader.GetLogLine(line);
-                            bool fileOk = pipe.WriteToPipe(textLine, line);
+                            var fileOk = pipe.WriteToPipe(textLine, line);
                             if (!fileOk)
                             {
                                 deleteList.Add(pipe);
@@ -2884,7 +2877,7 @@ namespace LogExpert.UI.Controls.LogWindow
 
                 var xmlColumnizer = _currentColumnizer as ILogLineXmlColumnizer;
 
-                foreach (int lineNum in lineNumList)
+                foreach (var lineNum in lineNumList)
                 {
                     ILogLine line = _logFileReader.GetLogLine(lineNum);
                     if (xmlColumnizer != null)
@@ -2968,7 +2961,7 @@ namespace LogExpert.UI.Controls.LogWindow
                 return;
             }
 
-            int line = 0;
+            var line = 0;
             _guiStateArgs.MinTimestamp = GetTimestampForLineForward(ref line, true);
             line = dataGridView.RowCount - 1;
             _guiStateArgs.MaxTimestamp = GetTimestampForLine(ref line, true);
@@ -3003,11 +2996,11 @@ namespace LogExpert.UI.Controls.LogWindow
         /// <returns></returns>
         private string CalculateColumnNames (FilterParams filter)
         {
-            string names = string.Empty;
+            var names = string.Empty;
 
             if (filter.ColumnRestrict)
             {
-                foreach (int colIndex in filter.ColumnList)
+                foreach (var colIndex in filter.ColumnList)
                 {
                     if (colIndex < dataGridView.Columns.GetColumnCount(DataGridViewElementStates.None) - 2)
                     {
@@ -3036,7 +3029,7 @@ namespace LogExpert.UI.Controls.LogWindow
             foreach (DataGridViewColumn col in dict.Values)
             {
                 col.Frozen = _freezeStateMap.ContainsKey(gridView) && _freezeStateMap[gridView];
-                bool sel = col.HeaderCell.Selected;
+                var sel = col.HeaderCell.Selected;
                 if (col.Index == _selectedCol)
                 {
                     break;
@@ -3079,12 +3072,12 @@ namespace LogExpert.UI.Controls.LogWindow
 
         private void TestStatistic (PatternArgs patternArgs)
         {
-            int beginLine = patternArgs.StartLine;
+            var beginLine = patternArgs.StartLine;
             _logger.Info("TestStatistics() called with start line {0}", beginLine);
 
             _patternArgs = patternArgs;
 
-            int num = beginLine + 1; //this.dataGridView.RowCount;
+            var num = beginLine + 1; //this.dataGridView.RowCount;
 
             _progressEventArgs.MinValue = 0;
             _progressEventArgs.MaxValue = dataGridView.RowCount;
@@ -3097,11 +3090,11 @@ namespace LogExpert.UI.Controls.LogWindow
 
             Dictionary<int, int> processedLinesDict = [];
             List<PatternBlock> blockList = [];
-            int blockId = 0;
+            var blockId = 0;
             _isSearching = true;
             _shouldCancel = false;
-            int searchLine = -1;
-            for (int i = beginLine; i < num && !_shouldCancel; ++i)
+            var searchLine = -1;
+            for (var i = beginLine; i < num && !_shouldCancel; ++i)
             {
                 if (processedLinesDict.ContainsKey(i))
                 {
@@ -3109,7 +3102,7 @@ namespace LogExpert.UI.Controls.LogWindow
                 }
 
                 PatternBlock block;
-                int maxBlockLen = patternArgs.EndLine - patternArgs.StartLine;
+                var maxBlockLen = patternArgs.EndLine - patternArgs.StartLine;
                 //int searchLine = i + 1;
                 _logger.Debug("TestStatistic(): i={0} searchLine={1}", i, searchLine);
                 //bool firstBlock = true;
@@ -3172,7 +3165,7 @@ namespace LogExpert.UI.Controls.LogWindow
 
         private void addBlockTargetLinesToDict (Dictionary<int, int> dict, PatternBlock block)
         {
-            foreach (int lineNum in block.targetLines.Keys)
+            foreach (var lineNum in block.targetLines.Keys)
             {
                 if (!dict.ContainsKey(lineNum))
                 {
@@ -3204,7 +3197,7 @@ namespace LogExpert.UI.Controls.LogWindow
         private PatternBlock DetectBlock (int startNum, int startLineToSearch, int maxBlockLen, int maxDiffInBlock,
             int maxMisses, Dictionary<int, int> processedLinesDict)
         {
-            int targetLine = FindSimilarLine(startNum, startLineToSearch, processedLinesDict);
+            var targetLine = FindSimilarLine(startNum, startLineToSearch, processedLinesDict);
             if (targetLine == -1)
             {
                 return null;
@@ -3212,12 +3205,12 @@ namespace LogExpert.UI.Controls.LogWindow
 
             PatternBlock block = new();
             block.startLine = startNum;
-            int srcLine = block.startLine;
+            var srcLine = block.startLine;
             block.targetStart = targetLine;
-            int srcMisses = 0;
+            var srcMisses = 0;
             block.srcLines.Add(srcLine, srcLine);
             //block.targetLines.Add(targetLine, targetLine);
-            int len = 0;
+            var len = 0;
             QualityInfo qi = new();
             qi.quality = block.weigth;
             block.qualityInfoList[targetLine] = qi;
@@ -3233,7 +3226,7 @@ namespace LogExpert.UI.Controls.LogWindow
                     break;
                 }
 
-                int nextTargetLine = FindSimilarLine(srcLine, targetLine + 1, processedLinesDict);
+                var nextTargetLine = FindSimilarLine(srcLine, targetLine + 1, processedLinesDict);
                 if (nextTargetLine > -1 && nextTargetLine - targetLine - 1 <= maxDiffInBlock)
                 {
                     block.weigth += maxDiffInBlock - (nextTargetLine - targetLine - 1) + 1;
@@ -3242,8 +3235,8 @@ namespace LogExpert.UI.Controls.LogWindow
                     block.srcLines.Add(srcLine, srcLine);
                     if (nextTargetLine - targetLine > 1)
                     {
-                        int tempWeight = block.weigth;
-                        for (int tl = targetLine + 1; tl < nextTargetLine; ++tl)
+                        var tempWeight = block.weigth;
+                        for (var tl = targetLine + 1; tl < nextTargetLine; ++tl)
                         {
                             qi = new QualityInfo();
                             qi.quality = --tempWeight;
@@ -3275,7 +3268,7 @@ namespace LogExpert.UI.Controls.LogWindow
             qi = new QualityInfo();
             qi.quality = block.weigth;
             block.qualityInfoList[targetLine] = qi;
-            for (int k = block.targetStart; k <= block.targetEnd; ++k)
+            for (var k = block.targetStart; k <= block.targetEnd; ++k)
             {
                 block.targetLines.Add(k, k);
             }
@@ -3289,20 +3282,20 @@ namespace LogExpert.UI.Controls.LogWindow
             Regex regex = new("\\d");
             Regex regex2 = new("\\S");
 
-            int num = _logFileReader.LineCount;
-            for (int i = 0; i < num; ++i)
+            var num = _logFileReader.LineCount;
+            for (var i = 0; i < num; ++i)
             {
-                string msg = GetMsgForLine(i);
+                var msg = GetMsgForLine(i);
                 if (msg != null)
                 {
                     msg = msg.ToLower();
                     msg = regex.Replace(msg, "0");
                     msg = regex2.Replace(msg, " ");
-                    char[] chars = msg.ToCharArray();
-                    int value = 0;
-                    int numOfE = 0;
-                    int numOfA = 0;
-                    int numOfI = 0;
+                    var chars = msg.ToCharArray();
+                    var value = 0;
+                    var numOfE = 0;
+                    var numOfA = 0;
+                    var numOfI = 0;
                     foreach (var t in chars)
                     {
                         value += t;
@@ -3330,10 +3323,10 @@ namespace LogExpert.UI.Controls.LogWindow
 
         private int _FindSimilarLine (int srcLine, int startLine)
         {
-            int value = _lineHashList[srcLine];
+            var value = _lineHashList[srcLine];
 
-            int num = _lineHashList.Count;
-            for (int i = startLine; i < num; ++i)
+            var num = _lineHashList.Count;
+            for (var i = startLine; i < num; ++i)
             {
                 if (Math.Abs(_lineHashList[i] - value) < 3)
                 {
@@ -3360,16 +3353,16 @@ namespace LogExpert.UI.Controls.LogWindow
 
         private int FindSimilarLine (int srcLine, int startLine, Dictionary<int, int> processedLinesDict)
         {
-            int threshold = _patternArgs.Fuzzy;
+            var threshold = _patternArgs.Fuzzy;
 
-            bool prepared = false;
+            var prepared = false;
             Regex regex = null;
             Regex regex2 = null;
             string msgToFind = null;
             CultureInfo culture = CultureInfo.CurrentCulture;
 
-            int num = _logFileReader.LineCount;
-            for (int i = startLine; i < num; ++i)
+            var num = _logFileReader.LineCount;
+            for (var i = startLine; i < num; ++i)
             {
                 if (processedLinesDict.ContainsKey(i))
                 {
@@ -3396,12 +3389,12 @@ namespace LogExpert.UI.Controls.LogWindow
                         prepared = true;
                     }
 
-                    string msg = GetMsgForLine(i);
+                    var msg = GetMsgForLine(i);
                     if (msg != null)
                     {
                         msg = regex.Replace(msg, "0");
                         msg = regex2.Replace(msg, " ");
-                        int lenDiff = Math.Abs(msg.Length - msgToFind.Length);
+                        var lenDiff = Math.Abs(msg.Length - msgToFind.Length);
                         if (lenDiff > threshold)
                         {
                             //this.similarCache[srcLine, i] = lenDiff;
@@ -3409,7 +3402,7 @@ namespace LogExpert.UI.Controls.LogWindow
                         }
 
                         msg = msg.ToLower(culture);
-                        int distance = Util.YetiLevenshtein(msgToFind, msg);
+                        var distance = Util.YetiLevenshtein(msgToFind, msg);
                         //this.similarCache[srcLine, i] = distance;
                         if (distance < threshold)
                         {
@@ -3433,7 +3426,7 @@ namespace LogExpert.UI.Controls.LogWindow
 
         private void ChangeRowHeight (bool decrease)
         {
-            int rowNum = dataGridView.CurrentCellAddress.Y;
+            var rowNum = dataGridView.CurrentCellAddress.Y;
             if (rowNum < 0 || rowNum >= dataGridView.RowCount)
             {
                 return;
@@ -3504,7 +3497,7 @@ namespace LogExpert.UI.Controls.LogWindow
 
         private void AddBookmarkAndEditComment ()
         {
-            int lineNum = dataGridView.CurrentCellAddress.Y;
+            var lineNum = dataGridView.CurrentCellAddress.Y;
             if (!_bookmarkProvider.IsBookmarkAtLine(lineNum))
             {
                 ToggleBookmark();
@@ -3515,7 +3508,7 @@ namespace LogExpert.UI.Controls.LogWindow
 
         private void AddBookmarkComment (string text)
         {
-            int lineNum = dataGridView.CurrentCellAddress.Y;
+            var lineNum = dataGridView.CurrentCellAddress.Y;
             Bookmark bookmark;
             if (!_bookmarkProvider.IsBookmarkAtLine(lineNum))
             {
@@ -3542,7 +3535,7 @@ namespace LogExpert.UI.Controls.LogWindow
             {
                 SetCellSelectionMode(false);
                 _noSelectionUpdates = true;
-                for (int i = range.StartLine; i <= range.EndLine; ++i)
+                for (var i = range.StartLine; i <= range.EndLine; ++i)
                 {
                     dataGridView.Rows[i].Selected = true;
                 }
@@ -3576,7 +3569,7 @@ namespace LogExpert.UI.Controls.LogWindow
             {
                 foreach (DataGridViewRow row in filterGridView.SelectedRows)
                 {
-                    int lineNum = _filterResultList[row.Index];
+                    var lineNum = _filterResultList[row.Index];
                     AddBookmarkAtLineSilently(lineNum);
                 }
             }
@@ -3641,8 +3634,8 @@ namespace LogExpert.UI.Controls.LogWindow
                         TimeSyncList = slave.TimeSyncList;
                     }
 
-                    int currentLineNum = dataGridView.CurrentCellAddress.Y;
-                    int refLine = currentLineNum;
+                    var currentLineNum = dataGridView.CurrentCellAddress.Y;
+                    var refLine = currentLineNum;
                     DateTime timeStamp = GetTimestampForLine(ref refLine, true);
                     if (!timeStamp.Equals(DateTime.MinValue) && !_shouldTimestampDisplaySyncingCancel)
                     {
@@ -3727,12 +3720,12 @@ namespace LogExpert.UI.Controls.LogWindow
 
         private void SelectColumn ()
         {
-            string colName = columnComboBox.SelectedItem as string;
+            var colName = columnComboBox.SelectedItem as string;
             DataGridViewColumn col = GetColumnByName(dataGridView, colName);
             if (col != null && !col.Frozen)
             {
                 dataGridView.FirstDisplayedScrollingColumnIndex = col.Index;
-                int currentLine = dataGridView.CurrentCellAddress.Y;
+                var currentLine = dataGridView.CurrentCellAddress.Y;
                 if (currentLine >= 0)
                 {
                     dataGridView.CurrentCell = dataGridView.Rows[dataGridView.CurrentCellAddress.Y].Cells[col.Index];

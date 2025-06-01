@@ -1,20 +1,20 @@
-﻿using LogExpert.Core.Classes;
+using System.Reflection;
+using System.Text;
+
 using LogExpert.Core.Config;
 using LogExpert.Core.Entities;
 using LogExpert.Core.Interface;
 using LogExpert.Dialogs;
 using LogExpert.UI.Extensions;
 using LogExpert.UI.Extensions.Forms;
+
 using NLog;
-using System.Reflection;
-using System.Text;
-using static LogExpert.UI.Controls.LogTabWindow.LogTabWindow;
 
 namespace LogExpert.UI.Controls.LogTabWindow;
 
 // Data shared over all LogTabWindow instances
 //TODO: Can we get rid of this class?
-internal partial class LogTabWindow : Form, ILogTabWindow
+public partial class LogTabWindow : Form, ILogTabWindow
 {
     #region Fields
 
@@ -64,7 +64,7 @@ internal partial class LogTabWindow : Form, ILogTabWindow
     #endregion
 
     #region cTor
-    public LogTabWindow(string[] fileNames, int instanceNumber, bool showInstanceNumbers, IConfigManager configManager)
+    public LogTabWindow (string[] fileNames, int instanceNumber, bool showInstanceNumbers, IConfigManager configManager)
     {
         AutoScaleDimensions = new SizeF(96F, 96F);
         AutoScaleMode = AutoScaleMode.Dpi;
@@ -158,7 +158,7 @@ internal partial class LogTabWindow : Form, ILogTabWindow
     #endregion
 
     #region ColorTheme
-    public void ChangeTheme(Control.ControlCollection container)
+    public void ChangeTheme (Control.ControlCollection container)
     {
         ColorMode.LoadColorMode(ConfigManager.Settings.Preferences.darkMode);
         Win32.UseImmersiveDarkMode(Handle, ColorMode.DarkModeEnabled);
@@ -258,21 +258,21 @@ internal partial class LogTabWindow : Form, ILogTabWindow
 
     #region Delegates
 
-    private delegate void AddFileTabsDelegate(string[] fileNames);
+    private delegate void AddFileTabsDelegate (string[] fileNames);
 
-    private delegate void ExceptionFx();
+    private delegate void ExceptionFx ();
 
-    private delegate void FileNotFoundDelegate(LogWindow.LogWindow logWin);
+    private delegate void FileNotFoundDelegate (LogWindow.LogWindow logWin);
 
-    private delegate void FileRespawnedDelegate(LogWindow.LogWindow logWin);
+    private delegate void FileRespawnedDelegate (LogWindow.LogWindow logWin);
 
-    public delegate void HighlightSettingsChangedEventHandler(object sender, EventArgs e);
+    public delegate void HighlightSettingsChangedEventHandler (object sender, EventArgs e);
 
-    private delegate void LoadMultiFilesDelegate(string[] fileName, EncodingOptions encodingOptions);
+    private delegate void LoadMultiFilesDelegate (string[] fileName, EncodingOptions encodingOptions);
 
-    private delegate void SetColumnizerFx(ILogLineColumnizer columnizer);
+    private delegate void SetColumnizerFx (ILogLineColumnizer columnizer);
 
-    private delegate void SetTabIconDelegate(LogWindow.LogWindow logWindow, Icon icon);
+    private delegate void SetTabIconDelegate (LogWindow.LogWindow logWindow, Icon icon);
 
     #endregion
 
@@ -308,7 +308,7 @@ internal partial class LogTabWindow : Form, ILogTabWindow
 
     #region Internals
 
-    internal HighlightGroup FindHighlightGroup(string groupName)
+    internal HighlightGroup FindHighlightGroup (string groupName)
     {
         lock (HighlightGroupList)
         {
@@ -340,24 +340,4 @@ internal partial class LogTabWindow : Form, ILogTabWindow
 
         #endregion
     }
-}
-
-public class StaticLogTabWindowData
-{
-    #region Properties
-
-    public ILogTabWindow CurrentLockedMainWindow { get; set; }
-
-    #endregion
-}
-
-public abstract class AbstractLogTabWindow()
-{
-    public static StaticLogTabWindowData StaticData { get; set; } = new StaticLogTabWindowData();
-
-    public static ILogTabWindow Create(string[] fileNames, int instanceNumber, bool showInstanceNumbers, IConfigManager configManager)
-    {
-        return new LogTabWindow(fileNames, instanceNumber, showInstanceNumbers, configManager);
-    }
-
 }

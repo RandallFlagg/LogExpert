@@ -1,13 +1,16 @@
-﻿using LogExpert.Core.Classes;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Text;
+
+using LogExpert.Core.Classes;
 using LogExpert.Core.Classes.Persister;
 using LogExpert.Core.Config;
 using LogExpert.Core.Entities;
 using LogExpert.Core.EventArguments;
 using LogExpert.Dialogs;
 using LogExpert.UI.Dialogs;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Text;
+using LogExpert.UI.Dialogs.LogTabWindow;
+
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace LogExpert.UI.Controls.LogTabWindow;
@@ -15,12 +18,12 @@ partial class LogTabWindow
 {
     #region Events handler
 
-    private void OnBookmarkWindowVisibleChanged(object sender, EventArgs e)
+    private void OnBookmarkWindowVisibleChanged (object sender, EventArgs e)
     {
         _firstBookmarkWindowShow = false;
     }
 
-    private void OnLogTabWindowLoad(object sender, EventArgs e)
+    private void OnLogTabWindowLoad (object sender, EventArgs e)
     {
         ApplySettings(ConfigManager.Settings, SettingsFlags.All);
         if (ConfigManager.Settings.isMaximized)
@@ -64,7 +67,7 @@ partial class LogTabWindow
 #endif
     }
 
-    private void OnLogTabWindowClosing(object sender, CancelEventArgs e)
+    private void OnLogTabWindowClosing (object sender, CancelEventArgs e)
     {
         try
         {
@@ -105,7 +108,7 @@ partial class LogTabWindow
         }
     }
 
-    private void OnStripMouseUp(object sender, MouseEventArgs e)
+    private void OnStripMouseUp (object sender, MouseEventArgs e)
     {
         if (sender is ToolStripDropDown dropDown)
         {
@@ -113,7 +116,7 @@ partial class LogTabWindow
         }
     }
 
-    private void OnHistoryItemClicked(object sender, ToolStripItemClickedEventArgs e)
+    private void OnHistoryItemClicked (object sender, ToolStripItemClickedEventArgs e)
     {
         if (string.IsNullOrEmpty(e.ClickedItem.Text) == false)
         {
@@ -121,7 +124,7 @@ partial class LogTabWindow
         }
     }
 
-    private void OnLogWindowDisposed(object sender, EventArgs e)
+    private void OnLogWindowDisposed (object sender, EventArgs e)
     {
         LogWindow.LogWindow logWindow = sender as LogWindow.LogWindow;
 
@@ -135,12 +138,12 @@ partial class LogTabWindow
         logWindow.Tag = null;
     }
 
-    private void OnExitToolStripMenuItemClick(object sender, EventArgs e)
+    private void OnExitToolStripMenuItemClick (object sender, EventArgs e)
     {
         Close();
     }
 
-    private void OnSelectFilterToolStripMenuItemClick(object sender, EventArgs e)
+    private void OnSelectFilterToolStripMenuItemClick (object sender, EventArgs e)
     {
         if (CurrentLogWindow == null)
         {
@@ -204,7 +207,7 @@ partial class LogTabWindow
         }
     }
 
-    private void OnGoToLineToolStripMenuItemClick(object sender, EventArgs e)
+    private void OnGoToLineToolStripMenuItemClick (object sender, EventArgs e)
     {
         if (CurrentLogWindow == null)
         {
@@ -223,22 +226,22 @@ partial class LogTabWindow
         }
     }
 
-    private void OnHighlightingToolStripMenuItemClick(object sender, EventArgs e)
+    private void OnHighlightingToolStripMenuItemClick (object sender, EventArgs e)
     {
         ShowHighlightSettingsDialog();
     }
 
-    private void OnSearchToolStripMenuItemClick(object sender, EventArgs e)
+    private void OnSearchToolStripMenuItemClick (object sender, EventArgs e)
     {
         OpenSearchDialog();
     }
 
-    private void OnOpenToolStripMenuItemClick(object sender, EventArgs e)
+    private void OnOpenToolStripMenuItemClick (object sender, EventArgs e)
     {
         OpenFileDialog();
     }
 
-    private void OnLogTabWindowDragEnter(object sender, DragEventArgs e)
+    private void OnLogTabWindowDragEnter (object sender, DragEventArgs e)
     {
 #if DEBUG
         string[] formats = e.Data.GetFormats();
@@ -253,7 +256,7 @@ partial class LogTabWindow
 #endif
     }
 
-    private void OnLogWindowDragOver(object sender, DragEventArgs e)
+    private void OnLogWindowDragOver (object sender, DragEventArgs e)
     {
         if (!e.Data.GetDataPresent(DataFormats.FileDrop))
         {
@@ -265,7 +268,7 @@ partial class LogTabWindow
         }
     }
 
-    private void OnLogWindowDragDrop(object sender, DragEventArgs e)
+    private void OnLogWindowDragDrop (object sender, DragEventArgs e)
     {
 #if DEBUG
         string[] formats = e.Data.GetFormats();
@@ -290,7 +293,7 @@ partial class LogTabWindow
         }
     }
 
-    private void OnTimeShiftToolStripMenuItemCheckStateChanged(object sender, EventArgs e)
+    private void OnTimeShiftToolStripMenuItemCheckStateChanged (object sender, EventArgs e)
     {
         if (!_skipEvents && CurrentLogWindow != null)
         {
@@ -301,65 +304,65 @@ partial class LogTabWindow
         }
     }
 
-    private void OnAboutToolStripMenuItemClick(object sender, EventArgs e)
+    private void OnAboutToolStripMenuItemClick (object sender, EventArgs e)
     {
         AboutBox aboutBox = new();
         aboutBox.TopMost = TopMost;
         aboutBox.ShowDialog();
     }
 
-    private void OnFilterToolStripMenuItemClick(object sender, EventArgs e)
+    private void OnFilterToolStripMenuItemClick (object sender, EventArgs e)
     {
         CurrentLogWindow?.ToggleFilterPanel();
     }
 
-    private void OnMultiFileToolStripMenuItemClick(object sender, EventArgs e)
+    private void OnMultiFileToolStripMenuItemClick (object sender, EventArgs e)
     {
         ToggleMultiFile();
         fileToolStripMenuItem.HideDropDown();
     }
 
-    private void OnGuiStateUpdate(object sender, GuiStateArgs e)
+    private void OnGuiStateUpdate (object sender, GuiStateArgs e)
     {
         BeginInvoke(GuiStateUpdateWorker, e);
     }
 
-    private void OnColumnizerChanged(object sender, ColumnizerEventArgs e)
+    private void OnColumnizerChanged (object sender, ColumnizerEventArgs e)
     {
         _bookmarkWindow?.SetColumnizer(e.Columnizer);
     }
 
-    private void OnBookmarkAdded(object sender, EventArgs e)
+    private void OnBookmarkAdded (object sender, EventArgs e)
     {
         _bookmarkWindow.UpdateView();
     }
 
-    private void OnBookmarkTextChanged(object sender, BookmarkEventArgs e)
+    private void OnBookmarkTextChanged (object sender, BookmarkEventArgs e)
     {
         _bookmarkWindow.BookmarkTextChanged(e.Bookmark);
     }
 
-    private void OnBookmarkRemoved(object sender, EventArgs e)
+    private void OnBookmarkRemoved (object sender, EventArgs e)
     {
         _bookmarkWindow.UpdateView();
     }
 
-    private void OnProgressBarUpdate(object sender, ProgressEventArgs e)
+    private void OnProgressBarUpdate (object sender, ProgressEventArgs e)
     {
         Invoke(ProgressBarUpdateWorker, e);
     }
 
-    private void OnStatusLineEvent(object sender, StatusLineEventArgs e)
+    private void OnStatusLineEvent (object sender, StatusLineEventArgs e)
     {
         StatusLineEventWorker(e);
     }
 
-    private void OnFollowTailCheckBoxClick(object sender, EventArgs e)
+    private void OnFollowTailCheckBoxClick (object sender, EventArgs e)
     {
         CurrentLogWindow?.FollowTailChanged(checkBoxFollowTail.Checked, false);
     }
 
-    private void OnLogTabWindowKeyDown(object sender, KeyEventArgs e)
+    private void OnLogTabWindowKeyDown (object sender, KeyEventArgs e)
     {
         if (e.KeyCode == Keys.W && e.Control)
         {
@@ -375,22 +378,22 @@ partial class LogTabWindow
         }
     }
 
-    private void OnCloseFileToolStripMenuItemClick(object sender, EventArgs e)
+    private void OnCloseFileToolStripMenuItemClick (object sender, EventArgs e)
     {
         CurrentLogWindow?.Close();
     }
 
-    private void OnCellSelectModeToolStripMenuItemClick(object sender, EventArgs e)
+    private void OnCellSelectModeToolStripMenuItemClick (object sender, EventArgs e)
     {
         CurrentLogWindow?.SetCellSelectionMode(cellSelectModeToolStripMenuItem.Checked);
     }
 
-    private void OnCopyMarkedLinesIntoNewTabToolStripMenuItemClick(object sender, EventArgs e)
+    private void OnCopyMarkedLinesIntoNewTabToolStripMenuItemClick (object sender, EventArgs e)
     {
         CurrentLogWindow?.CopyMarkedLinesToTab();
     }
 
-    private void OnTimeShiftMenuTextBoxKeyDown(object sender, KeyEventArgs e)
+    private void OnTimeShiftMenuTextBoxKeyDown (object sender, KeyEventArgs e)
     {
         if (CurrentLogWindow == null)
         {
@@ -404,12 +407,12 @@ partial class LogTabWindow
         }
     }
 
-    private void OnAlwaysOnTopToolStripMenuItemClick(object sender, EventArgs e)
+    private void OnAlwaysOnTopToolStripMenuItemClick (object sender, EventArgs e)
     {
         TopMost = alwaysOnTopToolStripMenuItem.Checked;
     }
 
-    private void OnFileSizeChanged(object sender, LogEventArgs e)
+    private void OnFileSizeChanged (object sender, LogEventArgs e)
     {
         if (sender.GetType().IsAssignableFrom(typeof(LogWindow.LogWindow)))
         {
@@ -443,17 +446,17 @@ partial class LogTabWindow
         }
     }
 
-    private void OnLogWindowFileNotFound(object sender, EventArgs e)
+    private void OnLogWindowFileNotFound (object sender, EventArgs e)
     {
         Invoke(new FileNotFoundDelegate(FileNotFound), sender);
     }
 
-    private void OnLogWindowFileRespawned(object sender, EventArgs e)
+    private void OnLogWindowFileRespawned (object sender, EventArgs e)
     {
         Invoke(new FileRespawnedDelegate(FileRespawned), sender);
     }
 
-    private void OnLogWindowFilterListChanged(object sender, FilterListChangedEventArgs e)
+    private void OnLogWindowFilterListChanged (object sender, FilterListChangedEventArgs e)
     {
         lock (_logWindowList)
         {
@@ -468,14 +471,14 @@ partial class LogTabWindow
         ConfigManager.Save(SettingsFlags.FilterList);
     }
 
-    private void OnLogWindowCurrentHighlightGroupChanged(object sender, CurrentHighlightGroupChangedEventArgs e)
+    private void OnLogWindowCurrentHighlightGroupChanged (object sender, CurrentHighlightGroupChangedEventArgs e)
     {
         OnHighlightSettingsChanged();
         ConfigManager.Settings.Preferences.HighlightGroupList = HighlightGroupList;
         ConfigManager.Save(SettingsFlags.HighlightSettings);
     }
 
-    private void OnTailFollowed(object sender, EventArgs e)
+    private void OnTailFollowed (object sender, EventArgs e)
     {
         if (dockPanel.ActiveContent == null)
         {
@@ -493,7 +496,7 @@ partial class LogTabWindow
         }
     }
 
-    private void OnLogWindowSyncModeChanged(object sender, SyncModeEventArgs e)
+    private void OnLogWindowSyncModeChanged (object sender, SyncModeEventArgs e)
     {
         if (!Disposing)
         {
@@ -508,47 +511,47 @@ partial class LogTabWindow
         }
     }
 
-    private void OnToggleBookmarkToolStripMenuItemClick(object sender, EventArgs e)
+    private void OnToggleBookmarkToolStripMenuItemClick (object sender, EventArgs e)
     {
         CurrentLogWindow?.ToggleBookmark();
     }
 
-    private void OnJumpToNextToolStripMenuItemClick(object sender, EventArgs e)
+    private void OnJumpToNextToolStripMenuItemClick (object sender, EventArgs e)
     {
         CurrentLogWindow?.JumpNextBookmark();
     }
 
-    private void OnJumpToPrevToolStripMenuItemClick(object sender, EventArgs e)
+    private void OnJumpToPrevToolStripMenuItemClick (object sender, EventArgs e)
     {
         CurrentLogWindow?.JumpPrevBookmark();
     }
 
-    private void OnASCIIToolStripMenuItemClick(object sender, EventArgs e)
+    private void OnASCIIToolStripMenuItemClick (object sender, EventArgs e)
     {
         CurrentLogWindow?.ChangeEncoding(Encoding.ASCII);
     }
 
-    private void OnANSIToolStripMenuItemClick(object sender, EventArgs e)
+    private void OnANSIToolStripMenuItemClick (object sender, EventArgs e)
     {
         CurrentLogWindow?.ChangeEncoding(Encoding.Default);
     }
 
-    private void OnUTF8ToolStripMenuItemClick(object sender, EventArgs e)
+    private void OnUTF8ToolStripMenuItemClick (object sender, EventArgs e)
     {
         CurrentLogWindow?.ChangeEncoding(new UTF8Encoding(false));
     }
 
-    private void OnUTF16ToolStripMenuItemClick(object sender, EventArgs e)
+    private void OnUTF16ToolStripMenuItemClick (object sender, EventArgs e)
     {
         CurrentLogWindow?.ChangeEncoding(Encoding.Unicode);
     }
 
-    private void OnISO88591ToolStripMenuItemClick(object sender, EventArgs e)
+    private void OnISO88591ToolStripMenuItemClick (object sender, EventArgs e)
     {
         CurrentLogWindow?.ChangeEncoding(Encoding.GetEncoding("iso-8859-1"));
     }
 
-    private void OnReloadToolStripMenuItemClick(object sender, EventArgs e)
+    private void OnReloadToolStripMenuItemClick (object sender, EventArgs e)
     {
         if (CurrentLogWindow != null)
         {
@@ -559,12 +562,12 @@ partial class LogTabWindow
         }
     }
 
-    private void OnSettingsToolStripMenuItemClick(object sender, EventArgs e)
+    private void OnSettingsToolStripMenuItemClick (object sender, EventArgs e)
     {
         OpenSettings(0);
     }
 
-    private void OnDateTimeDragControlValueDragged(object sender, EventArgs e)
+    private void OnDateTimeDragControlValueDragged (object sender, EventArgs e)
     {
         if (CurrentLogWindow != null)
         {
@@ -572,22 +575,22 @@ partial class LogTabWindow
         }
     }
 
-    private void OnDateTimeDragControlValueChanged(object sender, EventArgs e)
+    private void OnDateTimeDragControlValueChanged (object sender, EventArgs e)
     {
         CurrentLogWindow?.ScrollToTimestamp(dragControlDateTime.DateTime, true, true);
     }
 
-    private void OnLogTabWindowDeactivate(object sender, EventArgs e)
+    private void OnLogTabWindowDeactivate (object sender, EventArgs e)
     {
         CurrentLogWindow?.AppFocusLost();
     }
 
-    private void OnLogTabWindowActivated(object sender, EventArgs e)
+    private void OnLogTabWindowActivated (object sender, EventArgs e)
     {
         CurrentLogWindow?.AppFocusGained();
     }
 
-    private void OnShowBookmarkListToolStripMenuItemClick(object sender, EventArgs e)
+    private void OnShowBookmarkListToolStripMenuItemClick (object sender, EventArgs e)
     {
         if (_bookmarkWindow.Visible)
         {
@@ -606,42 +609,42 @@ partial class LogTabWindow
         }
     }
 
-    private void OnToolStripButtonOpenClick(object sender, EventArgs e)
+    private void OnToolStripButtonOpenClick (object sender, EventArgs e)
     {
         OpenFileDialog();
     }
 
-    private void OnToolStripButtonSearchClick(object sender, EventArgs e)
+    private void OnToolStripButtonSearchClick (object sender, EventArgs e)
     {
         OpenSearchDialog();
     }
 
-    private void OnToolStripButtonFilterClick(object sender, EventArgs e)
+    private void OnToolStripButtonFilterClick (object sender, EventArgs e)
     {
         CurrentLogWindow?.ToggleFilterPanel();
     }
 
-    private void OnToolStripButtonBookmarkClick(object sender, EventArgs e)
+    private void OnToolStripButtonBookmarkClick (object sender, EventArgs e)
     {
         CurrentLogWindow?.ToggleBookmark();
     }
 
-    private void OnToolStripButtonUpClick(object sender, EventArgs e)
+    private void OnToolStripButtonUpClick (object sender, EventArgs e)
     {
         CurrentLogWindow?.JumpPrevBookmark();
     }
 
-    private void OnToolStripButtonDownClick(object sender, EventArgs e)
+    private void OnToolStripButtonDownClick (object sender, EventArgs e)
     {
         CurrentLogWindow?.JumpNextBookmark();
     }
 
-    private void OnShowHelpToolStripMenuItemClick(object sender, EventArgs e)
+    private void OnShowHelpToolStripMenuItemClick (object sender, EventArgs e)
     {
         Help.ShowHelp(this, "LogExpert.chm");
     }
 
-    private void OnHideLineColumnToolStripMenuItemClick(object sender, EventArgs e)
+    private void OnHideLineColumnToolStripMenuItemClick (object sender, EventArgs e)
     {
         ConfigManager.Settings.hideLineColumn = hideLineColumnToolStripMenuItem.Checked;
         lock (_logWindowList)
@@ -658,12 +661,12 @@ partial class LogTabWindow
     // Tab context menu stuff
     // ==================================================================
 
-    private void OnCloseThisTabToolStripMenuItemClick(object sender, EventArgs e)
+    private void OnCloseThisTabToolStripMenuItemClick (object sender, EventArgs e)
     {
         (dockPanel.ActiveContent as LogWindow.LogWindow).Close();
     }
 
-    private void OnCloseOtherTabsToolStripMenuItemClick(object sender, EventArgs e)
+    private void OnCloseOtherTabsToolStripMenuItemClick (object sender, EventArgs e)
     {
         IList<Form> closeList = new List<Form>();
         lock (_logWindowList)
@@ -682,12 +685,12 @@ partial class LogTabWindow
         }
     }
 
-    private void OnCloseAllTabsToolStripMenuItemClick(object sender, EventArgs e)
+    private void OnCloseAllTabsToolStripMenuItemClick (object sender, EventArgs e)
     {
         CloseAllTabs();
     }
 
-    private void OnTabColorToolStripMenuItemClick(object sender, EventArgs e)
+    private void OnTabColorToolStripMenuItemClick (object sender, EventArgs e)
     {
         LogWindow.LogWindow logWindow = dockPanel.ActiveContent as LogWindow.LogWindow;
 
@@ -727,7 +730,7 @@ partial class LogTabWindow
         }
     }
 
-    private void OnLogTabWindowSizeChanged(object sender, EventArgs e)
+    private void OnLogTabWindowSizeChanged (object sender, EventArgs e)
     {
         if (WindowState != FormWindowState.Minimized)
         {
@@ -735,7 +738,7 @@ partial class LogTabWindow
         }
     }
 
-    private void OnSaveProjectToolStripMenuItemClick(object sender, EventArgs e)
+    private void OnSaveProjectToolStripMenuItemClick (object sender, EventArgs e)
     {
         SaveFileDialog dlg = new();
         dlg.DefaultExt = "lxj";
@@ -766,7 +769,7 @@ partial class LogTabWindow
         }
     }
 
-    private void OnLoadProjectToolStripMenuItemClick(object sender, EventArgs e)
+    private void OnLoadProjectToolStripMenuItemClick (object sender, EventArgs e)
     {
         OpenFileDialog dlg = new();
         dlg.DefaultExt = "lxj";
@@ -779,7 +782,7 @@ partial class LogTabWindow
         }
     }
 
-    private void OnToolStripButtonBubblesClick(object sender, EventArgs e)
+    private void OnToolStripButtonBubblesClick (object sender, EventArgs e)
     {
         if (CurrentLogWindow != null)
         {
@@ -787,13 +790,13 @@ partial class LogTabWindow
         }
     }
 
-    private void OnCopyPathToClipboardToolStripMenuItemClick(object sender, EventArgs e)
+    private void OnCopyPathToClipboardToolStripMenuItemClick (object sender, EventArgs e)
     {
         LogWindow.LogWindow logWindow = dockPanel.ActiveContent as LogWindow.LogWindow;
         Clipboard.SetText(logWindow.Title);
     }
 
-    private void OnFindInExplorerToolStripMenuItemClick(object sender, EventArgs e)
+    private void OnFindInExplorerToolStripMenuItemClick (object sender, EventArgs e)
     {
         LogWindow.LogWindow logWindow = dockPanel.ActiveContent as LogWindow.LogWindow;
 
@@ -804,22 +807,22 @@ partial class LogTabWindow
         explorer.Start();
     }
 
-    private void OnExportBookmarksToolStripMenuItemClick(object sender, EventArgs e)
+    private void OnExportBookmarksToolStripMenuItemClick (object sender, EventArgs e)
     {
         CurrentLogWindow?.ExportBookmarkList();
     }
 
-    private void OnHighlightGroupsComboBoxDropDownClosed(object sender, EventArgs e)
+    private void OnHighlightGroupsComboBoxDropDownClosed (object sender, EventArgs e)
     {
         ApplySelectedHighlightGroup();
     }
 
-    private void OnHighlightGroupsComboBoxSelectedIndexChanged(object sender, EventArgs e)
+    private void OnHighlightGroupsComboBoxSelectedIndexChanged (object sender, EventArgs e)
     {
         ApplySelectedHighlightGroup();
     }
 
-    private void OnHighlightGroupsComboBoxMouseUp(object sender, MouseEventArgs e)
+    private void OnHighlightGroupsComboBoxMouseUp (object sender, MouseEventArgs e)
     {
         if (e.Button == MouseButtons.Right)
         {
@@ -828,7 +831,7 @@ partial class LogTabWindow
     }
 
 
-    private void OnConfigChanged(object sender, ConfigChangedEventArgs e)
+    private void OnConfigChanged (object sender, ConfigChangedEventArgs e)
     {
         if (LogExpertProxy != null)
         {
@@ -836,31 +839,31 @@ partial class LogTabWindow
         }
     }
 
-    private void OnDumpLogBufferInfoToolStripMenuItemClick(object sender, EventArgs e)
+    private void OnDumpLogBufferInfoToolStripMenuItemClick (object sender, EventArgs e)
     {
 #if DEBUG
         CurrentLogWindow?.DumpBufferInfo();
 #endif
     }
 
-    private void OnDumpBufferDiagnosticToolStripMenuItemClick(object sender, EventArgs e)
+    private void OnDumpBufferDiagnosticToolStripMenuItemClick (object sender, EventArgs e)
     {
 #if DEBUG
         CurrentLogWindow?.DumpBufferDiagnostic();
 #endif
     }
 
-    private void OnRunGCToolStripMenuItemClick(object sender, EventArgs e)
+    private void OnRunGCToolStripMenuItemClick (object sender, EventArgs e)
     {
         RunGC();
     }
 
-    private void OnGCInfoToolStripMenuItemClick(object sender, EventArgs e)
+    private void OnGCInfoToolStripMenuItemClick (object sender, EventArgs e)
     {
         DumpGCInfo();
     }
 
-    private void OnToolsToolStripMenuItemDropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
+    private void OnToolsToolStripMenuItemDropDownItemClicked (object sender, ToolStripItemClickedEventArgs e)
     {
         if (e.ClickedItem.Tag is ToolEntry tag)
         {
@@ -868,98 +871,98 @@ partial class LogTabWindow
         }
     }
 
-    private void OnExternalToolsToolStripItemClicked(object sender, ToolStripItemClickedEventArgs e)
+    private void OnExternalToolsToolStripItemClicked (object sender, ToolStripItemClickedEventArgs e)
     {
         ToolButtonClick(e.ClickedItem.Tag as ToolEntry);
     }
 
-    private void OnConfigureToolStripMenuItemClick(object sender, EventArgs e)
+    private void OnConfigureToolStripMenuItemClick (object sender, EventArgs e)
     {
         OpenSettings(2);
     }
 
-    private void OnThrowExceptionGUIThreadToolStripMenuItemClick(object sender, EventArgs e)
+    private void OnThrowExceptionGUIThreadToolStripMenuItemClick (object sender, EventArgs e)
     {
         throw new Exception("This is a test exception thrown by the GUI thread");
     }
 
-    private void OnThrowExceptionBackgroundThToolStripMenuItemClick(object sender, EventArgs e)
+    private void OnThrowExceptionBackgroundThToolStripMenuItemClick (object sender, EventArgs e)
     {
         ExceptionFx fx = ThrowExceptionFx;
         fx.BeginInvoke(null, null);
     }
 
-    private void OnThrowExceptionBackgroundThreadToolStripMenuItemClick(object sender, EventArgs e)
+    private void OnThrowExceptionBackgroundThreadToolStripMenuItemClick (object sender, EventArgs e)
     {
         Thread thread = new(ThrowExceptionThreadFx);
         thread.IsBackground = true;
         thread.Start();
     }
 
-    private void OnWarnToolStripMenuItemClick(object sender, EventArgs e)
+    private void OnWarnToolStripMenuItemClick (object sender, EventArgs e)
     {
         //_logger.GetLogger().LogLevel = _logger.Level.WARN;
     }
 
-    private void OnInfoToolStripMenuItemClick(object sender, EventArgs e)
+    private void OnInfoToolStripMenuItemClick (object sender, EventArgs e)
     {
         //_logger.Get_logger().LogLevel = _logger.Level.INFO;
     }
 
-    private void OnDebugToolStripMenuItemClick(object sender, EventArgs e)
+    private void OnDebugToolStripMenuItemClick (object sender, EventArgs e)
     {
         //_logger.Get_logger().LogLevel = _logger.Level.DEBUG;
     }
 
-    private void OnLogLevelToolStripMenuItemClick(object sender, EventArgs e)
+    private void OnLogLevelToolStripMenuItemClick (object sender, EventArgs e)
     {
     }
 
-    private void OnLogLevelToolStripMenuItemDropDownOpening(object sender, EventArgs e)
+    private void OnLogLevelToolStripMenuItemDropDownOpening (object sender, EventArgs e)
     {
         //warnToolStripMenuItem.Checked = _logger.Get_logger().LogLevel == _logger.Level.WARN;
         //infoToolStripMenuItem.Checked = _logger.Get_logger().LogLevel == _logger.Level.INFO;
         //debugToolStripMenuItem1.Checked = _logger.Get_logger().LogLevel == _logger.Level.DEBUG;
     }
 
-    private void OnDisableWordHighlightModeToolStripMenuItemClick(object sender, EventArgs e)
+    private void OnDisableWordHighlightModeToolStripMenuItemClick (object sender, EventArgs e)
     {
         DebugOptions.DisableWordHighlight = disableWordHighlightModeToolStripMenuItem.Checked;
         CurrentLogWindow?.RefreshAllGrids();
     }
 
-    private void OnMultiFileMaskToolStripMenuItemClick(object sender, EventArgs e)
+    private void OnMultiFileMaskToolStripMenuItemClick (object sender, EventArgs e)
     {
         CurrentLogWindow?.ChangeMultifileMask();
     }
 
-    private void OnMultiFileEnabledStripMenuItemClick(object sender, EventArgs e)
+    private void OnMultiFileEnabledStripMenuItemClick (object sender, EventArgs e)
     {
         ToggleMultiFile();
     }
 
-    private void OnLockInstanceToolStripMenuItemClick(object sender, EventArgs e)
+    private void OnLockInstanceToolStripMenuItemClick (object sender, EventArgs e)
     {
         AbstractLogTabWindow.StaticData.CurrentLockedMainWindow = lockInstanceToolStripMenuItem.Checked ? null : this;
     }
 
-    private void OnOptionToolStripMenuItemDropDownOpening(object sender, EventArgs e)
+    private void OnOptionToolStripMenuItemDropDownOpening (object sender, EventArgs e)
     {
         lockInstanceToolStripMenuItem.Enabled = !ConfigManager.Settings.Preferences.allowOnlyOneInstance;
         lockInstanceToolStripMenuItem.Checked = AbstractLogTabWindow.StaticData.CurrentLockedMainWindow == this;
     }
 
-    private void OnFileToolStripMenuItemDropDownOpening(object sender, EventArgs e)
+    private void OnFileToolStripMenuItemDropDownOpening (object sender, EventArgs e)
     {
         newFromClipboardToolStripMenuItem.Enabled = Clipboard.ContainsText();
     }
 
-    private void OnNewFromClipboardToolStripMenuItemClick(object sender, EventArgs e)
+    private void OnNewFromClipboardToolStripMenuItemClick (object sender, EventArgs e)
     {
         PasteFromClipboard();
     }
 
-    private void OnOpenURIToolStripMenuItemClick(object sender, EventArgs e)
+    private void OnOpenURIToolStripMenuItemClick (object sender, EventArgs e)
     {
         OpenUriDialog dlg = new()
         {
@@ -977,7 +980,7 @@ partial class LogTabWindow
         }
     }
 
-    private void OnColumnFinderToolStripMenuItemClick(object sender, EventArgs e)
+    private void OnColumnFinderToolStripMenuItemClick (object sender, EventArgs e)
     {
         if (CurrentLogWindow != null && !_skipEvents)
         {
@@ -985,7 +988,7 @@ partial class LogTabWindow
         }
     }
 
-    private void OnDockPanelActiveContentChanged(object sender, EventArgs e)
+    private void OnDockPanelActiveContentChanged (object sender, EventArgs e)
     {
         if (dockPanel.ActiveContent is LogWindow.LogWindow window)
         {
@@ -995,7 +998,7 @@ partial class LogTabWindow
         }
     }
 
-    private void OnTabRenameToolStripMenuItemClick(object sender, EventArgs e)
+    private void OnTabRenameToolStripMenuItemClick (object sender, EventArgs e)
     {
         if (CurrentLogWindow != null)
         {
