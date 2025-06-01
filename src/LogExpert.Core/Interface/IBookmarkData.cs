@@ -1,25 +1,26 @@
-﻿using LogExpert.Core.Entities;
+using LogExpert.Core.Entities;
 
-namespace LogExpert.Core.Interface
+namespace LogExpert.Core.Interface;
+
+public interface IBookmarkData
 {
-    public interface IBookmarkData
-    {
-        #region Properties
+    #region Properties
 
-        BookmarkCollection Bookmarks { get; }
+    BookmarkCollection Bookmarks { get; }
 
-        #endregion
+    #endregion
 
-        #region Public methods
+    #region Public methods
 
-        void ToggleBookmark(int lineNum);
+    void ToggleBookmark (int lineNum);
 
-        bool IsBookmarkAtLine(int lineNum);
+    bool IsBookmarkAtLine (int lineNum);
 
-        int GetBookmarkIndexForLine(int lineNum);
+    int GetBookmarkIndexForLine (int lineNum);
 
-        Bookmark GetBookmarkForLine(int lineNum);
+    Bookmark GetBookmarkForLine (int lineNum);
 
-        #endregion
-    }
+    void SetBookmarks (SortedList<int, Bookmark> bookmarkList);
+
+    #endregion
 }

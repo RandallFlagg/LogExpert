@@ -55,6 +55,11 @@ public class BookmarkDataProvider : IBookmarkData
 
     #region Public methods
 
+    public void SetBookmarks (SortedList<int, Entities.Bookmark> bookmarkList)
+    {
+        BookmarkList = bookmarkList;
+    }
+
     public void ToggleBookmark (int lineNum)
     {
         if (IsBookmarkAtLine(lineNum))
