@@ -1,4 +1,6 @@
-﻿using LogExpert.Core.Classes.Highlight;
+using System.Drawing;
+
+using LogExpert.Core.Classes.Highlight;
 using LogExpert.Core.Entities;
 using LogExpert.Core.Interface;
 

@@ -1,4 +1,6 @@
-﻿namespace LogExpert.UI.Extensions
+using System.Drawing;
+
+namespace LogExpert.UI.Extensions
 {
     internal static class Utils
     {

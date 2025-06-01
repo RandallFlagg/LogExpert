@@ -1,4 +1,7 @@
-﻿using LogExpert.Core.Config;
+using System.Drawing;
+using System.Windows.Forms;
+
+using LogExpert.Core.Config;
 using LogExpert.Core.Entities;
 using LogExpert.Core.Enums;
 using LogExpert.Core.Interface;
