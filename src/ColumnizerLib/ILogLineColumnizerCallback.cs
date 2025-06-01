@@ -1,4 +1,4 @@
-﻿namespace LogExpert
+namespace LogExpert
 {
     ///<summary>
     ///This is a callback interface. Some of the ILogLineColumnizer functions
@@ -21,26 +21,32 @@
         /// a ILogLineColumnizer function is called for (e.g. the line that has to be painted).
         /// </summary>
         /// <returns>The current line number starting at 0</returns>
-        int GetLineNum();
+        int GetLineNum ();
 
+        /// <summary>
+        /// This function sets the current line number. That is the line number of the log line
+        /// a ILogLineColumnizer function is called for (e.g. the line that has to be painted).
+        /// </summary>
+        /// <param name="lineNum">line number to be set</param>
+        void SetLineNum (int lineNum);
         /// <summary>
         /// Returns the full file name (path + name) of the current log file.
         /// </summary>
         /// <returns>File name of current log file</returns>
-        string GetFileName();
+        string GetFileName ();
 
         /// <summary>
         /// Returns the log line with the given index (zero-based).
         /// </summary>
         /// <param name="lineNum">Number of the line to be retrieved</param>
         /// <returns>A string with line content or null if line number is out of range</returns>
-        ILogLine GetLogLine(int lineNum);
+        ILogLine GetLogLine (int lineNum);
 
         /// <summary>
         /// Returns the number of lines of the logfile.
         /// </summary>
         /// <returns>Number of lines.</returns>
-        int GetLineCount();
+        int GetLineCount ();
 
         #endregion
     }

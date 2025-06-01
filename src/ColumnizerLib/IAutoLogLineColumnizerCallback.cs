@@ -1,4 +1,4 @@
-﻿namespace LogExpert
+namespace LogExpert
 {
     public interface IAutoLogLineColumnizerCallback
     {
@@ -7,6 +7,6 @@
         /// </summary>
         /// <param name="lineNum">Number of the line to be retrieved</param>
         /// <returns>A string with line content or null if line number is out of range</returns>
-        ILogLine GetLogLine(int lineNum);
+        ILogLine GetLogLine (int lineNum);
     }
 }

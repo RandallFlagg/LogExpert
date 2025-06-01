@@ -511,7 +511,7 @@ namespace LogExpert.UI.Controls.LogWindow
 
         public Font BoldFont { get; private set; }
 
-        LogfileReader ILogWindow._logFileReader => _logFileReader;
+        LogfileReader ILogWindow.LogFileReader => _logFileReader;
 
         event FileSizeChangedEventHandler ILogWindow.FileSizeChanged
         {

@@ -1,16 +1,12 @@
-﻿using LogExpert.Classes.ILogLineColumnizerCallback;
+using LogExpert.Classes.ILogLineColumnizerCallback;
 using LogExpert.Core.Classes;
 using LogExpert.Core.Classes.Filter;
 
 using NLog;
 
-using System;
-using System.Collections.Generic;
-using System.Windows.Forms;
-
 namespace LogExpert.Classes.Filter
 {
-    internal delegate void FilterFx(FilterParams filterParams, List<int> filterResultLines, List<int> lastFilterResultLines, List<int> filterHitList);
+    internal delegate void FilterFx (FilterParams filterParams, List<int> filterResultLines, List<int> lastFilterResultLines, List<int> filterHitList);
 
     internal class Filter
     {
@@ -27,7 +23,7 @@ namespace LogExpert.Classes.Filter
         #region cTor
 
         //TODO Is the callback needed?
-        public Filter(ColumnizerCallback callback)
+        public Filter (ColumnizerCallback callback)
         {
             _callback = callback;
             FilterResultLines = [];
@@ -51,7 +47,7 @@ namespace LogExpert.Classes.Filter
 
         #region Public methods
 
-        public int DoFilter(FilterParams filterParams, int startLine, int maxCount, ProgressCallback progressCallback)
+        public int DoFilter (FilterParams filterParams, int startLine, int maxCount, ProgressCallback progressCallback)
         {
             return DoFilter(filterParams, startLine, maxCount, FilterResultLines, LastFilterLinesList, FilterHitList, progressCallback);
         }
@@ -60,16 +56,16 @@ namespace LogExpert.Classes.Filter
 
         #region Private Methods
 
-        private int DoFilter(FilterParams filterParams, int startLine, int maxCount, List<int> filterResultLines,
-            List<int> lastFilterLinesList, List<int> filterHitList, ProgressCallback progressCallback)
+        private int DoFilter (FilterParams filterParams, int startLine, int maxCount, List<int> filterResultLines, List<int> lastFilterLinesList, List<int> filterHitList, ProgressCallback progressCallback)
         {
-            int lineNum = startLine;
-            int count = 0;
-            int callbackCounter = 0;
+            var lineNum = startLine;
+            var count = 0;
+            var callbackCounter = 0;
 
             try
             {
                 filterParams.Reset();
+
                 while ((count++ < maxCount || filterParams.IsInRange) && !ShouldCancel)
                 {
                     if (lineNum >= _callback.GetLineCount())
@@ -78,16 +74,17 @@ namespace LogExpert.Classes.Filter
                     }
 
                     ILogLine line = _callback.GetLogLine(lineNum);
+
                     if (line == null)
                     {
                         return count;
                     }
 
-                    _callback.LineNum = lineNum;
+                    _callback.SetLineNum(lineNum);
+
                     if (Util.TestFilterCondition(filterParams, line, _callback))
                     {
-                        AddFilterLine(lineNum, false, filterParams, filterResultLines, lastFilterLinesList,
-                            filterHitList);
+                        AddFilterLine(lineNum, false, filterParams, filterResultLines, lastFilterLinesList, filterHitList);
                     }
 
                     lineNum++;
@@ -112,7 +109,7 @@ namespace LogExpert.Classes.Filter
             return count;
         }
 
-        private void AddFilterLine(int lineNum, bool immediate, FilterParams filterParams, List<int> filterResultLines, List<int> lastFilterLinesList, List<int> filterHitList)
+        private void AddFilterLine (int lineNum, bool immediate, FilterParams filterParams, List<int> filterResultLines, List<int> lastFilterLinesList, List<int> filterHitList)
         {
             filterHitList.Add(lineNum);
             IList<int> filterResult = GetAdditionalFilterResults(filterParams, lineNum, lastFilterLinesList);
@@ -137,7 +134,7 @@ namespace LogExpert.Classes.Filter
         /// <param name="lineNum"></param>
         /// <param name="checkList"></param>
         /// <returns></returns>
-        private IList<int> GetAdditionalFilterResults(FilterParams filterParams, int lineNum, IList<int> checkList)
+        private IList<int> GetAdditionalFilterResults (FilterParams filterParams, int lineNum, IList<int> checkList)
         {
             IList<int> resultList = [];
 
