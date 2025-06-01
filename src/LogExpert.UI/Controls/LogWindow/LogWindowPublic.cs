@@ -11,6 +11,7 @@ using LogExpert.Core.Entities;
 using LogExpert.Core.EventArguments;
 using LogExpert.Dialogs;
 using LogExpert.UI.Entities;
+using LogExpert.UI.Extensions;
 
 namespace LogExpert.UI.Controls.LogWindow;
 
@@ -579,6 +580,28 @@ partial class LogWindow
         //this.dataGridView.Refresh();
         _parentLogTabWin.FollowTailChanged(this, isChecked, byTrigger);
         SendGuiStateUpdate();
+    }
+
+    public void TryToTruncate ()
+    {
+        try
+        {
+            if (LockFinder.CheckIfFileIsLocked(Title))
+            {
+                var name = LockFinder.FindLockedProcessName(Title);
+                StatusLineText($"Truncate failed: file is locked by {name}");
+            }
+            else
+            {
+                File.WriteAllText(Title, "");
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.Warn($"Unexpected issue truncating file: {ex.Message}");
+            StatusLineText("Unexpected issue truncating file");
+            throw;
+        }
     }
 
     public void GotoLine (int line)
