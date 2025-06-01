@@ -22,7 +22,7 @@ namespace LogExpert.Classes.Filter
 
         #region cTor
 
-        //TODO Is the callback needed?
+        //TODO Is the callback needed? (https://github.com/LogExperts/LogExpert/issues/401)
         public Filter (ColumnizerCallback callback)
         {
             _callback = callback;

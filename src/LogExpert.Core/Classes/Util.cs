@@ -28,7 +28,7 @@ public class Util
         return fileName[(i + 1)..];
     }
 
-    //TODO Add Null Check
+    //TODO Add Null Check (https://github.com/LogExperts/LogExpert/issues/403)
     public static string StripExtension (string fileName)
     {
         var i = fileName.LastIndexOf('.');
@@ -41,7 +41,7 @@ public class Util
         return fileName[..i];
     }
 
-    //TODO Add Null Check
+    //TODO Add Null Check (https://github.com/LogExperts/LogExpert/issues/403)
     public static string GetExtension (string fileName)
     {
         var i = fileName.LastIndexOf('.');
@@ -102,7 +102,7 @@ public class Util
         return match;
     }
 
-    //TODO Add Null Checks
+    //TODO Add Null Checks (https://github.com/LogExperts/LogExpert/issues/403)
     public static int DamerauLevenshteinDistance (string src, string dest)
     {
         var d = new int[src.Length + 1, dest.Length + 1];
@@ -142,7 +142,7 @@ public class Util
         return d[str1.Length, str2.Length];
     }
 
-    //TODO Add Null Checks
+    //TODO Add Null Checks (https://github.com/LogExperts/LogExpert/issues/403)
     public static unsafe int YetiLevenshtein (string s1, string s2)
     {
         fixed (char* p1 = s1)
@@ -409,7 +409,7 @@ public class Util
         }
     }
 
-    //TODO Add Null Check
+    //TODO Add Null Check (https://github.com/LogExperts/LogExpert/issues/403)
     [SupportedOSPlatform("windows")]
     public string? GetWordFromPos (int xPos, string text, Graphics g, Font font)
     {
