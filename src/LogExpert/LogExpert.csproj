@@ -13,7 +13,6 @@
     <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
     <ImplicitUsings>enable</ImplicitUsings>
     <IsTestProject>False</IsTestProject>
-    <NoWarn>CS1591;</NoWarn>
     <OutputPath>$(SolutionDir)..\bin\$(Configuration)</OutputPath>
     <OutputType>WinExe</OutputType>
     <SignAssembly>True</SignAssembly>
