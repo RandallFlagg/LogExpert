@@ -1,4 +1,10 @@
-﻿using LogExpert.Classes;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Runtime.Versioning;
+using System.Security;
+using System.Text;
+
+using LogExpert.Classes;
 using LogExpert.Core.Classes;
 using LogExpert.Core.Classes.Columnizer;
 using LogExpert.Core.Classes.Persister;
@@ -10,27 +16,25 @@ using LogExpert.Dialogs;
 using LogExpert.PluginRegistry.FileSystem;
 using LogExpert.UI.Dialogs;
 using LogExpert.UI.Extensions;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
-using System.Security;
-using System.Text;
+
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace LogExpert.UI.Controls.LogTabWindow;
-partial class LogTabWindow
+
+public partial class LogTabWindow
 {
     #region Private Methods
 
     /// <summary>
     /// Creates a temp file with the text content of the clipboard and opens the temp file in a new tab.
     /// </summary>
-    private void PasteFromClipboard()
+    [SupportedOSPlatform("windows")]
+    private void PasteFromClipboard ()
     {
         if (Clipboard.ContainsText())
         {
-            string text = Clipboard.GetText();
-            string fileName = Path.GetTempFileName();
+            var text = Clipboard.GetText();
+            var fileName = Path.GetTempFileName();
 
             using (FileStream fStream = new(fileName, FileMode.Append, FileAccess.Write, FileShare.Read))
             using (StreamWriter writer = new(fStream, Encoding.Unicode))
@@ -39,27 +43,27 @@ partial class LogTabWindow
                 writer.Close();
             }
 
-            string title = "Clipboard";
+            var title = "Clipboard";
             LogWindow.LogWindow logWindow = AddTempFileTab(fileName, title);
-            LogWindowData data = logWindow.Tag as LogWindowData;
-            if (data != null)
+            if (logWindow.Tag is LogWindowData data)
             {
                 SetTooltipText(logWindow, "Pasted on " + DateTime.Now);
             }
         }
     }
 
-    private void InitToolWindows()
+    private void InitToolWindows ()
     {
         InitBookmarkWindow();
     }
 
-    private void DestroyToolWindows()
+    private void DestroyToolWindows ()
     {
         DestroyBookmarkWindow();
     }
 
-    private void InitBookmarkWindow()
+    [SupportedOSPlatform("windows")]
+    private void InitBookmarkWindow ()
     {
         _bookmarkWindow = new BookmarkWindow
         {
@@ -72,13 +76,14 @@ partial class LogTabWindow
         _firstBookmarkWindowShow = true;
     }
 
-    private void DestroyBookmarkWindow()
+    [SupportedOSPlatform("windows")]
+    private void DestroyBookmarkWindow ()
     {
         _bookmarkWindow.HideOnClose = false;
         _bookmarkWindow.Close();
     }
 
-    private void SaveLastOpenFilesList()
+    private void SaveLastOpenFilesList ()
     {
         ConfigManager.Settings.lastOpenFilesList.Clear();
         foreach (DockContent content in dockPanel.Contents)
@@ -93,7 +98,8 @@ partial class LogTabWindow
         }
     }
 
-    private void SaveWindowPosition()
+    [SupportedOSPlatform("windows")]
+    private void SaveWindowPosition ()
     {
         SuspendLayout();
         if (WindowState == FormWindowState.Normal)
@@ -112,12 +118,12 @@ partial class LogTabWindow
         ResumeLayout();
     }
 
-    private void SetTooltipText(LogWindow.LogWindow logWindow, string logFileName)
+    private void SetTooltipText (LogWindow.LogWindow logWindow, string logFileName)
     {
         logWindow.ToolTipText = logFileName;
     }
 
-    private void FillDefaultEncodingFromSettings(EncodingOptions encodingOptions)
+    private void FillDefaultEncodingFromSettings (EncodingOptions encodingOptions)
     {
         if (ConfigManager.Settings.Preferences.defaultEncoding != null)
         {
@@ -133,9 +139,10 @@ partial class LogTabWindow
         }
     }
 
-    private void AddFileTabs(string[] fileNames)
+    [SupportedOSPlatform("windows")]
+    private void AddFileTabs (string[] fileNames)
     {
-        foreach (string fileName in fileNames)
+        foreach (var fileName in fileNames)
         {
             if (!string.IsNullOrEmpty(fileName))
             {
@@ -153,7 +160,8 @@ partial class LogTabWindow
         Activate();
     }
 
-    private void AddLogWindow(LogWindow.LogWindow logWindow, string title, bool doNotAddToPanel)
+    [SupportedOSPlatform("windows")]
+    private void AddLogWindow (LogWindow.LogWindow logWindow, string title, bool doNotAddToPanel)
     {
         logWindow.CloseButton = true;
         logWindow.TabPageContextMenuStrip = tabContextMenuStrip;
@@ -165,9 +173,13 @@ partial class LogTabWindow
             logWindow.Show(dockPanel);
         }
 
-        LogWindowData data = new();
-        data.diffSum = 0;
+        LogWindowData data = new()
+        {
+            diffSum = 0
+        };
+
         logWindow.Tag = data;
+
         lock (_logWindowList)
         {
             _logWindowList.Add(logWindow);
@@ -185,7 +197,8 @@ partial class LogTabWindow
         logWindow.Visible = true;
     }
 
-    private void DisconnectEventHandlers(LogWindow.LogWindow logWindow)
+    [SupportedOSPlatform("windows")]
+    private void DisconnectEventHandlers (LogWindow.LogWindow logWindow)
     {
         logWindow.FileSizeChanged -= OnFileSizeChanged;
         logWindow.TailFollowed -= OnTailFollowed;
@@ -196,21 +209,18 @@ partial class LogTabWindow
         logWindow.CurrentHighlightGroupChanged -= OnLogWindowCurrentHighlightGroupChanged;
         logWindow.SyncModeChanged -= OnLogWindowSyncModeChanged;
 
-        LogWindowData data = logWindow.Tag as LogWindowData;
+        var data = logWindow.Tag as LogWindowData;
         //data.tabPage.MouseClick -= tabPage_MouseClick;
         //data.tabPage.TabDoubleClick -= tabPage_TabDoubleClick;
         //data.tabPage.ContextMenuStrip = null;
         //data.tabPage = null;
     }
 
-    private void AddToFileHistory(string fileName)
+    private void AddToFileHistory (string fileName)
     {
-        bool FindName(string s)
-        {
-            return s.ToLower().Equals(fileName.ToLower());
-        }
+        bool FindName (string s) => s.ToUpperInvariant().Equals(fileName.ToUpperInvariant(), StringComparison.Ordinal);
 
-        int index = ConfigManager.Settings.fileHistoryList.FindIndex(FindName);
+        var index = ConfigManager.Settings.fileHistoryList.FindIndex(FindName);
 
         if (index != -1)
         {
@@ -229,13 +239,14 @@ partial class LogTabWindow
         FillHistoryMenu();
     }
 
-    private LogWindow.LogWindow FindWindowForFile(string fileName)
+    [SupportedOSPlatform("windows")]
+    private LogWindow.LogWindow FindWindowForFile (string fileName)
     {
         lock (_logWindowList)
         {
             foreach (LogWindow.LogWindow logWindow in _logWindowList)
             {
-                if (logWindow.FileName.ToLower().Equals(fileName.ToLower()))
+                if (logWindow.FileName.ToUpperInvariant().Equals(fileName.ToUpperInvariant(), StringComparison.Ordinal))
                 {
                     return logWindow;
                 }
@@ -251,7 +262,7 @@ partial class LogTabWindow
     /// </summary>
     /// <param name="fileName"></param>
     /// <returns></returns>
-    private string FindFilenameForSettings(string fileName)
+    private string FindFilenameForSettings (string fileName)
     {
         if (fileName.EndsWith(".lxp"))
         {
@@ -277,7 +288,7 @@ partial class LogTabWindow
                 }
 
                 // handle relative paths in .lxp files
-                string dir = Path.GetDirectoryName(fileName);
+                var dir = Path.GetDirectoryName(fileName);
                 return Path.Combine(dir, persistenceData.fileName);
             }
         }
@@ -285,11 +296,12 @@ partial class LogTabWindow
         return fileName;
     }
 
-    private void FillHistoryMenu()
+    [SupportedOSPlatform("windows")]
+    private void FillHistoryMenu ()
     {
         ToolStripDropDown strip = new ToolStripDropDownMenu();
 
-        foreach (string file in ConfigManager.Settings.fileHistoryList)
+        foreach (var file in ConfigManager.Settings.fileHistoryList)
         {
             ToolStripItem item = new ToolStripMenuItem(file);
             strip.Items.Add(item);
@@ -300,7 +312,8 @@ partial class LogTabWindow
         lastUsedToolStripMenuItem.DropDown = strip;
     }
 
-    private void RemoveLogWindow(LogWindow.LogWindow logWindow)
+    [SupportedOSPlatform("windows")]
+    private void RemoveLogWindow (LogWindow.LogWindow logWindow)
     {
         lock (_logWindowList)
         {
@@ -310,7 +323,8 @@ partial class LogTabWindow
         DisconnectEventHandlers(logWindow);
     }
 
-    private void RemoveAndDisposeLogWindow(LogWindow.LogWindow logWindow, bool dontAsk)
+    [SupportedOSPlatform("windows")]
+    private void RemoveAndDisposeLogWindow (LogWindow.LogWindow logWindow, bool dontAsk)
     {
         if (CurrentLogWindow == logWindow)
         {
@@ -325,7 +339,8 @@ partial class LogTabWindow
         logWindow.Close(dontAsk);
     }
 
-    private void ShowHighlightSettingsDialog()
+    [SupportedOSPlatform("windows")]
+    private void ShowHighlightSettingsDialog ()
     {
         HighlightDialog dlg = new(ConfigManager)
         {
@@ -348,21 +363,23 @@ partial class LogTabWindow
         }
     }
 
-    private void FillHighlightComboBox()
+    [SupportedOSPlatform("windows")]
+    private void FillHighlightComboBox ()
     {
-        string currentGroupName = groupsComboBoxHighlightGroups.Text;
+        var currentGroupName = groupsComboBoxHighlightGroups.Text;
         groupsComboBoxHighlightGroups.Items.Clear();
         foreach (HighlightGroup group in HighlightGroupList)
         {
             groupsComboBoxHighlightGroups.Items.Add(group.GroupName);
-            if (group.GroupName.Equals(currentGroupName))
+            if (group.GroupName.Equals(currentGroupName, StringComparison.Ordinal))
             {
                 groupsComboBoxHighlightGroups.Text = group.GroupName;
             }
         }
     }
 
-    private void OpenFileDialog()
+    [SupportedOSPlatform("windows")]
+    private void OpenFileDialog ()
     {
         OpenFileDialog openFileDialog = new();
 
@@ -409,7 +426,8 @@ partial class LogTabWindow
         }
     }
 
-    private void LoadFiles(string[] names, bool invertLogic)
+    [SupportedOSPlatform("windows")]
+    private void LoadFiles (string[] names, bool invertLogic)
     {
         Array.Sort(names);
 
@@ -448,14 +466,9 @@ partial class LogTabWindow
         {
             if (invertLogic)
             {
-                if (option == MultiFileOption.SingleFiles)
-                {
-                    option = MultiFileOption.MultiFile;
-                }
-                else
-                {
-                    option = MultiFileOption.SingleFiles;
-                }
+                option = option == MultiFileOption.SingleFiles
+                    ? MultiFileOption.MultiFile
+                    : MultiFileOption.SingleFiles;
             }
         }
 
@@ -469,12 +482,13 @@ partial class LogTabWindow
         }
     }
 
-    private void SetColumnizerHistoryEntry(string fileName, ILogLineColumnizer columnizer)
+    private void SetColumnizerHistoryEntry (string fileName, ILogLineColumnizer columnizer)
     {
         ColumnizerHistoryEntry entry = FindColumnizerHistoryEntry(fileName);
         if (entry != null)
         {
-            ConfigManager.Settings.columnizerHistoryList.Remove(entry);
+            _ = ConfigManager.Settings.columnizerHistoryList.Remove(entry);
+
         }
 
         ConfigManager.Settings.columnizerHistoryList.Add(new ColumnizerHistoryEntry(fileName, columnizer.GetName()));
@@ -485,11 +499,11 @@ partial class LogTabWindow
         }
     }
 
-    private ColumnizerHistoryEntry FindColumnizerHistoryEntry(string fileName)
+    private ColumnizerHistoryEntry FindColumnizerHistoryEntry (string fileName)
     {
         foreach (ColumnizerHistoryEntry entry in ConfigManager.Settings.columnizerHistoryList)
         {
-            if (entry.FileName.Equals(fileName))
+            if (entry.FileName.Equals(fileName, StringComparison.Ordinal))
             {
                 return entry;
             }
@@ -498,7 +512,8 @@ partial class LogTabWindow
         return null;
     }
 
-    private void ToggleMultiFile()
+    [SupportedOSPlatform("windows")]
+    private void ToggleMultiFile ()
     {
         if (CurrentLogWindow != null)
         {
@@ -508,7 +523,8 @@ partial class LogTabWindow
         }
     }
 
-    private void ChangeCurrentLogWindow(LogWindow.LogWindow newLogWindow)
+    [SupportedOSPlatform("windows")]
+    private void ChangeCurrentLogWindow (LogWindow.LogWindow newLogWindow)
     {
         if (newLogWindow == _currentLogWindow)
         {
@@ -517,7 +533,7 @@ partial class LogTabWindow
 
         LogWindow.LogWindow oldLogWindow = _currentLogWindow;
         _currentLogWindow = newLogWindow;
-        string titleName = _showInstanceNumbers ? "LogExpert #" + _instanceNumber : "LogExpert";
+        var titleName = _showInstanceNumbers ? "LogExpert #" + _instanceNumber : "LogExpert";
 
         if (oldLogWindow != null)
         {
@@ -541,14 +557,9 @@ partial class LogTabWindow
             newLogWindow.BookmarkRemoved += OnBookmarkRemoved;
             newLogWindow.BookmarkTextChanged += OnBookmarkTextChanged;
 
-            if (newLogWindow.IsTempFile)
-            {
-                Text = titleName + @" - " + newLogWindow.TempTitleName;
-            }
-            else
-            {
-                Text = titleName + @" - " + newLogWindow.FileName;
-            }
+            Text = newLogWindow.IsTempFile
+                ? titleName + @" - " + newLogWindow.TempTitleName
+                : titleName + @" - " + newLogWindow.FileName;
 
             multiFileToolStripMenuItem.Checked = CurrentLogWindow.IsMultiFile;
             multiFileToolStripMenuItem.Enabled = true;
@@ -583,30 +594,31 @@ partial class LogTabWindow
         }
     }
 
-    private void ConnectToolWindows(LogWindow.LogWindow logWindow)
+    private void ConnectToolWindows (LogWindow.LogWindow logWindow)
     {
         ConnectBookmarkWindow(logWindow);
     }
 
-    private void ConnectBookmarkWindow(LogWindow.LogWindow logWindow)
+    private void ConnectBookmarkWindow (LogWindow.LogWindow logWindow)
     {
         FileViewContext ctx = new(logWindow, logWindow);
         _bookmarkWindow.SetBookmarkData(logWindow.BookmarkData);
         _bookmarkWindow.SetCurrentFile(ctx);
     }
 
-    private void DisconnectToolWindows(LogWindow.LogWindow logWindow)
+    private void DisconnectToolWindows (LogWindow.LogWindow logWindow)
     {
         DisconnectBookmarkWindow(logWindow);
     }
 
-    private void DisconnectBookmarkWindow(LogWindow.LogWindow logWindow)
+    private void DisconnectBookmarkWindow (LogWindow.LogWindow logWindow)
     {
         _bookmarkWindow.SetBookmarkData(null);
         _bookmarkWindow.SetCurrentFile(null);
     }
 
-    private void GuiStateUpdateWorker(GuiStateArgs e)
+    [SupportedOSPlatform("windows")]
+    private void GuiStateUpdateWorker (GuiStateArgs e)
     {
         _skipEvents = true;
         checkBoxFollowTail.Checked = e.FollowTail;
@@ -643,7 +655,8 @@ partial class LogTabWindow
         _skipEvents = false;
     }
 
-    private void ProgressBarUpdateWorker(ProgressEventArgs e)
+    [SupportedOSPlatform("windows")]
+    private void ProgressBarUpdateWorker (ProgressEventArgs e)
     {
         if (e.Value <= e.MaxValue && e.Value >= e.MinValue)
         {
@@ -663,7 +676,8 @@ partial class LogTabWindow
         }
     }
 
-    private void StatusLineEventWorker(StatusLineEventArgs e)
+    [SupportedOSPlatform("windows")]
+    private void StatusLineEventWorker (StatusLineEventArgs e)
     {
         if (e != null)
         {
@@ -678,7 +692,7 @@ partial class LogTabWindow
             labelCurrentLine.Size = TextRenderer.MeasureText(labelCurrentLine.Text, labelCurrentLine.Font);
             if (statusStrip.InvokeRequired)
             {
-                statusStrip.BeginInvoke(new MethodInvoker(delegate { statusStrip.Refresh(); }));
+                statusStrip.BeginInvoke(new MethodInvoker(statusStrip.Refresh));
             }
             else
             {
@@ -689,17 +703,18 @@ partial class LogTabWindow
 
     // tailState: 0,1,2 = on/off/off by Trigger
     // syncMode: 0 = normal (no), 1 = time synced
-    private Icon CreateLedIcon(int level, bool dirty, int tailState, int syncMode)
+    [SupportedOSPlatform("windows")]
+    private Icon CreateLedIcon (int level, bool dirty, int tailState, int syncMode)
     {
         Rectangle iconRect = _leds[0];
         iconRect.Height = 16; // (DockPanel's damn hardcoded height) // this.leds[this.leds.Length - 1].Bottom;
         iconRect.Width = iconRect.Right + 6;
         Bitmap bmp = new(iconRect.Width, iconRect.Height);
-        Graphics gfx = Graphics.FromImage(bmp);
+        var gfx = Graphics.FromImage(bmp);
 
-        int offsetFromTop = 4;
+        var offsetFromTop = 4;
 
-        for (int i = 0; i < _leds.Length; ++i)
+        for (var i = 0; i < _leds.Length; ++i)
         {
             Rectangle ledRect = _leds[i];
             ledRect.Offset(0, offsetFromTop);
@@ -714,8 +729,8 @@ partial class LogTabWindow
             }
         }
 
-        int ledSize = 3;
-        int ledGap = 1;
+        var ledSize = 3;
+        var ledGap = 1;
         Rectangle lastLed = _leds[^1];
         Rectangle dirtyLed = new(lastLed.Right + 2, lastLed.Bottom - ledSize, ledSize, ledSize);
         Rectangle tailLed = new(dirtyLed.Location, dirtyLed.Size);
@@ -754,8 +769,8 @@ partial class LogTabWindow
         // see http://connect.microsoft.com/VisualStudio/feedback/ViewFeedback.aspx?FeedbackID=345656
         // GetHicon() creates an unmanaged handle which must be destroyed. The Clone() workaround creates
         // a managed copy of icon. then the unmanaged win32 handle is destroyed
-        IntPtr iconHandle = bmp.GetHicon();
-        Icon icon = Icon.FromHandle(iconHandle).Clone() as Icon;
+        var iconHandle = bmp.GetHicon();
+        var icon = Icon.FromHandle(iconHandle).Clone() as Icon;
         Win32.DestroyIcon(iconHandle);
 
         gfx.Dispose();
@@ -763,18 +778,18 @@ partial class LogTabWindow
         return icon;
     }
 
-    private void CreateIcons()
+    private void CreateIcons ()
     {
-        for (int syncMode = 0; syncMode <= 1; syncMode++) // LED indicating time synced tabs
+        for (var syncMode = 0; syncMode <= 1; syncMode++) // LED indicating time synced tabs
         {
-            for (int tailMode = 0; tailMode < 4; tailMode++)
+            for (var tailMode = 0; tailMode < 4; tailMode++)
             {
-                for (int i = 0; i < 6; ++i)
+                for (var i = 0; i < 6; ++i)
                 {
                     _ledIcons[i, 0, tailMode, syncMode] = CreateLedIcon(i, false, tailMode, syncMode);
                 }
 
-                for (int i = 0; i < 6; ++i)
+                for (var i = 0; i < 6; ++i)
                 {
                     _ledIcons[i, 1, tailMode, syncMode] = CreateLedIcon(i, true, tailMode, syncMode);
                 }
@@ -782,23 +797,26 @@ partial class LogTabWindow
         }
     }
 
-    private void FileNotFound(LogWindow.LogWindow logWin)
+    [SupportedOSPlatform("windows")]
+    private void FileNotFound (LogWindow.LogWindow logWin)
     {
-        LogWindowData data = logWin.Tag as LogWindowData;
+        var data = logWin.Tag as LogWindowData;
         BeginInvoke(new SetTabIconDelegate(SetTabIcon), logWin, _deadIcon);
         dragControlDateTime.Visible = false;
     }
 
-    private void FileRespawned(LogWindow.LogWindow logWin)
+    [SupportedOSPlatform("windows")]
+    private void FileRespawned (LogWindow.LogWindow logWin)
     {
-        LogWindowData data = logWin.Tag as LogWindowData;
+        var data = logWin.Tag as LogWindowData;
         Icon icon = GetIcon(0, data);
         BeginInvoke(new SetTabIconDelegate(SetTabIcon), logWin, icon);
     }
 
-    private void ShowLedPeak(LogWindow.LogWindow logWin)
+    [SupportedOSPlatform("windows")]
+    private void ShowLedPeak (LogWindow.LogWindow logWin)
     {
-        LogWindowData data = logWin.Tag as LogWindowData;
+        var data = logWin.Tag as LogWindowData;
         lock (data)
         {
             data.diffSum = DIFF_MAX;
@@ -808,14 +826,14 @@ partial class LogTabWindow
         BeginInvoke(new SetTabIconDelegate(SetTabIcon), logWin, icon);
     }
 
-    private int GetLevelFromDiff(int diff)
+    private int GetLevelFromDiff (int diff)
     {
         if (diff > 60)
         {
             diff = 60;
         }
 
-        int level = diff / 10;
+        var level = diff / 10;
         if (diff > 0 && level == 0)
         {
             level = 2;
@@ -828,7 +846,8 @@ partial class LogTabWindow
         return level - 1;
     }
 
-    private void LedThreadProc()
+    [SupportedOSPlatform("windows")]
+    private void LedThreadProc ()
     {
         Thread.CurrentThread.Name = "LED Thread";
         while (!_shouldStop)
@@ -846,7 +865,7 @@ partial class LogTabWindow
             {
                 foreach (LogWindow.LogWindow logWindow in _logWindowList)
                 {
-                    LogWindowData data = logWindow.Tag as LogWindowData;
+                    var data = logWindow.Tag as LogWindowData;
                     if (data.diffSum > 0)
                     {
                         data.diffSum -= 10;
@@ -863,7 +882,8 @@ partial class LogTabWindow
         }
     }
 
-    private void SetTabIcon(LogWindow.LogWindow logWindow, Icon icon)
+    [SupportedOSPlatform("windows")]
+    private void SetTabIcon (LogWindow.LogWindow logWindow, Icon icon)
     {
         if (logWindow != null)
         {
@@ -872,7 +892,7 @@ partial class LogTabWindow
         }
     }
 
-    private Icon GetIcon(int diff, LogWindowData data)
+    private Icon GetIcon (int diff, LogWindowData data)
     {
         Icon icon =
             _ledIcons[
@@ -882,7 +902,8 @@ partial class LogTabWindow
         return icon;
     }
 
-    private void RefreshEncodingMenuBar(Encoding encoding)
+    [SupportedOSPlatform("windows")]
+    private void RefreshEncodingMenuBar (Encoding encoding)
     {
         toolStripEncodingASCIIItem.Checked = false;
         toolStripEncodingANSIItem.Checked = false;
@@ -919,7 +940,7 @@ partial class LogTabWindow
         toolStripEncodingANSIItem.Text = Encoding.Default.HeaderName;
     }
 
-    private void OpenSettings(int tabToOpen)
+    private void OpenSettings (int tabToOpen)
     {
         SettingsDialog dlg = new(ConfigManager.Settings.Preferences, this, tabToOpen, ConfigManager)
         {
@@ -934,7 +955,7 @@ partial class LogTabWindow
         }
     }
 
-    private void NotifyWindowsForChangedPrefs(SettingsFlags flags)
+    private void NotifyWindowsForChangedPrefs (SettingsFlags flags)
     {
         _logger.Info("The preferences have changed");
         ApplySettings(ConfigManager.Settings, flags);
@@ -956,7 +977,8 @@ partial class LogTabWindow
         }
     }
 
-    private void ApplySettings(Settings settings, SettingsFlags flags)
+    [SupportedOSPlatform("windows")]
+    private void ApplySettings (Settings settings, SettingsFlags flags)
     {
         if ((flags & SettingsFlags.WindowPosition) == SettingsFlags.WindowPosition)
         {
@@ -986,7 +1008,8 @@ partial class LogTabWindow
         }
     }
 
-    private void SetTabIcons(Preferences preferences)
+    [SupportedOSPlatform("windows")]
+    private void SetTabIcons (Preferences preferences)
     {
         _tailLedBrush[0] = new SolidBrush(preferences.showTailColor);
         CreateIcons();
@@ -994,14 +1017,15 @@ partial class LogTabWindow
         {
             foreach (LogWindow.LogWindow logWindow in _logWindowList)
             {
-                LogWindowData data = logWindow.Tag as LogWindowData;
+                var data = logWindow.Tag as LogWindowData;
                 Icon icon = GetIcon(data.diffSum, data);
                 BeginInvoke(new SetTabIconDelegate(SetTabIcon), logWindow, icon);
             }
         }
     }
 
-    private void SetToolIcon(ToolEntry entry, ToolStripItem item)
+    [SupportedOSPlatform("windows")]
+    private void SetToolIcon (ToolEntry entry, ToolStripItem item)
     {
         Icon icon = Win32.LoadIconFromExe(entry.iconFile, entry.iconIndex);
         if (icon != null)
@@ -1026,7 +1050,7 @@ partial class LogTabWindow
         }
     }
 
-    private void ToolButtonClick(ToolEntry toolEntry)
+    private void ToolButtonClick (ToolEntry toolEntry)
     {
         if (string.IsNullOrEmpty(toolEntry.cmd))
         {
@@ -1042,7 +1066,7 @@ partial class LogTabWindow
             if (line != null && info != null)
             {
                 ArgParser parser = new(toolEntry.args);
-                string argLine = parser.BuildArgs(line, CurrentLogWindow.GetRealLineNum() + 1, info, this);
+                var argLine = parser.BuildArgs(line, CurrentLogWindow.GetRealLineNum() + 1, info, this);
                 if (argLine != null)
                 {
                     StartTool(toolEntry.cmd, argLine, toolEntry.sysout, toolEntry.columnizerName,
@@ -1052,7 +1076,8 @@ partial class LogTabWindow
         }
     }
 
-    private void StartTool(string cmd, string args, bool sysoutPipe, string columnizerName, string workingDir)
+    [SupportedOSPlatform("windows")]
+    private void StartTool (string cmd, string args, bool sysoutPipe, string columnizerName, string workingDir)
     {
         if (string.IsNullOrEmpty(cmd))
         {
@@ -1079,7 +1104,7 @@ partial class LogTabWindow
             //process.OutputDataReceived += pipe.DataReceivedEventHandler;
             try
             {
-                process.Start();
+                _ = process.Start();
             }
             catch (Win32Exception e)
             {
@@ -1106,7 +1131,7 @@ partial class LogTabWindow
             try
             {
                 startInfo.UseShellExecute = false;
-                process.Start();
+                _ = process.Start();
             }
             catch (Exception e)
             {
@@ -1116,7 +1141,8 @@ partial class LogTabWindow
         }
     }
 
-    private void CloseAllTabs()
+    [SupportedOSPlatform("windows")]
+    private void CloseAllTabs ()
     {
         IList<Form> closeList = [];
         lock (_logWindowList)
@@ -1136,7 +1162,7 @@ partial class LogTabWindow
         }
     }
 
-    private void SetTabColor(LogWindow.LogWindow logWindow, Color color)
+    private void SetTabColor (LogWindow.LogWindow logWindow, Color color)
     {
         //tabPage.BackLowColor = color;
         //tabPage.BackLowColorDisabled = Color.FromArgb(255,
@@ -1146,10 +1172,11 @@ partial class LogTabWindow
         //  );
     }
 
-    private void LoadProject(string projectFileName, bool restoreLayout)
+    [SupportedOSPlatform("windows")]
+    private void LoadProject (string projectFileName, bool restoreLayout)
     {
         ProjectData projectData = ProjectPersister.LoadProjectData(projectFileName);
-        bool hasLayoutData = projectData.tabLayoutXml != null;
+        var hasLayoutData = projectData.tabLayoutXml != null;
 
         if (hasLayoutData && restoreLayout && _logWindowList.Count > 0)
         {
@@ -1173,7 +1200,7 @@ partial class LogTabWindow
 
         if (projectData != null)
         {
-            foreach (string fileName in projectData.memberList)
+            foreach (var fileName in projectData.memberList)
             {
                 if (hasLayoutData)
                 {
@@ -1195,13 +1222,15 @@ partial class LogTabWindow
         }
     }
 
-    private void ApplySelectedHighlightGroup()
+    [SupportedOSPlatform("windows")]
+    private void ApplySelectedHighlightGroup ()
     {
-        string groupName = groupsComboBoxHighlightGroups.Text;
+        var groupName = groupsComboBoxHighlightGroups.Text;
         CurrentLogWindow?.SetCurrentHighlightGroup(groupName);
     }
 
-    private void FillToolLauncherBar()
+    [SupportedOSPlatform("windows")]
+    private void FillToolLauncherBar ()
     {
         char[] labels =
         {
@@ -1212,7 +1241,7 @@ partial class LogTabWindow
         toolsToolStripMenuItem.DropDownItems.Add(configureToolStripMenuItem);
         toolsToolStripMenuItem.DropDownItems.Add(configureToolStripSeparator);
         externalToolsToolStrip.Items.Clear();
-        int num = 0;
+        var num = 0;
         externalToolsToolStrip.SuspendLayout();
         foreach (ToolEntry tool in Preferences.toolEntries)
         {
@@ -1229,8 +1258,11 @@ partial class LogTabWindow
             }
 
             num++;
-            ToolStripMenuItem menuItem = new(tool.name);
-            menuItem.Tag = tool;
+            ToolStripMenuItem menuItem = new(tool.name)
+            {
+                Tag = tool
+            };
+
             SetToolIcon(tool, menuItem);
             toolsToolStripMenuItem.DropDownItems.Add(menuItem);
         }
@@ -1240,49 +1272,49 @@ partial class LogTabWindow
         externalToolsToolStrip.Visible = num > 0; // do not show bar if no tool uses it
     }
 
-    private void RunGC()
+    private void RunGC ()
     {
-        _logger.Info("Running GC. Used mem before: {0:N0}", GC.GetTotalMemory(false));
+        _logger.Info($"Running GC. Used mem before: {GC.GetTotalMemory(false):N0}");
         GC.Collect();
-        _logger.Info("GC done.    Used mem after:  {0:N0}", GC.GetTotalMemory(true));
+        _logger.Info($"GC done.    Used mem after:  {GC.GetTotalMemory(true):N0}");
     }
 
-    private void DumpGCInfo()
+    private void DumpGCInfo ()
     {
-        _logger.Info("-------- GC info -----------\r\nUsed mem: {0:N0}", GC.GetTotalMemory(false));
-        for (int i = 0; i < GC.MaxGeneration; ++i)
+        _logger.Info($"-------- GC info -----------\r\nUsed mem: {GC.GetTotalMemory(false):N0}");
+        for (var i = 0; i < GC.MaxGeneration; ++i)
         {
-            _logger.Info("Generation {0} collect count: {1}", i, GC.CollectionCount(i));
+            _logger.Info($"Generation {i} collect count: {GC.CollectionCount(i)}");
         }
 
         _logger.Info("----------------------------");
     }
 
-    private void ThrowExceptionFx()
+    private void ThrowExceptionFx ()
     {
         throw new Exception("This is a test exception thrown by an async delegate");
     }
 
-    private void ThrowExceptionThreadFx()
+    private void ThrowExceptionThreadFx ()
     {
         throw new Exception("This is a test exception thrown by a background thread");
     }
 
-    private string SaveLayout()
+    private string SaveLayout ()
     {
         using MemoryStream memStream = new(2000);
         using StreamReader r = new(memStream);
         dockPanel.SaveAsXml(memStream, Encoding.UTF8, true);
 
         memStream.Seek(0, SeekOrigin.Begin);
-        string resultXml = r.ReadToEnd();
+        var resultXml = r.ReadToEnd();
 
         r.Close();
 
         return resultXml;
     }
 
-    private void RestoreLayout(string layoutXml)
+    private void RestoreLayout (string layoutXml)
     {
         using MemoryStream memStream = new(2000);
         using StreamWriter w = new(memStream);
@@ -1294,29 +1326,29 @@ partial class LogTabWindow
         dockPanel.LoadFromXml(memStream, DeserializeDockContent, true);
     }
 
-    private IDockContent DeserializeDockContent(string persistString)
+    private IDockContent DeserializeDockContent (string persistString)
     {
-        if (persistString.Equals(WindowTypes.BookmarkWindow.ToString()))
+        if (persistString.Equals(WindowTypes.BookmarkWindow.ToString(), StringComparison.Ordinal))
         {
             return _bookmarkWindow;
         }
 
         if (persistString.StartsWith(WindowTypes.LogWindow.ToString()))
         {
-            string fileName = persistString.Substring(WindowTypes.LogWindow.ToString().Length + 1);
+            var fileName = persistString.Substring(WindowTypes.LogWindow.ToString().Length + 1);
             LogWindow.LogWindow win = FindWindowForFile(fileName);
             if (win != null)
             {
                 return win;
             }
 
-            _logger.Warn("Layout data contains non-existing LogWindow for {0}", fileName);
+            _logger.Warn($"Layout data contains non-existing LogWindow for {fileName}");
         }
 
         return null;
     }
 
-    private void OnHighlightSettingsChanged()
+    private void OnHighlightSettingsChanged ()
     {
         HighlightSettingsChanged?.Invoke(this, EventArgs.Empty);
     }

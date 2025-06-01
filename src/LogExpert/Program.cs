@@ -5,11 +5,14 @@ using LogExpert.Core.Classes.IPC;
 using LogExpert.Core.Config;
 using LogExpert.Core.Interface;
 using LogExpert.Dialogs;
-using LogExpert.UI.Controls.LogTabWindow;
 using LogExpert.UI.Dialogs;
+using LogExpert.UI.Dialogs.LogTabWindow;
+
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+
 using NLog;
+
 using System.Diagnostics;
 using System.IO.Pipes;
 using System.Reflection;

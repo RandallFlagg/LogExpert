@@ -22,8 +22,8 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace LogExpert.UI.Controls.LogWindow;
 
-//TODO: Implemented 4 interfaces explicitly. Find them by searcginh: ILogWindow.<method name>
-internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, ILogWindow
+//TODO: Implemented 4 interfaces explicitly. Find them by searching: ILogWindow.<method name>
+public partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, ILogWindow
 {
     #region Fields
 

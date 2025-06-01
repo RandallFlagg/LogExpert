@@ -1,7 +1,9 @@
 ﻿using LogExpert.Config;
 using LogExpert.Core.Interface;
-using LogExpert.UI.Controls.LogTabWindow;
+using LogExpert.UI.Dialogs.LogTabWindow;
+
 using NLog;
+
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;

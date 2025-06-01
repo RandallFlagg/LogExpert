@@ -13,7 +13,7 @@ using WeifenLuo.WinFormsUI.Docking;
 namespace LogExpert.Dialogs;
 
 //TODO can be moved to Logexpert.UI if the PaintHelper has been refactored
-public partial class BookmarkWindow : DockContent, ISharedToolWindow
+public partial class BookmarkWindow : DockContent, ISharedToolWindow, IBookmarkView
 {
     #region Fields
 
@@ -219,7 +219,7 @@ public partial class BookmarkWindow : DockContent, ISharedToolWindow
     {
         if (ctx != null)
         {
-            _logger.Debug("Current file changed to {0}", ctx.LogView.FileName);
+            _logger.Debug($"Current file changed to {ctx.LogView.FileName}");
             lock (paintLock)
             {
                 logView = ctx.LogView;

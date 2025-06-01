@@ -1,4 +1,7 @@
-﻿using LogExpert.Classes.Filter;
+using System.Text;
+using System.Text.RegularExpressions;
+
+using LogExpert.Classes.Filter;
 using LogExpert.Core.Classes.Columnizer;
 using LogExpert.Core.Config;
 using LogExpert.Core.Entities;
@@ -6,22 +9,21 @@ using LogExpert.Core.Interface;
 using LogExpert.Dialogs;
 using LogExpert.UI.Entities;
 using LogExpert.UI.Extensions;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Text.RegularExpressions;
+
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace LogExpert.UI.Controls.LogTabWindow;
-partial class LogTabWindow
+
+public partial class LogTabWindow
 {
     #region Public methods
 
-    public LogWindow.LogWindow AddTempFileTab(string fileName, string title)
+    public LogWindow.LogWindow AddTempFileTab (string fileName, string title)
     {
         return AddFileTab(fileName, true, title, false, null);
     }
 
-    public LogWindow.LogWindow AddFilterTab(FilterPipe pipe, string title, ILogLineColumnizer preProcessColumnizer)
+    public LogWindow.LogWindow AddFilterTab (FilterPipe pipe, string title, ILogLineColumnizer preProcessColumnizer)
     {
         LogWindow.LogWindow logWin = AddFileTab(pipe.FileName, true, title, false, preProcessColumnizer);
         if (pipe.FilterParams.SearchText.Length > 0)
@@ -41,12 +43,12 @@ partial class LogTabWindow
         return logWin;
     }
 
-    public LogWindow.LogWindow AddFileTabDeferred(string givenFileName, bool isTempFile, string title, bool forcePersistenceLoading, ILogLineColumnizer preProcessColumnizer)
+    public LogWindow.LogWindow AddFileTabDeferred (string givenFileName, bool isTempFile, string title, bool forcePersistenceLoading, ILogLineColumnizer preProcessColumnizer)
     {
         return AddFileTab(givenFileName, isTempFile, title, forcePersistenceLoading, preProcessColumnizer, true);
     }
 
-    public LogWindow.LogWindow AddFileTab(string givenFileName, bool isTempFile, string title, bool forcePersistenceLoading, ILogLineColumnizer preProcessColumnizer, bool doNotAddToDockPanel = false)
+    public LogWindow.LogWindow AddFileTab (string givenFileName, bool isTempFile, string title, bool forcePersistenceLoading, ILogLineColumnizer preProcessColumnizer, bool doNotAddToDockPanel = false)
     {
         string logFileName = FindFilenameForSettings(givenFileName);
         LogWindow.LogWindow win = FindWindowForFile(logFileName);
@@ -116,7 +118,7 @@ partial class LogTabWindow
         return logWindow;
     }
 
-    public LogWindow.LogWindow AddMultiFileTab(string[] fileNames)
+    public LogWindow.LogWindow AddMultiFileTab (string[] fileNames)
     {
         if (fileNames.Length < 1)
         {
@@ -134,12 +136,12 @@ partial class LogTabWindow
         return logWindow;
     }
 
-    public void LoadFiles(string[] fileNames)
+    public void LoadFiles (string[] fileNames)
     {
         Invoke(new AddFileTabsDelegate(AddFileTabs), [fileNames]);
     }
 
-    public void OpenSearchDialog()
+    public void OpenSearchDialog ()
     {
         if (CurrentLogWindow == null)
         {
@@ -160,7 +162,7 @@ partial class LogTabWindow
         }
     }
 
-    public ILogLineColumnizer GetColumnizerHistoryEntry(string fileName)
+    public ILogLineColumnizer GetColumnizerHistoryEntry (string fileName)
     {
         ColumnizerHistoryEntry entry = FindColumnizerHistoryEntry(fileName);
         if (entry != null)
@@ -179,7 +181,7 @@ partial class LogTabWindow
         return null;
     }
 
-    public void SwitchTab(bool shiftPressed)
+    public void SwitchTab (bool shiftPressed)
     {
         int index = dockPanel.Contents.IndexOf(dockPanel.ActiveContent);
         if (shiftPressed)
@@ -210,7 +212,7 @@ partial class LogTabWindow
         }
     }
 
-    public void ScrollAllTabsToTimestamp(DateTime timestamp, LogWindow.LogWindow senderWindow)
+    public void ScrollAllTabsToTimestamp (DateTime timestamp, LogWindow.LogWindow senderWindow)
     {
         lock (_logWindowList)
         {
@@ -227,7 +229,7 @@ partial class LogTabWindow
         }
     }
 
-    public ILogLineColumnizer FindColumnizerByFileMask(string fileName)
+    public ILogLineColumnizer FindColumnizerByFileMask (string fileName)
     {
         foreach (ColumnizerMaskEntry entry in ConfigManager.Settings.Preferences.columnizerMaskList)
         {
@@ -252,7 +254,7 @@ partial class LogTabWindow
         return null;
     }
 
-    public HighlightGroup FindHighlightGroupByFileMask(string fileName)
+    public HighlightGroup FindHighlightGroupByFileMask (string fileName)
     {
         foreach (HighlightMaskEntry entry in ConfigManager.Settings.Preferences.highlightMaskList)
         {
@@ -277,12 +279,12 @@ partial class LogTabWindow
         return null;
     }
 
-    public void SelectTab(ILogWindow logWindow)
+    public void SelectTab (ILogWindow logWindow)
     {
         logWindow.Activate();
     }
 
-    public void SetForeground()
+    public void SetForeground ()
     {
         Win32.SetForegroundWindow(Handle);
         if (WindowState == FormWindowState.Minimized)
@@ -299,7 +301,7 @@ partial class LogTabWindow
     }
 
     // called from LogWindow when follow tail was changed
-    public void FollowTailChanged(LogWindow.LogWindow logWindow, bool isEnabled, bool offByTrigger)
+    public void FollowTailChanged (LogWindow.LogWindow logWindow, bool isEnabled, bool offByTrigger)
     {
         LogWindowData data = logWindow.Tag as LogWindowData;
         if (data == null)
@@ -323,7 +325,7 @@ partial class LogTabWindow
         }
     }
 
-    public void NotifySettingsChanged(object sender, SettingsFlags flags)
+    public void NotifySettingsChanged (object sender, SettingsFlags flags)
     {
         if (sender != this)
         {
@@ -331,7 +333,7 @@ partial class LogTabWindow
         }
     }
 
-    public IList<WindowFileEntry> GetListOfOpenFiles()
+    public IList<WindowFileEntry> GetListOfOpenFiles ()
     {
         IList<WindowFileEntry> list = new List<WindowFileEntry>();
         lock (_logWindowList)
