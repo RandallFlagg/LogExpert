@@ -4,6 +4,7 @@ using LogExpert.Core.Entities;
 using LogExpert.Core.Interface;
 using LogExpert.Dialogs;
 using LogExpert.UI.Controls;
+using LogExpert.UI.Interface;
 using NLog;
 using System.Drawing;
 using System.Windows.Forms;
@@ -31,7 +32,7 @@ namespace LogExpert.UI.Entities
 
         #region Public methods
 
-        public static void CellPainting(ILogPaintContext logPaintCtx, BufferedDataGridView gridView, int rowIndex,
+        public static void CellPainting(ILogPaintContextUI logPaintCtx, BufferedDataGridView gridView, int rowIndex,
             DataGridViewCellPaintingEventArgs e)
         {
             if (rowIndex < 0 || e.ColumnIndex < 0)
@@ -295,12 +296,12 @@ namespace LogExpert.UI.Entities
 
         #region Private Methods
 
-        private static void PaintCell(ILogPaintContext logPaintCtx, DataGridViewCellPaintingEventArgs e, BufferedDataGridView gridView, bool noBackgroundFill, HighlightEntry groundEntry)
+        private static void PaintCell(ILogPaintContextUI logPaintCtx, DataGridViewCellPaintingEventArgs e, BufferedDataGridView gridView, bool noBackgroundFill, HighlightEntry groundEntry)
         {
             PaintHighlightedCell(logPaintCtx, e, gridView, noBackgroundFill, groundEntry);
         }
 
-        private static void PaintHighlightedCell(ILogPaintContext logPaintCtx, DataGridViewCellPaintingEventArgs e, BufferedDataGridView gridView, bool noBackgroundFill, HighlightEntry groundEntry)
+        private static void PaintHighlightedCell(ILogPaintContextUI logPaintCtx, DataGridViewCellPaintingEventArgs e, BufferedDataGridView gridView, bool noBackgroundFill, HighlightEntry groundEntry)
         {
             object value = e.Value ?? string.Empty;
 

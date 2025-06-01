@@ -3,10 +3,10 @@
     <TargetFramework>net8.0</TargetFramework>
     <EnableWindowsTargeting>False</EnableWindowsTargeting>
     <OutputType>Library</OutputType>
-	<IsTestProject>false</IsTestProject>
+    <IsTestProject>false</IsTestProject>
     <RootNamespace>LogExpert</RootNamespace>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <UseWindowsForms>false</UseWindowsForms>
+    <UseWindowsForms>False</UseWindowsForms>
     <ImportWindowsDesktopTargets>False</ImportWindowsDesktopTargets>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <OutputPath>$(SolutionDir)..\bin\$(Configuration)\plugins</OutputPath>

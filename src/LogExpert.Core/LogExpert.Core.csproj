@@ -8,6 +8,8 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <SignAssembly>False</SignAssembly>
     <AssemblyOriginatorKeyFile>..\Solution Items\Key.snk</AssemblyOriginatorKeyFile>
+    <PublishAot>false</PublishAot>
+    <NoWarn>CS8625;CS8603;CS8618;CS8600;CS8603;CS8602;CS8604;CS8622;CS8601;</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

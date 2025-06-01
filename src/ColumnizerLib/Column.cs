@@ -7,7 +7,7 @@ namespace LogExpert
     {
         #region Fields
 
-        private static readonly int _maxLength = 4678 - 3;
+        private const int _maxLength = 4678 - 3;
         private static readonly string _replacement = "...";
 
         private static readonly IEnumerable<Func<string, string>> _replacements;

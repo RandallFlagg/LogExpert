@@ -3,10 +3,13 @@
   <PropertyGroup>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <AssemblyOriginatorKeyFile>..\Solution Items\Key.snk</AssemblyOriginatorKeyFile>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
     <ForceDesignerDPIUnaware>true</ForceDesignerDPIUnaware>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>disable</Nullable>
+    <NoWarn>CS8625;CS8603;CS8618;CS8600;CS8603;CS8602;CS8604;CS8622;CS8601;CS8605;</NoWarn>
+    <Nullable>enable</Nullable>
+    <PublishAot>false</PublishAot>
     <SignAssembly>False</SignAssembly>
     <TargetFramework>net8.0</TargetFramework>
     <UseWindowsForms>False</UseWindowsForms>
@@ -41,6 +44,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Dialogs\Eminus\EminusConfigDlg.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="Properties\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>

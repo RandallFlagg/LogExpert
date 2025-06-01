@@ -48,7 +48,6 @@
     <Content Include="logexpert.ico" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="System.Text.Encoding" />
     <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="NLog" />
   </ItemGroup>

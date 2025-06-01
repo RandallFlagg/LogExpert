@@ -15,6 +15,7 @@ using LogExpert.Dialogs;
 using LogExpert.UI.Controls.LogTabWindow;
 using LogExpert.UI.Dialogs;
 using LogExpert.UI.Extensions.Forms;
+using LogExpert.UI.Interface;
 using NLog;
 using System.Drawing;
 using System.Windows.Forms;

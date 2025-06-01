@@ -3,7 +3,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <EnableWindowsTargeting>False</EnableWindowsTargeting>
     <OutputType>Library</OutputType>
-	<IsTestProject>false</IsTestProject>
+    <IsTestProject>false</IsTestProject>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <UseWindowsForms>false</UseWindowsForms>
     <ImportWindowsDesktopTargets>False</ImportWindowsDesktopTargets>

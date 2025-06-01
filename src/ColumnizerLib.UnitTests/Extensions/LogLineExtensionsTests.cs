@@ -1,8 +1,8 @@
-﻿using LogExpert;
+using LogExpert;
 using LogExpert.Extensions;
 
 using NUnit.Framework;
-
+//TODO: Not in use
 namespace ColumnizerLib.UnitTests.Extensions
 {
     [TestFixture]

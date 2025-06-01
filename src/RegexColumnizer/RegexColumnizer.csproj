@@ -5,7 +5,7 @@
     <OutputType>Library</OutputType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <UseWindowsForms>false</UseWindowsForms>
-	<IsTestProject>false</IsTestProject>
+    <IsTestProject>false</IsTestProject>
     <ImportWindowsDesktopTargets>False</ImportWindowsDesktopTargets>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <OutputPath>$(SolutionDir)..\bin\$(Configuration)\plugins</OutputPath>
@@ -36,8 +36,4 @@
       <Link>Key.snk</Link>
     </None>
   </ItemGroup>
-<!--  <ItemGroup>-->
-<!--    <PackageReference Include="Microsoft.CSharp" />-->
-<!--    <PackageReference Include="System.Data.DataSetExtensions" />-->
-<!--  </ItemGroup>-->
 </Project>
