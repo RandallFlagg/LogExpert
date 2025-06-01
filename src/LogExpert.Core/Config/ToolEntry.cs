@@ -16,7 +16,7 @@ namespace LogExpert.Core.Config
         public int iconIndex;
         public bool isFavourite;
         public string name;
-        public bool sysout = false;
+        public bool sysout;
         public string workingDir = "";
 
         #endregion

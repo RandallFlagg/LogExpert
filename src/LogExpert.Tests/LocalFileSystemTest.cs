@@ -37,7 +37,7 @@ namespace LogExpert.Tests
         public void TestUriToFileStream()
         {
             DirectoryInfo dInfo = Directory.CreateDirectory(RolloverHandlerTest.TEST_DIR_NAME);
-            string fullName = CreateFile(dInfo, "test.log");
+            var fullName = CreateFile(dInfo, "test.log");
 
             LocalFileSystem fs = new();
             ILogFileInfo info = fs.GetLogfileInfo(fullName);
@@ -46,7 +46,7 @@ namespace LogExpert.Tests
             Stream stream = info.OpenStream();
             Assert.That(stream.CanSeek, Is.True);
             StreamReader reader = new(stream);
-            string line = reader.ReadLine();
+            var line = reader.ReadLine();
             Assert.That(line.StartsWith("line number", StringComparison.InvariantCultureIgnoreCase), Is.True);
             reader.Close();
         }

@@ -8,9 +8,9 @@
 
         #region Properties
 
-        public int RolloverOffset { get; set; } = 0;
+        public int RolloverOffset { get; set; }
 
-        public bool IsRollover { get; set; } = false;
+        public bool IsRollover { get; set; }
 
         public long FileSize { get; set; }
 

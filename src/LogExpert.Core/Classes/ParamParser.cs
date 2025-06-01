@@ -34,9 +34,9 @@ namespace LogExpert.Core.Classes
                 fileInfo.FullName.Contains(" ") ? "\"" + fileInfo.FullName + "\"" : fileInfo.FullName);
             builder.Replace("%E",
                 fileInfo.Extension.Contains(" ") ? "\"" + fileInfo.Extension + "\"" : fileInfo.Extension);
-            string stripped = StripExtension(fileInfo.Name);
+            var stripped = StripExtension(fileInfo.Name);
             builder.Replace("%M", stripped.Contains(" ") ? "\"" + stripped + "\"" : stripped);
-            int sPos = 0;
+            var sPos = 0;
             string reg;
             string replace;
             do
@@ -45,7 +45,7 @@ namespace LogExpert.Core.Classes
                 replace = GetNextGroup(builder, ref sPos);
                 if (reg != null && replace != null)
                 {
-                    string result = Regex.Replace(logLine.FullLine, reg, replace);
+                    var result = Regex.Replace(logLine.FullLine, reg, replace);
                     builder.Insert(sPos, result);
                 }
             } while (replace != null);
@@ -54,7 +54,7 @@ namespace LogExpert.Core.Classes
 
         public static string StripExtension(string fileName)
         {
-            int i = fileName.LastIndexOf('.');
+            var i = fileName.LastIndexOf('.');
             if (i < 0)
             {
                 i = fileName.Length - 1;
@@ -68,14 +68,13 @@ namespace LogExpert.Core.Classes
 
         private string GetNextGroup(StringBuilder builder, ref int sPos)
         {
-            int count = 0;
             int ePos;
             while (sPos < builder.Length)
             {
                 if (builder[sPos] == '{')
                 {
                     ePos = sPos + 1;
-                    count = 1;
+                    var count = 1;
                     while (ePos < builder.Length)
                     {
                         if (builder[ePos] == '{')
@@ -88,7 +87,7 @@ namespace LogExpert.Core.Classes
                         }
                         if (count == 0)
                         {
-                            string reg = builder.ToString(sPos + 1, ePos - sPos - 1);
+                            var reg = builder.ToString(sPos + 1, ePos - sPos - 1);
                             builder.Remove(sPos, ePos - sPos + 1);
                             return reg;
                         }

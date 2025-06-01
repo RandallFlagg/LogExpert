@@ -19,7 +19,7 @@ namespace LogExpert.Tests
         public void GetPriority_HappyFile_PriorityMatches(string fileName, Priority priority)
         {
             var jsonCompactColumnizer = new JsonColumnizer.JsonCompactColumnizer();
-            string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName);
+            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName);
             LogfileReader logFileReader = new(path, new EncodingOptions(), true, 40, 50, new MultiFileOptions(), PluginRegistry.PluginRegistry.Instance);
             logFileReader.ReadFiles();
             List<ILogLine> loglines = new()

@@ -273,13 +273,13 @@ internal partial class SettingsDialog : Form
 
     private void FillColumnizerForToolsList(ComboBox comboBox, string columnizerName)
     {
-        int selIndex = 0;
+        var selIndex = 0;
         comboBox.Items.Clear();
         IList<ILogLineColumnizer> columnizers = PluginRegistry.PluginRegistry.Instance.RegisteredColumnizers;
 
         foreach (ILogLineColumnizer columnizer in columnizers)
         {
-            int index = comboBox.Items.Add(columnizer.GetName());
+            var index = comboBox.Items.Add(columnizer.GetName());
             if (columnizer.GetName().Equals(columnizerName))
             {
                 selIndex = index;
@@ -296,10 +296,10 @@ internal partial class SettingsDialog : Form
     {
         dataGridViewColumnizer.Rows.Clear();
 
-        DataGridViewComboBoxColumn comboColumn = (DataGridViewComboBoxColumn)dataGridViewColumnizer.Columns[1];
+        var comboColumn = (DataGridViewComboBoxColumn)dataGridViewColumnizer.Columns[1];
         comboColumn.Items.Clear();
 
-        DataGridViewTextBoxColumn textColumn = (DataGridViewTextBoxColumn)dataGridViewColumnizer.Columns[0];
+        var textColumn = (DataGridViewTextBoxColumn)dataGridViewColumnizer.Columns[0];
 
         IList<ILogLineColumnizer> columnizers = PluginRegistry.PluginRegistry.Instance.RegisteredColumnizers;
 
@@ -330,11 +330,11 @@ internal partial class SettingsDialog : Form
             dataGridViewColumnizer.Rows.Add(row);
         }
 
-        int count = dataGridViewColumnizer.RowCount;
+        var count = dataGridViewColumnizer.RowCount;
 
         if (count > 0 && !dataGridViewColumnizer.Rows[count - 1].IsNewRow)
         {
-            DataGridViewComboBoxCell comboCell = (DataGridViewComboBoxCell)dataGridViewColumnizer.Rows[count - 1].Cells[1];
+            var comboCell = (DataGridViewComboBoxCell)dataGridViewColumnizer.Rows[count - 1].Cells[1];
             comboCell.Value = comboCell.Items[0];
         }
     }
@@ -343,11 +343,11 @@ internal partial class SettingsDialog : Form
     {
         dataGridViewHighlightMask.Rows.Clear();
 
-        DataGridViewComboBoxColumn comboColumn = (DataGridViewComboBoxColumn)dataGridViewHighlightMask.Columns[1];
+        var comboColumn = (DataGridViewComboBoxColumn)dataGridViewHighlightMask.Columns[1];
         comboColumn.Items.Clear();
 
         //TODO Remove if not necessary
-        DataGridViewTextBoxColumn textColumn = (DataGridViewTextBoxColumn)dataGridViewHighlightMask.Columns[0];
+        var textColumn = (DataGridViewTextBoxColumn)dataGridViewHighlightMask.Columns[0];
 
         foreach (HighlightGroup group in (IList<HighlightGroup>)_logTabWin.HighlightGroupList)
         {
@@ -376,11 +376,11 @@ internal partial class SettingsDialog : Form
             dataGridViewHighlightMask.Rows.Add(row);
         }
 
-        int count = dataGridViewHighlightMask.RowCount;
+        var count = dataGridViewHighlightMask.RowCount;
 
         if (count > 0 && !dataGridViewHighlightMask.Rows[count - 1].IsNewRow)
         {
-            DataGridViewComboBoxCell comboCell =
+            var comboCell =
                 (DataGridViewComboBoxCell)dataGridViewHighlightMask.Rows[count - 1].Cells[1];
             comboCell.Value = comboCell.Items[0];
         }
@@ -518,7 +518,7 @@ internal partial class SettingsDialog : Form
         GetCurrentToolValues();
         Preferences.toolEntries.Clear();
 
-        for (int i = 0; i < listBoxTools.Items.Count; ++i)
+        for (var i = 0; i < listBoxTools.Items.Count; ++i)
         {
             Preferences.toolEntries.Add(listBoxTools.Items[i] as ToolEntry);
             (listBoxTools.Items[i] as ToolEntry).isFavourite = listBoxTools.GetItemChecked(i);
@@ -701,7 +701,7 @@ internal partial class SettingsDialog : Form
     //TODO Remove or refactor this function
     private void OnDataGridViewColumnizerRowsAdded(object sender, DataGridViewRowsAddedEventArgs e)
     {
-        DataGridViewComboBoxCell comboCell = (DataGridViewComboBoxCell)dataGridViewColumnizer.Rows[e.RowIndex].Cells[1];
+        var comboCell = (DataGridViewComboBoxCell)dataGridViewColumnizer.Rows[e.RowIndex].Cells[1];
         if (comboCell.Items.Count > 0)
         {
             //        comboCell.Value = comboCell.Items[0];
@@ -712,7 +712,7 @@ internal partial class SettingsDialog : Form
     {
         if (dataGridViewColumnizer.CurrentRow != null && !dataGridViewColumnizer.CurrentRow.IsNewRow)
         {
-            int index = dataGridViewColumnizer.CurrentRow.Index;
+            var index = dataGridViewColumnizer.CurrentRow.Index;
             dataGridViewColumnizer.EndEdit();
             dataGridViewColumnizer.Rows.RemoveAt(index);
         }
@@ -763,7 +763,7 @@ internal partial class SettingsDialog : Form
     {
         _selectedPlugin?.HideConfigForm();
 
-        object o = listBoxPlugin.SelectedItem;
+        var o = listBoxPlugin.SelectedItem;
 
         if (o != null)
         {
@@ -883,12 +883,12 @@ internal partial class SettingsDialog : Form
 
     private void OnBtnToolUpClick(object sender, EventArgs e)
     {
-        int i = listBoxTools.SelectedIndex;
+        var i = listBoxTools.SelectedIndex;
 
         if (i > 0)
         {
-            bool isChecked = listBoxTools.GetItemChecked(i);
-            object item = listBoxTools.Items[i];
+            var isChecked = listBoxTools.GetItemChecked(i);
+            var item = listBoxTools.Items[i];
             listBoxTools.Items.RemoveAt(i);
             i--;
             listBoxTools.Items.Insert(i, item);
@@ -899,12 +899,12 @@ internal partial class SettingsDialog : Form
 
     private void OnBtnToolDownClick(object sender, EventArgs e)
     {
-        int i = listBoxTools.SelectedIndex;
+        var i = listBoxTools.SelectedIndex;
 
         if (i < listBoxTools.Items.Count - 1)
         {
-            bool isChecked = listBoxTools.GetItemChecked(i);
-            object item = listBoxTools.Items[i];
+            var isChecked = listBoxTools.GetItemChecked(i);
+            var item = listBoxTools.Items[i];
             listBoxTools.Items.RemoveAt(i);
             i++;
             listBoxTools.Items.Insert(i, item);
@@ -921,7 +921,7 @@ internal partial class SettingsDialog : Form
 
     private void OnToolDeleteButtonClick(object sender, EventArgs e)
     {
-        int i = listBoxTools.SelectedIndex;
+        var i = listBoxTools.SelectedIndex;
 
         if (i < listBoxTools.Items.Count && i >= 0)
         {
@@ -944,7 +944,7 @@ internal partial class SettingsDialog : Form
     {
         if (_selectedTool != null)
         {
-            string iconFile = _selectedTool.iconFile;
+            var iconFile = _selectedTool.iconFile;
 
             if (Util.IsNullOrSpaces(iconFile))
             {
@@ -974,7 +974,7 @@ internal partial class SettingsDialog : Form
 
     private void OnMultiFilePatternTextChanged(object sender, EventArgs e)
     {
-        string pattern = textBoxMultifilePattern.Text;
+        var pattern = textBoxMultifilePattern.Text;
         upDownMultifileDays.Enabled = pattern.Contains("$D");
     }
 

@@ -68,9 +68,9 @@ public partial class BufferedDataGridView : DataGridView
   }
    */
 
-    public ContextMenuStrip EditModeMenuStrip { get; set; } = null;
+    public ContextMenuStrip EditModeMenuStrip { get; set; }
 
-    public bool PaintWithOverlays { get; set; } = false;
+    public bool PaintWithOverlays { get; set; }
 
     #endregion
 
@@ -112,7 +112,7 @@ public partial class BufferedDataGridView : DataGridView
         base.OnEditingControlShowing(e);
         e.Control.KeyDown -= OnControlKeyDown;
         e.Control.KeyDown += OnControlKeyDown;
-        DataGridViewTextBoxEditingControl editControl = (DataGridViewTextBoxEditingControl)e.Control;
+        var editControl = (DataGridViewTextBoxEditingControl)e.Control;
         e.Control.PreviewKeyDown -= Control_PreviewKeyDown;
         e.Control.PreviewKeyDown += Control_PreviewKeyDown;
 
@@ -297,7 +297,7 @@ public partial class BufferedDataGridView : DataGridView
                 if (EditingControl is LogCellEditingControl editControl)
                 {
                     editControl.EditingControlDataGridView.EndEdit();
-                    int line = editControl.EditingControlDataGridView.CurrentCellAddress.Y;
+                    var line = editControl.EditingControlDataGridView.CurrentCellAddress.Y;
                     if (e.KeyCode == Keys.Up)
                     {
                         if (line > 0)
@@ -314,9 +314,9 @@ public partial class BufferedDataGridView : DataGridView
                         }
                     }
 
-                    int col = editControl.EditingControlDataGridView.CurrentCellAddress.X;
-                    int scrollIndex = editControl.EditingControlDataGridView.HorizontalScrollingOffset;
-                    int selStart = editControl.SelectionStart;
+                    var col = editControl.EditingControlDataGridView.CurrentCellAddress.X;
+                    var scrollIndex = editControl.EditingControlDataGridView.HorizontalScrollingOffset;
+                    var selStart = editControl.SelectionStart;
                     editControl.EditingControlDataGridView.CurrentCell = editControl.EditingControlDataGridView.Rows[line].Cells[col];
                     editControl.EditingControlDataGridView.BeginEdit(false);
                     editControl.SelectionStart = selStart;

@@ -90,13 +90,13 @@ public partial class LogTabWindow : Form, ILogTabWindow
 
         Rectangle led = new(0, 0, 8, 2);
 
-        for (int i = 0; i < _leds.Length; ++i)
+        for (var i = 0; i < _leds.Length; ++i)
         {
             _leds[i] = led;
             led.Offset(0, led.Height + 0);
         }
 
-        int grayAlpha = 50;
+        var grayAlpha = 50;
 
         _ledBrushes[0] = new SolidBrush(Color.FromArgb(255, 220, 0, 0));
         _ledBrushes[1] = new SolidBrush(Color.FromArgb(255, 220, 220, 0));
@@ -124,7 +124,7 @@ public partial class LogTabWindow : Form, ILogTabWindow
         host.Padding = new Padding(20, 0, 0, 0);
         host.BackColor = Color.FromKnownColor(KnownColor.Transparent);
 
-        int index = buttonToolStrip.Items.IndexOfKey("toolStripButtonTail");
+        var index = buttonToolStrip.Items.IndexOfKey("toolStripButtonTail");
 
         toolStripEncodingASCIIItem.Text = Encoding.ASCII.HeaderName;
         toolStripEncodingANSIItem.Text = Encoding.Default.HeaderName;
@@ -142,10 +142,10 @@ public partial class LogTabWindow : Form, ILogTabWindow
         loadProgessBar.Visible = false;
 
         // get a reference to the current assembly
-        Assembly a = Assembly.GetExecutingAssembly();
+        var a = Assembly.GetExecutingAssembly();
 
         // get a list of resource names from the manifest
-        string[] resNames = a.GetManifestResourceNames();
+        var resNames = a.GetManifestResourceNames();
 
         Bitmap bmp = Resources.Resources.Deceased;
         _deadIcon = Icon.FromHandle(bmp.GetHicon());

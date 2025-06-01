@@ -29,7 +29,7 @@
 
         private static Section ParseSection(Tokenizer reader, int index, out bool syntaxError)
         {
-            bool hasDateParts = false;
+            var hasDateParts = false;
             string token;
             List<string> tokens = [];
 
@@ -56,8 +56,7 @@
                 return null;
             }
 
-            List<string> generalTextDateDuration = null;
-
+            List<string> generalTextDateDuration;
             if (hasDateParts)
             {
                 ParseMilliseconds(tokens, out generalTextDateDuration);

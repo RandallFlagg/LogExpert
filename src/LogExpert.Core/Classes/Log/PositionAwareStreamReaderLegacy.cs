@@ -30,7 +30,7 @@ namespace LogExpert.Core.Classes.Log
 
             while (-1 != (readInt = ReadChar()))
             {
-                char readChar = (char)readInt;
+                var readChar = (char)readInt;
 
                 switch (readChar)
                 {
@@ -54,7 +54,7 @@ namespace LogExpert.Core.Classes.Log
                             if (_crDetect)
                             {
                                 _crDetect = false;
-                                string line = GetLineAndResetCharBufferPos();
+                                var line = GetLineAndResetCharBufferPos();
                                 AppendToCharBuffer(readChar);
                                 return line;
                             }
@@ -65,7 +65,7 @@ namespace LogExpert.Core.Classes.Log
                 }
             }
 
-            string result = GetLineAndResetCharBufferPos();
+            var result = GetLineAndResetCharBufferPos();
             if (readInt == -1 && result.Length == 0 && !_crDetect)
             {
                 return null; // EOF

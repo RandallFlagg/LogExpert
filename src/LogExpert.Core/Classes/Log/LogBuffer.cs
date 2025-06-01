@@ -32,7 +32,7 @@ namespace LogExpert.Core.Classes.Log
 
         #region Properties
 
-        public long StartPos { set; get; } = 0;
+        public long StartPos { set; get; }
 
         public long Size
         {
@@ -52,7 +52,7 @@ namespace LogExpert.Core.Classes.Log
             get => _size;
         }
 
-        public int StartLine { set; get; } = 0;
+        public int StartLine { set; get; }
 
         public int LineCount { get; private set; }
 
@@ -60,9 +60,9 @@ namespace LogExpert.Core.Classes.Log
 
         public ILogFileInfo FileInfo { get; set; }
 
-        public int DroppedLinesCount { get; set; } = 0;
+        public int DroppedLinesCount { get; set; }
 
-        public int PrevBuffersDroppedLinesSum { get; set; } = 0;
+        public int PrevBuffersDroppedLinesSum { get; set; }
 
         #endregion
 

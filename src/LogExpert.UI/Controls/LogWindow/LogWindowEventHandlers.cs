@@ -1392,8 +1392,8 @@ namespace LogExpert.UI.Controls.LogWindow
                 var filterParams = (FilterParams)filterListBox.Items[filterListBox.SelectedIndex];
                 FilterParams newParams = filterParams.Clone();
                 //newParams.historyList = ConfigManager.Settings.filterHistoryList;
-                this._filterParams = newParams;
-                ReInitFilterParams(this._filterParams);
+                _filterParams = newParams;
+                ReInitFilterParams(_filterParams);
                 ApplyFilterParams();
                 CheckForAdvancedButtonDirty();
                 CheckForFilterDirty();

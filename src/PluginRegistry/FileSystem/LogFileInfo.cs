@@ -31,26 +31,14 @@ namespace LogExpert.PluginRegistry.FileSystem
 
         #region Properties
 
-        public string FullName
-        {
-            get { return fInfo.FullName; }
-        }
+        public string FullName => fInfo.FullName;
 
-        public string FileName
-        {
-            get { return fInfo.Name; }
-        }
+        public string FileName => fInfo.Name;
 
 
-        public string DirectoryName
-        {
-            get { return fInfo.DirectoryName; }
-        }
+        public string DirectoryName => fInfo.DirectoryName;
 
-        public char DirectorySeparatorChar
-        {
-            get { return Path.DirectorySeparatorChar; }
-        }
+        public char DirectorySeparatorChar => Path.DirectorySeparatorChar;
 
         public Uri Uri { get; }
 
@@ -63,7 +51,7 @@ namespace LogExpert.PluginRegistry.FileSystem
                     return -1;
                 }
 
-                int retry = RETRY_COUNT;
+                var retry = RETRY_COUNT;
 
                 while (retry > 0)
                 {
@@ -134,7 +122,7 @@ namespace LogExpert.PluginRegistry.FileSystem
         /// <returns></returns>
         public Stream OpenStream()
         {
-            int retry = RETRY_COUNT;
+            var retry = RETRY_COUNT;
 
             while (true)
             {

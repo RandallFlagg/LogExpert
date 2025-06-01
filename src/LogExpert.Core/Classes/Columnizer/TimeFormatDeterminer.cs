@@ -27,10 +27,7 @@ namespace LogExpert.Core.Classes.Columnizer
 
             public CultureInfo CultureInfo { get; }
 
-            public string DateTimeFormat
-            {
-                get { return DateFormat + " " + TimeFormat; }
-            }
+            public string DateTimeFormat => DateFormat + " " + TimeFormat;
 
             public bool IgnoreFirstChar { get; set; }
 
@@ -69,8 +66,8 @@ namespace LogExpert.Core.Classes.Columnizer
                 return null;
             }
 
-            string temp = line;
-            bool ignoreFirst = false;
+            var temp = line;
+            var ignoreFirst = false;
 
             // determine if string starts with bracket and remove it
             if (temp[0] == '[' || temp[0] == '(' || temp[0] == '{')

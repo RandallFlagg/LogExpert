@@ -4,7 +4,7 @@
     {
         #region Properties
 
-        public int EndLine { get; set; } = 0;
+        public int EndLine { get; set; }
 
         public int Fuzzy { get; set; } = 6;
 
@@ -14,7 +14,7 @@
 
         public int MinWeight { get; set; } = 15;
 
-        public int StartLine { get; set; } = 0;
+        public int StartLine { get; set; }
 
         #endregion
     }

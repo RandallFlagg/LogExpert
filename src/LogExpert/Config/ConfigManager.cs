@@ -274,7 +274,7 @@ namespace LogExpert.Config
                 _logger.Info("Saving settings");
                 lock (this)
                 {
-                    string dir = Settings.Preferences.PortableMode ? Application.StartupPath : ConfigDir;
+                    var dir = Settings.Preferences.PortableMode ? Application.StartupPath : ConfigDir;
 
                     if (!Directory.Exists(dir))
                     {

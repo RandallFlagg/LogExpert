@@ -102,7 +102,7 @@ namespace LogExpert.Classes.CommandLine
         /// <returns>Any reminding strings after arguments has been processed.</returns>
         public string[] Parse(string[] args)
         {
-            int i = 0;
+            var i = 0;
 
             List<string> new_args = [];
 
@@ -111,8 +111,8 @@ namespace LogExpert.Classes.CommandLine
                 if (args[i].Length > 1 && args[i][0] == '-')
                 {
                     // The current string is a parameter name
-                    string key = args[i][1..].ToLower();
-                    string argsValue = string.Empty;
+                    var key = args[i][1..].ToLower();
+                    var argsValue = string.Empty;
                     i++;
                     if (i < args.Length)
                     {
@@ -148,7 +148,7 @@ namespace LogExpert.Classes.CommandLine
 
 
             // Check that required parameters are present in the command line.
-            foreach (string key in parameters.Keys)
+            foreach (var key in parameters.Keys)
             {
                 if (parameters[key].Required && parameters[key].Exists == false)
                 {
@@ -164,16 +164,16 @@ namespace LogExpert.Classes.CommandLine
         /// </summary>
         public string HelpScreen()
         {
-            int len = 0;
-            foreach (string key in parameters.Keys)
+            var len = 0;
+            foreach (var key in parameters.Keys)
             {
                 len = Math.Max(len, key.Length);
             }
 
-            string help = "\nParameters:\n\n";
-            foreach (string key in parameters.Keys)
+            var help = "\nParameters:\n\n";
+            foreach (var key in parameters.Keys)
             {
-                string s = "-" + parameters[key].Name;
+                var s = "-" + parameters[key].Name;
                 while (s.Length < len + 3)
                 {
                     s += " ";

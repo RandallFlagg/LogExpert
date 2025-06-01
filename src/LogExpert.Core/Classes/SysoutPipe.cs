@@ -70,13 +70,13 @@ namespace LogExpert.Core.Classes
 
         protected void ReaderThread()
         {
-            char[] buff = new char[256];
+            var buff = new char[256];
 
             while (true)
             {
                 try
                 {
-                    int read = sysout.Read(buff, 0, 256);
+                    var read = sysout.Read(buff, 0, 256);
                     if (read == 0)
                     {
                         break;

@@ -97,7 +97,7 @@ namespace LogExpert.PluginRegistry
             ];
             RegisteredFileSystemPlugins.Add(new LocalFileSystem());
 
-            string pluginDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "plugins");
+            var pluginDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "plugins");
             //TODO: FIXME: This is a hack for the tests to pass. Need to find a better approach
             if (!Directory.Exists(pluginDir))
             {
@@ -110,7 +110,7 @@ namespace LogExpert.PluginRegistry
             if (interfaceName == null) { 
                 throw new NotImplementedException("The interface name is null. How did this happen? Let's fix this.");
             }
-            foreach (string dllName in Directory.EnumerateFiles(pluginDir, "*.dll"))
+            foreach (var dllName in Directory.EnumerateFiles(pluginDir, "*.dll"))
             {
                 try
                 {
@@ -147,7 +147,7 @@ namespace LogExpert.PluginRegistry
 
         private void LoadPluginAssembly(string dllName, string interfaceName)
         {
-            Assembly assembly = Assembly.LoadFrom(dllName);
+            var assembly = Assembly.LoadFrom(dllName);
             var types = assembly.GetTypes();
 
             foreach (var type in types)
@@ -159,7 +159,7 @@ namespace LogExpert.PluginRegistry
                     ConstructorInfo cti = type.GetConstructor(Type.EmptyTypes);
                     if (cti != null)
                     {
-                        object instance = cti.Invoke([]);
+                        var instance = cti.Invoke([]);
                         RegisteredColumnizers.Add((ILogLineColumnizer)instance);
 
                         if (instance is IColumnizerConfigurator configurator)
@@ -332,7 +332,7 @@ namespace LogExpert.PluginRegistry
                 ConstructorInfo cti = loadedType.GetConstructor(Type.EmptyTypes);
                 if (cti != null)
                 {
-                    object o = cti.Invoke([]);
+                    var o = cti.Invoke([]);
                     return o as T;
                 }
             }
@@ -349,7 +349,7 @@ namespace LogExpert.PluginRegistry
                 ConstructorInfo cti = loadedType.GetConstructor([typeof(IFileSystemCallback)]);
                 if (cti != null)
                 {
-                    object o = cti.Invoke([fsCallback]);
+                    var o = cti.Invoke([fsCallback]);
                     return o as T;
                 }
             }
@@ -363,10 +363,10 @@ namespace LogExpert.PluginRegistry
 
         private static Assembly ColumnizerResolveEventHandler(object? sender, ResolveEventArgs args)
         {
-            string fileName = new AssemblyName(args.Name).Name + ".dll";
+            var fileName = new AssemblyName(args.Name).Name + ".dll";
 
-            string mainDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName);
-            string pluginDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "plugins", fileName);
+            var mainDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName);
+            var pluginDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "plugins", fileName);
 
             if (File.Exists(mainDir))
             {

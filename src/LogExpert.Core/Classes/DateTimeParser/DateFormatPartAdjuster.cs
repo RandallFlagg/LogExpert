@@ -18,7 +18,7 @@ namespace LogExpert.Core.Classes.DateTimeParser
 
         public static string AdjustDateTimeFormatPart(string part)
         {
-            if (!_dateTimePartReplacements.TryGetValue(part, out string adjustedPart))
+            if (!_dateTimePartReplacements.TryGetValue(part, out var adjustedPart))
             {
                 return part;
             }

@@ -22,10 +22,10 @@ namespace LogExpert.Tests
         {
             using var stream = new MemoryStream(Encoding.ASCII.GetBytes(text));
             using var reader = new PositionAwareStreamReaderSystem(stream, new EncodingOptions());
-            int lineCount = 0;
+            var lineCount = 0;
             while (true)
             {
-                string line = reader.ReadLine();
+                var line = reader.ReadLine();
                 if (line == null)
                 {
                     break;
@@ -47,7 +47,7 @@ namespace LogExpert.Tests
         {
             using var stream = new MemoryStream(Encoding.ASCII.GetBytes(text));
             using var reader = new PositionAwareStreamReaderSystem(stream, new EncodingOptions());
-            int lineCount = 0;
+            var lineCount = 0;
             while (reader.ReadLine() != null)
             {
                 lineCount += 1;
@@ -68,10 +68,10 @@ namespace LogExpert.Tests
             using (var stream = new MemoryStream(Encoding.ASCII.GetBytes(text)))
             using (var reader = new PositionAwareStreamReaderLegacy(stream, new EncodingOptions()))
             {
-                int lineCount = 0;
+                var lineCount = 0;
                 while (true)
                 {
-                    string line = reader.ReadLine();
+                    var line = reader.ReadLine();
                     if (line == null)
                     {
                         break;
@@ -94,7 +94,7 @@ namespace LogExpert.Tests
             using (var stream = new MemoryStream(Encoding.ASCII.GetBytes(text)))
             using (var reader = new PositionAwareStreamReaderLegacy(stream, new EncodingOptions()))
             {
-                int lineCount = 0;
+                var lineCount = 0;
                 while (reader.ReadLine() != null)
                 {
                     lineCount += 1;

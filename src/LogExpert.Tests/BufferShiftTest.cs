@@ -27,7 +27,7 @@ namespace LogExpert.Tests
         [Test]
         public void TestShiftBuffers1()
         {
-            int linesPerFile = 10;
+            var linesPerFile = 10;
             MultiFileOptions options = new()
             {
                 MaxDayTry = 0,
@@ -51,11 +51,11 @@ namespace LogExpert.Tests
 
             foreach (LogFileInfo li in lil.Cast<LogFileInfo>())
             {
-                string fileName = enumerator.Current;
+                var fileName = enumerator.Current;
                 Assert.That(li.FullName, Is.EqualTo(fileName));
                 enumerator.MoveNext();
             }
-            int oldCount = lil.Count;
+            var oldCount = lil.Count;
 
             // Simulate rollover
             //
@@ -77,7 +77,7 @@ namespace LogExpert.Tests
             enumerator.MoveNext();
             foreach (LogFileInfo li in lil)
             {
-                string fileName = enumerator.Current;
+                var fileName = enumerator.Current;
                 Assert.That(li.FullName, Is.EqualTo(fileName));
                 enumerator.MoveNext();
             }
@@ -88,7 +88,7 @@ namespace LogExpert.Tests
             enumerator = files.GetEnumerator();
             enumerator.MoveNext();
             IList<LogBuffer> logBuffers = reader.GetBufferList();
-            int startLine = 0;
+            var startLine = 0;
             foreach (LogBuffer logBuffer in logBuffers)
             {
                 Assert.That(enumerator.Current, Is.EqualTo(logBuffer.FileInfo.FullName));
@@ -138,7 +138,7 @@ namespace LogExpert.Tests
             // Check first line to see if buffers are correct
             //
             ILogLine firstLine = reader.GetLogLine(0);
-            string[] names = new string[files.Count];
+            var names = new string[files.Count];
             files.CopyTo(names, 0);
             Assert.That(firstLine.FullLine.Contains(names[2]));
         }

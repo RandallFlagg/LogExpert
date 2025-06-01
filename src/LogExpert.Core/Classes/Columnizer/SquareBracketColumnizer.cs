@@ -8,12 +8,12 @@ namespace LogExpert.Core.Classes.Columnizer
     {
         #region ILogLineColumnizer implementation
 
-        protected int timeOffset = 0;
+        protected int timeOffset;
         private TimeFormatDeterminer _timeFormatDeterminer = new();
 
         // TODO: need preparing this columnizer with sample log lines before use it.
         private int _columnCount = 5;
-        private bool _isTimeExists = false;
+        private bool _isTimeExists;
 
         public SquareBracketColumnizer ()
         {
@@ -67,7 +67,7 @@ namespace LogExpert.Core.Classes.Columnizer
 
             try
             {
-                DateTime dateTime = DateTime.ParseExact(
+                var dateTime = DateTime.ParseExact(
                     cols.ColumnValues[0].FullValue + " " + cols.ColumnValues[1].FullValue, formatInfo.DateTimeFormat,
                     formatInfo.CultureInfo);
                 return dateTime;
@@ -90,10 +90,10 @@ namespace LogExpert.Core.Classes.Columnizer
                         return;
                     }
 
-                    DateTime newDateTime = DateTime.ParseExact(value, formatInfo.TimeFormat, formatInfo.CultureInfo);
-                    DateTime oldDateTime = DateTime.ParseExact(oldValue, formatInfo.TimeFormat, formatInfo.CultureInfo);
-                    long mSecsOld = oldDateTime.Ticks / TimeSpan.TicksPerMillisecond;
-                    long mSecsNew = newDateTime.Ticks / TimeSpan.TicksPerMillisecond;
+                    var newDateTime = DateTime.ParseExact(value, formatInfo.TimeFormat, formatInfo.CultureInfo);
+                    var oldDateTime = DateTime.ParseExact(oldValue, formatInfo.TimeFormat, formatInfo.CultureInfo);
+                    var mSecsOld = oldDateTime.Ticks / TimeSpan.TicksPerMillisecond;
+                    var mSecsNew = newDateTime.Ticks / TimeSpan.TicksPerMillisecond;
                     timeOffset = (int)(mSecsNew - mSecsOld);
                 }
                 catch (FormatException)
@@ -139,7 +139,7 @@ namespace LogExpert.Core.Classes.Columnizer
 
             // Last column is the message
             columnNames.Add("Message");
-            int i = 1;
+            var i = 1;
             while (columnNames.Count < GetColumnCount())
             {
                 columnNames.Insert(columnNames.Count - 1, "Source" + i++.ToString());
@@ -159,14 +159,14 @@ namespace LogExpert.Core.Classes.Columnizer
                 LogLine = line
             };
 
-            Column[] columns = new Column[]
+            var columns = new Column[]
             {
                 new() {FullValue = "", Parent = clogLine},
                 new() {FullValue = "", Parent = clogLine},
                 new() {FullValue = "", Parent = clogLine},
             };
 
-            string temp = line.FullLine;
+            var temp = line.FullLine;
 
             if (temp.Length < 3)
             {
@@ -182,17 +182,17 @@ namespace LogExpert.Core.Classes.Columnizer
             }
             else
             {
-                int endPos = formatInfo.DateTimeFormat.Length;
-                int timeLen = formatInfo.TimeFormat.Length;
-                int dateLen = formatInfo.DateFormat.Length;
+                var endPos = formatInfo.DateTimeFormat.Length;
+                var timeLen = formatInfo.TimeFormat.Length;
+                var dateLen = formatInfo.DateFormat.Length;
                 try
                 {
                     if (timeOffset != 0)
                     {
-                        DateTime dateTime = DateTime.ParseExact(temp.Substring(0, endPos), formatInfo.DateTimeFormat,
+                        var dateTime = DateTime.ParseExact(temp.Substring(0, endPos), formatInfo.DateTimeFormat,
                             formatInfo.CultureInfo);
                         dateTime = dateTime.Add(new TimeSpan(0, 0, 0, 0, timeOffset));
-                        string newDate = dateTime.ToString(formatInfo.DateTimeFormat, formatInfo.CultureInfo);
+                        var newDate = dateTime.ToString(formatInfo.DateTimeFormat, formatInfo.CultureInfo);
 
                         SquareSplit(ref columns, newDate, dateLen, timeLen, endPos, clogLine);
                     }
@@ -217,7 +217,7 @@ namespace LogExpert.Core.Classes.Columnizer
         void SquareSplit (ref Column[] columns, string line, int dateLen, int timeLen, int dateTimeEndPos, ColumnizedLogLine clogLine)
         {
             List<Column> columnList = [];
-            int restColumn = _columnCount;
+            var restColumn = _columnCount;
             if (_isTimeExists)
             {
                 columnList.Add(new Column { FullValue = line.Substring(0, dateLen), Parent = clogLine });
@@ -225,11 +225,11 @@ namespace LogExpert.Core.Classes.Columnizer
                 restColumn -= 2;
             }
 
-            int nextPos = dateTimeEndPos;
+            var nextPos = dateTimeEndPos;
 
-            string rest = line;
+            var rest = line;
 
-            for (int i = 0; i < restColumn; i++)
+            for (var i = 0; i < restColumn; i++)
             {
                 rest = rest.Substring(nextPos);
                 //var fullValue = rest.Substring(0, rest.IndexOf(']')).TrimStart(new char[] {' '}).TrimEnd(new char[] { ' ' });
@@ -257,19 +257,19 @@ namespace LogExpert.Core.Classes.Columnizer
         {
             Priority result = Priority.NotSupport;
             TimeFormatDeterminer timeDeterminer = new();
-            int timeStampExistsCount = 0;
-            int bracketsExistsCount = 0;
-            int maxBracketNumbers = 1;
+            var timeStampExistsCount = 0;
+            var bracketsExistsCount = 0;
+            var maxBracketNumbers = 1;
 
             foreach (var logline in samples)
             {
-                string line = logline?.FullLine;
+                var line = logline?.FullLine;
                 if (string.IsNullOrEmpty(line))
                 {
                     continue;
                 }
 
-                int bracketNumbers = 1;
+                var bracketNumbers = 1;
                 if (null != timeDeterminer.DetermineDateTimeFormatInfo(line))
                 {
                     timeStampExistsCount++;
@@ -279,7 +279,7 @@ namespace LogExpert.Core.Classes.Columnizer
                     timeStampExistsCount--;
                 }
 
-                string noSpaceLine = line.Replace(" ", string.Empty);
+                var noSpaceLine = line.Replace(" ", string.Empty);
                 if (noSpaceLine.IndexOf('[') >= 0 && noSpaceLine.IndexOf(']') >= 0
                                                   && noSpaceLine.IndexOf('[') < noSpaceLine.IndexOf(']'))
                 {

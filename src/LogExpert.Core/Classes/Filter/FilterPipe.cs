@@ -127,9 +127,9 @@ namespace LogExpert.Classes.Filter
             List<int> newList = [];
             lock (_lineMappingList)
             {
-                foreach (int lineNum in _lineMappingList)
+                foreach (var lineNum in _lineMappingList)
                 {
-                    int line = lineNum - offset;
+                    var line = lineNum - offset;
                     if (line >= 0)
                     {
                         newList.Add(line);
@@ -148,7 +148,7 @@ namespace LogExpert.Classes.Filter
             _logger.Debug("FilterPipe.ClearLineNums()");
             lock (_lineMappingList)
             {
-                for (int i = 0; i < _lineMappingList.Count; ++i)
+                for (var i = 0; i < _lineMappingList.Count; ++i)
                 {
                     _lineMappingList[i] = -1;
                 }

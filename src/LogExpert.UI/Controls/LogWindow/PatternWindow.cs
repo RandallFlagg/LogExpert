@@ -41,26 +41,26 @@ namespace LogExpert.UI.Controls.LogWindow
 
         public int Fuzzy
         {
-            set { fuzzyKnobControl.Value = value; }
-            get { return fuzzyKnobControl.Value; }
+            set => fuzzyKnobControl.Value = value;
+            get => fuzzyKnobControl.Value;
         }
 
         public int MaxDiff
         {
-            set { maxDiffKnobControl.Value = value; }
-            get { return maxDiffKnobControl.Value; }
+            set => maxDiffKnobControl.Value = value;
+            get => maxDiffKnobControl.Value;
         }
 
         public int MaxMisses
         {
-            set { maxMissesKnobControl.Value = value; }
-            get { return maxMissesKnobControl.Value; }
+            set => maxMissesKnobControl.Value = value;
+            get => maxMissesKnobControl.Value;
         }
 
         public int Weight
         {
-            set { weigthKnobControl.Value = value; }
-            get { return weigthKnobControl.Value; }
+            set => weigthKnobControl.Value = value;
+            get => weigthKnobControl.Value;
         }
 
         #endregion
@@ -73,7 +73,7 @@ namespace LogExpert.UI.Controls.LogWindow
             blockList.Clear();
             List<PatternBlock> singeList = [];
             //int blockId = -1;
-            for (int i = 0; i < flatBlockList.Count; ++i)
+            for (var i = 0; i < flatBlockList.Count; ++i)
             {
                 PatternBlock block = flatBlockList[i];
                 singeList.Add(block);
@@ -129,8 +129,8 @@ namespace LogExpert.UI.Controls.LogWindow
         public void SetFont(string fontName, float fontSize)
         {
             Font font = new(new FontFamily(fontName), fontSize);
-            int lineSpacing = font.FontFamily.GetLineSpacing(FontStyle.Regular);
-            float lineSpacingPixel = font.Size * lineSpacing / font.FontFamily.GetEmHeight(FontStyle.Regular);
+            var lineSpacing = font.FontFamily.GetLineSpacing(FontStyle.Regular);
+            var lineSpacingPixel = font.Size * lineSpacing / font.FontFamily.GetEmHeight(FontStyle.Regular);
 
             patternHitsDataGridView.DefaultCellStyle.Font = font;
             contentDataGridView.DefaultCellStyle.Font = font;
@@ -190,8 +190,8 @@ namespace LogExpert.UI.Controls.LogWindow
             {
                 return;
             }
-            int rowIndex = GetLineForHitGrid(e.RowIndex);
-            int colIndex = e.ColumnIndex;
+            var rowIndex = GetLineForHitGrid(e.RowIndex);
+            var colIndex = e.ColumnIndex;
             if (colIndex == 1)
             {
                 e.Value = currentList[e.RowIndex].weigth;
@@ -215,14 +215,14 @@ namespace LogExpert.UI.Controls.LogWindow
             if (e.ColumnIndex == 1)
             {
                 e.PaintBackground(e.CellBounds, false);
-                int selCount = patternArgs.EndLine - patternArgs.StartLine;
-                int maxWeight = patternArgs.MaxDiffInBlock * selCount + selCount;
+                var selCount = patternArgs.EndLine - patternArgs.StartLine;
+                var maxWeight = patternArgs.MaxDiffInBlock * selCount + selCount;
                 if (maxWeight > 0)
                 {
-                    int width = (int)((int)e.Value / (double)maxWeight * e.CellBounds.Width);
+                    var width = (int)((int)e.Value / (double)maxWeight * e.CellBounds.Width);
                     Rectangle rect = new(e.CellBounds.X, e.CellBounds.Y, width, e.CellBounds.Height);
-                    int alpha = 90 + (int)((int)e.Value / (double)maxWeight * 165);
-                    Color color = Color.FromArgb(alpha, 170, 180, 150);
+                    var alpha = 90 + (int)((int)e.Value / (double)maxWeight * 165);
+                    var color = Color.FromArgb(alpha, 170, 180, 150);
                     Brush brush = new SolidBrush(color);
                     rect.Inflate(-2, -1);
                     e.Graphics.FillRectangle(brush, rect);
@@ -233,8 +233,8 @@ namespace LogExpert.UI.Controls.LogWindow
             }
             else
             {
-                BufferedDataGridView gridView = (BufferedDataGridView)sender;
-                int rowIndex = GetLineForHitGrid(e.RowIndex);
+                var gridView = (BufferedDataGridView)sender;
+                var rowIndex = GetLineForHitGrid(e.RowIndex);
                 logWindow.CellPainting(gridView, rowIndex, e);
             }
         }
@@ -272,8 +272,8 @@ namespace LogExpert.UI.Controls.LogWindow
             {
                 return;
             }
-            int rowIndex = GetLineForContentGrid(e.RowIndex);
-            int colIndex = e.ColumnIndex;
+            var rowIndex = GetLineForContentGrid(e.RowIndex);
+            var colIndex = e.ColumnIndex;
             if (colIndex == 1)
             {
                 QualityInfo qi;
@@ -302,8 +302,8 @@ namespace LogExpert.UI.Controls.LogWindow
             {
                 return;
             }
-            BufferedDataGridView gridView = (BufferedDataGridView)sender;
-            int rowIndex = GetLineForContentGrid(e.RowIndex);
+            var gridView = (BufferedDataGridView)sender;
+            var rowIndex = GetLineForContentGrid(e.RowIndex);
             logWindow.CellPainting(gridView, rowIndex, e);
         }
 
@@ -313,7 +313,7 @@ namespace LogExpert.UI.Controls.LogWindow
             {
                 return;
             }
-            int rowIndex = GetLineForContentGrid(contentDataGridView.CurrentRow.Index);
+            var rowIndex = GetLineForContentGrid(contentDataGridView.CurrentRow.Index);
 
             logWindow.SelectLogLine(rowIndex);
         }

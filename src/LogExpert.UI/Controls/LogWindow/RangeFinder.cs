@@ -41,9 +41,9 @@ namespace LogExpert.UI.Controls.LogWindow
             _filterParams.IsRangeSearch = false;
             _filterParams.IsInRange = false;
 
-            int lineCount = callback.GetLineCount();
-            int lineNum = startLine;
-            bool foundStartLine = false;
+            var lineCount = callback.GetLineCount();
+            var lineNum = startLine;
+            var foundStartLine = false;
 
             Range range = new();
             FilterParams tmpParam = _filterParams.CloneWithCurrentColumnizer();

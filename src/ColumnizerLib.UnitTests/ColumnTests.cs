@@ -15,12 +15,12 @@ namespace ColumnizerLib.UnitTests
 
             StringBuilder builder = new();
 
-            for (int i = 0; i < 4675; i++)
+            for (var i = 0; i < 4675; i++)
             {
                 builder.Append("6");
             }
 
-            string expected = builder + "...";
+            var expected = builder + "...";
             builder.Append("1234");
 
             column.FullValue = builder.ToString();
@@ -36,12 +36,12 @@ namespace ColumnizerLib.UnitTests
 
             StringBuilder builder = new();
 
-            for (int i = 0; i < 4675; i++)
+            for (var i = 0; i < 4675; i++)
             {
                 builder.Append("6");
             }
 
-            string expected = builder.ToString();
+            var expected = builder.ToString();
 
             column.FullValue = expected;
 

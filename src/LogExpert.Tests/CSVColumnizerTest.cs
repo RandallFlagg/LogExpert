@@ -17,7 +17,7 @@ namespace LogExpert.Tests
         public void Instantiat_CSVFile_BuildCorrectColumnizer(string filename, string[] expectedHeaders)
         {
             CsvColumnizer.CsvColumnizer csvColumnizer = new();
-            string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, filename);
+            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, filename);
             LogfileReader reader = new(path, new EncodingOptions(), true, 40, 50, new MultiFileOptions(), PluginRegistry.PluginRegistry.Instance);
             reader.ReadFiles();
             ILogLine line = reader.GetLogLine(0);
@@ -26,7 +26,7 @@ namespace LogExpert.Tests
             {
                 logline = csvColumnizer.SplitLine(null, line);
             }
-            string expectedResult = string.Join(",", expectedHeaders);
+            var expectedResult = string.Join(",", expectedHeaders);
             Assert.That(logline.LogLine.FullLine, Is.EqualTo(expectedResult));
         }
     }

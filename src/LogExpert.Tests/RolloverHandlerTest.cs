@@ -22,7 +22,7 @@ namespace LogExpert.Tests
 
             LinkedList<string> files = CreateTestFilesWithoutDate();
 
-            string firstFile = files.Last.Value;
+            var firstFile = files.Last.Value;
 
             ILogFileInfo info = new LogFileInfo(new Uri(firstFile));
             RolloverFilenameHandler handler = new(info, options);
@@ -43,7 +43,7 @@ namespace LogExpert.Tests
 
             LinkedList<string> files = CreateTestFilesWithDate();
 
-            string firstFile = files.Last.Value;
+            var firstFile = files.Last.Value;
 
             ILogFileInfo info = new LogFileInfo(new Uri(firstFile));
             RolloverFilenameHandler handler = new(info, options);

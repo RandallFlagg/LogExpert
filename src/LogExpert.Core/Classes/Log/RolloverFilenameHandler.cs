@@ -50,10 +50,10 @@ namespace LogExpert.Core.Classes.Log
         public LinkedList<string> GetNameList(IPluginRegistry pluginRegistry)
         {
             LinkedList<string> fileList = new();
-            string fileName = _filenameBuilder.BuildFileName();
-            string filePath = _logFileInfo.DirectoryName + _logFileInfo.DirectorySeparatorChar + fileName;
+            var fileName = _filenameBuilder.BuildFileName();
+            var filePath = _logFileInfo.DirectoryName + _logFileInfo.DirectorySeparatorChar + fileName;
             fileList.AddFirst(filePath);
-            bool found = true;
+            var found = true;
             while (found)
             {
                 found = false;
@@ -73,7 +73,7 @@ namespace LogExpert.Core.Classes.Log
                 // if file with index isn't found or no index is in format pattern, decrement the current date
                 if (_filenameBuilder.IsDatePattern)
                 {
-                    int tryCounter = 0;
+                    var tryCounter = 0;
                     _filenameBuilder.Index = 0;
                     while (tryCounter < _options.MaxDayTry)
                     {

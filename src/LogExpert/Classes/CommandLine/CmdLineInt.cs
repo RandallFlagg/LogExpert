@@ -67,7 +67,7 @@ namespace LogExpert.Classes.CommandLine
         public override void SetValue(string value)
         {
             base.SetValue(value);
-            int i = 0;
+            int i;
             try
             {
                 i = Convert.ToInt32(value);

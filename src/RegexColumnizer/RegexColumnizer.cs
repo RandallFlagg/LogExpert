@@ -46,7 +46,7 @@ namespace RegexColumnizer
 
         public IColumnizedLogLine SplitLine(ILogLineColumnizerCallback callback, ILogLine line)
         {
-            ColumnizedLogLine logLine = new ColumnizedLogLine();
+            var logLine = new ColumnizedLogLine();
 
             logLine.ColumnValues = new IColumn[columns.Length];
             if (Regex != null)
@@ -55,7 +55,7 @@ namespace RegexColumnizer
 
                 if (m.Success)
                 {
-                    for (int i = m.Groups.Count - 1; i > 0; i--)
+                    for (var i = m.Groups.Count - 1; i > 0; i--)
                     {
                         logLine.ColumnValues[i - 1] = new Column
                         {
@@ -124,7 +124,7 @@ namespace RegexColumnizer
 
         public void Configure(ILogLineColumnizerCallback callback, string configDir)
         {
-            RegexColumnizerConfigDialog dialog = new RegexColumnizerConfigDialog {Config = Config};
+            var dialog = new RegexColumnizerConfigDialog {Config = Config};
             if (dialog.ShowDialog() == DialogResult.OK)
             {
                 var configFile = GetConfigFile(configDir);
@@ -162,7 +162,7 @@ namespace RegexColumnizer
         public string GetConfigFile(string configDir)
         {
             var name = GetType().Name;
-            string configPath = Path.Combine(configDir, name);
+            var configPath = Path.Combine(configDir, name);
             configPath = Path.ChangeExtension(configPath, "xml"); //todo change to json
             return configPath;
         }
@@ -189,7 +189,7 @@ namespace RegexColumnizer
             try
             {
                 Regex = new Regex(Config.Expression, RegexOptions.Compiled);
-                int skip = Regex.GetGroupNames().Length == 1 ? 0 : 1;
+                var skip = Regex.GetGroupNames().Length == 1 ? 0 : 1;
                 columns = Regex.GetGroupNames().Skip(skip).ToArray();
             }
             catch

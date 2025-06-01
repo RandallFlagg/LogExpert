@@ -15,7 +15,7 @@ namespace LogExpert.Tests
         public void GetColumnNames_HappyFile_ColumnNameMatches(string fileName, string expectedHeaders)
         {
             var jsonColumnizer = new JsonColumnizer.JsonColumnizer();
-            string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName);
+            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName);
             LogfileReader reader = new(path, new EncodingOptions(), true, 40, 50, new MultiFileOptions(), PluginRegistry.PluginRegistry.Instance);
             reader.ReadFiles();
 

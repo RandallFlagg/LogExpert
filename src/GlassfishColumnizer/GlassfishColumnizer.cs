@@ -18,7 +18,7 @@ namespace GlassfishColumnizer
         private readonly char separatorChar = '|';
         private readonly char[] trimChars = ['|'];
         protected CultureInfo cultureInfo = new("en-US");
-        protected int timeOffset = 0;
+        protected int timeOffset;
 
         #endregion
 
@@ -73,7 +73,7 @@ namespace GlassfishColumnizer
             ColumnizedLogLine cLogLine = new();
             cLogLine.LogLine = line;
 
-            string temp = line.FullLine;
+            var temp = line.FullLine;
 
             Column[] columns = Column.CreateColumns(COLUMN_COUNT, cLogLine);
             cLogLine.ColumnValues = columns.Select(a => a as IColumn).ToArray();
@@ -105,7 +105,7 @@ namespace GlassfishColumnizer
                         columns[1].FullValue = temp;
                     }
 
-                    string newDate = dateTime.ToString(DATETIME_FORMAT_OUT);
+                    var newDate = dateTime.ToString(DATETIME_FORMAT_OUT);
                     columns[0].FullValue = newDate;
                 }
                 catch (Exception)
@@ -150,7 +150,7 @@ namespace GlassfishColumnizer
 
         public DateTime GetTimestamp(ILogLineColumnizerCallback callback, ILogLine logLine)
         {
-            string temp = logLine.FullLine;
+            var temp = logLine.FullLine;
 
             // delete '[#|' and '|#]'
             if (temp.StartsWith("[#|"))
@@ -168,13 +168,13 @@ namespace GlassfishColumnizer
                 return DateTime.MinValue;
             }
 
-            int endIndex = temp.IndexOf(separatorChar, 1);
+            var endIndex = temp.IndexOf(separatorChar, 1);
             if (endIndex > 28 || endIndex < 0)
             {
                 return DateTime.MinValue;
             }
 
-            string value = temp[..endIndex];
+            var value = temp[..endIndex];
 
             try
             {
@@ -198,10 +198,10 @@ namespace GlassfishColumnizer
             {
                 try
                 {
-                    DateTime newDateTime = DateTime.ParseExact(value, DATETIME_FORMAT_OUT, cultureInfo);
-                    DateTime oldDateTime = DateTime.ParseExact(oldValue, DATETIME_FORMAT_OUT, cultureInfo);
-                    long mSecsOld = oldDateTime.Ticks / TimeSpan.TicksPerMillisecond;
-                    long mSecsNew = newDateTime.Ticks / TimeSpan.TicksPerMillisecond;
+                    var newDateTime = DateTime.ParseExact(value, DATETIME_FORMAT_OUT, cultureInfo);
+                    var oldDateTime = DateTime.ParseExact(oldValue, DATETIME_FORMAT_OUT, cultureInfo);
+                    var mSecsOld = oldDateTime.Ticks / TimeSpan.TicksPerMillisecond;
+                    var mSecsNew = newDateTime.Ticks / TimeSpan.TicksPerMillisecond;
                     timeOffset = (int)(mSecsNew - mSecsOld);
                 }
                 catch (FormatException)

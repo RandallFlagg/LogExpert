@@ -52,7 +52,7 @@ namespace LogExpert.Core.Classes.Filter
 
         public bool EmptyColumnHit { get; set; }
 
-        public bool ExactColumnMatch { get; set; } = false;
+        public bool ExactColumnMatch { get; set; }
 
         public bool ColumnRestrict { get; set; }
 
@@ -64,7 +64,7 @@ namespace LogExpert.Core.Classes.Filter
 
         public bool IsInvert { get; set; }
 
-        public bool IsRangeSearch { get; set; } = false;
+        public bool IsRangeSearch { get; set; }
 
         public bool IsRegex { get; set; }
 
@@ -80,7 +80,7 @@ namespace LogExpert.Core.Classes.Filter
         /// true=looking for end
         /// </summary>
         [field: NonSerialized]
-        public bool IsInRange { get; set; } = false;
+        public bool IsInRange { get; set; }
 
         [field: NonSerialized]
         public string LastLine { get; set; } = string.Empty;

@@ -89,10 +89,10 @@ namespace CsvColumnizer
 
         public string[] GetColumnNames()
         {
-            string[] names = new string[GetColumnCount()];
+            var names = new string[GetColumnCount()];
             if (_isValidCsv)
             {
-                int i = 0;
+                var i = 0;
                 foreach (CsvColumn column in _columnList)
                 {
                     names[i++] = column.Name;
@@ -164,20 +164,20 @@ namespace CsvColumnizer
                     csv.Read();
                     csv.ReadHeader();
 
-                    int fieldCount = csv.Parser.Count;
+                    var fieldCount = csv.Parser.Count;
 
-                    string[] headerRecord = csv.HeaderRecord;
+                    var headerRecord = csv.HeaderRecord;
 
                     if (_config.HasFieldNames && headerRecord != null)
                     {
-                        foreach (string headerColumn in headerRecord)
+                        foreach (var headerColumn in headerRecord)
                         {
                             _columnList.Add(new CsvColumn(headerColumn));
                         }
                     }
                     else
                     {
-                        for (int i = 0; i < fieldCount; ++i)
+                        for (var i = 0; i < fieldCount; ++i)
                         {
                             _columnList.Add(new CsvColumn("Column " + i + 1));
                         }
@@ -193,7 +193,7 @@ namespace CsvColumnizer
 
         public void Configure(ILogLineColumnizerCallback callback, string configDir)
         {
-            string configPath = configDir + "\\" + _configFileName;
+            var configPath = configDir + "\\" + _configFileName;
             FileInfo fileInfo = new(configPath);
 
             CsvColumnizerConfigDlg dlg = new(_config);
@@ -216,7 +216,7 @@ namespace CsvColumnizer
 
         public void LoadConfig(string configDir)
         {
-            string configPath = Path.Combine(configDir, _configFileName);
+            var configPath = Path.Combine(configDir, _configFileName);
 
             if (!File.Exists(configPath))
             {
@@ -267,13 +267,13 @@ namespace CsvColumnizer
             csv.ReadHeader();
 
             //we only read line by line and not the whole file so it is always the header
-            string[] records = csv.HeaderRecord;
+            var records = csv.HeaderRecord;
 
             if (records != null)
             {
                 List<Column> columns = [];
 
-                foreach (string record in records)
+                foreach (var record in records)
                 {
                     columns.Add(new Column { FullValue = record, Parent = cLogLine });
                 }

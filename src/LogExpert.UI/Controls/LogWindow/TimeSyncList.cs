@@ -27,10 +27,7 @@ public class TimeSyncList
 
     public DateTime CurrentTimestamp { get; set; }
 
-    public int Count
-    {
-        get { return logWindowList.Count; }
-    }
+    public int Count => logWindowList.Count;
 
     #endregion
 
@@ -54,6 +51,7 @@ public class TimeSyncList
         {
             logWindowList.Remove(logWindow);
         }
+
         OnWindowRemoved();
     }
 
@@ -90,10 +88,7 @@ public class TimeSyncList
 
     private void OnWindowRemoved ()
     {
-        if (WindowRemoved != null)
-        {
-            WindowRemoved(this, new EventArgs());
-        }
+        WindowRemoved?.Invoke(this, new EventArgs());
     }
 
     #endregion

@@ -33,10 +33,10 @@ namespace LogExpert.UI.Controls.LogWindow
         private double _average;
 
         private int _contrast = 400;
-        private int _displayHeight = 0;
+        private int _displayHeight;
         private bool _enabled;
         private DateTime _endTimestamp;
-        private int _lineCount = 0;
+        private int _lineCount;
         private int _maxDiff;
         private TimeSpan _maxSpan;
         private bool _shouldStop;
@@ -187,7 +187,7 @@ namespace LogExpert.UI.Controls.LogWindow
                 {
                     // wait for unbusy moments
                     _logger.Debug("TimeSpreadCalculator: wait for unbusy moments");
-                    bool signaled = _calcEvent.WaitOne(INACTIVITY_TIME, false);
+                    var signaled = _calcEvent.WaitOne(INACTIVITY_TIME, false);
                     if (signaled == false)
                     {
                         _logger.Debug("TimeSpreadCalculator: unbusy. starting calc.");
@@ -221,17 +221,17 @@ namespace LogExpert.UI.Controls.LogWindow
                 return;
             }
 
-            int lineNum = 0;
-            int lastLineNum = _callback.GetLineCount() - 1;
+            var lineNum = 0;
+            var lastLineNum = _callback.GetLineCount() - 1;
             _startTimestamp = _logWindow.GetTimestampForLineForward(ref lineNum, false);
             _endTimestamp = _logWindow.GetTimestampForLine(ref lastLineNum, false);
 
-            int timePerLineSum = 0;
+            var timePerLineSum = 0;
 
             if (_startTimestamp != DateTime.MinValue && _endTimestamp != DateTime.MinValue)
             {
                 TimeSpan overallSpan = _endTimestamp - _startTimestamp;
-                int overallSpanMillis = (int)(overallSpan.Ticks / TimeSpan.TicksPerMillisecond);
+                var overallSpanMillis = (int)(overallSpan.Ticks / TimeSpan.TicksPerMillisecond);
                 _timePerLine = (int)Math.Round(overallSpanMillis / (double)_lineCount);
                 DateTime oldTime = _logWindow.GetTimestampForLineForward(ref lineNum, false);
                 int step;
@@ -251,9 +251,9 @@ namespace LogExpert.UI.Controls.LogWindow
                 List<TimeSpan> maxList = [];
                 lineNum++;
 
-                for (int i = lineNum; i < lastLineNum; i += step)
+                for (var i = lineNum; i < lastLineNum; i += step)
                 {
-                    int currLineNum = i;
+                    var currLineNum = i;
                     DateTime time = _logWindow.GetTimestampForLineForward(ref currLineNum, false);
                     if (time != DateTime.MinValue)
                     {
@@ -296,15 +296,15 @@ namespace LogExpert.UI.Controls.LogWindow
                 return;
             }
 
-            int lineNum = 0;
-            int lastLineNum = _callback.GetLineCount() - 1;
+            var lineNum = 0;
+            var lastLineNum = _callback.GetLineCount() - 1;
             _startTimestamp = _logWindow.GetTimestampForLineForward(ref lineNum, false);
             _endTimestamp = _logWindow.GetTimestampForLine(ref lastLineNum, false);
 
             if (_startTimestamp != DateTime.MinValue && _endTimestamp != DateTime.MinValue)
             {
                 TimeSpan overallSpan = _endTimestamp - _startTimestamp;
-                long overallSpanMillis = overallSpan.Ticks / TimeSpan.TicksPerMillisecond;
+                var overallSpanMillis = overallSpan.Ticks / TimeSpan.TicksPerMillisecond;
                 //int timePerLine = (int)Math.Round((double)overallSpanMillis / (double)this.lineCount);
 
                 long step;
@@ -322,10 +322,10 @@ namespace LogExpert.UI.Controls.LogWindow
 
                 lineNum = 0;
                 DateTime searchTimeStamp = _startTimestamp;
-                int oldLineNum = lineNum;
-                int loopCount = 0;
-                int lineDiffSum = 0;
-                int minDiff = int.MaxValue;
+                var oldLineNum = lineNum;
+                var loopCount = 0;
+                var lineDiffSum = 0;
+                var minDiff = int.MaxValue;
                 _maxDiff = 0;
                 List<int> maxList = [];
                 List<SpreadEntry> newDiffList = [];
@@ -337,7 +337,7 @@ namespace LogExpert.UI.Controls.LogWindow
                     {
                         lineNum = -lineNum;
                     }
-                    int lineDiff = lineNum - oldLineNum;
+                    var lineDiff = lineNum - oldLineNum;
 
                     _logger.Debug("TimeSpreadCalculator.DoCalc_via_Time() test time {0:HH:mm:ss.fff} line diff={1}", searchTimeStamp, lineDiff);
 
@@ -412,7 +412,7 @@ namespace LogExpert.UI.Controls.LogWindow
                         diffFromAverage = 0;
                     }
 
-                    int value = (int)(diffFromAverage / (timePerLine / TimeSpan.TicksPerMillisecond) * _contrast);
+                    var value = (int)(diffFromAverage / (timePerLine / TimeSpan.TicksPerMillisecond) * _contrast);
                     entry.Value = 255 - value;
                     oldTime = entry.Timestamp;
                 }
@@ -425,14 +425,14 @@ namespace LogExpert.UI.Controls.LogWindow
         {
             foreach (SpreadEntry entry in DiffList)
             {
-                int lineDiff = entry.Diff;
-                double diffFromAverage = entry.Diff - average;
+                var lineDiff = entry.Diff;
+                var diffFromAverage = entry.Diff - average;
 
                 if (diffFromAverage < 0)
                 {
                     diffFromAverage = 0;
                 }
-                int value = (int)(diffFromAverage / maxDiff * _contrast);
+                var value = (int)(diffFromAverage / maxDiff * _contrast);
                 entry.Value = 255 - value;
 
                 _logger.Debug("TimeSpreadCalculator.DoCalc() test time {0:HH:mm:ss.fff} line diff={1} value={2}", entry.Timestamp, lineDiff, value);

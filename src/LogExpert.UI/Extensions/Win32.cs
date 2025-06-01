@@ -67,16 +67,16 @@ namespace LogExpert.UI.Extensions
             //IntPtr[] largeIcons = new IntPtr[1];
             nint smallIcons = new();
             nint largeIcons = new();
-            int num = (int)ExtractIconEx(fileName, index, ref largeIcons, ref smallIcons, 1);
+            var num = (int)ExtractIconEx(fileName, index, ref largeIcons, ref smallIcons, 1);
             if (num > 0 && smallIcons != nint.Zero)
             {
-                Icon icon = (Icon)Icon.FromHandle(smallIcons).Clone();
+                var icon = (Icon)Icon.FromHandle(smallIcons).Clone();
                 DestroyIcon(smallIcons);
                 return icon;
             }
             if (num > 0 && largeIcons != nint.Zero)
             {
-                Icon icon = (Icon)Icon.FromHandle(largeIcons).Clone();
+                var icon = (Icon)Icon.FromHandle(largeIcons).Clone();
                 DestroyIcon(largeIcons);
                 return icon;
             }
@@ -85,9 +85,9 @@ namespace LogExpert.UI.Extensions
 
         public static Icon[,] ExtractIcons(string fileName)
         {
-            nint smallIcon = nint.Zero;
-            nint largeIcon = nint.Zero;
-            int iconCount = (int)ExtractIconEx(fileName, -1, ref largeIcon, ref smallIcon, 0);
+            var smallIcon = nint.Zero;
+            var largeIcon = nint.Zero;
+            var iconCount = (int)ExtractIconEx(fileName, -1, ref largeIcon, ref smallIcon, 0);
             if (iconCount <= 0)
             {
                 return null;
@@ -95,11 +95,11 @@ namespace LogExpert.UI.Extensions
 
             nint smallIcons = new();
             nint largeIcons = new();
-            Icon[,] result = new Icon[2, iconCount];
+            var result = new Icon[2, iconCount];
 
-            for (int i = 0; i < iconCount; ++i)
+            for (var i = 0; i < iconCount; ++i)
             {
-                int num = (int)ExtractIconEx(fileName, i, ref largeIcons, ref smallIcons, 1);
+                var num = (int)ExtractIconEx(fileName, i, ref largeIcons, ref smallIcons, 1);
                 if (smallIcons != nint.Zero)
                 {
                     result[0, i] = (Icon)Icon.FromHandle(smallIcons).Clone();
@@ -135,7 +135,7 @@ namespace LogExpert.UI.Extensions
                 attribute = DWMWA_USE_IMMERSIVE_DARK_MODE;
             }
 
-            int useImmersiveDarkMode = enabled ? 1 : 0;
+            var useImmersiveDarkMode = enabled ? 1 : 0;
             return DwmSetWindowAttribute(handle, attribute, ref useImmersiveDarkMode, sizeof(int)) == 0;
 
         }

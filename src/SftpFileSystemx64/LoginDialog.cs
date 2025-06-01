@@ -25,7 +25,7 @@ namespace SftpFileSystem
             serverNameLabel.Text = host;
             if (userNames != null)
             {
-                foreach (string name in userNames)
+                foreach (var name in userNames)
                 {
                     if (name != null)
                     {

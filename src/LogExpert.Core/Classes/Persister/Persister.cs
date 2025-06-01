@@ -17,30 +17,30 @@ namespace LogExpert.Core.Classes.Persister
 
         public SortedList<int, Entities.Bookmark> bookmarkList = [];
         public int bookmarkListPosition = 300;
-        public bool bookmarkListVisible = false;
+        public bool bookmarkListVisible;
         public string columnizerName;
         public int currentLine = -1;
         public Encoding encoding;
-        public string fileName = null;
-        public bool filterAdvanced = false;
+        public string fileName;
+        public bool filterAdvanced;
         public List<FilterParams> filterParamsList = [];
         public int filterPosition = 222;
-        public bool filterSaveListVisible = false;
+        public bool filterSaveListVisible;
         public List<FilterTabData> filterTabDataList = [];
-        public bool filterVisible = false;
+        public bool filterVisible;
         public int firstDisplayedLine = -1;
         public bool followTail = true;
         public string highlightGroupName;
         public int lineCount;
 
-        public bool multiFile = false;
+        public bool multiFile;
         public int multiFileMaxDays;
         public List<string> multiFileNames = [];
         public string multiFilePattern;
         public SortedList<int, RowHeightEntry> rowHeightList = [];
-        public string sessionFileName = null;
+        public string sessionFileName;
         public bool showBookmarkCommentColumn;
-        public string tabName = null;
+        public string tabName;
 
         public string settingsSaveLoadLocation;
 
@@ -73,7 +73,7 @@ namespace LogExpert.Core.Classes.Persister
             if (preferences.saveLocation == SessionSaveLocation.SameDir)
             {
                 // make to log file in .lxp file relative
-                string filePart = Path.GetFileName(persistenceData.fileName);
+                var filePart = Path.GetFileName(persistenceData.fileName);
                 persistenceData.fileName = filePart;
             }
 
@@ -91,13 +91,13 @@ namespace LogExpert.Core.Classes.Persister
 
         public static PersistenceData LoadPersistenceData(string logFileName, Preferences preferences)
         {
-            string fileName = BuildPersisterFileName(logFileName, preferences);
+            var fileName = BuildPersisterFileName(logFileName, preferences);
             return Load(fileName);
         }
 
         public static PersistenceData LoadPersistenceDataOptionsOnly(string logFileName, Preferences preferences)
         {
-            string fileName = BuildPersisterFileName(logFileName, preferences);
+            var fileName = BuildPersisterFileName(logFileName, preferences);
             return LoadOptionsOnly(fileName);
         }
 
@@ -132,7 +132,7 @@ namespace LogExpert.Core.Classes.Persister
             XmlNode fileNode = xmlDoc.SelectSingleNode("logexpert/file");
             if (fileNode != null)
             {
-                XmlElement fileElement = fileNode as XmlElement;
+                var fileElement = fileNode as XmlElement;
                 ReadOptions(fileElement, persistenceData);
                 persistenceData.fileName = fileElement.GetAttribute("fileName");
                 persistenceData.encoding = ReadEncoding(fileElement);
@@ -199,7 +199,7 @@ namespace LogExpert.Core.Classes.Persister
 
         private static string BuildSessionFileNameFromPath(string logFileName)
         {
-            string result = logFileName;
+            var result = logFileName;
             result = result.Replace(Path.DirectorySeparatorChar, '_');
             result = result.Replace(Path.AltDirectorySeparatorChar, '_');
             result = result.Replace(Path.VolumeSeparatorChar, '_');
@@ -303,7 +303,7 @@ namespace LogExpert.Core.Classes.Persister
 
                 MemoryStream stream = new(capacity: 200);
                 JsonSerializer.Serialize(stream, filterParams);
-                string base64Data = Convert.ToBase64String(stream.ToArray());
+                var base64Data = Convert.ToBase64String(stream.ToArray());
                 paramsElement.InnerText = base64Data;
                 filterElement.AppendChild(paramsElement);
                 filtersElement.AppendChild(filterElement);
@@ -324,8 +324,8 @@ namespace LogExpert.Core.Classes.Persister
                     {
                         if (subNode.Name.Equals("params"))
                         {
-                            string base64Text = subNode.InnerText;
-                            byte[] data = Convert.FromBase64String(base64Text);
+                            var base64Text = subNode.InnerText;
+                            var data = Convert.FromBase64String(base64Text);
                             MemoryStream stream = new(data);
 
                             try
@@ -385,12 +385,12 @@ namespace LogExpert.Core.Classes.Persister
         private static PersistenceData ReadPersistenceDataFromNode(XmlNode node)
         {
             PersistenceData persistenceData = new();
-            XmlElement fileElement = node as XmlElement;
+            var fileElement = node as XmlElement;
             persistenceData.bookmarkList = ReadBookmarks(fileElement);
             persistenceData.rowHeightList = ReadRowHeightList(fileElement);
             ReadOptions(fileElement, persistenceData);
             persistenceData.fileName = fileElement.GetAttribute("fileName");
-            string sLineCount = fileElement.GetAttribute("lineCount");
+            var sLineCount = fileElement.GetAttribute("lineCount");
             if (sLineCount != null && sLineCount.Length > 0)
             {
                 persistenceData.lineCount = int.Parse(sLineCount);
@@ -468,7 +468,7 @@ namespace LogExpert.Core.Classes.Persister
                         _logger.Error("Invalid XML format for bookmark: {0}", node.InnerText);
                         continue;
                     }
-                    int lineNum = int.Parse(line);
+                    var lineNum = int.Parse(line);
 
                     Entities.Bookmark bookmark = new(lineNum)
                     {
@@ -520,8 +520,8 @@ namespace LogExpert.Core.Classes.Persister
                             height = attr.InnerText;
                         }
                     }
-                    int lineNum = int.Parse(line);
-                    int heightValue = int.Parse(height);
+                    var lineNum = int.Parse(line);
+                    var heightValue = int.Parse(height);
                     rowHeightList.Add(lineNum, new RowHeightEntry(lineNum, heightValue));
                 }
             }
@@ -538,7 +538,7 @@ namespace LogExpert.Core.Classes.Persister
             element.SetAttribute("enabled", persistenceData.multiFile ? "1" : "0");
             element.SetAttribute("pattern", persistenceData.multiFilePattern);
             element.SetAttribute("maxDays", "" + persistenceData.multiFileMaxDays);
-            foreach (string fileName in persistenceData.multiFileNames)
+            foreach (var fileName in persistenceData.multiFileNames)
             {
                 XmlElement entryElement = xmlDoc.CreateElement("fileEntry");
                 entryElement.SetAttribute("fileName", "" + fileName);
@@ -594,7 +594,7 @@ namespace LogExpert.Core.Classes.Persister
         private static void ReadOptions(XmlElement startNode, PersistenceData persistenceData)
         {
             XmlNode optionsNode = startNode.SelectSingleNode("options");
-            string value = GetOptionsAttribute(optionsNode, "multifile", "enabled");
+            var value = GetOptionsAttribute(optionsNode, "multifile", "enabled");
             persistenceData.multiFile = value != null && value.Equals("1");
             persistenceData.multiFilePattern = GetOptionsAttribute(optionsNode, "multifile", "pattern");
             value = GetOptionsAttribute(optionsNode, "multifile", "maxDays");
@@ -690,7 +690,7 @@ namespace LogExpert.Core.Classes.Persister
             }
             if (node is XmlElement)
             {
-                string value = (node as XmlElement).GetAttribute(attrName);
+                var value = (node as XmlElement).GetAttribute(attrName);
                 return value;
             }
             else

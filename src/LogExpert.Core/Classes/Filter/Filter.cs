@@ -40,7 +40,7 @@ namespace LogExpert.Classes.Filter
 
         public List<int> FilterHitList { get; }
 
-        public bool ShouldCancel { get; set; } = false;
+        public bool ShouldCancel { get; set; }
 
         #endregion
 
@@ -144,7 +144,7 @@ namespace LogExpert.Classes.Filter
             }
 
             // back spread
-            for (int i = filterParams.SpreadBefore; i > 0; --i)
+            for (var i = filterParams.SpreadBefore; i > 0; --i)
             {
                 if (lineNum - i > 0)
                 {
@@ -160,7 +160,7 @@ namespace LogExpert.Classes.Filter
                 resultList.Add(lineNum);
             }
             // after spread
-            for (int i = 1; i <= filterParams.SpreadBehind; ++i)
+            for (var i = 1; i <= filterParams.SpreadBehind; ++i)
             {
                 if (lineNum + i < _callback.GetLineCount())
                 {

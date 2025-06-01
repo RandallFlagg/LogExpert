@@ -7,15 +7,15 @@
 
         public List<string> HistoryList { get; set; } = [];
 
-        public bool IsCaseSensitive { get; set; } = false;
+        public bool IsCaseSensitive { get; set; }
 
         public bool IsFindNext { get; set; }
 
         public bool IsForward { get; set; } = true;
 
-        public bool IsFromTop { get; set; } = false;
+        public bool IsFromTop { get; set; }
 
-        public bool IsRegex { get; set; } = false;
+        public bool IsRegex { get; set; }
 
         public string SearchText { get; set; } = string.Empty;
 

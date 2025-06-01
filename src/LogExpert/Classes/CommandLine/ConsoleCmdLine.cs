@@ -29,7 +29,7 @@ namespace LogExpert.Classes.CommandLine
         {
             string[] ret = [];
 
-            string error = string.Empty;
+            var error = string.Empty;
 
             try
             {

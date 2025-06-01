@@ -4,13 +4,13 @@ namespace LogExpert.Core.EventArguments
     {
         #region Properties
 
-        public long FileSize { get; set; } = 0;
+        public long FileSize { get; set; }
 
         public string StatusText { get; set; } = string.Empty;
 
-        public int LineCount { get; set; } = 0;
+        public int LineCount { get; set; }
 
-        public int CurrentLineNum { get; set; } = 0;
+        public int CurrentLineNum { get; set; }
 
         #endregion
 

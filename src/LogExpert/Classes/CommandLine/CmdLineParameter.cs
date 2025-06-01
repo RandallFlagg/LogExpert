@@ -35,7 +35,7 @@ namespace LogExpert.Classes.CommandLine
         /// <summary>
         /// Returns true if the parameter was found in the command line.
         /// </summary>
-        public bool Exists { get; private set; } = false;
+        public bool Exists { get; private set; }
 
         /// <summary>
         /// Returns true if the parameter is required in the command line.

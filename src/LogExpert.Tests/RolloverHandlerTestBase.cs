@@ -54,7 +54,7 @@ namespace LogExpert.Tests
             RolloverFilenameBuilder fnb = new(formatPattern);
             fnb.SetFileName(fileList.Last.Value);
             fnb.Index += fileList.Count;
-            string newFileName = fnb.BuildFileName();
+            var newFileName = fnb.BuildFileName();
             fileList.AddFirst(newFileName);
             LinkedList<string>.Enumerator enumerator = fileList.GetEnumerator();
             LinkedList<string>.Enumerator nextEnumerator = fileList.GetEnumerator();
@@ -89,12 +89,12 @@ namespace LogExpert.Tests
 
         protected string CreateFile(DirectoryInfo dInfo, string fileName)
         {
-            int lineCount = 10;
-            string fullName = dInfo == null ? fileName : dInfo.FullName + Path.DirectorySeparatorChar + fileName;
+            var lineCount = 10;
+            var fullName = dInfo == null ? fileName : dInfo.FullName + Path.DirectorySeparatorChar + fileName;
 
             using (StreamWriter writer = new(File.Create(fullName)))
             {
-                for (int i = 1; i <= lineCount; ++i)
+                for (var i = 1; i <= lineCount; ++i)
                 {
                     writer.WriteLine("Line number " + i.ToString("D3") + " of File " + fullName);
                 }

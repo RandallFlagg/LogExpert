@@ -69,7 +69,7 @@ public class ColorComboBox : ComboBox
         if (e.Index >= 0)
         {
             Rectangle rectangle = new(4, e.Bounds.Top + 2, 30, e.Bounds.Height - 4);
-            Color rectColor = (Color)Items[e.Index];
+            var rectColor = (Color)Items[e.Index];
             e.Graphics.FillRectangle(new SolidBrush(rectColor), rectangle);
             e.Graphics.DrawRectangle(Pens.Black, rectangle);
 

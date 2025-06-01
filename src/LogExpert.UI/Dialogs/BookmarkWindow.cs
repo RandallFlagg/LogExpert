@@ -138,7 +138,7 @@ public partial class BookmarkWindow : DockContent, ISharedToolWindow, IBookmarkV
     public void ResizeColumns ()
     {
         // this.bookmarkDataGridView.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.DisplayedCells);
-        for (int i = 2; i < bookmarkDataGridView.ColumnCount; ++i)
+        for (var i = 2; i < bookmarkDataGridView.ColumnCount; ++i)
         {
             bookmarkDataGridView.AutoResizeColumn(i, DataGridViewAutoSizeColumnMode.DisplayedCells);
         }
@@ -157,7 +157,7 @@ public partial class BookmarkWindow : DockContent, ISharedToolWindow, IBookmarkV
     /// <param name="bookmark"></param>
     public void BookmarkTextChanged (Bookmark bookmark)
     {
-        int rowIndex = bookmarkDataGridView.CurrentCellAddress.Y;
+        var rowIndex = bookmarkDataGridView.CurrentCellAddress.Y;
         if (rowIndex == -1)
         {
             return;
@@ -181,7 +181,7 @@ public partial class BookmarkWindow : DockContent, ISharedToolWindow, IBookmarkV
                 UpdateView();
             }
 
-            int row = bookmarkData.GetBookmarkIndexForLine(lineNum);
+            var row = bookmarkData.GetBookmarkIndexForLine(lineNum);
             bookmarkDataGridView.CurrentCell = bookmarkDataGridView.Rows[row].Cells[0];
         }
     }
@@ -296,7 +296,7 @@ public partial class BookmarkWindow : DockContent, ISharedToolWindow, IBookmarkV
             else
             {
                 // _logger.logDebug("CellPaint No Focus");
-                Color color = Color.FromArgb(255, 170, 170, 170);
+                var color = Color.FromArgb(255, 170, 170, 170);
                 brush = new SolidBrush(color);
             }
 
@@ -383,7 +383,7 @@ public partial class BookmarkWindow : DockContent, ISharedToolWindow, IBookmarkV
                     return;
                 }
 
-                int lineNum = bookmarkData.Bookmarks[e.RowIndex].LineNum;
+                var lineNum = bookmarkData.Bookmarks[e.RowIndex].LineNum;
 
                 // if (e.ColumnIndex == 1)
                 // {
@@ -415,14 +415,14 @@ public partial class BookmarkWindow : DockContent, ISharedToolWindow, IBookmarkV
         }
 
         Bookmark bookmarkForLine = bookmarkData.Bookmarks[e.RowIndex];
-        int lineNum = bookmarkForLine.LineNum;
+        var lineNum = bookmarkForLine.LineNum;
         if (e.ColumnIndex == 1)
         {
             e.Value = bookmarkForLine.Text?.Replace('\n', ' ').Replace('\r', ' ');
         }
         else
         {
-            int columnIndex = e.ColumnIndex > 1 ? e.ColumnIndex - 1 : e.ColumnIndex;
+            var columnIndex = e.ColumnIndex > 1 ? e.ColumnIndex - 1 : e.ColumnIndex;
             e.Value = logPaintContext.GetCellValue(lineNum, columnIndex);
         }
     }
@@ -451,7 +451,7 @@ public partial class BookmarkWindow : DockContent, ISharedToolWindow, IBookmarkV
             if (bookmarkDataGridView.CurrentCellAddress.Y >= 0 &&
                 bookmarkDataGridView.CurrentCellAddress.Y < bookmarkData.Bookmarks.Count)
             {
-                int lineNum = bookmarkData.Bookmarks[bookmarkDataGridView.CurrentCellAddress.Y].LineNum;
+                var lineNum = bookmarkData.Bookmarks[bookmarkDataGridView.CurrentCellAddress.Y].LineNum;
                 logView.SelectLogLine(lineNum);
             }
 
@@ -495,7 +495,7 @@ public partial class BookmarkWindow : DockContent, ISharedToolWindow, IBookmarkV
             return; // ignore all changes done while the control is disabled
         }
 
-        int rowIndex = bookmarkDataGridView.CurrentCellAddress.Y;
+        var rowIndex = bookmarkDataGridView.CurrentCellAddress.Y;
         if (rowIndex == -1)
         {
             return;
@@ -553,12 +553,12 @@ public partial class BookmarkWindow : DockContent, ISharedToolWindow, IBookmarkV
         // Toggle bookmark when double-clicking on the first column
         if (e.ColumnIndex == 0 && e.RowIndex >= 0 && bookmarkDataGridView.CurrentRow != null)
         {
-            int index = bookmarkDataGridView.CurrentRow.Index;
-            int lineNum = bookmarkData.Bookmarks[bookmarkDataGridView.CurrentRow.Index].LineNum;
+            var index = bookmarkDataGridView.CurrentRow.Index;
+            var lineNum = bookmarkData.Bookmarks[bookmarkDataGridView.CurrentRow.Index].LineNum;
             bookmarkData.ToggleBookmark(lineNum);
 
             // we don't ask for confirmation if the bookmark has an associated comment...
-            int boomarkCount = bookmarkData.Bookmarks.Count;
+            var boomarkCount = bookmarkData.Bookmarks.Count;
             bookmarkDataGridView.RowCount = boomarkCount;
 
             if (index < boomarkCount)
@@ -595,7 +595,7 @@ public partial class BookmarkWindow : DockContent, ISharedToolWindow, IBookmarkV
 
         if (bookmarkDataGridView.CurrentRow != null && e.RowIndex >= 0)
         {
-            int lineNum = bookmarkData.Bookmarks[bookmarkDataGridView.CurrentRow.Index].LineNum;
+            var lineNum = bookmarkData.Bookmarks[bookmarkDataGridView.CurrentRow.Index].LineNum;
             logView.SelectAndEnsureVisible(lineNum, true);
         }
     }
@@ -634,7 +634,7 @@ public partial class BookmarkWindow : DockContent, ISharedToolWindow, IBookmarkV
             if (Width > Height)
             {
                 splitContainer1.Orientation = Orientation.Vertical;
-                int distance = Width - 200;
+                var distance = Width - 200;
                 splitContainer1.SplitterDistance = distance > splitContainer1.Panel1MinSize
                     ? distance
                     : splitContainer1.Panel1MinSize;
@@ -642,7 +642,7 @@ public partial class BookmarkWindow : DockContent, ISharedToolWindow, IBookmarkV
             else
             {
                 splitContainer1.Orientation = Orientation.Horizontal;
-                int distance = Height - 200;
+                var distance = Height - 200;
                 splitContainer1.SplitterDistance = distance > splitContainer1.Panel1MinSize
                     ? distance
                     : splitContainer1.Panel1MinSize;

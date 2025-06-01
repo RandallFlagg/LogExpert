@@ -102,10 +102,10 @@ namespace LogExpert.Core.Classes.Log
 
             try
             {
-                int readInt = _reader.Read();
+                var readInt = _reader.Read();
                 if (readInt != -1)
                 {
-                    char readChar = (char)readInt;
+                    var readChar = (char)readInt;
                     if (_posIncPrecomputed != 0)
                     {
                         _position += _posIncPrecomputed;
@@ -156,17 +156,17 @@ namespace LogExpert.Core.Classes.Log
             UTF-32-Little-Endian-Byteorder: FF FE 00 00
             */
 
-            byte[] readPreamble = new byte[4];
+            var readPreamble = new byte[4];
 
-            int readLen = _stream.Read(readPreamble, 0, 4);
+            var readLen = _stream.Read(readPreamble, 0, 4);
 
             if (readLen >= 2)
             {
                 foreach (Encoding encoding in _preambleEncodings)
                 {
-                    byte[] preamble = encoding.GetPreamble();
-                    bool fail = false;
-                    for (int i = 0; i < readLen && i < preamble.Length; ++i)
+                    var preamble = encoding.GetPreamble();
+                    var fail = false;
+                    for (var i = 0; i < readLen && i < preamble.Length; ++i)
                     {
                         if (readPreamble[i] != preamble[i])
                         {

@@ -5,7 +5,7 @@ namespace LogExpert.Core.Classes.DateTimeParser
     internal class Tokenizer
     {
         private string formatString;
-        private int formatStringPosition = 0;
+        private int formatStringPosition;
 
         public Tokenizer(string fmt)
         {
@@ -33,7 +33,7 @@ namespace LogExpert.Core.Classes.DateTimeParser
 
         public int PeekUntil(int startOffset, int until)
         {
-            int offset = startOffset;
+            var offset = startOffset;
             while (true)
             {
                 var c = Peek(offset++);
@@ -127,7 +127,7 @@ namespace LogExpert.Core.Classes.DateTimeParser
         {
             if (Peek() == open)
             {
-                int length = PeekUntil(1, close);
+                var length = PeekUntil(1, close);
                 if (length > 0)
                 {
                     Advance(1 + length);

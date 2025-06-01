@@ -50,9 +50,9 @@ namespace RegexColumnizer
             {
                 Regex regex = new(tbExpression.Text);
                 var groupNames = regex.GetGroupNames();
-                int offset = groupNames.Length > 1 ? 1 : 0;
+                var offset = groupNames.Length > 1 ? 1 : 0;
 
-                for (int i = offset; i < groupNames.Length; i++)
+                for (var i = offset; i < groupNames.Length; i++)
                 {
                     table.Columns.Add(groupNames[i]);
                 }

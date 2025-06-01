@@ -53,7 +53,7 @@ namespace LogExpert.UI.Entities
                     }
                     else
                     {
-                        Color color = Color.FromArgb(255, 170, 170, 170);
+                        var color = Color.FromArgb(255, 170, 170, 170);
                         brush = new SolidBrush(color);
                     }
                     e.Graphics.FillRectangle(brush, e.CellBounds);
@@ -159,9 +159,9 @@ namespace LogExpert.UI.Entities
 
         public static void SetColumnizer(ILogLineColumnizer columnizer, BufferedDataGridView gridView)
         {
-            int rowCount = gridView.RowCount;
-            int currLine = gridView.CurrentCellAddress.Y;
-            int currFirstLine = gridView.FirstDisplayedScrollingRowIndex;
+            var rowCount = gridView.RowCount;
+            var currLine = gridView.CurrentCellAddress.Y;
+            var currFirstLine = gridView.FirstDisplayedScrollingRowIndex;
 
             try
             {
@@ -178,7 +178,7 @@ namespace LogExpert.UI.Entities
 
             gridView.Columns.Add(CreateLineNumberColumn());
 
-            foreach (string colName in columnizer.GetColumnNames())
+            foreach (var colName in columnizer.GetColumnNames())
             {
                 gridView.Columns.Add(CreateTitleColumn(colName));
             }
@@ -301,7 +301,7 @@ namespace LogExpert.UI.Entities
 
         private static void PaintHighlightedCell(ILogPaintContextUI logPaintCtx, DataGridViewCellPaintingEventArgs e, BufferedDataGridView gridView, bool noBackgroundFill, HighlightEntry groundEntry)
         {
-            object value = e.Value ?? string.Empty;
+            var value = e.Value ?? string.Empty;
 
             IList<HilightMatchEntry> matchList = logPaintCtx.FindHighlightMatches(value as ILogLine);
             // too many entries per line seem to cause problems with the GDI
@@ -338,7 +338,7 @@ namespace LogExpert.UI.Entities
                 }
             }
 
-            int leftPad = e.CellStyle.Padding.Left;
+            var leftPad = e.CellStyle.Padding.Left;
             RectangleF rect = new(e.CellBounds.Left + leftPad, e.CellBounds.Top, e.CellBounds.Width, e.CellBounds.Height);
             Rectangle borderWidths = BorderWidths(e.AdvancedBorderStyle);
             Rectangle valBounds = e.CellBounds;
@@ -383,7 +383,7 @@ namespace LogExpert.UI.Entities
                     ? new SolidBrush(matchEntry.HilightEntry.BackgroundColor)
                     : null;
 
-                string matchWord = string.Empty;
+                var matchWord = string.Empty;
                 if (value is Column again)
                 {
                     if (string.IsNullOrEmpty(again.FullValue) == false)
@@ -431,8 +431,8 @@ namespace LogExpert.UI.Entities
         private static IList<HilightMatchEntry> MergeHighlightMatchEntries(IList<HilightMatchEntry> matchList, HilightMatchEntry groundEntry)
         {
             // Fill an area with lenth of whole text with a default hilight entry
-            HighlightEntry[] entryArray = new HighlightEntry[groundEntry.Length];
-            for (int i = 0; i < entryArray.Length; ++i)
+            var entryArray = new HighlightEntry[groundEntry.Length];
+            for (var i = 0; i < entryArray.Length; ++i)
             {
                 entryArray[i] = groundEntry.HilightEntry;
             }
@@ -441,8 +441,8 @@ namespace LogExpert.UI.Entities
             // Non-word-mode matches will not overpaint because they use the groundEntry
             foreach (HilightMatchEntry me in matchList)
             {
-                int endPos = me.StartPos + me.Length;
-                for (int i = me.StartPos; i < endPos; ++i)
+                var endPos = me.StartPos + me.Length;
+                for (var i = me.StartPos; i < endPos; ++i)
                 {
                     if (me.HilightEntry.IsWordMatch)
                     {
@@ -460,8 +460,8 @@ namespace LogExpert.UI.Entities
             if (entryArray.Length > 0)
             {
                 HighlightEntry currentEntry = entryArray[0];
-                int lastStartPos = 0;
-                int pos = 0;
+                var lastStartPos = 0;
+                var pos = 0;
                 for (; pos < entryArray.Length; ++pos)
                 {
                     if (entryArray[pos] != currentEntry)

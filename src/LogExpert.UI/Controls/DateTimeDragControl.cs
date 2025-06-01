@@ -126,7 +126,7 @@ namespace LogExpert.Dialogs
         // Returns the index of the rectangle (digitRects) under the mouse cursor
         private int DetermineDraggedDigit(MouseEventArgs e)
         {
-            for (int i = 0; i < _digitRects.Count; ++i)
+            for (var i = 0; i < _digitRects.Count; ++i)
             {
                 if (_digitRects[i].Contains(e.Location) && Token.IsDatePart(_dateParts[i]))
                 {
@@ -140,7 +140,7 @@ namespace LogExpert.Dialogs
         // Return the value corresponding to current dragged digit
         private int GetDraggedValue()
         {
-            string datePart = _dateParts[_draggedDigit];
+            var datePart = _dateParts[_draggedDigit];
 
             if (datePart.StartsWith("y", StringComparison.OrdinalIgnoreCase))
             {
@@ -177,10 +177,10 @@ namespace LogExpert.Dialogs
                 return false;
             }
 
-            bool changed = true;
+            var changed = true;
             try
             {
-                string datePart = _dateParts[_draggedDigit];
+                var datePart = _dateParts[_draggedDigit];
 
                 if (datePart.StartsWith("y", StringComparison.OrdinalIgnoreCase))
                 {
@@ -234,14 +234,14 @@ namespace LogExpert.Dialogs
                 .ToArray();
 
             Rectangle rect = ClientRectangle;
-            int oneCharWidth = rect.Width / _dateParts.Sum(s => s.Length);
-            int left = rect.Left;
+            var oneCharWidth = rect.Width / _dateParts.Sum(s => s.Length);
+            var left = rect.Left;
 
             _digitRects.Clear();
 
-            foreach (string datePart in _dateParts)
+            foreach (var datePart in _dateParts)
             {
-                int s = datePart.Length * oneCharWidth;
+                var s = datePart.Length * oneCharWidth;
                 _digitRects.Add(new Rectangle(left, rect.Top, s, rect.Height));
                 left += s;
             }
@@ -252,14 +252,14 @@ namespace LogExpert.Dialogs
         {
             CultureInfo culture = System.Threading.Thread.CurrentThread.CurrentCulture;
 
-            string datePattern = string.Concat(culture.DateTimeFormat.ShortDatePattern, " ", culture.DateTimeFormat.LongTimePattern);
+            var datePattern = string.Concat(culture.DateTimeFormat.ShortDatePattern, " ", culture.DateTimeFormat.LongTimePattern);
 
             List<Section> sections = Parser.ParseSections(datePattern, out _);
             Section dateSection = sections.FirstOrDefault();
 
             if (dateSection == null)
             {
-                sections = Parser.ParseSections("dd.MM.yyyy HH:mm:ss", out bool _);
+                sections = Parser.ParseSections("dd.MM.yyyy HH:mm:ss", out var _);
                 dateSection = sections.Single();
             }
 
@@ -372,9 +372,9 @@ namespace LogExpert.Dialogs
             // Display current value with user-defined date format and fixed time format ("HH:mm:ss")
             using (Brush brush = new SolidBrush(Color.Black))
             {
-                for (int i = 0; i < _dateParts.Length; i++)
+                for (var i = 0; i < _dateParts.Length; i++)
                 {
-                    string datePart = _dateParts[i];
+                    var datePart = _dateParts[i];
                     Rectangle rect = _digitRects[i];
                     string value;
 
@@ -479,7 +479,7 @@ namespace LogExpert.Dialogs
                     }
             }
 
-            int delta = diff / 5 - _addedValue; // one unit per 5 pixels move
+            var delta = diff / 5 - _addedValue; // one unit per 5 pixels move
 
             if (delta == 0)
             {

@@ -44,10 +44,7 @@
             return cLogLine;
         }
 
-        public string Text
-        {
-            get { return GetName(); }
-        }
+        public string Text => GetName();
 
         public Priority GetPriority(string fileName, IEnumerable<ILogLine> samples)
         {

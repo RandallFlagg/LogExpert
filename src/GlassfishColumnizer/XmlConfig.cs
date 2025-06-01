@@ -10,7 +10,7 @@ namespace GlassfishColumnizer
 
         public string XmlEndTag { get; } = "|#]";
 
-        public string Stylesheet { get; } = null;
+        public string Stylesheet { get; }
 
         public string[] Namespace => null;
 

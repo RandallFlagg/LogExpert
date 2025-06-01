@@ -25,7 +25,7 @@ namespace LogExpert.Tests
 
         private void CompareReaderImplementationsInternal(string fileName, Encoding enc, int maxPosition)
         {
-            string path = Environment.CurrentDirectory + "\\data\\";
+            var path = Environment.CurrentDirectory + "\\data\\";
             EncodingOptions encOpts = new();
             encOpts.Encoding = enc;
 
@@ -33,10 +33,10 @@ namespace LogExpert.Tests
             using Stream s2 = new FileStream(path + fileName, FileMode.Open, FileAccess.Read);
             using ILogStreamReader r1 = new PositionAwareStreamReaderLegacy(s1, encOpts);
             using ILogStreamReader r2 = new PositionAwareStreamReaderSystem(s2, encOpts);
-            for (int lineNum = 0; ; lineNum++)
+            for (var lineNum = 0; ; lineNum++)
             {
-                string line1 = r1.ReadLine();
-                string line2 = r2.ReadLine();
+                var line1 = r1.ReadLine();
+                var line2 = r2.ReadLine();
                 if (line1 == null && line2 == null)
                 {
                     break;

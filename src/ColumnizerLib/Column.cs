@@ -20,7 +20,7 @@ namespace LogExpert
 
         static Column()
         {
-            List<Func<string, string>> replacements = new List<Func<string, string>>(
+            var replacements = new List<Func<string, string>>(
                 new Func<string, string>[]
                 {
                     //replace tab with 3 spaces, from old coding. Needed???
@@ -71,7 +71,7 @@ namespace LogExpert
             {
                 _fullValue = value;
 
-                string temp = FullValue;
+                var temp = FullValue;
 
                 foreach (var replacement in _replacements)
                 {
@@ -97,9 +97,9 @@ namespace LogExpert
 
         public static Column[] CreateColumns(int count, IColumnizedLogLine parent, string defaultValue)
         {
-            Column[] output = new Column[count];
+            var output = new Column[count];
 
-            for (int i = 0; i < count; i++)
+            for (var i = 0; i < count; i++)
             {
                 output[i] = new Column {FullValue = defaultValue, Parent = parent};
             }

@@ -39,7 +39,7 @@ namespace LogExpert.Core.Classes.Log
                 _newLineSequenceLength = GuessNewLineSequenceLength(reader);
             }
 
-            string line = reader.ReadLine();
+            var line = reader.ReadLine();
 
             if (line != null)
             {
@@ -60,20 +60,20 @@ namespace LogExpert.Core.Classes.Log
 
         private int GuessNewLineSequenceLength(StreamReader reader)
         {
-            long currentPos = Position;
+            var currentPos = Position;
 
             try
             {
-                string line = reader.ReadLine();
+                var line = reader.ReadLine();
 
                 if (line != null)
                 {
                     Position += Encoding.GetByteCount(line);
 
-                    int firstChar = reader.Read();
+                    var firstChar = reader.Read();
                     if (firstChar == CHAR_CR) // check \r
                     {
-                        int secondChar = reader.Read();
+                        var secondChar = reader.Read();
                         if (secondChar == CHAR_LF) // check \n
                         {
                             return Encoding.GetByteCount("\r\n");

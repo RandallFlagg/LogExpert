@@ -37,12 +37,12 @@ namespace LogExpert
 
         private XmlDocument BuildParam(ILogLine line)
         {
-            string fullLogLine = line.FullLine;
+            var fullLogLine = line.FullLine;
             // no Java stacktrace but some special logging of our applications at work:
             if (fullLogLine.Contains("Exception of type", StringComparison.CurrentCulture) ||
                 fullLogLine.Contains("Nested:", StringComparison.CurrentCulture))
             {
-                int pos = fullLogLine.IndexOf("created in ");
+                var pos = fullLogLine.IndexOf("created in ");
 
                 if (pos == -1)
                 {
@@ -50,14 +50,14 @@ namespace LogExpert
                 }
 
                 pos += "created in ".Length;
-                int endPos = fullLogLine.IndexOf(DOT, pos);
+                var endPos = fullLogLine.IndexOf(DOT, pos);
 
                 if (endPos == -1)
                 {
                     return null;
                 }
 
-                string className = fullLogLine[pos..endPos];
+                var className = fullLogLine[pos..endPos];
                 pos = fullLogLine.IndexOf(DOUBLE_DOT, pos);
 
                 if (pos == -1)
@@ -65,19 +65,19 @@ namespace LogExpert
                     return null;
                 }
 
-                string lineNum = fullLogLine[(pos + 1)..];
+                var lineNum = fullLogLine[(pos + 1)..];
                 XmlDocument doc = BuildXmlDocument(className, lineNum);
                 return doc;
             }
 
             if (fullLogLine.Contains("at ", StringComparison.CurrentCulture))
             {
-                string str = fullLogLine.Trim();
+                var str = fullLogLine.Trim();
                 string className = null;
                 string lineNum = null;
-                int pos = str.IndexOf("at ") + 3;
+                var pos = str.IndexOf("at ") + 3;
                 str = str[pos..]; // remove 'at '
-                int idx = str.IndexOfAny(['(', '$', '<']);
+                var idx = str.IndexOfAny(['(', '$', '<']);
 
                 if (idx != -1)
                 {
@@ -215,7 +215,7 @@ namespace LogExpert
 
         public void LoadConfig(string configDir)
         {
-            string configPath = configDir + CFG_FILE_NAME;
+            var configPath = configDir + CFG_FILE_NAME;
 
             FileInfo fileInfo = new(configDir + Path.DirectorySeparatorChar + CFG_FILE_NAME);
 

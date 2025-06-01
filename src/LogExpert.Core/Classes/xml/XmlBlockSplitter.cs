@@ -71,7 +71,7 @@ namespace LogExpert.Core.Classes.xml
                 _stylesheet = value;
                 if (_stylesheet != null)
                 {
-                    XmlReader stylesheetReader = XmlReader.Create(new StringReader(_stylesheet));
+                    var stylesheetReader = XmlReader.Create(new StringReader(_stylesheet));
 
                     _xslt = new XslCompiledTransform();
                     _xslt.Load(stylesheetReader);
@@ -91,7 +91,7 @@ namespace LogExpert.Core.Classes.xml
         {
             if (_stylesheet != null)
             {
-                XmlReader xmlReader = XmlReader.Create(new StringReader(block), _settings, _context);
+                var xmlReader = XmlReader.Create(new StringReader(block), _settings, _context);
 
                 xmlReader.Read();
                 xmlReader.MoveToContent();
@@ -99,7 +99,7 @@ namespace LogExpert.Core.Classes.xml
                 StringWriter textWriter = new();
 
                 _xslt.Transform(xmlReader, null, textWriter);
-                string message = textWriter.ToString();
+                var message = textWriter.ToString();
                 SplitToLinesList(message);
             }
             else
@@ -112,13 +112,13 @@ namespace LogExpert.Core.Classes.xml
         private void SplitToLinesList(string message)
         {
             const int MAX_LEN = 3000;
-            string[] lines = message.Split(_splitStrings, StringSplitOptions.None);
-            foreach (string theLine in lines)
+            var lines = message.Split(_splitStrings, StringSplitOptions.None);
+            foreach (var theLine in lines)
             {
-                string line = theLine.Trim(_newLineChar);
+                var line = theLine.Trim(_newLineChar);
                 while (line.Length > MAX_LEN)
                 {
-                    string part = line.Substring(0, MAX_LEN);
+                    var part = line.Substring(0, MAX_LEN);
                     line = line.Substring(MAX_LEN);
                     _lineList.Enqueue(part);
                 }
@@ -147,7 +147,7 @@ namespace LogExpert.Core.Classes.xml
         {
             if (_lineList.Count == 0)
             {
-                string block = _reader.ReadLine();
+                var block = _reader.ReadLine();
                 if (block == null)
                 {
                     return null;

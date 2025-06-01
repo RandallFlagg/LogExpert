@@ -12,10 +12,7 @@ namespace FlashIconHighlighter
     {
         #region Properties
 
-        public string Text
-        {
-            get { return GetName(); }
-        }
+        public string Text => GetName();
 
         #endregion
 

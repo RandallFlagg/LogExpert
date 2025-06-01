@@ -4,13 +4,13 @@
     {
         public static string GetWordFromPos(int xPos, string text, Graphics g, Font font)
         {
-            string[] words = text.Split([' ', '.', ':', ';']);
+            var words = text.Split([' ', '.', ':', ';']);
 
-            int index = 0;
+            var index = 0;
 
             List<CharacterRange> crList = [];
 
-            for (int i = 0; i < words.Length; ++i)
+            for (var i = 0; i < words.Length; ++i)
             {
                 crList.Add(new CharacterRange(index, words[i].Length));
                 index += words[i].Length;
@@ -29,9 +29,9 @@
             RectangleF rect = new(0, 0, 3000, 20);
             Region[] stringRegions = g.MeasureCharacterRanges(text, font, rect, stringFormat);
 
-            bool found = false;
+            var found = false;
 
-            int y = 0;
+            var y = 0;
 
             foreach (Region regio in stringRegions)
             {

@@ -93,7 +93,7 @@ public partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, ILog
     private string[] _fileNames;
     private List<int> _filterHitList = [];
     private FilterParams _filterParams = new();
-    private int _filterPipeNameCounter = 0;
+    private int _filterPipeNameCounter;
     private List<int> _filterResultList = [];
 
     private EventWaitHandle _filterUpdateEvent = new ManualResetEvent(false);
@@ -109,7 +109,7 @@ public partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, ILog
     private bool _isTimestampDisplaySyncing;
     private List<int> _lastFilterLinesList = [];
 
-    private int _lineHeight = 0;
+    private int _lineHeight;
 
     internal LogfileReader _logFileReader;
     private MultiFileOptions _multiFileOptions = new();
@@ -118,15 +118,15 @@ public partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, ILog
     private PatternWindow _patternWindow;
 
     private ReloadMemento _reloadMemento;
-    private int _reloadOverloadCounter = 0;
+    private int _reloadOverloadCounter;
     private SortedList<int, RowHeightEntry> _rowHeightList = [];
-    private int _selectedCol = 0; // set by context menu event for column headers only
+    private int _selectedCol; // set by context menu event for column headers only
     private bool _shouldCallTimeSync;
     private bool _shouldCancel;
     private bool _shouldTimestampDisplaySyncingCancel;
     private bool _showAdvanced;
     private List<HighlightEntry> _tempHighlightEntryList = [];
-    private int _timeShiftSyncLine = 0;
+    private int _timeShiftSyncLine;
 
     private bool _waitingForClose;
 
@@ -190,7 +190,7 @@ public partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, ILog
         //this.toolwinTabControl.TabPages.Add(this.bookmarkWindow);
 
         _filterParams = new FilterParams();
-        foreach (string item in configManager.Settings.filterHistoryList)
+        foreach (var item in configManager.Settings.filterHistoryList)
         {
             filterComboBox.Items.Add(item);
         }
@@ -460,7 +460,7 @@ public partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, ILog
 
     public string FileName { get; private set; }
 
-    public string SessionFileName { get; set; } = null;
+    public string SessionFileName { get; set; }
 
     public bool IsMultiFile
     {
@@ -474,7 +474,7 @@ public partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, ILog
 
     public string TempTitleName { get; set; } = "";
 
-    internal FilterPipe FilterPipe { get; set; } = null;
+    internal FilterPipe FilterPipe { get; set; }
 
     public string Title
     {
@@ -493,11 +493,11 @@ public partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, ILog
 
     public bool ForcePersistenceLoading { get; set; }
 
-    public string ForcedPersistenceFileName { get; set; } = null;
+    public string ForcedPersistenceFileName { get; set; }
 
     public Preferences Preferences => ConfigManager.Settings.Preferences;
 
-    public string GivenFileName { get; set; } = null;
+    public string GivenFileName { get; set; }
 
     public TimeSyncList TimeSyncList { get; private set; }
 
@@ -517,28 +517,14 @@ public partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, ILog
 
     event FileSizeChangedEventHandler ILogWindow.FileSizeChanged
     {
-        add
-        {
-            this.FileSizeChanged += new FileSizeChangedEventHandler(value);
-        }
-
-        remove
-        {
-            this.FileSizeChanged -= new FileSizeChangedEventHandler(value);
-        }
+        add => FileSizeChanged += new FileSizeChangedEventHandler(value);
+        remove => FileSizeChanged -= new FileSizeChangedEventHandler(value);
     }
 
     event EventHandler ILogWindow.TailFollowed
     {
-        add
-        {
-            this.TailFollowed += new TailFollowedEventHandler(value);
-        }
-
-        remove
-        {
-            this.TailFollowed -= new TailFollowedEventHandler(value);
-        }
+        add => TailFollowed += new TailFollowedEventHandler(value);
+        remove => TailFollowed -= new TailFollowedEventHandler(value);
     }
 
     #endregion
@@ -676,7 +662,7 @@ public partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, ILog
 #if DEBUG
     internal void DumpBufferInfo ()
     {
-        int currentLineNum = dataGridView.CurrentCellAddress.Y;
+        var currentLineNum = dataGridView.CurrentCellAddress.Y;
         _logFileReader.LogBufferInfoForLine(currentLineNum);
     }
 

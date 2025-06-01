@@ -39,7 +39,7 @@ public partial class OpenUriDialog : Form
         if (UriHistory != null)
         {
             cmbUri.Items.Clear();
-            foreach (string uri in UriHistory)
+            foreach (var uri in UriHistory)
             {
                 cmbUri.Items.Add(uri);
             }
@@ -50,7 +50,7 @@ public partial class OpenUriDialog : Form
     {
         UriHistory = [];
 
-        foreach (object item in cmbUri.Items)
+        foreach (var item in cmbUri.Items)
         {
             UriHistory.Add(item.ToString());
         }

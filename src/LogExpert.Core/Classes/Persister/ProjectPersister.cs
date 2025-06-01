@@ -15,8 +15,8 @@ namespace LogExpert.Core.Classes.Persister
             XmlNodeList fileList = xmlDoc.GetElementsByTagName("member");
             foreach (XmlNode fileNode in fileList)
             {
-                XmlElement fileElement = fileNode as XmlElement;
-                string fileName = fileElement.GetAttribute("fileName");
+                var fileElement = fileNode as XmlElement;
+                var fileName = fileElement.GetAttribute("fileName");
                 projectData.memberList.Add(fileName);
             }
             XmlNodeList layoutElements = xmlDoc.GetElementsByTagName("layout");
@@ -55,7 +55,7 @@ namespace LogExpert.Core.Classes.Persister
 
         private static void SaveProjectMembers(XmlDocument xmlDoc, XmlNode membersNode, List<string> memberList)
         {
-            foreach (string fileName in memberList)
+            foreach (var fileName in memberList)
             {
                 XmlElement memberElement = xmlDoc.CreateElement("member");
                 membersNode.AppendChild(memberElement);

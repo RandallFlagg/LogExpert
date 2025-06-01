@@ -32,7 +32,7 @@ namespace Log4jXmlColumnizer
         {
             get
             {
-                int count = 0;
+                var count = 0;
                 foreach (Log4jColumnEntry entry in columnList)
                 {
                     if (entry.Visible)
@@ -51,8 +51,8 @@ namespace Log4jXmlColumnizer
         {
             get
             {
-                string[] names = new string[ActiveColumnCount];
-                int index = 0;
+                var names = new string[ActiveColumnCount];
+                var index = 0;
                 foreach (Log4jColumnEntry entry in columnList)
                 {
                     if (entry.Visible)
@@ -71,7 +71,7 @@ namespace Log4jXmlColumnizer
         public void FillDefaults(string[] columnNames)
         {
             columnList.Clear();
-            for (int i = 0; i < columnNames.Length; ++i)
+            for (var i = 0; i < columnNames.Length; ++i)
             {
                 columnList.Add(new Log4jColumnEntry(columnNames[i], i, 0));
             }

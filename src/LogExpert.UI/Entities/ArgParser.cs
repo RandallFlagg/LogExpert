@@ -35,11 +35,11 @@ namespace LogExpert.Classes
             builder.Replace("%N", logFileInfo.FileName);
             builder.Replace("%F", logFileInfo.FullName);
             builder.Replace("%E", Util.GetExtension(logFileInfo.FileName));
-            string stripped = Util.StripExtension(logFileInfo.FileName);
+            var stripped = Util.StripExtension(logFileInfo.FileName);
             builder.Replace("%M", stripped);
 
             builder.Replace("%URI", logFileInfo.Uri.AbsoluteUri);
-            string user = logFileInfo.Uri.UserInfo;
+            var user = logFileInfo.Uri.UserInfo;
             if (user.Contains(":"))
             {
                 user = user.Substring(0, user.IndexOf(':'));
@@ -49,7 +49,7 @@ namespace LogExpert.Classes
             builder.Replace("%H", logFileInfo.Uri.Host);
             builder.Replace("%T", logFileInfo.Uri.Port.ToString());
 
-            int sPos = 0;
+            var sPos = 0;
             string reg;
             string replace;
             do
@@ -58,19 +58,19 @@ namespace LogExpert.Classes
                 replace = GetNextGroup(builder, ref sPos);
                 if (reg != null && replace != null)
                 {
-                    string result = Regex.Replace(logLine.FullLine, reg, replace);
+                    var result = Regex.Replace(logLine.FullLine, reg, replace);
                     builder.Insert(sPos, result);
                 }
             } while (replace != null);
 
-            int i = 0;
+            var i = 0;
             while (i < builder.Length)
             {
                 // ?"Pinpad-type?"(thales,dione)
                 if (builder[i] == '?')
                 {
-                    int end = i;
-                    string ask = "Parameter";
+                    var end = i;
+                    var ask = "Parameter";
                     if (builder[i + 1] == '"')
                     {
                         end = builder.ToString().IndexOf('"', i + 2);
@@ -83,12 +83,12 @@ namespace LogExpert.Classes
                     string[] values = null;
                     if (builder[end + 1] == '(')
                     {
-                        int end2 = builder.ToString().IndexOf(')');
+                        var end2 = builder.ToString().IndexOf(')');
                         if (end2 == -1)
                         {
                             end2 = builder.Length - 1;
                         }
-                        string valueStr = builder.ToString().Substring(end + 2, end2 - end - 2);
+                        var valueStr = builder.ToString().Substring(end + 2, end2 - end - 2);
                         values = valueStr.Split(new char[] { ',' }, StringSplitOptions.None);
                         end = end2;
                     }
@@ -119,14 +119,13 @@ namespace LogExpert.Classes
 
         private string GetNextGroup(StringBuilder builder, ref int sPos)
         {
-            int count = 0;
             int ePos;
             while (sPos < builder.Length)
             {
                 if (builder[sPos] == '{')
                 {
                     ePos = sPos + 1;
-                    count = 1;
+                    var count = 1;
                     while (ePos < builder.Length)
                     {
                         if (builder[ePos] == '{')
@@ -139,7 +138,7 @@ namespace LogExpert.Classes
                         }
                         if (count == 0)
                         {
-                            string reg = builder.ToString(sPos + 1, ePos - sPos - 1);
+                            var reg = builder.ToString(sPos + 1, ePos - sPos - 1);
                             builder.Remove(sPos, ePos - sPos + 1);
                             return reg;
                         }

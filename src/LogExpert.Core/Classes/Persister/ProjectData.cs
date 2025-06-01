@@ -7,7 +7,7 @@ namespace LogExpert.Core.Classes.Persister
         #region Fields
 
         public List<string> memberList = [];
-        public string tabLayoutXml = null;
+        public string tabLayoutXml;
 
         #endregion
     }

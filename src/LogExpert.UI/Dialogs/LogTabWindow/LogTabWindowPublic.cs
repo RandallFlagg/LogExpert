@@ -36,7 +36,7 @@ public partial class LogTabWindow
             );
             tip.AutomaticDelay = 10;
             tip.AutoPopDelay = 5000;
-            LogWindowData data = logWin.Tag as LogWindowData;
+            var data = logWin.Tag as LogWindowData;
             data.toolTip = tip;
         }
 
@@ -50,7 +50,7 @@ public partial class LogTabWindow
 
     public LogWindow.LogWindow AddFileTab (string givenFileName, bool isTempFile, string title, bool forcePersistenceLoading, ILogLineColumnizer preProcessColumnizer, bool doNotAddToDockPanel = false)
     {
-        string logFileName = FindFilenameForSettings(givenFileName);
+        var logFileName = FindFilenameForSettings(givenFileName);
         LogWindow.LogWindow win = FindWindowForFile(logFileName);
         if (win != null)
         {
@@ -86,7 +86,7 @@ public partial class LogTabWindow
             AddToFileHistory(givenFileName);
         }
 
-        LogWindowData data = logWindow.Tag as LogWindowData;
+        var data = logWindow.Tag as LogWindowData;
         data.color = _defaultTabColor;
         SetTabColor(logWindow, _defaultTabColor);
         //data.tabPage.BorderColor = this.defaultTabBorderColor;
@@ -183,7 +183,7 @@ public partial class LogTabWindow
 
     public void SwitchTab (bool shiftPressed)
     {
-        int index = dockPanel.Contents.IndexOf(dockPanel.ActiveContent);
+        var index = dockPanel.Contents.IndexOf(dockPanel.ActiveContent);
         if (shiftPressed)
         {
             index--;
@@ -303,7 +303,7 @@ public partial class LogTabWindow
     // called from LogWindow when follow tail was changed
     public void FollowTailChanged (LogWindow.LogWindow logWindow, bool isEnabled, bool offByTrigger)
     {
-        LogWindowData data = logWindow.Tag as LogWindowData;
+        var data = logWindow.Tag as LogWindowData;
         if (data == null)
         {
             return;

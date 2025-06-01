@@ -37,7 +37,7 @@ namespace LogExpert.Tests
                 }
 
                 var message = $"Culture: {culture.Name} ({culture.EnglishName} {datePattern})";
-                var sections = Parser.ParseSections(datePattern, out bool syntaxError);
+                var sections = Parser.ParseSections(datePattern, out var syntaxError);
 
                 Assert.That(syntaxError, Is.False, message);
 
@@ -64,7 +64,7 @@ namespace LogExpert.Tests
 
             var datePattern = GetDateAndTimeFormat(culture);
 
-            var sections = Parser.ParseSections(datePattern, out bool syntaxError);
+            var sections = Parser.ParseSections(datePattern, out var syntaxError);
 
             var message = $"Culture: {culture.EnglishName}, Actual date pattern: {datePattern}";
 
@@ -94,7 +94,7 @@ namespace LogExpert.Tests
             HashSet<char> charsToRemoveSet = new(charsToRemove);
             StringBuilder result = new();
 
-            foreach (char c in input)
+            foreach (var c in input)
             {
                 if (!charsToRemoveSet.Contains(c))
                 {
@@ -108,7 +108,7 @@ namespace LogExpert.Tests
         private string GetDateAndTimeFormat(CultureInfo culture)
         {
 
-            string InvisibleUNICODEmarkers =
+            var InvisibleUNICODEmarkers =
                       "\u00AD\u034F\u061C\u115F\u1160\u17B4\u17B5" +
                                 "\u180B\u180C\u180D\u180E\u200B\u200C\u200D\u200E\u200F" +
                                 "\u202A\u202B\u202C\u202D\u202E\u202F\u205F\u2060\u2062" +
@@ -117,7 +117,7 @@ namespace LogExpert.Tests
                                 "\uFE0A\uFE0B\uFE0C\uFE0D\uFE0E\uFE0F";
 
 
-            string dateTime = string.Concat(culture.DateTimeFormat.ShortDatePattern.ToString(),
+            var dateTime = string.Concat(culture.DateTimeFormat.ShortDatePattern.ToString(),
                 " ",
                 culture.DateTimeFormat.LongTimePattern.ToString());
 

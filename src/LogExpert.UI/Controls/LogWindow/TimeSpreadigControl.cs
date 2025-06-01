@@ -14,7 +14,7 @@ namespace LogExpert.UI.Controls.LogWindow
         private Bitmap _bitmap = new(1, 1);
         private int _displayHeight = 1;
         private readonly int _edgeOffset = (int)Win32.GetSystemMetricsForDpi(Win32.SM_CYVSCROLL);
-        private int _lastMouseY = 0;
+        private int _lastMouseY;
         private readonly object _monitor = new();
         private int _rectHeight = 1;
 
@@ -97,7 +97,7 @@ namespace LogExpert.UI.Controls.LogWindow
         private SpreadEntry GetEntryForMouse(MouseEventArgs e)
         {
             List<SpreadEntry> list = TimeSpreadCalc.DiffList;
-            int y = e.Y - _edgeOffset;
+            var y = e.Y - _edgeOffset;
             if (y < 0)
             {
                 y = 0;
@@ -157,7 +157,7 @@ namespace LogExpert.UI.Controls.LogWindow
                 }
 
                 _bitmap = new Bitmap(rect.Width, rect.Height);
-                Graphics gfx = Graphics.FromImage(_bitmap);
+                var gfx = Graphics.FromImage(_bitmap);
                 Brush bgBrush = new SolidBrush(BackColor);
                 gfx.FillRectangle(bgBrush, rect);
                 bgBrush.Dispose();
@@ -180,10 +180,10 @@ namespace LogExpert.UI.Controls.LogWindow
 
                 lock (list)
                 {
-                    for (int i = 0; i < list.Count; i += step)
+                    for (var i = 0; i < list.Count; i += step)
                     {
                         SpreadEntry entry = list[i];
-                        int color = ReverseAlpha ? entry.Value : 255 - entry.Value;
+                        var color = ReverseAlpha ? entry.Value : 255 - entry.Value;
 
                         if (color > 255)
                         {
@@ -220,7 +220,7 @@ namespace LogExpert.UI.Controls.LogWindow
                 }
 
                 //this.bmp = new Bitmap(rect.Width, rect.Height);
-                Graphics gfx = Graphics.FromImage(_bitmap);
+                var gfx = Graphics.FromImage(_bitmap);
 
                 Brush bgBrush = new SolidBrush(BackColor);
                 Brush fgBrush = new SolidBrush(ForeColor);
@@ -297,7 +297,7 @@ namespace LogExpert.UI.Controls.LogWindow
                 return;
             }
             _lastMouseY = e.Y;
-            string dts = entry.Timestamp.ToString("dd.MM.yyyy HH:mm:ss");
+            var dts = entry.Timestamp.ToString("dd.MM.yyyy HH:mm:ss");
             _toolTip.SetToolTip(this, "Line " + (entry.LineNum + 1) + "\n" + dts);
         }
 

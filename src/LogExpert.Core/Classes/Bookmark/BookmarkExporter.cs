@@ -18,7 +18,7 @@ public static class BookmarkExporter
         writer.WriteLine("Log file name;Line number;Comment");
         foreach (Entities.Bookmark bookmark in bookmarkList.Values)
         {
-            string line = $"{logfileName};{bookmark.LineNum};{bookmark.Text.Replace(replacementForNewLine, @"\" + replacementForNewLine, StringComparison.OrdinalIgnoreCase).Replace("\r\n", replacementForNewLine, StringComparison.OrdinalIgnoreCase)}";
+            var line = $"{logfileName};{bookmark.LineNum};{bookmark.Text.Replace(replacementForNewLine, @"\" + replacementForNewLine, StringComparison.OrdinalIgnoreCase).Replace("\r\n", replacementForNewLine, StringComparison.OrdinalIgnoreCase)}";
             writer.WriteLine(line);
         }
         writer.Close();

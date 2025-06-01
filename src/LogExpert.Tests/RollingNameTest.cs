@@ -20,7 +20,7 @@ namespace LogExpert.Tests
         {
             RolloverFilenameBuilder fnb = new(formatString);
             fnb.SetFileName(expectedResult);
-            string name = fnb.BuildFileName();
+            var name = fnb.BuildFileName();
             Assert.That(name, Is.EqualTo(expectedResult));
         }
 
@@ -38,7 +38,7 @@ namespace LogExpert.Tests
             RolloverFilenameBuilder fnb = new(formatString);
             fnb.SetFileName(fileName);
             fnb.Index += 1;
-            string name = fnb.BuildFileName();
+            var name = fnb.BuildFileName();
             Assert.That(name, Is.EqualTo(expectedResult));
         }
 
@@ -50,7 +50,7 @@ namespace LogExpert.Tests
             RolloverFilenameBuilder fnb = new(formatString);
             fnb.SetFileName(fileName);
             fnb.Index += 2;
-            string name = fnb.BuildFileName();
+            var name = fnb.BuildFileName();
             Assert.That(name, Is.EqualTo(expectedResult));
         }
 
@@ -62,7 +62,7 @@ namespace LogExpert.Tests
             RolloverFilenameBuilder fnb = new(formatString);
             fnb.SetFileName(fileName);
             fnb.Index -= 1;
-            string name = fnb.BuildFileName();
+            var name = fnb.BuildFileName();
             Assert.That(name, Is.EqualTo("engine.log"));
         }
     }

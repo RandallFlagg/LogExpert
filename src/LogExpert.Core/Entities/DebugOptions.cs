@@ -2,6 +2,6 @@
 {
     public class DebugOptions
     {
-        public static bool DisableWordHighlight { get; set; } = false;
+        public static bool DisableWordHighlight { get; set; }
     }
 }

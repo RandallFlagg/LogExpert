@@ -182,7 +182,7 @@ namespace SftpFileSystem
                 string password = null;
                 if (uri.UserInfo != null && uri.UserInfo.Length > 0)
                 {
-                    string[] split = uri.UserInfo.Split(':');
+                    var split = uri.UserInfo.Split(':');
                     if (split.Length > 0)
                     {
                         userName = split[0];

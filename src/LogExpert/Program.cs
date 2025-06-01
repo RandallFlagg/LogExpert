@@ -98,7 +98,7 @@ namespace LogExpert
                     }
                     else
                     {
-                        int counter = 3;
+                        var counter = 3;
                         Exception errMsg = null;
 
                         Settings settings = ConfigManager.Instance.Settings;
@@ -106,7 +106,7 @@ namespace LogExpert
                         {
                             try
                             {
-                                WindowsIdentity wi = WindowsIdentity.GetCurrent();
+                                var wi = WindowsIdentity.GetCurrent();
                                 var command = SerializeCommandIntoNonFormattedJSON(absoluteFilePaths, settings.Preferences.allowOnlyOneInstance);
                                 SendCommandToServer(command);
                                 break;
@@ -172,7 +172,7 @@ namespace LogExpert
         {
             List<string> argsList = [];
 
-            foreach (string fileArg in remainingArgs)
+            foreach (var fileArg in remainingArgs)
             {
                 try
                 {
@@ -280,7 +280,7 @@ namespace LogExpert
                 {
                     await server.WaitForConnectionAsync(cancellationToken);
                     using var reader = new StreamReader(server, Encoding.UTF8);
-                    string line = await reader.ReadLineAsync(cancellationToken);
+                    var line = await reader.ReadLineAsync(cancellationToken);
 
                     if (line != null)
                     {
@@ -302,7 +302,7 @@ namespace LogExpert
         [STAThread]
         private static void ShowUnhandledException(object exceptionObject)
         {
-            string errorText = string.Empty;
+            var errorText = string.Empty;
             string stackTrace;
 
             if (exceptionObject is Exception exception)
@@ -313,7 +313,7 @@ namespace LogExpert
             else
             {
                 stackTrace = exceptionObject.ToString();
-                string[] lines = stackTrace.Split('\n');
+                var lines = stackTrace.Split('\n');
 
                 if (lines != null && lines.Length > 0)
                 {
@@ -347,7 +347,7 @@ namespace LogExpert
         {
             _logger.Fatal(e);
 
-            object exceptionObject = e.ExceptionObject;
+            var exceptionObject = e.ExceptionObject;
 
             Thread thread = new(ShowUnhandledException)
             {

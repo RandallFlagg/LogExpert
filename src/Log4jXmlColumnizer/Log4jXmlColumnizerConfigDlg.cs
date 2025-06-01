@@ -35,9 +35,9 @@ namespace LogExpert
 
         private void FillListBox()
         {
-            DataGridViewCheckBoxColumn checkColumn = (DataGridViewCheckBoxColumn)columnGridView.Columns[0];
-            DataGridViewTextBoxColumn nameColumn = (DataGridViewTextBoxColumn)columnGridView.Columns[1];
-            DataGridViewTextBoxColumn lenColumn = (DataGridViewTextBoxColumn)columnGridView.Columns[2];
+            var checkColumn = (DataGridViewCheckBoxColumn)columnGridView.Columns[0];
+            var nameColumn = (DataGridViewTextBoxColumn)columnGridView.Columns[1];
+            var lenColumn = (DataGridViewTextBoxColumn)columnGridView.Columns[2];
 
             foreach (Log4jColumnEntry entry in _config.columnList)
             {
@@ -62,12 +62,12 @@ namespace LogExpert
             //  {
             //    this.config.columnList[i]. visible = this.columnListBox.GetItemChecked(i);
             //  }
-            for (int i = 0; i < columnGridView.Rows.Count; ++i)
+            for (var i = 0; i < columnGridView.Rows.Count; ++i)
             {
                 _config.columnList[i].Visible = (bool)columnGridView.Rows[i].Cells[0].Value;
-                string sLen = (string)columnGridView.Rows[i].Cells[2].Value;
+                var sLen = (string)columnGridView.Rows[i].Cells[2].Value;
 
-                if (int.TryParse(sLen, out int len))
+                if (int.TryParse(sLen, out var len))
                 {
                     _config.columnList[i].MaxLen = len;
                 }

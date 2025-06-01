@@ -75,7 +75,7 @@ namespace LogExpert.Core.Classes.Log
                 _dateGroup = match.Groups["date"];
                 if (_dateGroup.Success)
                 {
-                    string date = fileName.Substring(_dateGroup.Index, _dateGroup.Length);
+                    var date = fileName.Substring(_dateGroup.Index, _dateGroup.Length);
                     if (DateTime.TryParseExact(date, _dateTimeFormat, DateTimeFormatInfo.InvariantInfo,
                         DateTimeStyles.None,
                         out _dateTime))
@@ -104,10 +104,10 @@ namespace LogExpert.Core.Classes.Log
 
         public string BuildFileName()
         {
-            string fileName = _currentFileName;
+            var fileName = _currentFileName;
             if (_dateGroup != null && _dateGroup.Success)
             {
-                string newDate = _dateTime.ToString(_dateTimeFormat, DateTimeFormatInfo.InvariantInfo);
+                var newDate = _dateTime.ToString(_dateTimeFormat, DateTimeFormatInfo.InvariantInfo);
                 fileName = fileName.Remove(_dateGroup.Index, _dateGroup.Length);
                 fileName = fileName.Insert(_dateGroup.Index, newDate);
             }
@@ -118,7 +118,7 @@ namespace LogExpert.Core.Classes.Log
 
                 if (!_hideZeroIndex || Index > 0)
                 {
-                    string format = "D" + _indexGroup.Length;
+                    var format = "D" + _indexGroup.Length;
                     fileName = fileName.Insert(_indexGroup.Index, Index.ToString(format));
                     if (_hideZeroIndex && _condContent != null)
                     {
@@ -138,18 +138,18 @@ namespace LogExpert.Core.Classes.Log
 
         private void ParseFormatString(string formatString)
         {
-            string fmt = EscapeNonvarRegions(formatString);
-            int datePos = formatString.IndexOf("$D(");
+            var fmt = EscapeNonvarRegions(formatString);
+            var datePos = formatString.IndexOf("$D(");
             if (datePos != -1)
             {
-                int endPos = formatString.IndexOf(')', datePos);
+                var endPos = formatString.IndexOf(')', datePos);
                 if (endPos != -1)
                 {
                     _dateTimeFormat = formatString.Substring(datePos + 3, endPos - datePos - 3);
                     _dateTimeFormat = _dateTimeFormat.ToUpper();
                     _dateTimeFormat = _dateTimeFormat.Replace('D', 'd').Replace('Y', 'y');
 
-                    string dtf = _dateTimeFormat;
+                    var dtf = _dateTimeFormat;
                     dtf = dtf.ToUpper();
                     dtf = dtf.Replace("D", "\\d");
                     dtf = dtf.Replace("Y", "\\d");
@@ -161,10 +161,10 @@ namespace LogExpert.Core.Classes.Log
                 }
             }
 
-            int condPos = fmt.IndexOf("$J(");
+            var condPos = fmt.IndexOf("$J(");
             if (condPos != -1)
             {
-                int endPos = fmt.IndexOf(')', condPos);
+                var endPos = fmt.IndexOf(')', condPos);
                 if (endPos != -1)
                 {
                     _condContent = fmt.Substring(condPos + 3, endPos - condPos - 3);
@@ -182,11 +182,11 @@ namespace LogExpert.Core.Classes.Log
 
         private string EscapeNonvarRegions(string formatString)
         {
-            string fmt = formatString.Replace('*', '\xFFFD');
+            var fmt = formatString.Replace('*', '\xFFFD');
             StringBuilder result = new();
-            int state = 0;
+            var state = 0;
             StringBuilder segment = new();
-            for (int i = 0; i < fmt.Length; ++i)
+            for (var i = 0; i < fmt.Length; ++i)
             {
                 switch (state)
                 {

@@ -12,9 +12,9 @@ namespace LogExpert.Core.Config
 
         public bool allowOnlyOneInstance;
 
-        public bool askForClose = false;
+        public bool askForClose;
 
-        public bool darkMode = false;
+        public bool darkMode;
 
         public int bufferCount = 100;
 
@@ -36,7 +36,7 @@ namespace LogExpert.Core.Config
 
         public List<HighlightGroup> HighlightGroupList { get; set; } = [];
 
-        public bool isAutoHideFilterList = false;
+        public bool isAutoHideFilterList;
 
         public bool isFilterOnLoad;
 
@@ -64,14 +64,14 @@ namespace LogExpert.Core.Config
 
         public int pollingInterval = 250;
 
-        public bool reverseAlpha = false;
+        public bool reverseAlpha;
 
         public bool PortableMode { get; set; }
 
         /// <summary>
         /// Save Directory of the last logfile
         /// </summary>
-        public string sessionSaveDirectory = null;
+        public string sessionSaveDirectory;
 
         public bool saveFilters = true;
 
@@ -89,7 +89,7 @@ namespace LogExpert.Core.Config
 
         public bool showTailState = true;
 
-        public bool showTimeSpread = false;
+        public bool showTimeSpread;
 
         public Color timeSpreadColor = Color.FromKnownColor(KnownColor.Gray);
 

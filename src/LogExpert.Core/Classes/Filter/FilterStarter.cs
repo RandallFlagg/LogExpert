@@ -76,14 +76,14 @@ namespace LogExpert.Classes.Filter
             _filterWorkerList.Clear();
             _shouldStop = false;
 
-            int interval = maxCount / ThreadCount;
+            var interval = maxCount / ThreadCount;
 
             if (interval < 1)
             {
                 interval = 1;
             }
 
-            int workStartLine = startLine;
+            var workStartLine = startLine;
             List<WaitHandle> handleList = [];
             _progressLineCount = 0;
             _progressCallback = progressCallback;
@@ -136,7 +136,7 @@ namespace LogExpert.Classes.Filter
 
         private void ThreadProgressCallback (int lineCount)
         {
-            int count = Interlocked.Add(ref _progressLineCount, lineCount);
+            var count = Interlocked.Add(ref _progressLineCount, lineCount);
             _progressCallback(count);
         }
 
@@ -188,21 +188,21 @@ namespace LogExpert.Classes.Filter
             _logger.Info("Merging filter results.");
             foreach (Filter filter in _filterReadyList)
             {
-                foreach (int lineNum in filter.FilterHitList)
+                foreach (var lineNum in filter.FilterHitList)
                 {
                     if (!_filterHitDict.ContainsKey(lineNum))
                     {
                         _filterHitDict.Add(lineNum, lineNum);
                     }
                 }
-                foreach (int lineNum in filter.FilterResultLines)
+                foreach (var lineNum in filter.FilterResultLines)
                 {
                     if (!_filterResultDict.ContainsKey(lineNum))
                     {
                         _filterResultDict.Add(lineNum, lineNum);
                     }
                 }
-                foreach (int lineNum in filter.LastFilterLinesList)
+                foreach (var lineNum in filter.LastFilterLinesList)
                 {
                     if (!_lastFilterLinesDict.ContainsKey(lineNum))
                     {

@@ -17,8 +17,8 @@ namespace LogExpert.Tests
         {
             ConfigManager.Instance.Settings.alwaysOnTop = true;
             ConfigManager.Instance.Save(SettingsFlags.All);
-            string configDir = ConfigManager.Instance.ConfigDir;
-            string settingsFile = configDir + "\\settings.json";
+            var configDir = ConfigManager.Instance.ConfigDir;
+            var settingsFile = configDir + "\\settings.json";
 
             Settings settings = null;
             

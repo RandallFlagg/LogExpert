@@ -26,10 +26,7 @@ namespace Log4jXmlColumnizer
                                             "</xsl:template>" +
                                             "</xsl:stylesheet>";
 
-        public string[] Namespace
-        {
-            get { return ["log4j", "http://jakarta.apache.org/log4j"]; }
-        }
+        public string[] Namespace => ["log4j", "http://jakarta.apache.org/log4j"];
 
         #endregion
     }

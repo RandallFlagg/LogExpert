@@ -21,7 +21,7 @@ namespace LogExpert.Tests
         [TestCase("Timestamp Columnizer", "30/08/2018 08:51:42.712 no bracket 1", "30/08/2018 08:51:42.712 no bracket 2", "30/08/2018 08:51:42.712 [TRACE]    with bracket 1", "30/08/2018 08:51:42.712 [TRACE]    with bracket 2", "no bracket 3")]
         public void FindColumnizer_ReturnCorrectColumnizer(string expectedColumnizerName, string line0, string line1, string line2, string line3, string line4)
         {
-            string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "test");
+            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "test");
 
             Mock<IAutoLogLineColumnizerCallback> autoLogLineColumnizerCallbackMock = new();
 
@@ -65,7 +65,7 @@ namespace LogExpert.Tests
         public void FindReplacementForAutoColumnizer_ValidTextFile_ReturnCorrectColumnizer(
             string fileName, Type columnizerType)
         {
-            string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName);
+            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName);
             LogfileReader reader = new(path, new EncodingOptions(), true, 40, 50, new MultiFileOptions(), PluginRegistry.PluginRegistry.Instance);
             reader.ReadFiles();
 
@@ -83,7 +83,7 @@ namespace LogExpert.Tests
         public void DecideColumnizerByName_WhenReaderIsNotReady_ReturnCorrectColumnizer(
             string fileName, Type columnizerType)
         {
-            string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName);
+            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName);
 
             // TODO: When DI container is ready, we can mock this set up.
             PluginRegistry.PluginRegistry.Instance.RegisteredColumnizers.Add(new JsonCompactColumnizer());
@@ -97,7 +97,7 @@ namespace LogExpert.Tests
         public void DecideColumnizerByName_ValidTextFile_ReturnCorrectColumnizer(
             string columnizerName, Type columnizerType)
         {
-            string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, columnizerName);
+            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, columnizerName);
 
             // TODO: When DI container is ready, we can mock this set up.
             PluginRegistry.PluginRegistry.Instance.RegisteredColumnizers.Add(new JsonColumnizer.JsonColumnizer());

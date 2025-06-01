@@ -38,10 +38,10 @@ namespace SftpFileSystem
             Uri = fileUri;
             _remoteFileName = Uri.PathAndQuery;
 
-            int port = Uri.Port != -1 ? Uri.Port : 22;
+            var port = Uri.Port != -1 ? Uri.Port : 22;
 
-            bool success = false;
-            bool cancelled = false;
+            var success = false;
+            var cancelled = false;
             if (sftFileSystem.ConfigData.UseKeyfile)
             {
                 lock (_sshKeyMonitor) // prevent multiple password dialogs when opening multiple files at once
@@ -149,8 +149,8 @@ namespace SftpFileSystem
         {
             get
             {
-                string full = FullName;
-                int i = full.LastIndexOf(DirectorySeparatorChar);
+                var full = FullName;
+                var i = full.LastIndexOf(DirectorySeparatorChar);
                 if (i != -1)
                 {
                     return full.Substring(0, i);
@@ -168,8 +168,8 @@ namespace SftpFileSystem
             {
                 try
                 {
-                    SftpFile file = (SftpFile) _sftp.Get(_remoteFileName);
-                    long len = file.Attributes.Size;
+                    var file = (SftpFile) _sftp.Get(_remoteFileName);
+                    var len = file.Attributes.Size;
                     return len != -1;
                 }
                 catch (Exception e)
@@ -184,8 +184,8 @@ namespace SftpFileSystem
         {
             get
             {
-                string full = FullName;
-                int i = full.LastIndexOf(DirectorySeparatorChar);
+                var full = FullName;
+                var i = full.LastIndexOf(DirectorySeparatorChar);
                 return full.Substring(i + 1);
             }
         }
@@ -196,7 +196,7 @@ namespace SftpFileSystem
         {
             get
             {
-                SftpFile file = (SftpFile)_sftp.Get(_remoteFileName);
+                var file = (SftpFile)_sftp.Get(_remoteFileName);
                 return file.Attributes.Size;
             }
         }
@@ -238,7 +238,7 @@ namespace SftpFileSystem
 
         public Stream OpenStream()
         {
-            int retry = RETRY_COUNT;
+            var retry = RETRY_COUNT;
             while (true)
             {
                 try

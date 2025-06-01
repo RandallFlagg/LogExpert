@@ -12,7 +12,7 @@ namespace LogExpert.Core.Classes.Columnizer
         private readonly Regex lineRegex = new("(.*) (-) (.*) (\\[.*\\]) (\".*\") (.*) (.*) (\".*\") (\".*\")");
 
         protected CultureInfo cultureInfo = new("de-DE");
-        protected int timeOffset = 0;
+        protected int timeOffset;
 
         #endregion
 
@@ -58,7 +58,7 @@ namespace LogExpert.Core.Classes.Columnizer
 
             try
             {
-                DateTime dateTime = DateTime.ParseExact(cols.ColumnValues[2].FullValue, "dd/MMM/yyyy:HH:mm:ss zzz",
+                var dateTime = DateTime.ParseExact(cols.ColumnValues[2].FullValue, "dd/MMM/yyyy:HH:mm:ss zzz",
                     new CultureInfo("en-US"));
                 return dateTime;
             }
@@ -74,12 +74,12 @@ namespace LogExpert.Core.Classes.Columnizer
             {
                 try
                 {
-                    DateTime newDateTime =
+                    var newDateTime =
                         DateTime.ParseExact(value, "dd/MMM/yyyy:HH:mm:ss zzz", new CultureInfo("en-US"));
-                    DateTime oldDateTime =
+                    var oldDateTime =
                         DateTime.ParseExact(oldValue, "dd/MMM/yyyy:HH:mm:ss zzz", new CultureInfo("en-US"));
-                    long mSecsOld = oldDateTime.Ticks / TimeSpan.TicksPerMillisecond;
-                    long mSecsNew = newDateTime.Ticks / TimeSpan.TicksPerMillisecond;
+                    var mSecsOld = oldDateTime.Ticks / TimeSpan.TicksPerMillisecond;
+                    var mSecsNew = newDateTime.Ticks / TimeSpan.TicksPerMillisecond;
                     timeOffset = (int)(mSecsNew - mSecsOld);
                 }
                 catch (FormatException)
@@ -115,7 +115,7 @@ namespace LogExpert.Core.Classes.Columnizer
                 LogLine = line
             };
 
-            Column[] columns = new Column[8]
+            var columns = new Column[8]
             {
                 new() {FullValue = "", Parent = cLogLine},
                 new() {FullValue = "", Parent = cLogLine},
@@ -129,7 +129,7 @@ namespace LogExpert.Core.Classes.Columnizer
 
             cLogLine.ColumnValues = columns.Select(a => a as IColumn).ToArray();
 
-            string temp = line.FullLine;
+            var temp = line.FullLine;
             if (temp.Length > 1024)
             {
                 // spam 
@@ -154,7 +154,7 @@ namespace LogExpert.Core.Classes.Columnizer
                     columns[6].FullValue = groups[8].Value;
                     columns[7].FullValue = groups[9].Value;
 
-                    string dateTimeStr = groups[4].Value.Substring(1, 26);
+                    var dateTimeStr = groups[4].Value.Substring(1, 26);
 
                     // dirty probing of date/time format (much faster than DateTime.ParseExact()
                     if (dateTimeStr[2] == '/' && dateTimeStr[6] == '/' && dateTimeStr[11] == ':')
@@ -163,10 +163,10 @@ namespace LogExpert.Core.Classes.Columnizer
                         {
                             try
                             {
-                                DateTime dateTime = DateTime.ParseExact(dateTimeStr, "dd/MMM/yyyy:HH:mm:ss zzz",
+                                var dateTime = DateTime.ParseExact(dateTimeStr, "dd/MMM/yyyy:HH:mm:ss zzz",
                                     new CultureInfo("en-US"));
                                 dateTime = dateTime.Add(new TimeSpan(0, 0, 0, 0, timeOffset));
-                                string newDate = dateTime.ToString("dd/MMM/yyyy:HH:mm:ss zzz",
+                                var newDate = dateTime.ToString("dd/MMM/yyyy:HH:mm:ss zzz",
                                     new CultureInfo("en-US"));
                                 columns[2].FullValue = newDate;
                             }

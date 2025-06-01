@@ -41,7 +41,7 @@ namespace LogExpert.Core.Classes.Columnizer
 
             if (cti != null)
             {
-                object o = cti.Invoke([]);
+                var o = cti.Invoke([]);
 
                 if (o is IColumnizerConfigurator configurator)
                 {

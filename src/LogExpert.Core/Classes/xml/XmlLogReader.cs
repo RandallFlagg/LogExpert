@@ -58,16 +58,16 @@ namespace LogExpert.Core.Classes.xml
         public override string ReadLine()
         {
             short state = 0;
-            int tagIndex = 0;
-            bool blockComplete = false;
-            bool eof = false;
-            int tryCounter = 5;
+            var tagIndex = 0;
+            var blockComplete = false;
+            var eof = false;
+            var tryCounter = 5;
 
             StringBuilder builder = new();
 
             while (!eof && !blockComplete)
             {
-                int readInt = ReadChar();
+                var readInt = ReadChar();
                 if (readInt == -1)
                 {
                     // if eof before the block is complete, wait some msecs for the logger to flush the complete xml struct
@@ -80,18 +80,16 @@ namespace LogExpert.Core.Classes.xml
                         }
                         else
                         {
-                            eof = true;
                             break;
                         }
                     }
                     else
                     {
-                        eof = true;
                         break;
                     }
                 }
 
-                char readChar = (char)readInt;
+                var readChar = (char)readInt;
                 // state:
                 // 0 = looking for tag start
                 // 1 = reading into buffer as long as the read data matches the start tag

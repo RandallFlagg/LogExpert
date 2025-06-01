@@ -94,8 +94,8 @@ namespace JsonColumnizer
 
         public virtual string[] GetColumnNames()
         {
-            string[] names = new string[GetColumnCount()];
-            int i = 0;
+            var names = new string[GetColumnCount()];
+            var i = 0;
             foreach (var column in ColumnList)
             {
                 names[i++] = column.Name;

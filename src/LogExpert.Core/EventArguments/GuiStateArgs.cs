@@ -14,13 +14,13 @@ namespace LogExpert.Core.EventArguments
 
         public string TimeshiftText { get; set; } = string.Empty;
 
-        public bool TimeshiftPossible { get; set; } = false;
+        public bool TimeshiftPossible { get; set; }
 
         public bool MultiFileEnabled { get; set; } = true;
 
         public bool FilterEnabled { get; set; } = true;
 
-        public bool CellSelectMode { get; set; } = false;
+        public bool CellSelectMode { get; set; }
 
         public Encoding CurrentEncoding { get; set; }
 

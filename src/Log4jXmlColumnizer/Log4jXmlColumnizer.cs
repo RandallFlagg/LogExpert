@@ -26,7 +26,7 @@ namespace Log4jXmlColumnizer
         private readonly char[] trimChars = ['\xFFFD'];
         private Log4jXmlColumnizerConfig _config;
         protected CultureInfo cultureInfo = new("de-DE");
-        protected int timeOffset = 0;
+        protected int timeOffset;
 
         #endregion
 
@@ -101,7 +101,7 @@ namespace Log4jXmlColumnizer
                         columns[8].FullValue = line.FullLine;
                     }
 
-                    string newDate = dateTime.ToString(DATETIME_FORMAT);
+                    var newDate = dateTime.ToString(DATETIME_FORMAT);
                     columns[0].FullValue = newDate;
                 }
                 catch (Exception)
@@ -130,7 +130,7 @@ namespace Log4jXmlColumnizer
                 {
                     columns[0] = timestmp;
 
-                    for (int i = 1; i < cols.Length; i++)
+                    for (var i = 1; i < cols.Length; i++)
                     {
                         columns[i].FullValue = cols[i];
                     }
@@ -168,18 +168,18 @@ namespace Log4jXmlColumnizer
                 return DateTime.MinValue;
             }
 
-            int endIndex = line.FullLine.IndexOf(separatorChar, 1);
+            var endIndex = line.FullLine.IndexOf(separatorChar, 1);
 
             if (endIndex > 20 || endIndex < 0)
             {
                 return DateTime.MinValue;
             }
-            string value = line.FullLine.Substring(0, endIndex);
+            var value = line.FullLine.Substring(0, endIndex);
 
             try
             {
                 // convert log4j timestamp into a readable format:
-                if (long.TryParse(value, out long timestamp))
+                if (long.TryParse(value, out var timestamp))
                 {
                     // Add the time offset before returning
                     DateTime dateTime = new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
@@ -208,10 +208,10 @@ namespace Log4jXmlColumnizer
             {
                 try
                 {
-                    DateTime newDateTime = DateTime.ParseExact(value, DATETIME_FORMAT, cultureInfo);
-                    DateTime oldDateTime = DateTime.ParseExact(oldValue, DATETIME_FORMAT, cultureInfo);
-                    long mSecsOld = oldDateTime.Ticks / TimeSpan.TicksPerMillisecond;
-                    long mSecsNew = newDateTime.Ticks / TimeSpan.TicksPerMillisecond;
+                    var newDateTime = DateTime.ParseExact(value, DATETIME_FORMAT, cultureInfo);
+                    var oldDateTime = DateTime.ParseExact(oldValue, DATETIME_FORMAT, cultureInfo);
+                    var mSecsOld = oldDateTime.Ticks / TimeSpan.TicksPerMillisecond;
+                    var mSecsNew = newDateTime.Ticks / TimeSpan.TicksPerMillisecond;
                     timeOffset = (int)(mSecsNew - mSecsOld);
                 }
                 catch (FormatException)
@@ -236,7 +236,7 @@ namespace Log4jXmlColumnizer
 
         public void LoadConfig(string configDir)
         {
-            string configPath = configDir + Path.DirectorySeparatorChar + "log4jxmlcolumnizer.json";
+            var configPath = configDir + Path.DirectorySeparatorChar + "log4jxmlcolumnizer.json";
 
             FileInfo fileInfo = new(configDir + Path.DirectorySeparatorChar + "log4jxmlcolumnizer.json");
 
@@ -286,7 +286,7 @@ namespace Log4jXmlColumnizer
         private Column[] MapColumns(Column[] cols)
         {
             List<Column> output = [];
-            int index = 0;
+            var index = 0;
             foreach (Log4jColumnEntry entry in _config.columnList)
             {
                 if (entry.Visible)
