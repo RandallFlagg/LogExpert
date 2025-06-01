@@ -4,14 +4,8 @@ using LogExpert.Core.Enums;
 using LogExpert.Core.Interface;
 using LogExpert.UI.Entities;
 using LogExpert.UI.Extensions.Forms;
-
+using LogExpert.UI.Interface;
 using NLog;
-
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Windows.Forms;
-
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace LogExpert.Dialogs;
@@ -25,7 +19,7 @@ public partial class BookmarkWindow : DockContent, ISharedToolWindow, IBookmarkV
     private readonly object paintLock = new();
 
     private IBookmarkData bookmarkData;
-    private ILogPaintContext logPaintContext;
+    private ILogPaintContextUI logPaintContext;
     private ILogView logView;
 
     #endregion
@@ -218,7 +212,7 @@ public partial class BookmarkWindow : DockContent, ISharedToolWindow, IBookmarkV
         PreferencesChanged(newPreferences, isLoadTime, flags, null);
     }
 
-    public void SetCurrentFile(FileViewContext ctx)
+    public void SetCurrentFile(IFileViewContext ctx)
     {
         if (ctx != null)
         {
@@ -226,7 +220,7 @@ public partial class BookmarkWindow : DockContent, ISharedToolWindow, IBookmarkV
             lock (paintLock)
             {
                 logView = ctx.LogView;
-                logPaintContext = ctx.LogPaintContext;
+                logPaintContext = (ILogPaintContextUI)ctx.LogPaintContext;
             }
 
             SetColumnizer(ctx.LogView.CurrentColumnizer);

@@ -7,6 +7,7 @@
     <Nullable>enable</Nullable>
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\Solution Items\Key.snk</AssemblyOriginatorKeyFile>
+    <NoWarn>CS8600;CS8603;CS8618;</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

@@ -5,6 +5,7 @@ using LogExpert.Core.Entities;
 using LogExpert.Core.Interface;
 using LogExpert.Dialogs;
 using LogExpert.UI.Entities;
+using LogExpert.UI.Extensions;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -283,7 +284,7 @@ partial class LogTabWindow
 
     public void SetForeground()
     {
-        SetForegroundWindow(Handle);
+        Win32.SetForegroundWindow(Handle);
         if (WindowState == FormWindowState.Minimized)
         {
             if (_wasMaximized)
@@ -296,9 +297,6 @@ partial class LogTabWindow
             }
         }
     }
-
-    [DllImport("User32.dll")]
-    public static extern int SetForegroundWindow(IntPtr hWnd);
 
     // called from LogWindow when follow tail was changed
     public void FollowTailChanged(LogWindow.LogWindow logWindow, bool isEnabled, bool offByTrigger)

@@ -1,14 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0-windows</TargetFramework>
-    <Nullable>disable</Nullable>
-    <UseWindowsForms>true</UseWindowsForms>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <SignAssembly>True</SignAssembly>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <AssemblyOriginatorKeyFile>..\Solution Items\Key.snk</AssemblyOriginatorKeyFile>
     <ForceDesignerDPIUnaware>true</ForceDesignerDPIUnaware>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <NoWarn>CS8625;CS8603;CS8618;CS8600;CS8603;CS8602;CS8604;CS8622;CS8601;CS8605;</NoWarn>
+    <Nullable>enable</Nullable>
+    <PublishAot>false</PublishAot>
+    <SignAssembly>True</SignAssembly>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
 
   <ItemGroup>
@@ -23,7 +26,6 @@
 
   <ItemGroup>
     <EmbeddedResource Remove="Dialogs\LogTabWindow\LogTabWindowEventHandlers.resx" />
-    <EmbeddedResource Remove="Dialogs\LogTabWindow\LogTabWindowPrivate.resx" />
     <EmbeddedResource Remove="Dialogs\LogTabWindow\LogTabWindowPublic.resx" />
     <EmbeddedResource Remove="Controls\LogWindow\LogWindowEventHandlers.resx" />
     <EmbeddedResource Remove="Controls\LogWindow\LogWindowPrivate.resx" />

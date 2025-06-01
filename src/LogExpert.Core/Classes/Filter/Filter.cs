@@ -1,12 +1,7 @@
 ﻿using LogExpert.Classes.ILogLineColumnizerCallback;
 using LogExpert.Core.Classes;
 using LogExpert.Core.Classes.Filter;
-
 using NLog;
-
-using System;
-using System.Collections.Generic;
-using System.Windows.Forms;
 
 namespace LogExpert.Classes.Filter
 {

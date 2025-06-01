@@ -1,5 +1,4 @@
-﻿using LogExpert.Core.Classes;
-
+﻿using LogExpert.UI.Extensions;
 using System.Runtime.Versioning;
 
 namespace LogExpert.UI.Dialogs;
