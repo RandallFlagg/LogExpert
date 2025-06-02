@@ -1,12 +1,11 @@
 using System;
 
-namespace LogExpert.Core.Config
+namespace LogExpert.Core.Config;
+
+[Serializable]
+public enum MultiFileOption
 {
-    [Serializable]
-    public enum MultiFileOption
-    {
-        SingleFiles,
-        MultiFile,
-        Ask
-    }
+    SingleFiles,
+    MultiFile,
+    Ask
 }

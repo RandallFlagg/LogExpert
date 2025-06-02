@@ -1,13 +1,12 @@
 ﻿using LogExpert.Core.Config;
 
-namespace LogExpert.Core.EventArguments
+namespace LogExpert.Core.EventArguments;
+
+public class ConfigChangedEventArgs(SettingsFlags changeFlags) : System.EventArgs
 {
-    public class ConfigChangedEventArgs(SettingsFlags changeFlags) : System.EventArgs
-    {
-        #region Properties
+    #region Properties
 
-        public SettingsFlags Flags { get; } = changeFlags;
+    public SettingsFlags Flags { get; } = changeFlags;
 
-        #endregion
-    }
+    #endregion
 }

@@ -1,9 +1,8 @@
-﻿namespace LogExpert.Core.Structs
-{
-    public struct ActEntry
-    {
-        public string Name { get; set; }
+﻿namespace LogExpert.Core.Structs;
 
-        public IKeywordAction Plugin { get; set; }
-    }
+public struct ActEntry
+{
+    public string Name { get; set; }
+
+    public IKeywordAction Plugin { get; set; }
 }

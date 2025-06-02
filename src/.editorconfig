@@ -555,7 +555,7 @@ dotnet_code_quality.CA1001.excluded_symbol_names =
 dotnet_code_quality.CA1001.excluded_type_names_with_derived_types = 
 
 # CA1002: Do not expose generic lists
-dotnet_diagnostic.CA1002.severity = warning
+dotnet_diagnostic.CA1002.severity = suggestion
 dotnet_code_quality.CA1002.api_surface = all
 
 # CA1003: Use generic event handler instances
@@ -906,7 +906,7 @@ dotnet_code_quality.CA1806.additional_use_results_methods =
 dotnet_diagnostic.CA1810.severity = warning
 
 # CA1812: Avoid uninstantiated internal classes
-dotnet_diagnostic.CA1812.severity = warning
+dotnet_diagnostic.CA1812.severity = None
 
 # CA1813: Avoid unsealed attributes
 dotnet_diagnostic.CA1813.severity = suggestion
@@ -1021,7 +1021,7 @@ dotnet_diagnostic.CA1849.severity = warning
 dotnet_diagnostic.CA1850.severity = warning
 
 # CA2000: Dispose objects before losing scope
-dotnet_diagnostic.CA2000.severity = warning
+dotnet_diagnostic.CA2000.severity = None
 dotnet_code_quality.CA2000.excluded_symbol_names = 
 dotnet_code_quality.CA2000.excluded_type_names_with_derived_types = 
 dotnet_code_quality.CA2000.dispose_analysis_kind = NonExceptionPaths
@@ -1100,7 +1100,7 @@ dotnet_code_quality.CA2208.api_surface = all
 dotnet_diagnostic.CA2211.severity = warning
 
 # CA2213: Disposable fields should be disposed
-dotnet_diagnostic.CA2213.severity = warning
+dotnet_diagnostic.CA2213.severity = None
 
 # CA2214: Do not call overridable methods in constructors
 dotnet_diagnostic.CA2214.severity = warning

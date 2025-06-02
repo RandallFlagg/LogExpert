@@ -1,78 +1,77 @@
 ﻿using System.Drawing;
 using System.Runtime.InteropServices;
 
-namespace LogExpert.Core.Config
+namespace LogExpert.Core.Config;
+
+public static class ColorMode
 {
-    public static class ColorMode
+    // Bright Theme
+    // https://paletton.com/#uid=15-0u0k00sH00kJ0pq+00RL00RL
+    private static readonly Color BrightBookmarkDefaultSystemColor = SystemColors.Control; // Important: only supports SystemColors
+    private static readonly Color LessBrightBackgroundColor = Color.FromArgb(208, 205, 206);
+    private static readonly Color BrightBackgroundColor = Color.FromArgb(221, 221, 221);
+    private static readonly Color BrighterBackgroundColor = Color.FromArgb(253, 253, 253);
+    private static readonly Color BrightForeColor = Color.FromArgb(0, 0, 0);
+
+    // Dark Theme
+    // https://paletton.com/#uid=15-0u0k005U0670008J003Y003Y
+    private static readonly Color DarkBookmarkDefaultSystemColor = SystemColors.ControlDarkDark; // Important: only supports SystemColors
+    private static readonly Color LessLessDarkBackgroundColor = Color.FromArgb(90, 90, 90);
+    private static readonly Color LessDarkBackgroundColor = Color.FromArgb(67, 67, 67);
+    private static readonly Color DarkBackgroundColor = Color.FromArgb(45, 45, 45);
+    private static readonly Color DarkerBackgroundColor = Color.FromArgb(30, 30, 30);
+    private static readonly Color DarkForeColor = Color.FromArgb(255, 255, 255);
+
+    // Default
+    public static Color BackgroundColor = BrightBackgroundColor;
+    public static Color DockBackgroundColor = BrighterBackgroundColor;
+    public static Color BookmarksDefaultBackgroundColor = BrightBookmarkDefaultSystemColor;
+    public static Color ForeColor = BrightForeColor;
+    public static Color MenuBackgroundColor = BrighterBackgroundColor;
+    public static Color HoverMenuBackgroundColor = LessBrightBackgroundColor;
+    public static Color ActiveTabColor = BrighterBackgroundColor;
+    public static Color InactiveTabColor = LessBrightBackgroundColor;
+    public static Color TabsBackgroundStripColor = LessBrightBackgroundColor;
+
+    public static bool DarkModeEnabled;
+
+    public static void LoadColorMode(bool darkMode)
     {
-        // Bright Theme
-        // https://paletton.com/#uid=15-0u0k00sH00kJ0pq+00RL00RL
-        private static readonly Color BrightBookmarkDefaultSystemColor = SystemColors.Control; // Important: only supports SystemColors
-        private static readonly Color LessBrightBackgroundColor = Color.FromArgb(208, 205, 206);
-        private static readonly Color BrightBackgroundColor = Color.FromArgb(221, 221, 221);
-        private static readonly Color BrighterBackgroundColor = Color.FromArgb(253, 253, 253);
-        private static readonly Color BrightForeColor = Color.FromArgb(0, 0, 0);
-
-        // Dark Theme
-        // https://paletton.com/#uid=15-0u0k005U0670008J003Y003Y
-        private static readonly Color DarkBookmarkDefaultSystemColor = SystemColors.ControlDarkDark; // Important: only supports SystemColors
-        private static readonly Color LessLessDarkBackgroundColor = Color.FromArgb(90, 90, 90);
-        private static readonly Color LessDarkBackgroundColor = Color.FromArgb(67, 67, 67);
-        private static readonly Color DarkBackgroundColor = Color.FromArgb(45, 45, 45);
-        private static readonly Color DarkerBackgroundColor = Color.FromArgb(30, 30, 30);
-        private static readonly Color DarkForeColor = Color.FromArgb(255, 255, 255);
-
-        // Default
-        public static Color BackgroundColor = BrightBackgroundColor;
-        public static Color DockBackgroundColor = BrighterBackgroundColor;
-        public static Color BookmarksDefaultBackgroundColor = BrightBookmarkDefaultSystemColor;
-        public static Color ForeColor = BrightForeColor;
-        public static Color MenuBackgroundColor = BrighterBackgroundColor;
-        public static Color HoverMenuBackgroundColor = LessBrightBackgroundColor;
-        public static Color ActiveTabColor = BrighterBackgroundColor;
-        public static Color InactiveTabColor = LessBrightBackgroundColor;
-        public static Color TabsBackgroundStripColor = LessBrightBackgroundColor;
-
-        public static bool DarkModeEnabled;
-
-        public static void LoadColorMode(bool darkMode)
+        if (darkMode)
         {
-            if (darkMode)
-            {
-                SetDarkMode();
-            }
-            else
-            {
-                SetBrightMode();
-            }
+            SetDarkMode();
         }
-
-        private static void SetDarkMode()
+        else
         {
-            BackgroundColor = DarkBackgroundColor;
-            ForeColor = DarkForeColor;
-            MenuBackgroundColor = DarkerBackgroundColor;
-            DockBackgroundColor = LessDarkBackgroundColor;
-            HoverMenuBackgroundColor = LessDarkBackgroundColor;
-            BookmarksDefaultBackgroundColor = DarkBookmarkDefaultSystemColor;
-            TabsBackgroundStripColor = LessDarkBackgroundColor;
-            ActiveTabColor = LessLessDarkBackgroundColor;
-            InactiveTabColor = LessDarkBackgroundColor;
-            DarkModeEnabled = true;
+            SetBrightMode();
         }
+    }
 
-        private static void SetBrightMode()
-        {
-            BackgroundColor = BrightBackgroundColor;
-            ForeColor = BrightForeColor;
-            MenuBackgroundColor = BrighterBackgroundColor;
-            DockBackgroundColor = BrighterBackgroundColor;
-            BookmarksDefaultBackgroundColor = BrightBookmarkDefaultSystemColor;
-            HoverMenuBackgroundColor = LessBrightBackgroundColor;
-            TabsBackgroundStripColor = BrighterBackgroundColor;
-            ActiveTabColor = BrighterBackgroundColor;
-            InactiveTabColor = LessBrightBackgroundColor;
-            DarkModeEnabled = false;
-        }
+    private static void SetDarkMode()
+    {
+        BackgroundColor = DarkBackgroundColor;
+        ForeColor = DarkForeColor;
+        MenuBackgroundColor = DarkerBackgroundColor;
+        DockBackgroundColor = LessDarkBackgroundColor;
+        HoverMenuBackgroundColor = LessDarkBackgroundColor;
+        BookmarksDefaultBackgroundColor = DarkBookmarkDefaultSystemColor;
+        TabsBackgroundStripColor = LessDarkBackgroundColor;
+        ActiveTabColor = LessLessDarkBackgroundColor;
+        InactiveTabColor = LessDarkBackgroundColor;
+        DarkModeEnabled = true;
+    }
+
+    private static void SetBrightMode()
+    {
+        BackgroundColor = BrightBackgroundColor;
+        ForeColor = BrightForeColor;
+        MenuBackgroundColor = BrighterBackgroundColor;
+        DockBackgroundColor = BrighterBackgroundColor;
+        BookmarksDefaultBackgroundColor = BrightBookmarkDefaultSystemColor;
+        HoverMenuBackgroundColor = LessBrightBackgroundColor;
+        TabsBackgroundStripColor = BrighterBackgroundColor;
+        ActiveTabColor = BrighterBackgroundColor;
+        InactiveTabColor = LessBrightBackgroundColor;
+        DarkModeEnabled = false;
     }
 }

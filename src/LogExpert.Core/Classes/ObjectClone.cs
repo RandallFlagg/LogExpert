@@ -1,21 +1,20 @@
 ﻿using System.IO;
 using System.Text.Json;
 
-namespace LogExpert.Core.Classes
+namespace LogExpert.Core.Classes;
+
+public static class ObjectClone
 {
-    public static class ObjectClone
+    #region Public methods
+
+    public static T Clone<T>(T RealObject)
     {
-        #region Public methods
+        using MemoryStream objectStream = new();
 
-        public static T Clone<T>(T RealObject)
-        {
-            using MemoryStream objectStream = new();
-
-            JsonSerializer.Serialize(objectStream, RealObject);
-            objectStream.Seek(0, SeekOrigin.Begin);
-            return JsonSerializer.Deserialize<T>(objectStream);
-        }
-
-        #endregion
+        JsonSerializer.Serialize(objectStream, RealObject);
+        objectStream.Seek(0, SeekOrigin.Begin);
+        return JsonSerializer.Deserialize<T>(objectStream);
     }
+
+    #endregion
 }

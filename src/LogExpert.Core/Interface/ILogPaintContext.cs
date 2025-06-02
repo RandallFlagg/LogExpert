@@ -1,6 +1,5 @@
-﻿namespace LogExpert.Core.Interface
+﻿namespace LogExpert.Core.Interface;
+
+public interface ILogPaintContext
 {
-    public interface ILogPaintContext
-    {
-    }
 }

@@ -1,10 +1,9 @@
-﻿namespace LogExpert.Extensions
+﻿namespace LogExpert.Extensions;
+
+public static class LogLineExtensions
 {
-    public static class LogLineExtensions
+    public static string ToClipBoardText(this ILogLine logLine)
     {
-        public static string ToClipBoardText(this ILogLine logLine)
-        {
-            return "\t" + (logLine.LineNumber + 1).ToString() + "\t" + logLine.FullLine;
-        }
+        return "\t" + (logLine.LineNumber + 1).ToString() + "\t" + logLine.FullLine;
     }
 }

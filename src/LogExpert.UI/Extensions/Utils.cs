@@ -1,57 +1,56 @@
-﻿namespace LogExpert.UI.Extensions
+﻿namespace LogExpert.UI.Extensions;
+
+internal static class Utils
 {
-    internal static class Utils
+    public static string GetWordFromPos(int xPos, string text, Graphics g, Font font)
     {
-        public static string GetWordFromPos(int xPos, string text, Graphics g, Font font)
+        var words = text.Split([' ', '.', ':', ';']);
+
+        var index = 0;
+
+        List<CharacterRange> crList = [];
+
+        for (var i = 0; i < words.Length; ++i)
         {
-            var words = text.Split([' ', '.', ':', ';']);
+            crList.Add(new CharacterRange(index, words[i].Length));
+            index += words[i].Length;
+        }
 
-            var index = 0;
+        CharacterRange[] crArray = [.. crList];
 
-            List<CharacterRange> crList = [];
+        StringFormat stringFormat = new(StringFormat.GenericTypographic)
+        {
+            Trimming = StringTrimming.None,
+            FormatFlags = StringFormatFlags.NoClip
+        };
 
-            for (var i = 0; i < words.Length; ++i)
+        stringFormat.SetMeasurableCharacterRanges(crArray);
+
+        RectangleF rect = new(0, 0, 3000, 20);
+        Region[] stringRegions = g.MeasureCharacterRanges(text, font, rect, stringFormat);
+
+        var found = false;
+
+        var y = 0;
+
+        foreach (Region regio in stringRegions)
+        {
+            if (regio.IsVisible(xPos, 3, g))
             {
-                crList.Add(new CharacterRange(index, words[i].Length));
-                index += words[i].Length;
+                found = true;
+                break;
             }
 
-            CharacterRange[] crArray = [.. crList];
+            y++;
+        }
 
-            StringFormat stringFormat = new(StringFormat.GenericTypographic)
-            {
-                Trimming = StringTrimming.None,
-                FormatFlags = StringFormatFlags.NoClip
-            };
-
-            stringFormat.SetMeasurableCharacterRanges(crArray);
-
-            RectangleF rect = new(0, 0, 3000, 20);
-            Region[] stringRegions = g.MeasureCharacterRanges(text, font, rect, stringFormat);
-
-            var found = false;
-
-            var y = 0;
-
-            foreach (Region regio in stringRegions)
-            {
-                if (regio.IsVisible(xPos, 3, g))
-                {
-                    found = true;
-                    break;
-                }
-
-                y++;
-            }
-
-            if (found)
-            {
-                return words[y];
-            }
-            else
-            {
-                return null;
-            }
+        if (found)
+        {
+            return words[y];
+        }
+        else
+        {
+            return null;
         }
     }
 }

@@ -1,13 +1,10 @@
-﻿using LogExpert.Core.Entities;
+using System.Drawing.Drawing2D;
+
+using LogExpert.Core.Entities;
 using LogExpert.Core.EventArguments;
 using LogExpert.UI.Controls;
-using NLog;
 
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Windows.Forms;
+using NLog;
 
 namespace LogExpert.Dialogs;
 
@@ -35,7 +32,7 @@ public partial class BufferedDataGridView : DataGridView
 
     #region cTor
 
-    public BufferedDataGridView()
+    public BufferedDataGridView ()
     {
         _pen = new Pen(_bubbleColor, (float)3.0);
         _brush = new SolidBrush(_bubbleColor);
@@ -49,7 +46,7 @@ public partial class BufferedDataGridView : DataGridView
 
     #region Delegates
 
-    public delegate void OverlayDoubleClickedEventHandler(object sender, OverlayEventArgs e);
+    public delegate void OverlayDoubleClickedEventHandler (object sender, OverlayEventArgs e);
 
     #endregion
 
@@ -76,7 +73,7 @@ public partial class BufferedDataGridView : DataGridView
 
     #region Public methods
 
-    public void AddOverlay(BookmarkOverlay overlay)
+    public void AddOverlay (BookmarkOverlay overlay)
     {
         lock (_overlayList)
         {
@@ -88,7 +85,7 @@ public partial class BufferedDataGridView : DataGridView
 
     #region Overrides
 
-    protected override void OnPaint(PaintEventArgs e)
+    protected override void OnPaint (PaintEventArgs e)
     {
         try
         {
@@ -107,7 +104,7 @@ public partial class BufferedDataGridView : DataGridView
         }
     }
 
-    protected override void OnEditingControlShowing(DataGridViewEditingControlShowingEventArgs e)
+    protected override void OnEditingControlShowing (DataGridViewEditingControlShowingEventArgs e)
     {
         base.OnEditingControlShowing(e);
         e.Control.KeyDown -= OnControlKeyDown;
@@ -119,7 +116,7 @@ public partial class BufferedDataGridView : DataGridView
         editControl.ContextMenuStrip = EditModeMenuStrip;
     }
 
-    protected override void OnMouseDown(MouseEventArgs e)
+    protected override void OnMouseDown (MouseEventArgs e)
     {
         BookmarkOverlay overlay = GetOverlayForPosition(e.Location);
         if (overlay != null)
@@ -148,7 +145,7 @@ public partial class BufferedDataGridView : DataGridView
         }
     }
 
-    protected override void OnMouseUp(MouseEventArgs e)
+    protected override void OnMouseUp (MouseEventArgs e)
     {
         if (_isDrag)
         {
@@ -161,7 +158,7 @@ public partial class BufferedDataGridView : DataGridView
         }
     }
 
-    protected override void OnMouseMove(MouseEventArgs e)
+    protected override void OnMouseMove (MouseEventArgs e)
     {
         if (_isDrag)
         {
@@ -178,7 +175,7 @@ public partial class BufferedDataGridView : DataGridView
         }
     }
 
-    protected override void OnMouseDoubleClick(MouseEventArgs e)
+    protected override void OnMouseDoubleClick (MouseEventArgs e)
     {
         BookmarkOverlay overlay = GetOverlayForPosition(e.Location);
         if (overlay != null)
@@ -198,7 +195,7 @@ public partial class BufferedDataGridView : DataGridView
 
     #region Private Methods
 
-    private BookmarkOverlay GetOverlayForPosition(Point pos)
+    private BookmarkOverlay GetOverlayForPosition (Point pos)
     {
         lock (_overlayList)
         {
@@ -214,7 +211,7 @@ public partial class BufferedDataGridView : DataGridView
         return null;
     }
 
-    private void PaintOverlays(PaintEventArgs e)
+    private void PaintOverlays (PaintEventArgs e)
     {
         BufferedGraphicsContext currentContext = BufferedGraphicsManager.Current;
 
@@ -277,7 +274,7 @@ public partial class BufferedDataGridView : DataGridView
 
     #region Events handler
 
-    private void Control_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+    private void Control_PreviewKeyDown (object sender, PreviewKeyDownEventArgs e)
     {
         if ((e.KeyCode == Keys.C || e.KeyCode == Keys.Insert) && e.Control)
         {
@@ -288,7 +285,7 @@ public partial class BufferedDataGridView : DataGridView
         }
     }
 
-    private void OnControlKeyDown(object sender, KeyEventArgs e)
+    private void OnControlKeyDown (object sender, KeyEventArgs e)
     {
         if (e.KeyCode == Keys.Up || e.KeyCode == Keys.Down)
         {
@@ -332,10 +329,10 @@ public partial class BufferedDataGridView : DataGridView
         }
     }
 
-    #endregion
-
-    protected virtual void OnOverlayDoubleClicked(OverlayEventArgs e)
+    protected virtual void OnOverlayDoubleClicked (OverlayEventArgs e)
     {
         OverlayDoubleClicked?.Invoke(this, e);
     }
+
+    #endregion
 }

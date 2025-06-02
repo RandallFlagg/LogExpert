@@ -1,7 +1,6 @@
-﻿namespace LogExpert.Core.Entities
+﻿namespace LogExpert.Core.Entities;
+
+public class DebugOptions
 {
-    public class DebugOptions
-    {
-        public static bool DisableWordHighlight { get; set; }
-    }
+    public static bool DisableWordHighlight { get; set; }
 }

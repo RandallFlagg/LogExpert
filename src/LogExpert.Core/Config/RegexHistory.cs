@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Generic;
 
-namespace LogExpert.Core.Config
-{
-    [Serializable]
-    public class RegexHistory
-    {
-        public List<string> ExpressionHistoryList { get; set; } = [];
+namespace LogExpert.Core.Config;
 
-        public List<string> TesttextHistoryList { get; set; } = [];
-    }
+[Serializable]
+public class RegexHistory
+{
+    public List<string> ExpressionHistoryList { get; set; } = [];
+
+    public List<string> TesttextHistoryList { get; set; } = [];
 }

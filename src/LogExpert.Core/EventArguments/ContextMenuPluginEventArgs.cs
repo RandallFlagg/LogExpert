@@ -1,19 +1,18 @@
-﻿namespace LogExpert.Core.EventArguments
+﻿namespace LogExpert.Core.EventArguments;
+
+public class ContextMenuPluginEventArgs(IContextMenuEntry entry, IList<int> logLines, ILogLineColumnizer columnizer,
+    ILogExpertCallback callback) : System.EventArgs
 {
-    public class ContextMenuPluginEventArgs(IContextMenuEntry entry, IList<int> logLines, ILogLineColumnizer columnizer,
-        ILogExpertCallback callback) : System.EventArgs
-    {
 
-        #region Properties
+    #region Properties
 
-        public IContextMenuEntry Entry { get; } = entry;
+    public IContextMenuEntry Entry { get; } = entry;
 
-        public IList<int> LogLines { get; } = logLines;
+    public IList<int> LogLines { get; } = logLines;
 
-        public ILogLineColumnizer Columnizer { get; } = columnizer;
+    public ILogLineColumnizer Columnizer { get; } = columnizer;
 
-        public ILogExpertCallback Callback { get; } = callback;
+    public ILogExpertCallback Callback { get; } = callback;
 
-        #endregion
-    }
+    #endregion
 }

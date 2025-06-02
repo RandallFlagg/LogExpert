@@ -1,13 +1,12 @@
 ﻿using LogExpert.Core.Entities;
 
-namespace LogExpert.Core.EventArguments
+namespace LogExpert.Core.EventArguments;
+
+public class OverlayEventArgs(BookmarkOverlay overlay) : System.EventArgs
 {
-    public class OverlayEventArgs(BookmarkOverlay overlay) : System.EventArgs
-    {
-        #region Properties
+    #region Properties
 
-        public BookmarkOverlay BookmarkOverlay { get; set; } = overlay;
+    public BookmarkOverlay BookmarkOverlay { get; set; } = overlay;
 
-        #endregion
-    }
+    #endregion
 }

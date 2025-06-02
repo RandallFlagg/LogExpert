@@ -1,19 +1,18 @@
 ﻿using LogExpert;
 
-namespace GlassfishColumnizer
+namespace GlassfishColumnizer;
+
+internal class XmlConfig : IXmlLogConfiguration
 {
-    internal class XmlConfig : IXmlLogConfiguration
-    {
-        #region Properties
+    #region Properties
 
-        public string XmlStartTag { get; } = "[#|";
+    public string XmlStartTag { get; } = "[#|";
 
-        public string XmlEndTag { get; } = "|#]";
+    public string XmlEndTag { get; } = "|#]";
 
-        public string Stylesheet { get; }
+    public string Stylesheet { get; }
 
-        public string[] Namespace => null;
+    public string[] Namespace => null;
 
-        #endregion
-    }
+    #endregion
 }

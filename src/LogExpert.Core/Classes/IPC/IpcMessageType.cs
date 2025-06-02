@@ -1,9 +1,8 @@
-﻿namespace LogExpert.Core.Classes.IPC
+﻿namespace LogExpert.Core.Classes.IPC;
+
+public enum IpcMessageType
 {
-    public enum IpcMessageType
-    {
-        Load,
-        NewWindow,
-        NewWindowOrLockedWindow
-    }
+    Load,
+    NewWindow,
+    NewWindowOrLockedWindow
 }

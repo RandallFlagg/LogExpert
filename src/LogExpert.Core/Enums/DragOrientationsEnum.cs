@@ -1,9 +1,8 @@
-﻿namespace LogExpert.Core.Enums
+﻿namespace LogExpert.Core.Enums;
+
+public enum DragOrientationsEnum
 {
-    public enum DragOrientationsEnum
-    {
-        Horizontal,
-        Vertical,
-        InvertedVertical
-    }
+    Horizontal,
+    Vertical,
+    InvertedVertical
 }

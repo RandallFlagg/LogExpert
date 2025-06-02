@@ -1,16 +1,15 @@
 ﻿using LogExpert.Core.Entities;
 using LogExpert.Core.Interface;
 
-namespace LogExpert.Core.EventArguments
+namespace LogExpert.Core.EventArguments;
+
+public class CurrentHighlightGroupChangedEventArgs(ILogWindow logWindow, HighlightGroup currentGroup)
 {
-    public class CurrentHighlightGroupChangedEventArgs(ILogWindow logWindow, HighlightGroup currentGroup)
-    {
-        #region Properties
+    #region Properties
 
-        public ILogWindow LogWindow { get; } = logWindow;
+    public ILogWindow LogWindow { get; } = logWindow;
 
-        public HighlightGroup CurrentGroup { get; } = currentGroup;
+    public HighlightGroup CurrentGroup { get; } = currentGroup;
 
-        #endregion
-    }
+    #endregion
 }

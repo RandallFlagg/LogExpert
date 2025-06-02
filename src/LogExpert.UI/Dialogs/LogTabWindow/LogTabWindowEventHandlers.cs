@@ -764,8 +764,8 @@ public partial class LogTabWindow
             }
 
             ProjectData projectData = new();
-            projectData.memberList = fileNames;
-            projectData.tabLayoutXml = SaveLayout();
+            projectData.MemberList = fileNames;
+            projectData.TabLayoutXml = SaveLayout();
             ProjectPersister.SaveProjectData(fileName, projectData);
         }
     }

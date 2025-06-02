@@ -1,25 +1,24 @@
-﻿namespace LogExpert.Core.Extensions
+﻿namespace LogExpert.Core.Extensions;
+
+public static class Extensions
 {
-    public static class Extensions
+    public static bool IsEmpty<T>(this IEnumerable<T> collection)
     {
-        public static bool IsEmpty<T>(this IEnumerable<T> collection)
+        if (collection == null)
         {
-            if (collection == null)
-            {
-                return true;
-            }
-
-            return !collection.Any();
+            return true;
         }
 
-        public static bool IsEmpty<T>(this IList<T> list)
-        {
-            if (list == null)
-            {
-                return true;
-            }
+        return !collection.Any();
+    }
 
-            return list.Count == 0;
+    public static bool IsEmpty<T>(this IList<T> list)
+    {
+        if (list == null)
+        {
+            return true;
         }
+
+        return list.Count == 0;
     }
 }
