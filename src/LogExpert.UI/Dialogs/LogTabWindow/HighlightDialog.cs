@@ -101,7 +101,7 @@ public partial class HighlightDialog : Form
     {
         if (comboBoxGroups.SelectedIndex >= 0 && comboBoxGroups.SelectedIndex < HighlightGroupList.Count)
         {
-            HighlightGroup newGroup = (HighlightGroup)HighlightGroupList[comboBoxGroups.SelectedIndex].Clone();
+            var newGroup = (HighlightGroup)HighlightGroupList[comboBoxGroups.SelectedIndex].Clone();
             newGroup.GroupName = "Copy of " + newGroup.GroupName;
 
             HighlightGroupList.Add(newGroup);
@@ -132,7 +132,7 @@ public partial class HighlightDialog : Form
 
         if (comboBoxGroups.SelectedIndex >= 0 && comboBoxGroups.SelectedIndex < HighlightGroupList.Count)
         {
-            int index = comboBoxGroups.SelectedIndex;
+            var index = comboBoxGroups.SelectedIndex;
             HighlightGroupList.RemoveAt(comboBoxGroups.SelectedIndex);
             FillGroupComboBox();
             if (index < HighlightGroupList.Count)
@@ -166,7 +166,7 @@ public partial class HighlightDialog : Form
 
     private void OnBtnGroupDownClick(object sender, EventArgs e)
     {
-        int index = comboBoxGroups.SelectedIndex;
+        var index = comboBoxGroups.SelectedIndex;
         if (index > -1 && index < _highlightGroupList.Count - 1)
         {
             _highlightGroupList.Reverse(index, 2);
@@ -178,7 +178,7 @@ public partial class HighlightDialog : Form
 
     private void OnBtnGroupUpClick(object sender, EventArgs e)
     {
-        int index = comboBoxGroups.SelectedIndex;
+        var index = comboBoxGroups.SelectedIndex;
         if (index > 0)
         {
             _highlightGroupList.Reverse(index - 1, 2);
@@ -240,11 +240,11 @@ public partial class HighlightDialog : Form
 
     private void OnBtnMoveDownClick(object sender, EventArgs e)
     {
-        int index = listBoxHighlight.SelectedIndex;
+        var index = listBoxHighlight.SelectedIndex;
 
         if (index > -1 && index < listBoxHighlight.Items.Count - 1)
         {
-            object item = listBoxHighlight.SelectedItem;
+            var item = listBoxHighlight.SelectedItem;
             listBoxHighlight.Items.RemoveAt(index);
             listBoxHighlight.Items.Insert(index + 1, item);
             listBoxHighlight.SelectedIndex = index + 1;
@@ -254,10 +254,10 @@ public partial class HighlightDialog : Form
 
     private void OnBtnMoveUpClick(object sender, EventArgs e)
     {
-        int index = listBoxHighlight.SelectedIndex;
+        var index = listBoxHighlight.SelectedIndex;
         if (index > 0)
         {
-            object item = listBoxHighlight.SelectedItem;
+            var item = listBoxHighlight.SelectedItem;
             listBoxHighlight.Items.RemoveAt(index); // will also clear the selection
             listBoxHighlight.Items.Insert(index - 1, item);
             listBoxHighlight.SelectedIndex = index - 1; // restore the selection
@@ -269,9 +269,9 @@ public partial class HighlightDialog : Form
     {
         // Propose a unique name
         const string baseName = "New group";
-        string name = baseName;
-        bool uniqueName = false;
-        int i = 1;
+        var name = baseName;
+        var uniqueName = false;
+        var i = 1;
         while (!uniqueName)
         {
             uniqueName = HighlightGroupList.FindIndex(delegate (HighlightGroup g) { return g.GroupName == name; }) < 0;
@@ -370,12 +370,12 @@ public partial class HighlightDialog : Form
     {
         if (listBoxHighlight.SelectedIndex >= 0)
         {
-            int removeIndex = listBoxHighlight.SelectedIndex;
+            var removeIndex = listBoxHighlight.SelectedIndex;
             _currentGroup.HighlightEntryList.RemoveAt(removeIndex);
             listBoxHighlight.Items.RemoveAt(removeIndex);
 
             // Select previous (or first if none before)
-            int nextSelectIndex = removeIndex;
+            var nextSelectIndex = removeIndex;
             if (nextSelectIndex >= listBoxHighlight.Items.Count)
             {
                 nextSelectIndex--; // if last item was removed, go one up
@@ -412,7 +412,7 @@ public partial class HighlightDialog : Form
         e.DrawBackground();
         if (e.Index >= 0)
         {
-            HighlightEntry entry = (HighlightEntry)listBoxHighlight.Items[e.Index];
+            var entry = (HighlightEntry)listBoxHighlight.Items[e.Index];
             Rectangle rectangle = new(0, e.Bounds.Top, e.Bounds.Width, e.Bounds.Height);
 
             if ((e.State & DrawItemState.Selected) != DrawItemState.Selected)
@@ -519,7 +519,7 @@ public partial class HighlightDialog : Form
 
     private void Dirty()
     {
-        int index = listBoxHighlight.SelectedIndex;
+        var index = listBoxHighlight.SelectedIndex;
         if (index > -1)
         {
             btnApply.Enabled = true;
@@ -574,7 +574,7 @@ public partial class HighlightDialog : Form
         FillGroupComboBox();
 
         _currentGroup = null;
-        string groupToSelect = PreSelectedGroupName;
+        var groupToSelect = PreSelectedGroupName;
         if (string.IsNullOrEmpty(groupToSelect))
         {
             groupToSelect = def;
@@ -599,10 +599,10 @@ public partial class HighlightDialog : Form
     private void ReEvaluateGroupButtonStates()
     {
         // Refresh button states based on the selection in the combobox
-        bool atLeastOneSelected = comboBoxGroups.SelectedItem != null;
-        bool moreThanOne = comboBoxGroups.Items.Count > 1;
-        bool firstSelected = atLeastOneSelected && comboBoxGroups.SelectedIndex == 0;
-        bool lastSelected = atLeastOneSelected && comboBoxGroups.SelectedIndex == comboBoxGroups.Items.Count - 1;
+        var atLeastOneSelected = comboBoxGroups.SelectedItem != null;
+        var moreThanOne = comboBoxGroups.Items.Count > 1;
+        var firstSelected = atLeastOneSelected && comboBoxGroups.SelectedIndex == 0;
+        var lastSelected = atLeastOneSelected && comboBoxGroups.SelectedIndex == comboBoxGroups.Items.Count - 1;
 
         btnDeleteGroup.Enabled = atLeastOneSelected;
         btnCopyGroup.Enabled = atLeastOneSelected;
@@ -613,10 +613,10 @@ public partial class HighlightDialog : Form
     private void ReEvaluateHighlightButtonStates()
     {
         // Refresh button states based on the selection in the combobox
-        bool atLeastOneSelected = listBoxHighlight.SelectedItem != null;
-        bool moreThanOne = listBoxHighlight.Items.Count > 1;
-        bool firstSelected = atLeastOneSelected && listBoxHighlight.SelectedIndex == 0;
-        bool lastSelected = atLeastOneSelected && listBoxHighlight.SelectedIndex == listBoxHighlight.Items.Count - 1;
+        var atLeastOneSelected = listBoxHighlight.SelectedItem != null;
+        var moreThanOne = listBoxHighlight.Items.Count > 1;
+        var firstSelected = atLeastOneSelected && listBoxHighlight.SelectedIndex == 0;
+        var lastSelected = atLeastOneSelected && listBoxHighlight.SelectedIndex == listBoxHighlight.Items.Count - 1;
 
         btnDelete.Enabled = atLeastOneSelected;
         btnMoveUp.Enabled = atLeastOneSelected && moreThanOne && !firstSelected;
@@ -629,7 +629,7 @@ public partial class HighlightDialog : Form
         {
             CheckRegex();
 
-            HighlightEntry entry = (HighlightEntry)listBoxHighlight.SelectedItem;
+            var entry = (HighlightEntry)listBoxHighlight.SelectedItem;
 
             entry.ForegroundColor = (Color)colorBoxForeground.SelectedItem;
             entry.BackgroundColor = (Color)colorBoxBackground.SelectedItem;
@@ -679,7 +679,7 @@ public partial class HighlightDialog : Form
 
     private void StartEditEntry()
     {
-        HighlightEntry entry = (HighlightEntry)listBoxHighlight.SelectedItem;
+        var entry = (HighlightEntry)listBoxHighlight.SelectedItem;
 
         if (entry != null)
         {

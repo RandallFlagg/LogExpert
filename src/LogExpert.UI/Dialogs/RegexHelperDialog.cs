@@ -108,7 +108,7 @@ public partial class RegexHelperDialog : Form
 
     private void OnButtonOkClick(object sender, EventArgs e)
     {
-        string text = comboBoxRegex.Text;
+        var text = comboBoxRegex.Text;
         comboBoxRegex.Items.Remove(text);
         comboBoxRegex.Items.Insert(0, text);
 

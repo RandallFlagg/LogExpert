@@ -14,10 +14,10 @@ public partial class KnobControl : UserControl
 
     private readonly StringFormat _stringFormat = new();
 
-    private bool _isShiftPressed = false;
+    private bool _isShiftPressed;
 
-    private int _oldValue = 0;
-    private int _startMouseY = 0;
+    private int _oldValue;
+    private int _startMouseY;
     private int _value;
 
     #endregion
@@ -53,7 +53,7 @@ public partial class KnobControl : UserControl
 
     public int Value
     {
-        get { return _value; }
+        get => _value;
         set
         {
             _value = value;
@@ -62,10 +62,7 @@ public partial class KnobControl : UserControl
     }
 
 
-    public int Range
-    {
-        get { return MaxValue - MinValue; }
-    }
+    public int Range => MaxValue - MinValue;
 
     public int DragSensitivity { get; set; } = 3;
 
@@ -83,7 +80,7 @@ public partial class KnobControl : UserControl
         Pen greyPen = new(Color.Gray, 1);
 
         Rectangle rect = ClientRectangle;
-        int height = Font.Height + 3;
+        var height = Font.Height + 3;
         if (height > rect.Height)
         {
             height = rect.Height + 3;
@@ -95,8 +92,8 @@ public partial class KnobControl : UserControl
         //rect = this.ClientRectangle;
         rect.Inflate(-2, -2);
 
-        float startAngle = 135.0F + 270F * ((float)_value / (float)Range);
-        float sweepAngle = 0.1F;
+        var startAngle = 135.0F + 270F * ((float)_value / (float)Range);
+        var sweepAngle = 0.1F;
         e.Graphics.DrawPie(blackPen, rect, startAngle, sweepAngle);
 
         Brush brush = new SolidBrush(foregroundColor);
@@ -147,11 +144,11 @@ public partial class KnobControl : UserControl
             return;
         }
 
-        int sense = _isShiftPressed ? DragSensitivity * 2 : DragSensitivity;
+        var sense = _isShiftPressed ? DragSensitivity * 2 : DragSensitivity;
 
-        int diff = _startMouseY - e.Y;
+        var diff = _startMouseY - e.Y;
         _logger.Debug("KnobDiff: {0}", diff);
-        int range = MaxValue - MinValue;
+        var range = MaxValue - MinValue;
         _value = _oldValue + diff / sense;
 
         if (_value < MinValue)

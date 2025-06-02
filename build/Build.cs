@@ -443,7 +443,7 @@ partial class Build : NukeBuild
 
             AppveyorArtifacts.ForEach((artifact) =>
             {
-                Process proc = new Process();
+                var proc = new Process();
                 proc.StartInfo = new ProcessStartInfo("appveyor", $"PushArtifact \"{artifact}\"");
                 if (!proc.Start())
                 {
@@ -464,7 +464,7 @@ partial class Build : NukeBuild
         {
             AbsolutePath logExpertApplicationData = SpecialFolder(SpecialFolders.ApplicationData) / "LogExpert";
 
-            DirectoryInfo info = new DirectoryInfo(logExpertApplicationData);
+            var info = new DirectoryInfo(logExpertApplicationData);
             info.GetDirectories().ForEach(a => a.Delete(true));
             logExpertApplicationData.DeleteDirectory();
         });
@@ -474,7 +474,7 @@ partial class Build : NukeBuild
         {
             AbsolutePath logExpertDocuments = SpecialFolder(SpecialFolders.UserProfile) / "Documents" / "LogExpert";
 
-            DirectoryInfo info = new DirectoryInfo(logExpertDocuments);
+            var info = new DirectoryInfo(logExpertDocuments);
             info.GetDirectories().ForEach(a => a.Delete(true));
             logExpertDocuments.DeleteDirectory();
         });

@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Windows.Forms;
 
-namespace LogExpert.UI.Controls
+namespace LogExpert.UI.Controls;
+
+public class LogGridCell : DataGridViewTextBoxCell
 {
-    public class LogGridCell : DataGridViewTextBoxCell
-    {
-        #region Properties
+    #region Properties
 
-        public override Type EditType => typeof(LogCellEditingControl);
+    public override Type EditType => typeof(LogCellEditingControl);
 
-        #endregion
-    }
+    #endregion
 }

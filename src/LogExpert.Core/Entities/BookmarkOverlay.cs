@@ -1,17 +1,16 @@
 ﻿using System.Drawing;
 
-namespace LogExpert.Core.Entities
+namespace LogExpert.Core.Entities;
+
+public class BookmarkOverlay
 {
-    public class BookmarkOverlay
-    {
-        #region Properties
+    #region Properties
 
-        public Bookmark Bookmark { get; set; }
+    public Bookmark Bookmark { get; set; }
 
-        public Point Position { get; set; }
+    public Point Position { get; set; }
 
-        public Rectangle BubbleRect { get; set; }
+    public Rectangle BubbleRect { get; set; }
 
-        #endregion
-    }
+    #endregion
 }

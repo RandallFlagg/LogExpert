@@ -2,318 +2,317 @@ using System.Text.RegularExpressions;
 
 using static LogExpert.Core.Classes.Columnizer.TimeFormatDeterminer;
 
-namespace LogExpert.Core.Classes.Columnizer
+namespace LogExpert.Core.Classes.Columnizer;
+
+public class SquareBracketColumnizer : ILogLineColumnizer, IColumnizerPriority
 {
-    public class SquareBracketColumnizer : ILogLineColumnizer, IColumnizerPriority
+    #region ILogLineColumnizer implementation
+
+    protected int timeOffset;
+    private TimeFormatDeterminer _timeFormatDeterminer = new();
+
+    // TODO: need preparing this columnizer with sample log lines before use it.
+    private int _columnCount = 5;
+    private bool _isTimeExists;
+
+    public SquareBracketColumnizer ()
     {
-        #region ILogLineColumnizer implementation
+    }
 
-        protected int timeOffset = 0;
-        private TimeFormatDeterminer _timeFormatDeterminer = new();
-
-        // TODO: need preparing this columnizer with sample log lines before use it.
-        private int _columnCount = 5;
-        private bool _isTimeExists = false;
-
-        public SquareBracketColumnizer ()
+    public SquareBracketColumnizer (int columnCount, bool isTimeExists) : this()
+    {
+        // Add message column
+        _columnCount = columnCount + 1;
+        _isTimeExists = isTimeExists;
+        if (_isTimeExists)
         {
+            // Time and date
+            _columnCount += 2;
+        }
+    }
+
+    public bool IsTimeshiftImplemented ()
+    {
+        return true;
+    }
+
+    public void SetTimeOffset (int msecOffset)
+    {
+        timeOffset = msecOffset;
+    }
+
+    public int GetTimeOffset ()
+    {
+        return timeOffset;
+    }
+
+    public DateTime GetTimestamp (LogExpert.ILogLineColumnizerCallback callback, ILogLine line)
+    {
+        IColumnizedLogLine cols = SplitLine(callback, line);
+        if (cols == null || cols.ColumnValues == null || cols.ColumnValues.Length < 2)
+        {
+            return DateTime.MinValue;
         }
 
-        public SquareBracketColumnizer (int columnCount, bool isTimeExists) : this()
+        if (cols.ColumnValues[0].FullValue.Length == 0 || cols.ColumnValues[1].FullValue.Length == 0)
         {
-            // Add message column
-            _columnCount = columnCount + 1;
-            _isTimeExists = isTimeExists;
-            if (_isTimeExists)
-            {
-                // Time and date
-                _columnCount += 2;
-            }
+            return DateTime.MinValue;
         }
 
-        public bool IsTimeshiftImplemented ()
+        FormatInfo formatInfo = _timeFormatDeterminer.DetermineDateTimeFormatInfo(line.FullLine);
+        if (formatInfo == null)
         {
-            return true;
+            return DateTime.MinValue;
         }
 
-        public void SetTimeOffset (int msecOffset)
+        try
         {
-            timeOffset = msecOffset;
+            var dateTime = DateTime.ParseExact(
+                cols.ColumnValues[0].FullValue + " " + cols.ColumnValues[1].FullValue, formatInfo.DateTimeFormat,
+                formatInfo.CultureInfo);
+            return dateTime;
         }
-
-        public int GetTimeOffset ()
+        catch (Exception)
         {
-            return timeOffset;
+            return DateTime.MinValue;
         }
+    }
 
-        public DateTime GetTimestamp (LogExpert.ILogLineColumnizerCallback callback, ILogLine line)
+    public void PushValue (LogExpert.ILogLineColumnizerCallback callback, int column, string value, string oldValue)
+    {
+        if (column == 1)
         {
-            IColumnizedLogLine cols = SplitLine(callback, line);
-            if (cols == null || cols.ColumnValues == null || cols.ColumnValues.Length < 2)
-            {
-                return DateTime.MinValue;
-            }
-
-            if (cols.ColumnValues[0].FullValue.Length == 0 || cols.ColumnValues[1].FullValue.Length == 0)
-            {
-                return DateTime.MinValue;
-            }
-
-            FormatInfo formatInfo = _timeFormatDeterminer.DetermineDateTimeFormatInfo(line.FullLine);
-            if (formatInfo == null)
-            {
-                return DateTime.MinValue;
-            }
-
             try
             {
-                DateTime dateTime = DateTime.ParseExact(
-                    cols.ColumnValues[0].FullValue + " " + cols.ColumnValues[1].FullValue, formatInfo.DateTimeFormat,
-                    formatInfo.CultureInfo);
-                return dateTime;
-            }
-            catch (Exception)
-            {
-                return DateTime.MinValue;
-            }
-        }
-
-        public void PushValue (LogExpert.ILogLineColumnizerCallback callback, int column, string value, string oldValue)
-        {
-            if (column == 1)
-            {
-                try
+                FormatInfo formatInfo = _timeFormatDeterminer.DetermineTimeFormatInfo(oldValue);
+                if (formatInfo == null)
                 {
-                    FormatInfo formatInfo = _timeFormatDeterminer.DetermineTimeFormatInfo(oldValue);
-                    if (formatInfo == null)
-                    {
-                        return;
-                    }
-
-                    DateTime newDateTime = DateTime.ParseExact(value, formatInfo.TimeFormat, formatInfo.CultureInfo);
-                    DateTime oldDateTime = DateTime.ParseExact(oldValue, formatInfo.TimeFormat, formatInfo.CultureInfo);
-                    long mSecsOld = oldDateTime.Ticks / TimeSpan.TicksPerMillisecond;
-                    long mSecsNew = newDateTime.Ticks / TimeSpan.TicksPerMillisecond;
-                    timeOffset = (int)(mSecsNew - mSecsOld);
+                    return;
                 }
-                catch (FormatException)
-                {
-                }
+
+                var newDateTime = DateTime.ParseExact(value, formatInfo.TimeFormat, formatInfo.CultureInfo);
+                var oldDateTime = DateTime.ParseExact(oldValue, formatInfo.TimeFormat, formatInfo.CultureInfo);
+                var mSecsOld = oldDateTime.Ticks / TimeSpan.TicksPerMillisecond;
+                var mSecsNew = newDateTime.Ticks / TimeSpan.TicksPerMillisecond;
+                timeOffset = (int)(mSecsNew - mSecsOld);
+            }
+            catch (FormatException)
+            {
             }
         }
+    }
 
-        public string GetName ()
+    public string GetName ()
+    {
+        return "Square Bracket Columnizer";
+    }
+
+    public string GetDescription ()
+    {
+        return "Splits every line into n fields: Date, Time and the rest of the log message";
+    }
+
+    public int GetColumnCount ()
+    {
+        return _columnCount;
+    }
+
+    public string[] GetColumnNames ()
+    {
+        var columnNames = new List<string>(GetColumnCount());
+        if (_isTimeExists)
         {
-            return "Square Bracket Columnizer";
+            columnNames.Add("Date");
+            columnNames.Add("Time");
         }
 
-        public string GetDescription ()
+        // TODO: Make this configurable.
+        if (GetColumnCount() > 3)
         {
-            return "Splits every line into n fields: Date, Time and the rest of the log message";
+            columnNames.Add("Level");
         }
 
-        public int GetColumnCount ()
+        if (GetColumnCount() > 4)
         {
-            return _columnCount;
+            columnNames.Add("Source");
         }
 
-        public string[] GetColumnNames ()
+        // Last column is the message
+        columnNames.Add("Message");
+        var i = 1;
+        while (columnNames.Count < GetColumnCount())
         {
-            var columnNames = new List<string>(GetColumnCount());
-            if (_isTimeExists)
-            {
-                columnNames.Add("Date");
-                columnNames.Add("Time");
-            }
-
-            // TODO: Make this configurable.
-            if (GetColumnCount() > 3)
-            {
-                columnNames.Add("Level");
-            }
-
-            if (GetColumnCount() > 4)
-            {
-                columnNames.Add("Source");
-            }
-
-            // Last column is the message
-            columnNames.Add("Message");
-            int i = 1;
-            while (columnNames.Count < GetColumnCount())
-            {
-                columnNames.Insert(columnNames.Count - 1, "Source" + i++.ToString());
-            }
-
-            return columnNames.ToArray();
+            columnNames.Insert(columnNames.Count - 1, "Source" + i++.ToString());
         }
 
-        public IColumnizedLogLine SplitLine (LogExpert.ILogLineColumnizerCallback callback, ILogLine line)
+        return columnNames.ToArray();
+    }
+
+    public IColumnizedLogLine SplitLine (LogExpert.ILogLineColumnizerCallback callback, ILogLine line)
+    {
+        // 0         1         2         3         4         5         6         7         8         9         10        11        12        13        14        15        16
+        // 012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789
+        // 03.01.2008 14:48:00.066 <rest of line>
+
+        ColumnizedLogLine clogLine = new()
         {
-            // 0         1         2         3         4         5         6         7         8         9         10        11        12        13        14        15        16
-            // 012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789
-            // 03.01.2008 14:48:00.066 <rest of line>
+            LogLine = line
+        };
 
-            ColumnizedLogLine clogLine = new()
-            {
-                LogLine = line
-            };
+        var columns = new Column[]
+        {
+            new() {FullValue = "", Parent = clogLine},
+            new() {FullValue = "", Parent = clogLine},
+            new() {FullValue = "", Parent = clogLine},
+        };
 
-            Column[] columns = new Column[]
-            {
-                new() {FullValue = "", Parent = clogLine},
-                new() {FullValue = "", Parent = clogLine},
-                new() {FullValue = "", Parent = clogLine},
-            };
+        var temp = line.FullLine;
 
-            string temp = line.FullLine;
-
-            if (temp.Length < 3)
-            {
-                columns[2].FullValue = temp;
-                return clogLine;
-            }
-
-            FormatInfo formatInfo = _timeFormatDeterminer.DetermineDateTimeFormatInfo(line.FullLine);
-            if (formatInfo == null)
-            {
-                columns[2].FullValue = temp;
-                SquareSplit(ref columns, temp, 0, 0, 0, clogLine);
-            }
-            else
-            {
-                int endPos = formatInfo.DateTimeFormat.Length;
-                int timeLen = formatInfo.TimeFormat.Length;
-                int dateLen = formatInfo.DateFormat.Length;
-                try
-                {
-                    if (timeOffset != 0)
-                    {
-                        DateTime dateTime = DateTime.ParseExact(temp.Substring(0, endPos), formatInfo.DateTimeFormat,
-                            formatInfo.CultureInfo);
-                        dateTime = dateTime.Add(new TimeSpan(0, 0, 0, 0, timeOffset));
-                        string newDate = dateTime.ToString(formatInfo.DateTimeFormat, formatInfo.CultureInfo);
-
-                        SquareSplit(ref columns, newDate, dateLen, timeLen, endPos, clogLine);
-                    }
-                    else
-                    {
-                        SquareSplit(ref columns, temp, dateLen, timeLen, endPos, clogLine);
-                    }
-                }
-                catch (Exception)
-                {
-                    columns[0].FullValue = "n/a";
-                    columns[1].FullValue = "n/a";
-                    columns[2].FullValue = temp;
-                }
-            }
-
-            clogLine.ColumnValues = columns.Select(a => a as IColumn).ToArray();
-
+        if (temp.Length < 3)
+        {
+            columns[2].FullValue = temp;
             return clogLine;
         }
 
-        void SquareSplit (ref Column[] columns, string line, int dateLen, int timeLen, int dateTimeEndPos, ColumnizedLogLine clogLine)
+        FormatInfo formatInfo = _timeFormatDeterminer.DetermineDateTimeFormatInfo(line.FullLine);
+        if (formatInfo == null)
         {
-            List<Column> columnList = [];
-            int restColumn = _columnCount;
-            if (_isTimeExists)
-            {
-                columnList.Add(new Column { FullValue = line.Substring(0, dateLen), Parent = clogLine });
-                columnList.Add(new Column { FullValue = line.Substring(dateLen + 1, timeLen), Parent = clogLine });
-                restColumn -= 2;
-            }
-
-            int nextPos = dateTimeEndPos;
-
-            string rest = line;
-
-            for (int i = 0; i < restColumn; i++)
-            {
-                rest = rest.Substring(nextPos);
-                //var fullValue = rest.Substring(0, rest.IndexOf(']')).TrimStart(new char[] {' '}).TrimEnd(new char[] { ' ' });
-                var trimmed = rest.TrimStart(new char[] { ' ' });
-                if (string.IsNullOrEmpty(trimmed) || trimmed[0] != '[' || rest.IndexOf(']') < 0 || i == restColumn - 1)
-                {
-                    columnList.Add(new Column { FullValue = rest, Parent = clogLine });
-                    break;
-                }
-
-                nextPos = rest.IndexOf(']') + 1;
-                var fullValue = rest.Substring(0, nextPos);
-                columnList.Add(new Column { FullValue = fullValue, Parent = clogLine });
-            }
-
-            while (columnList.Count < _columnCount)
-            {
-                columnList.Insert(columnList.Count - 1, new Column { FullValue = "", Parent = clogLine });
-            }
-
-            columns = columnList.ToArray();
+            columns[2].FullValue = temp;
+            SquareSplit(ref columns, temp, 0, 0, 0, clogLine);
         }
-
-        public Priority GetPriority (string fileName, IEnumerable<ILogLine> samples)
+        else
         {
-            Priority result = Priority.NotSupport;
-            TimeFormatDeterminer timeDeterminer = new();
-            int timeStampExistsCount = 0;
-            int bracketsExistsCount = 0;
-            int maxBracketNumbers = 1;
-
-            foreach (var logline in samples)
+            var endPos = formatInfo.DateTimeFormat.Length;
+            var timeLen = formatInfo.TimeFormat.Length;
+            var dateLen = formatInfo.DateFormat.Length;
+            try
             {
-                string line = logline?.FullLine;
-                if (string.IsNullOrEmpty(line))
+                if (timeOffset != 0)
                 {
-                    continue;
-                }
+                    var dateTime = DateTime.ParseExact(temp.Substring(0, endPos), formatInfo.DateTimeFormat,
+                        formatInfo.CultureInfo);
+                    dateTime = dateTime.Add(new TimeSpan(0, 0, 0, 0, timeOffset));
+                    var newDate = dateTime.ToString(formatInfo.DateTimeFormat, formatInfo.CultureInfo);
 
-                int bracketNumbers = 1;
-                if (null != timeDeterminer.DetermineDateTimeFormatInfo(line))
-                {
-                    timeStampExistsCount++;
+                    SquareSplit(ref columns, newDate, dateLen, timeLen, endPos, clogLine);
                 }
                 else
                 {
-                    timeStampExistsCount--;
+                    SquareSplit(ref columns, temp, dateLen, timeLen, endPos, clogLine);
                 }
-
-                string noSpaceLine = line.Replace(" ", string.Empty);
-                if (noSpaceLine.IndexOf('[') >= 0 && noSpaceLine.IndexOf(']') >= 0
-                                                  && noSpaceLine.IndexOf('[') < noSpaceLine.IndexOf(']'))
-                {
-                    bracketNumbers += Regex.Matches(noSpaceLine, @"\]\[").Count;
-                    bracketsExistsCount++;
-                }
-                else
-                {
-                    bracketsExistsCount--;
-                }
-
-                maxBracketNumbers = Math.Max(bracketNumbers, maxBracketNumbers);
             }
-
-            // Add message
-            _columnCount = maxBracketNumbers + 1;
-            _isTimeExists = timeStampExistsCount > 0;
-            if (_isTimeExists)
+            catch (Exception)
             {
-                _columnCount += 2;
+                columns[0].FullValue = "n/a";
+                columns[1].FullValue = "n/a";
+                columns[2].FullValue = temp;
             }
-
-            if (maxBracketNumbers > 1)
-            {
-                result = Priority.WellSupport;
-                if (bracketsExistsCount > 0)
-                {
-                    result = Priority.PerfectlySupport;
-                }
-            }
-
-            return result;
         }
 
-        #endregion
+        clogLine.ColumnValues = columns.Select(a => a as IColumn).ToArray();
+
+        return clogLine;
     }
+
+    void SquareSplit (ref Column[] columns, string line, int dateLen, int timeLen, int dateTimeEndPos, ColumnizedLogLine clogLine)
+    {
+        List<Column> columnList = [];
+        var restColumn = _columnCount;
+        if (_isTimeExists)
+        {
+            columnList.Add(new Column { FullValue = line.Substring(0, dateLen), Parent = clogLine });
+            columnList.Add(new Column { FullValue = line.Substring(dateLen + 1, timeLen), Parent = clogLine });
+            restColumn -= 2;
+        }
+
+        var nextPos = dateTimeEndPos;
+
+        var rest = line;
+
+        for (var i = 0; i < restColumn; i++)
+        {
+            rest = rest.Substring(nextPos);
+            //var fullValue = rest.Substring(0, rest.IndexOf(']')).TrimStart(new char[] {' '}).TrimEnd(new char[] { ' ' });
+            var trimmed = rest.TrimStart([' ']);
+            if (string.IsNullOrEmpty(trimmed) || trimmed[0] != '[' || rest.IndexOf(']') < 0 || i == restColumn - 1)
+            {
+                columnList.Add(new Column { FullValue = rest, Parent = clogLine });
+                break;
+            }
+
+            nextPos = rest.IndexOf(']') + 1;
+            var fullValue = rest.Substring(0, nextPos);
+            columnList.Add(new Column { FullValue = fullValue, Parent = clogLine });
+        }
+
+        while (columnList.Count < _columnCount)
+        {
+            columnList.Insert(columnList.Count - 1, new Column { FullValue = "", Parent = clogLine });
+        }
+
+        columns = columnList.ToArray();
+    }
+
+    public Priority GetPriority (string fileName, IEnumerable<ILogLine> samples)
+    {
+        Priority result = Priority.NotSupport;
+        TimeFormatDeterminer timeDeterminer = new();
+        var timeStampExistsCount = 0;
+        var bracketsExistsCount = 0;
+        var maxBracketNumbers = 1;
+
+        foreach (var logline in samples)
+        {
+            var line = logline?.FullLine;
+            if (string.IsNullOrEmpty(line))
+            {
+                continue;
+            }
+
+            var bracketNumbers = 1;
+            if (null != timeDeterminer.DetermineDateTimeFormatInfo(line))
+            {
+                timeStampExistsCount++;
+            }
+            else
+            {
+                timeStampExistsCount--;
+            }
+
+            var noSpaceLine = line.Replace(" ", string.Empty);
+            if (noSpaceLine.IndexOf('[') >= 0 && noSpaceLine.IndexOf(']') >= 0
+                                              && noSpaceLine.IndexOf('[') < noSpaceLine.IndexOf(']'))
+            {
+                bracketNumbers += Regex.Matches(noSpaceLine, @"\]\[").Count;
+                bracketsExistsCount++;
+            }
+            else
+            {
+                bracketsExistsCount--;
+            }
+
+            maxBracketNumbers = Math.Max(bracketNumbers, maxBracketNumbers);
+        }
+
+        // Add message
+        _columnCount = maxBracketNumbers + 1;
+        _isTimeExists = timeStampExistsCount > 0;
+        if (_isTimeExists)
+        {
+            _columnCount += 2;
+        }
+
+        if (maxBracketNumbers > 1)
+        {
+            result = Priority.WellSupport;
+            if (bracketsExistsCount > 0)
+            {
+                result = Priority.PerfectlySupport;
+            }
+        }
+
+        return result;
+    }
+
+    #endregion
 }

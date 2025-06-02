@@ -52,7 +52,7 @@ public partial class ChooseIconDlg : Form
             imageList.ImageSize = icons[1, 0].Size;
             iconListView.LargeImageList = imageList;
 
-            for (int i = 0; i < icons.GetLength(1); ++i)
+            for (var i = 0; i < icons.GetLength(1); ++i)
             {
                 imageList.Images.Add(icons[1, i]);
                 ListViewItem item = new()

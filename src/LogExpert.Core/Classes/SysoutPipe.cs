@@ -3,94 +3,93 @@
 using System.Diagnostics;
 using System.Text;
 
-namespace LogExpert.Core.Classes
+namespace LogExpert.Core.Classes;
+
+public class SysoutPipe
 {
-    public class SysoutPipe
+    #region Fields
+
+    private static readonly ILogger _logger = LogManager.GetCurrentClassLogger();
+
+    private readonly StreamReader sysout;
+    private StreamWriter writer;
+
+    #endregion
+
+    #region cTor
+
+    public SysoutPipe(StreamReader sysout)
     {
-        #region Fields
+        this.sysout = sysout;
+        FileName = Path.GetTempFileName();
+        _logger.Info("sysoutPipe created temp file: {0}", FileName);
 
-        private static readonly ILogger _logger = LogManager.GetCurrentClassLogger();
+        FileStream fStream = new(FileName, FileMode.Append, FileAccess.Write, FileShare.Read);
+        writer = new StreamWriter(fStream, Encoding.Unicode);
 
-        private readonly StreamReader sysout;
-        private StreamWriter writer;
-
-        #endregion
-
-        #region cTor
-
-        public SysoutPipe(StreamReader sysout)
+        Thread thread = new(new ThreadStart(ReaderThread))
         {
-            this.sysout = sysout;
-            FileName = Path.GetTempFileName();
-            _logger.Info("sysoutPipe created temp file: {0}", FileName);
+            IsBackground = true
+        };
+        thread.Start();
+    }
 
-            FileStream fStream = new(FileName, FileMode.Append, FileAccess.Write, FileShare.Read);
-            writer = new StreamWriter(fStream, Encoding.Unicode);
+    #endregion
 
-            Thread thread = new(new ThreadStart(ReaderThread))
+    #region Properties
+
+    public string FileName { get; }
+
+    #endregion
+
+    #region Public methods
+
+    public void ClosePipe()
+    {
+        writer.Close();
+        writer = null;
+    }
+
+
+    public void DataReceivedEventHandler(object sender, DataReceivedEventArgs e)
+    {
+        writer.WriteLine(e.Data);
+    }
+
+    public void ProcessExitedEventHandler(object sender, System.EventArgs e)
+    {
+        //ClosePipe();
+        if (sender.GetType() == typeof(Process))
+        {
+            ((Process)sender).Exited -= ProcessExitedEventHandler;
+            ((Process)sender).OutputDataReceived -= DataReceivedEventHandler;
+        }
+    }
+
+    #endregion
+
+    protected void ReaderThread()
+    {
+        var buff = new char[256];
+
+        while (true)
+        {
+            try
             {
-                IsBackground = true
-            };
-            thread.Start();
-        }
-
-        #endregion
-
-        #region Properties
-
-        public string FileName { get; }
-
-        #endregion
-
-        #region Public methods
-
-        public void ClosePipe()
-        {
-            writer.Close();
-            writer = null;
-        }
-
-
-        public void DataReceivedEventHandler(object sender, DataReceivedEventArgs e)
-        {
-            writer.WriteLine(e.Data);
-        }
-
-        public void ProcessExitedEventHandler(object sender, System.EventArgs e)
-        {
-            //ClosePipe();
-            if (sender.GetType() == typeof(Process))
-            {
-                ((Process)sender).Exited -= ProcessExitedEventHandler;
-                ((Process)sender).OutputDataReceived -= DataReceivedEventHandler;
-            }
-        }
-
-        #endregion
-
-        protected void ReaderThread()
-        {
-            char[] buff = new char[256];
-
-            while (true)
-            {
-                try
+                var read = sysout.Read(buff, 0, 256);
+                if (read == 0)
                 {
-                    int read = sysout.Read(buff, 0, 256);
-                    if (read == 0)
-                    {
-                        break;
-                    }
-                    writer.Write(buff, 0, read);
-                }
-                catch (IOException e)
-                {
-                    _logger.Error(e);
                     break;
                 }
+                writer.Write(buff, 0, read);
             }
-
-            ClosePipe();
+            catch (IOException e)
+            {
+                _logger.Error(e);
+                break;
+            }
         }
+
+        ClosePipe();
     }
 }

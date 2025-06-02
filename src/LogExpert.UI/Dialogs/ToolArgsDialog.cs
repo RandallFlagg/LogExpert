@@ -81,7 +81,7 @@ internal partial class ToolArgsDialog : Form
             if (line != null && info != null)
             {
                 ArgParser parser = new(textBoxArguments.Text);
-                string args = parser.BuildArgs(line, logTabWin.CurrentLogWindow.GetRealLineNum() + 1, info, this);
+                var args = parser.BuildArgs(line, logTabWin.CurrentLogWindow.GetRealLineNum() + 1, info, this);
                 labelTestResult.Text = args;
             }
         }

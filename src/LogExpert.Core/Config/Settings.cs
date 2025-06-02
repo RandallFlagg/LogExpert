@@ -1,55 +1,54 @@
+using System.Drawing;
+
 using LogExpert.Core.Classes.Filter;
 using LogExpert.Core.Entities;
 
-using System.Drawing;
+namespace LogExpert.Core.Config;
 
-namespace LogExpert.Core.Config
+[Serializable]
+public class Settings
 {
-    [Serializable]
-    public class Settings
-    {
-        #region Fields
+    #region Fields
 
-        public bool alwaysOnTop;
+    public bool alwaysOnTop;
 
-        public Rectangle appBounds;
+    public Rectangle appBounds;
 
-        public Rectangle appBoundsFullscreen;
+    public Rectangle appBoundsFullscreen;
 
-        public IList<ColumnizerHistoryEntry> columnizerHistoryList = [];
+    public IList<ColumnizerHistoryEntry> columnizerHistoryList = [];
 
-        public List<ColorEntry> fileColors = [];
+    public List<ColorEntry> fileColors = [];
 
-        public List<string> fileHistoryList = [];
+    public List<string> fileHistoryList = [];
 
-        public List<string> filterHistoryList = [];
+    public List<string> filterHistoryList = [];
 
-        public List<FilterParams> filterList = [];
+    public List<FilterParams> filterList = [];
 
-        public FilterParams filterParams = new();
+    public FilterParams filterParams = new();
 
-        public List<string> filterRangeHistoryList = [];
+    public List<string> filterRangeHistoryList = [];
 
-        public bool hideLineColumn;
+    public bool hideLineColumn;
 
-        public bool isMaximized;
+    public bool isMaximized;
 
-        public string lastDirectory;
+    public string lastDirectory;
 
-        public List<string> lastOpenFilesList = [];
+    public List<string> lastOpenFilesList = [];
 
-        public Preferences Preferences { get; set; } = new();
+    public Preferences Preferences { get; set; } = new();
 
-        public RegexHistory RegexHistory { get; set; } = new();
+    public RegexHistory RegexHistory { get; set; } = new();
 
-        public List<string> searchHistoryList = [];
+    public List<string> searchHistoryList = [];
 
-        public SearchParams searchParams = new();
+    public SearchParams searchParams = new();
 
-        public IList<string> uriHistoryList = [];
+    public IList<string> uriHistoryList = [];
 
-        public int versionBuild;
+    public int versionBuild;
 
-        #endregion
-    }
+    #endregion
 }

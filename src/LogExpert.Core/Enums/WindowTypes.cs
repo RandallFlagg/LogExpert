@@ -1,8 +1,7 @@
-﻿namespace LogExpert.Core.Enums
+﻿namespace LogExpert.Core.Enums;
+
+public enum WindowTypes
 {
-    public enum WindowTypes
-    {
-        BookmarkWindow,
-        LogWindow,
-    }
+    BookmarkWindow,
+    LogWindow,
 }

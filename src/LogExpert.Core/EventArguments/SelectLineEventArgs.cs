@@ -1,11 +1,10 @@
-﻿namespace LogExpert.Core.EventArguments
+﻿namespace LogExpert.Core.EventArguments;
+
+public class SelectLineEventArgs(int line) : System.EventArgs
 {
-    public class SelectLineEventArgs(int line) : System.EventArgs
-    {
-        #region Properties
+    #region Properties
 
-        public int Line { get; } = line;
+    public int Line { get; } = line;
 
-        #endregion
-    }
+    #endregion
 }

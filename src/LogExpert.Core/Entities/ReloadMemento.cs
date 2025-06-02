@@ -1,9 +1,8 @@
-﻿namespace LogExpert.Core.Entities
-{
-    public class ReloadMemento
-    {
-        public int CurrentLine { get; set; }
+﻿namespace LogExpert.Core.Entities;
 
-        public int FirstDisplayedLine { get; set; }
-    }
+public class ReloadMemento
+{
+    public int CurrentLine { get; set; }
+
+    public int FirstDisplayedLine { get; set; }
 }

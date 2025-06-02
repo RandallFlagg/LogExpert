@@ -61,7 +61,7 @@ public partial class SearchDialog : Form
 
             checkBoxRegex.Checked = SearchParams.IsRegex;
             checkBoxCaseSensitive.Checked = SearchParams.IsCaseSensitive;
-            foreach (string item in SearchParams.HistoryList)
+            foreach (var item in SearchParams.HistoryList)
             {
                 comboBoxSearchFor.Items.Add(item);
             }

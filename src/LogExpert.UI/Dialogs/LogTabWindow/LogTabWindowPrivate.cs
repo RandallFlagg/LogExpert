@@ -1176,7 +1176,7 @@ public partial class LogTabWindow
     private void LoadProject (string projectFileName, bool restoreLayout)
     {
         ProjectData projectData = ProjectPersister.LoadProjectData(projectFileName);
-        var hasLayoutData = projectData.tabLayoutXml != null;
+        var hasLayoutData = projectData.TabLayoutXml != null;
 
         if (hasLayoutData && restoreLayout && _logWindowList.Count > 0)
         {
@@ -1200,7 +1200,7 @@ public partial class LogTabWindow
 
         if (projectData != null)
         {
-            foreach (var fileName in projectData.memberList)
+            foreach (var fileName in projectData.MemberList)
             {
                 if (hasLayoutData)
                 {
@@ -1217,7 +1217,7 @@ public partial class LogTabWindow
                 // Re-creating tool (non-document) windows is needed because the DockPanel control would throw strange errors
                 DestroyToolWindows();
                 InitToolWindows();
-                RestoreLayout(projectData.tabLayoutXml);
+                RestoreLayout(projectData.TabLayoutXml);
             }
         }
     }
@@ -1233,10 +1233,10 @@ public partial class LogTabWindow
     private void FillToolLauncherBar ()
     {
         char[] labels =
-        {
+        [
             'A', 'B', 'C', 'D', 'E', 'F', 'G', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
             'U', 'V', 'W', 'X', 'Y', 'Z'
-        };
+        ];
         toolsToolStripMenuItem.DropDownItems.Clear();
         toolsToolStripMenuItem.DropDownItems.Add(configureToolStripMenuItem);
         toolsToolStripMenuItem.DropDownItems.Add(configureToolStripSeparator);

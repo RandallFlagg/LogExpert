@@ -15,9 +15,9 @@ public class LineToolStripSeparatorExtension : ToolStripSeparator
     private void OnExtendedToolStripSeparatorPaint(object sender, PaintEventArgs e)
     {
         // Get the separator's width and height.
-        ToolStripSeparator toolStripSeparator = (ToolStripSeparator)sender;
-        int width = toolStripSeparator.Width;
-        int height = toolStripSeparator.Height;
+        var toolStripSeparator = (ToolStripSeparator)sender;
+        var width = toolStripSeparator.Width;
+        var height = toolStripSeparator.Height;
 
         // Choose the colors for drawing.
         // I've used Color.White as the foreColor.

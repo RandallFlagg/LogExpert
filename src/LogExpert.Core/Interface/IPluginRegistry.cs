@@ -1,10 +1,9 @@
-﻿namespace LogExpert.Core.Interface
-{
-    //TODO: Add documentation
-    public interface IPluginRegistry
-    {
-        IList<ILogLineColumnizer> RegisteredColumnizers { get; }
+﻿namespace LogExpert.Core.Interface;
 
-        IFileSystemPlugin FindFileSystemForUri(string fileNameOrUri);
-    }
+//TODO: Add documentation
+public interface IPluginRegistry
+{
+    IList<ILogLineColumnizer> RegisteredColumnizers { get; }
+
+    IFileSystemPlugin FindFileSystemForUri (string fileNameOrUri);
 }

@@ -1,10 +1,9 @@
-﻿namespace LogExpert.Core.Enums
+﻿namespace LogExpert.Core.Enums;
+
+public enum ProjectLoadDlgResult
 {
-    public enum ProjectLoadDlgResult
-    {
-        Cancel,
-        CloseTabs,
-        NewWindow,
-        IgnoreLayout
-    }
+    Cancel,
+    CloseTabs,
+    NewWindow,
+    IgnoreLayout
 }

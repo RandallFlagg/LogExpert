@@ -74,7 +74,7 @@ internal partial class FilterSelectorForm : Form //TODO: Can this be changed to 
     {
         ILogLineColumnizer col = _columnizerList[filterComboBox.SelectedIndex];
         SelectedColumnizer = col;
-        string description = col.GetDescription();
+        var description = col.GetDescription();
         description += "\r\nSupports timeshift: " + (SelectedColumnizer.IsTimeshiftImplemented() ? "Yes" : "No");
         commentTextBox.Text = description;
         configButton.Enabled = SelectedColumnizer is IColumnizerConfigurator;
@@ -86,7 +86,7 @@ internal partial class FilterSelectorForm : Form //TODO: Can this be changed to 
     {
         if (SelectedColumnizer is IColumnizerConfigurator configurator)
         {
-            string configDir = ConfigManager.ConfigDir;
+            var configDir = ConfigManager.ConfigDir;
 
             if (ConfigManager.Settings.Preferences.PortableMode)
             {

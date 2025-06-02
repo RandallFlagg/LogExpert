@@ -31,7 +31,7 @@ public partial class AboutBox : Form
         labelProductName.Text = AssemblyProduct;
         labelVersion.Text = AssemblyVersion;
         labelCopyright.Text = AssemblyCopyright;
-        string link = "https://github.com/LogExperts/LogExpert";
+        var link = "https://github.com/LogExperts/LogExpert";
         linkLabelURL.Links.Add(new LinkLabel.Link(0, link.Length, link));
         LoadUsedComponents();
     }
@@ -40,7 +40,7 @@ public partial class AboutBox : Form
 
     private void LoadUsedComponents()
     {
-        string json = File.ReadAllText($"{Application.StartupPath}files\\json\\usedComponents.json");
+        var json = File.ReadAllText($"{Application.StartupPath}files\\json\\usedComponents.json");
         var usedComponents = JsonConvert.DeserializeObject<UsedComponents[]>(json);
         usedComponents = usedComponents?.OrderBy(x => x.PackageId).ToArray();
         usedComponentsDataGrid.DataSource = usedComponents;
@@ -60,10 +60,10 @@ public partial class AboutBox : Form
     {
         get
         {
-            object[] attributes = _assembly.GetCustomAttributes(typeof(AssemblyTitleAttribute), false);
+            var attributes = _assembly.GetCustomAttributes(typeof(AssemblyTitleAttribute), false);
             if (attributes.Length > 0)
             {
-                AssemblyTitleAttribute titleAttribute = (AssemblyTitleAttribute)attributes[0];
+                var titleAttribute = (AssemblyTitleAttribute)attributes[0];
                 if (titleAttribute.Title != string.Empty)
                 {
                     return titleAttribute.Title;
@@ -81,7 +81,7 @@ public partial class AboutBox : Form
 
             if (assembly.Version != null)
             {
-                string version = $"{assembly.Version.Major}.{assembly.Version.Minor}.{assembly.Version.Build}.{assembly.Version.Revision}";
+                var version = $"{assembly.Version.Major}.{assembly.Version.Minor}.{assembly.Version.Build}.{assembly.Version.Revision}";
                 if (assembly.Version.Revision >= 9000)
                 {
                     version += " Testrelease";
@@ -99,7 +99,7 @@ public partial class AboutBox : Form
     {
         get
         {
-            object[] attributes = _assembly.GetCustomAttributes(typeof(AssemblyDescriptionAttribute), false);
+            var attributes = _assembly.GetCustomAttributes(typeof(AssemblyDescriptionAttribute), false);
 
             if (attributes.Length == 0)
             {
@@ -113,7 +113,7 @@ public partial class AboutBox : Form
     {
         get
         {
-            object[] attributes = _assembly.GetCustomAttributes(typeof(AssemblyProductAttribute), false);
+            var attributes = _assembly.GetCustomAttributes(typeof(AssemblyProductAttribute), false);
             if (attributes.Length == 0)
             {
                 return string.Empty;
@@ -126,7 +126,7 @@ public partial class AboutBox : Form
     {
         get
         {
-            object[] attributes = _assembly.GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false);
+            var attributes = _assembly.GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false);
             if (attributes.Length == 0)
             {
                 return string.Empty;
@@ -141,7 +141,7 @@ public partial class AboutBox : Form
 
     private void OnLinkLabelURLClicked(object sender, LinkLabelLinkClickedEventArgs e)
     {
-        string? target = string.Empty;
+        var target = string.Empty;
 
         if (e.Link != null)
         {

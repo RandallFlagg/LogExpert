@@ -1,18 +1,17 @@
 ﻿using System;
 
-namespace LogExpert.Core.Classes.DateTimeParser
+namespace LogExpert.Core.Classes.DateTimeParser;
+
+public static class Token
 {
-    public static class Token
+    public static bool IsDatePart(string token)
     {
-        public static bool IsDatePart(string token)
-        {
-            return
-                token.StartsWith("y", StringComparison.OrdinalIgnoreCase) ||
-                token.StartsWith("m", StringComparison.OrdinalIgnoreCase) ||
-                token.StartsWith("d", StringComparison.OrdinalIgnoreCase) ||
-                token.StartsWith("s", StringComparison.OrdinalIgnoreCase) ||
-                token.StartsWith("h", StringComparison.OrdinalIgnoreCase) ||
-                string.Compare(token, "tt", StringComparison.OrdinalIgnoreCase) == 0;
-        }
+        return
+            token.StartsWith("y", StringComparison.OrdinalIgnoreCase) ||
+            token.StartsWith("m", StringComparison.OrdinalIgnoreCase) ||
+            token.StartsWith("d", StringComparison.OrdinalIgnoreCase) ||
+            token.StartsWith("s", StringComparison.OrdinalIgnoreCase) ||
+            token.StartsWith("h", StringComparison.OrdinalIgnoreCase) ||
+            string.Compare(token, "tt", StringComparison.OrdinalIgnoreCase) == 0;
     }
 }

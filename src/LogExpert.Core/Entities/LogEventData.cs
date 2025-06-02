@@ -1,25 +1,24 @@
-﻿namespace LogExpert.Core.Entities
+﻿namespace LogExpert.Core.Entities;
+
+public class LogEventArgs : System.EventArgs
 {
-    public class LogEventArgs : System.EventArgs
-    {
-        #region Fields
+    #region Fields
 
-        #endregion
+    #endregion
 
-        #region Properties
+    #region Properties
 
-        public int RolloverOffset { get; set; } = 0;
+    public int RolloverOffset { get; set; }
 
-        public bool IsRollover { get; set; } = false;
+    public bool IsRollover { get; set; }
 
-        public long FileSize { get; set; }
+    public long FileSize { get; set; }
 
-        public int LineCount { get; set; }
+    public int LineCount { get; set; }
 
-        public int PrevLineCount { get; set; }
+    public int PrevLineCount { get; set; }
 
-        public long PrevFileSize { get; set; }
+    public long PrevFileSize { get; set; }
 
-        #endregion
-    }
+    #endregion
 }

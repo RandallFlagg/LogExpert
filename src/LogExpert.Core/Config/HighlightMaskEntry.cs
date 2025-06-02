@@ -1,15 +1,14 @@
 using System;
 
-namespace LogExpert.Core.Config
+namespace LogExpert.Core.Config;
+
+[Serializable]
+public class HighlightMaskEntry
 {
-    [Serializable]
-    public class HighlightMaskEntry
-    {
-        #region Fields
+    #region Fields
 
-        public string highlightGroupName;
-        public string mask;
+    public string highlightGroupName;
+    public string mask;
 
-        #endregion
-    }
+    #endregion
 }

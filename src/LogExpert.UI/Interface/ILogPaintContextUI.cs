@@ -2,34 +2,33 @@
 using LogExpert.Core.Entities;
 using LogExpert.Core.Interface;
 
-namespace LogExpert.UI.Interface
+namespace LogExpert.UI.Interface;
+
+/// <summary>
+/// Declares methods that are needed for drawing log lines. Used by PaintHelper.
+/// </summary>
+public interface ILogPaintContextUI : ILogPaintContext
 {
-    /// <summary>
-    /// Declares methods that are needed for drawing log lines. Used by PaintHelper.
-    /// </summary>
-    public interface ILogPaintContextUI : ILogPaintContext
-    {
-        #region Properties
+    #region Properties
 
-        Font MonospacedFont { get; } // Font font = new Font("Courier New", this.Preferences.fontSize, FontStyle.Bold);
-        Font NormalFont { get; }
-        Font BoldFont { get; }
-        Color BookmarkColor { get; }
+    Font MonospacedFont { get; } // Font font = new Font("Courier New", this.Preferences.fontSize, FontStyle.Bold);
+    Font NormalFont { get; }
+    Font BoldFont { get; }
+    Color BookmarkColor { get; }
 
-        #endregion
+    #endregion
 
-        #region Public methods
+    #region Public methods
 
-        ILogLine GetLogLine(int lineNum);
+    ILogLine GetLogLine(int lineNum);
 
-        IColumn GetCellValue(int rowIndex, int columnIndex);
+    IColumn GetCellValue(int rowIndex, int columnIndex);
 
-        Bookmark GetBookmarkForLine(int lineNum);
+    Bookmark GetBookmarkForLine(int lineNum);
 
-        HighlightEntry FindHighlightEntry(ITextValue line, bool noWordMatches);
+    HighlightEntry FindHighlightEntry(ITextValue line, bool noWordMatches);
 
-        IList<HilightMatchEntry> FindHighlightMatches(ITextValue line);
+    IList<HilightMatchEntry> FindHighlightMatches(ITextValue line);
 
-        #endregion
-    }
+    #endregion
 }

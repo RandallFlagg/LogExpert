@@ -1,11 +1,10 @@
-﻿namespace LogExpert.Core.EventArguments
+﻿namespace LogExpert.Core.EventArguments;
+
+public class SyncModeEventArgs(bool isSynced) : System.EventArgs
 {
-    public class SyncModeEventArgs(bool isSynced) : System.EventArgs
-    {
-        #region Properties
+    #region Properties
 
-        public bool IsTimeSynced { get; } = isSynced;
+    public bool IsTimeSynced { get; } = isSynced;
 
-        #endregion
-    }
+    #endregion
 }

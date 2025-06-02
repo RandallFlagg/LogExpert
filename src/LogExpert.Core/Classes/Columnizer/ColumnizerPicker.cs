@@ -2,142 +2,141 @@
 
 using System.Reflection;
 
-namespace LogExpert.Core.Classes.Columnizer
+namespace LogExpert.Core.Classes.Columnizer;
+
+public class ColumnizerPicker
 {
-    public class ColumnizerPicker
+    public static ILogLineColumnizer FindColumnizerByName(string name, IList<ILogLineColumnizer> list)
     {
-        public static ILogLineColumnizer FindColumnizerByName(string name, IList<ILogLineColumnizer> list)
+        foreach (ILogLineColumnizer columnizer in list)
         {
-            foreach (ILogLineColumnizer columnizer in list)
+            if (columnizer.GetName().Equals(name))
             {
-                if (columnizer.GetName().Equals(name))
-                {
-                    return columnizer;
-                }
+                return columnizer;
             }
+        }
+        return null;
+    }
+
+    public static ILogLineColumnizer DecideColumnizerByName(string name, IList<ILogLineColumnizer> list)
+    {
+        foreach (ILogLineColumnizer columnizer in list)
+        {
+            if (columnizer.GetName().Equals(name))
+            {
+                return columnizer;
+            }
+        }
+
+        return FindColumnizer(null, null, list);
+    }
+
+    public static ILogLineColumnizer CloneColumnizer(ILogLineColumnizer columnizer, string directory)
+    {
+        if (columnizer == null)
+        {
             return null;
         }
+        ConstructorInfo cti = columnizer.GetType().GetConstructor(Type.EmptyTypes);
 
-        public static ILogLineColumnizer DecideColumnizerByName(string name, IList<ILogLineColumnizer> list)
+        if (cti != null)
         {
-            foreach (ILogLineColumnizer columnizer in list)
-            {
-                if (columnizer.GetName().Equals(name))
-                {
-                    return columnizer;
-                }
-            }
+            var o = cti.Invoke([]);
 
-            return FindColumnizer(null, null, list);
+            if (o is IColumnizerConfigurator configurator)
+            {
+                configurator.LoadConfig(directory);
+            }
+            return (ILogLineColumnizer)o;
         }
+        return null;
+    }
 
-        public static ILogLineColumnizer CloneColumnizer(ILogLineColumnizer columnizer, string directory)
+    /// <summary>
+    /// This method implemented the "auto columnizer" feature.
+    /// This method should be called after each columnizer is changed to update the columizer.
+    /// </summary>
+    /// <param name="fileName"></param>
+    /// <param name="logFileReader"></param>
+    /// <param name="logLineColumnizer"></param>
+    /// <returns></returns>
+    public static ILogLineColumnizer FindReplacementForAutoColumnizer(string fileName,
+        IAutoLogLineColumnizerCallback logFileReader,
+        ILogLineColumnizer logLineColumnizer,
+        IList<ILogLineColumnizer> list)
+    {
+        if (logLineColumnizer == null || logLineColumnizer.GetName() == "Auto Columnizer")
         {
-            if (columnizer == null)
-            {
-                return null;
-            }
-            ConstructorInfo cti = columnizer.GetType().GetConstructor(Type.EmptyTypes);
+            return FindColumnizer(fileName, logFileReader, list);
+        }
+        return logLineColumnizer;
+    }
 
-            if (cti != null)
-            {
-                object o = cti.Invoke([]);
+    public static ILogLineColumnizer FindBetterColumnizer(string fileName,
+        IAutoLogLineColumnizerCallback logFileReader,
+        ILogLineColumnizer logLineColumnizer,
+        IList<ILogLineColumnizer> list)
+    {
+        var newColumnizer = FindColumnizer(fileName, logFileReader, list);
 
-                if (o is IColumnizerConfigurator configurator)
-                {
-                    configurator.LoadConfig(directory);
-                }
-                return (ILogLineColumnizer)o;
-            }
+        if (newColumnizer.GetType().Equals(logLineColumnizer.GetType()))
+        {
             return null;
         }
+        return newColumnizer;
+    }
 
-        /// <summary>
-        /// This method implemented the "auto columnizer" feature.
-        /// This method should be called after each columnizer is changed to update the columizer.
-        /// </summary>
-        /// <param name="fileName"></param>
-        /// <param name="logFileReader"></param>
-        /// <param name="logLineColumnizer"></param>
-        /// <returns></returns>
-        public static ILogLineColumnizer FindReplacementForAutoColumnizer(string fileName,
-            IAutoLogLineColumnizerCallback logFileReader,
-            ILogLineColumnizer logLineColumnizer,
-            IList<ILogLineColumnizer> list)
+    /// <summary>
+    /// This method will search all registered columnizer and return one according to the priority that returned
+    /// by the each columnizer.
+    /// </summary>
+    /// <param name="fileName"></param>
+    /// <param name="logFileReader"></param>
+    /// <returns></returns>
+    public static ILogLineColumnizer FindColumnizer(string fileName, IAutoLogLineColumnizerCallback logFileReader, IList<ILogLineColumnizer> list)
+    {
+        if (string.IsNullOrEmpty(fileName))
         {
-            if (logLineColumnizer == null || logLineColumnizer.GetName() == "Auto Columnizer")
-            {
-                return FindColumnizer(fileName, logFileReader, list);
-            }
-            return logLineColumnizer;
+            return new DefaultLogfileColumnizer();
         }
 
-        public static ILogLineColumnizer FindBetterColumnizer(string fileName,
-            IAutoLogLineColumnizerCallback logFileReader,
-            ILogLineColumnizer logLineColumnizer,
-            IList<ILogLineColumnizer> list)
-        {
-            var newColumnizer = FindColumnizer(fileName, logFileReader, list);
+        List<ILogLine> loglines = [];
 
-            if (newColumnizer.GetType().Equals(logLineColumnizer.GetType()))
-            {
-                return null;
-            }
-            return newColumnizer;
+        if (logFileReader != null)
+        {
+            loglines =
+            [
+                // Sampling a few lines to select the correct columnizer
+                logFileReader.GetLogLine(0),
+                logFileReader.GetLogLine(1),
+                logFileReader.GetLogLine(2),
+                logFileReader.GetLogLine(3),
+                logFileReader.GetLogLine(4),
+                logFileReader.GetLogLine(5),
+                logFileReader.GetLogLine(25),
+                logFileReader.GetLogLine(100),
+                logFileReader.GetLogLine(200),
+                logFileReader.GetLogLine(400)
+            ];
         }
 
-        /// <summary>
-        /// This method will search all registered columnizer and return one according to the priority that returned
-        /// by the each columnizer.
-        /// </summary>
-        /// <param name="fileName"></param>
-        /// <param name="logFileReader"></param>
-        /// <returns></returns>
-        public static ILogLineColumnizer FindColumnizer(string fileName, IAutoLogLineColumnizerCallback logFileReader, IList<ILogLineColumnizer> list)
+        var registeredColumnizer = list;
+
+        List<Tuple<Priority, ILogLineColumnizer>> priorityListOfColumnizers = [];
+
+        foreach (ILogLineColumnizer logLineColumnizer in registeredColumnizer)
         {
-            if (string.IsNullOrEmpty(fileName))
+            Priority priority = default;
+            if (logLineColumnizer is IColumnizerPriority columnizerPriority)
             {
-                return new DefaultLogfileColumnizer();
+                priority = columnizerPriority.GetPriority(fileName, loglines);
             }
 
-            List<ILogLine> loglines = [];
-
-            if (logFileReader != null)
-            {
-                loglines =
-                [
-                    // Sampling a few lines to select the correct columnizer
-                    logFileReader.GetLogLine(0),
-                    logFileReader.GetLogLine(1),
-                    logFileReader.GetLogLine(2),
-                    logFileReader.GetLogLine(3),
-                    logFileReader.GetLogLine(4),
-                    logFileReader.GetLogLine(5),
-                    logFileReader.GetLogLine(25),
-                    logFileReader.GetLogLine(100),
-                    logFileReader.GetLogLine(200),
-                    logFileReader.GetLogLine(400)
-                ];
-            }
-
-            var registeredColumnizer = list;
-
-            List<Tuple<Priority, ILogLineColumnizer>> priorityListOfColumnizers = [];
-
-            foreach (ILogLineColumnizer logLineColumnizer in registeredColumnizer)
-            {
-                Priority priority = default;
-                if (logLineColumnizer is IColumnizerPriority columnizerPriority)
-                {
-                    priority = columnizerPriority.GetPriority(fileName, loglines);
-                }
-
-                priorityListOfColumnizers.Add(new Tuple<Priority, ILogLineColumnizer>(priority, logLineColumnizer));
-            }
-
-            ILogLineColumnizer lineColumnizer = priorityListOfColumnizers.OrderByDescending(a => a.Item1).Select(a => a.Item2).First();
-
-            return lineColumnizer;
+            priorityListOfColumnizers.Add(new Tuple<Priority, ILogLineColumnizer>(priority, logLineColumnizer));
         }
+
+        ILogLineColumnizer lineColumnizer = priorityListOfColumnizers.OrderByDescending(a => a.Item1).Select(a => a.Item2).First();
+
+        return lineColumnizer;
     }
 }

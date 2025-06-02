@@ -20,9 +20,9 @@ public class MenuToolStripSeparatorExtension : ToolStripSeparator
         }
 
         // Get the separator's width and height.
-        ToolStripSeparator toolStripSeparator = sender as ToolStripSeparator;
-        int width = toolStripSeparator.Width;
-        int height = toolStripSeparator.Height;
+        var toolStripSeparator = sender as ToolStripSeparator;
+        var width = toolStripSeparator.Width;
+        var height = toolStripSeparator.Height;
 
         // Choose the colors for drawing.
         // I've used Color.White as the foreColor.

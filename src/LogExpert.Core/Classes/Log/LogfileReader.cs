@@ -78,7 +78,7 @@ public class LogfileReader : IAutoLogLineColumnizerCallback
             LinkedList<string> nameList = rolloverHandler.GetNameList(_pluginRegistry);
 
             ILogFileInfo fileInfo = null;
-            foreach (string name in nameList)
+            foreach (var name in nameList)
             {
                 fileInfo = AddFile(name);
             }
@@ -111,7 +111,7 @@ public class LogfileReader : IAutoLogLineColumnizerCallback
         InitLruBuffers();
 
         ILogFileInfo fileInfo = null;
-        foreach (string name in fileNames)
+        foreach (var name in fileNames)
         {
             fileInfo = AddFile(name);
         }
@@ -176,11 +176,11 @@ public class LogfileReader : IAutoLogLineColumnizerCallback
 
     public long FileSize { get; private set; }
 
-    public bool IsXmlMode { get; set; } = false;
+    public bool IsXmlMode { get; set; }
 
     public IXmlLogConfiguration XmlLogConfig { get; set; }
 
-    public IPreProcessColumnizer PreProcessColumnizer { get; set; } = null;
+    public IPreProcessColumnizer PreProcessColumnizer { get; set; }
 
     public EncodingOptions EncodingOptions
     {
@@ -260,7 +260,7 @@ public class LogfileReader : IAutoLogLineColumnizerCallback
     {
         _logger.Info("ShiftBuffers() begin for {0}{1}", _fileName, IsMultiFile ? " (MultiFile)" : "");
         AcquireBufferListWriterLock();
-        int offset = 0;
+        var offset = 0;
         _isLineCountDirty = true;
         lock (_monitor)
         {
@@ -275,7 +275,7 @@ public class LogfileReader : IAutoLogLineColumnizerCallback
             while (enumerator.MoveNext())
             {
                 ILogFileInfo logFileInfo = enumerator.Current;
-                string fileName = logFileInfo.FullName;
+                var fileName = logFileInfo.FullName;
                 _logger.Debug("Testing file {0}", fileName);
                 LinkedListNode<string> node = fileNameList.Find(fileName);
                 if (node == null)
@@ -373,7 +373,7 @@ public class LogfileReader : IAutoLogLineColumnizerCallback
 
             _logger.Info("Deleting buffers for the watched file");
             DeleteBuffersForInfo(_watchedILogFileInfo, true);
-            int startLine = LineCount - 1;
+            var startLine = LineCount - 1;
             _logger.Info("Re-Reading files");
             foreach (ILogFileInfo ILogFileInfo in readNewILogFileInfoList)
             {
@@ -459,7 +459,7 @@ public class LogfileReader : IAutoLogLineColumnizerCallback
     {
         AcquireBufferListReaderLock();
         LogBuffer logBuffer = GetBufferForLine(lineNum);
-        string fileName = logBuffer?.FileInfo.FullName;
+        var fileName = logBuffer?.FileInfo.FullName;
         ReleaseBufferListReaderLock();
         return fileName;
     }
@@ -486,15 +486,15 @@ public class LogfileReader : IAutoLogLineColumnizerCallback
     /// <returns></returns>
     public int GetNextMultiFileLine (int lineNum)
     {
-        int result = -1;
+        var result = -1;
         AcquireBufferListReaderLock();
         LogBuffer logBuffer = GetBufferForLine(lineNum);
         if (logBuffer != null)
         {
-            int index = _bufferList.IndexOf(logBuffer);
+            var index = _bufferList.IndexOf(logBuffer);
             if (index != -1)
             {
-                for (int i = index; i < _bufferList.Count; ++i)
+                for (var i = index; i < _bufferList.Count; ++i)
                 {
                     if (_bufferList[i].FileInfo != logBuffer.FileInfo)
                     {
@@ -511,15 +511,15 @@ public class LogfileReader : IAutoLogLineColumnizerCallback
 
     public int GetPrevMultiFileLine (int lineNum)
     {
-        int result = -1;
+        var result = -1;
         AcquireBufferListReaderLock();
         LogBuffer logBuffer = GetBufferForLine(lineNum);
         if (logBuffer != null)
         {
-            int index = _bufferList.IndexOf(logBuffer);
+            var index = _bufferList.IndexOf(logBuffer);
             if (index != -1)
             {
-                for (int i = index; i >= 0; --i)
+                for (var i = index; i >= 0; --i)
                 {
                     if (_bufferList[i].FileInfo != logBuffer.FileInfo)
                     {
@@ -547,7 +547,7 @@ public class LogfileReader : IAutoLogLineColumnizerCallback
     {
         AcquireBufferListReaderLock();
         LogBuffer logBuffer = GetBufferForLine(lineNum);
-        int result = -1;
+        var result = -1;
         if (logBuffer != null)
         {
             logBuffer = GetFirstBufferForFileByLogBuffer(logBuffer);
@@ -603,7 +603,7 @@ public class LogfileReader : IAutoLogLineColumnizerCallback
     /// </summary>
     public void StopMonitoringAsync ()
     {
-        Task task = Task.Run(StopMonitoring);
+        var task = Task.Run(StopMonitoring);
 
         //Thread stopperThread = new(new ThreadStart(StopMonitoring))
         //{
@@ -711,17 +711,17 @@ public class LogfileReader : IAutoLogLineColumnizerCallback
     {
         _logger.Info("-------- Buffer diagnostics -------");
         _lruCacheDictLock.AcquireReaderLock(Timeout.Infinite);
-        int cacheCount = _lruCacheDict.Count;
+        var cacheCount = _lruCacheDict.Count;
         _logger.Info("LRU entries: {0}", cacheCount);
         _lruCacheDictLock.ReleaseReaderLock();
 
         AcquireBufferListReaderLock();
         _logger.Info("File: {0}\r\nBuffer count: {1}\r\nDisposed buffers: {2}", _fileName, _bufferList.Count, _bufferList.Count - cacheCount);
-        int lineNum = 0;
+        var lineNum = 0;
         long disposeSum = 0;
         long maxDispose = 0;
         long minDispose = int.MaxValue;
-        for (int i = 0; i < _bufferList.Count; ++i)
+        for (var i = 0; i < _bufferList.Count; ++i)
         {
             LogBuffer buffer = _bufferList[i];
             _disposeLock.AcquireReaderLock(Timeout.Infinite);
@@ -933,7 +933,7 @@ public class LogfileReader : IAutoLogLineColumnizerCallback
                 reader.Position = filePos;
                 _fileLength = logFileInfo.Length;
 
-                int lineNum = startLine;
+                var lineNum = startLine;
                 LogBuffer logBuffer;
                 AcquireBufferListReaderLock();
                 if (_bufferList.Count == 0)
@@ -972,8 +972,8 @@ public class LogfileReader : IAutoLogLineColumnizerCallback
 
                 Monitor.Enter(logBuffer); // Lock the buffer
                 ReleaseBufferListReaderLock();
-                int lineCount = logBuffer.LineCount;
-                int droppedLines = logBuffer.PrevBuffersDroppedLinesSum;
+                var lineCount = logBuffer.LineCount;
+                var droppedLines = logBuffer.PrevBuffersDroppedLinesSum;
                 filePos = reader.Position;
 
                 while (ReadLine(reader, logBuffer.StartLine + logBuffer.LineCount, logBuffer.StartLine + logBuffer.LineCount + droppedLines, out var line))
@@ -1129,9 +1129,9 @@ public class LogfileReader : IAutoLogLineColumnizerCallback
         long startTime = Environment.TickCount;
 #endif
         _logger.Debug("Starting garbage collection");
-        int threshold = 10;
+        var threshold = 10;
         _lruCacheDictLock.AcquireWriterLock(Timeout.Infinite);
-        int diff = 0;
+        var diff = 0;
         if (_lruCacheDict.Count - (_MAX_BUFFERS + threshold) > 0)
         {
             diff = _lruCacheDict.Count - _MAX_BUFFERS;
@@ -1153,14 +1153,14 @@ public class LogfileReader : IAutoLogLineColumnizerCallback
 
             // remove first <diff> entries (least usage)
             _disposeLock.AcquireWriterLock(Timeout.Infinite);
-            for (int i = 0; i < diff; ++i)
+            for (var i = 0; i < diff; ++i)
             {
                 if (i >= useSorterList.Count)
                 {
                     break;
                 }
 
-                int startLine = useSorterList.Values[i];
+                var startLine = useSorterList.Values[i];
                 LogBufferCacheEntry entry = _lruCacheDict[startLine];
                 _lruCacheDict.Remove(startLine);
                 entry.LogBuffer.DisposeContent();
@@ -1319,14 +1319,14 @@ public class LogfileReader : IAutoLogLineColumnizerCallback
             {
                 ILogStreamReader reader = GetLogStreamReader(fileStream, EncodingOptions, UseNewReader);
 
-                long filePos = logBuffer.StartPos;
+                var filePos = logBuffer.StartPos;
                 reader.Position = logBuffer.StartPos;
-                int maxLinesCount = logBuffer.LineCount;
-                int lineCount = 0;
-                int dropCount = logBuffer.PrevBuffersDroppedLinesSum;
+                var maxLinesCount = logBuffer.LineCount;
+                var lineCount = 0;
+                var dropCount = logBuffer.PrevBuffersDroppedLinesSum;
                 logBuffer.ClearLines();
 
-                while (ReadLine(reader, logBuffer.StartLine + logBuffer.LineCount, logBuffer.StartLine + logBuffer.LineCount + dropCount, out string line))
+                while (ReadLine(reader, logBuffer.StartLine + logBuffer.LineCount, logBuffer.StartLine + logBuffer.LineCount + dropCount, out var line))
                 {
                     if (lineCount >= maxLinesCount)
                     {
@@ -1391,9 +1391,9 @@ public class LogfileReader : IAutoLogLineColumnizerCallback
         //}
 
         //int startIndex = lineNum / LogBuffer.MAX_LINES;  // doesn't work anymore since XML buffer may contain more lines than MAX_LINES
-        int startIndex = 0;
-        int count = _bufferList.Count;
-        for (int i = startIndex; i < count; ++i)
+        var startIndex = 0;
+        var count = _bufferList.Count;
+        for (var i = startIndex; i < count; ++i)
         {
             logBuffer = _bufferList[i];
             if (lineNum >= logBuffer.StartLine && lineNum < logBuffer.StartLine + logBuffer.LineCount)
@@ -1432,7 +1432,7 @@ public class LogfileReader : IAutoLogLineColumnizerCallback
     {
         ILogFileInfo info = logBuffer.FileInfo;
         AcquireBufferListReaderLock();
-        int index = _bufferList.IndexOf(logBuffer);
+        var index = _bufferList.IndexOf(logBuffer);
         if (index == -1)
         {
             ReleaseBufferListReaderLock();
@@ -1461,7 +1461,7 @@ public class LogfileReader : IAutoLogLineColumnizerCallback
         //IFileSystemPlugin fs = PluginRegistry.GetInstance().FindFileSystemForUri(this.watchedILogFileInfo.FullName);
         _logger.Info("MonitorThreadProc() for file {0}", _watchedILogFileInfo.FullName);
 
-        long oldSize = 0;
+        long oldSize;
         try
         {
             OnLoadingStarted(new LoadFileEventArgs(_fileName, 0, false, 0, false));
@@ -1481,7 +1481,7 @@ public class LogfileReader : IAutoLogLineColumnizerCallback
         {
             try
             {
-                int pollInterval = _watchedILogFileInfo.PollInterval;
+                var pollInterval = _watchedILogFileInfo.PollInterval;
                 //#if DEBUG
                 //          if (_logger.IsDebug)
                 //          {
@@ -1551,7 +1551,7 @@ public class LogfileReader : IAutoLogLineColumnizerCallback
             FileSize = _fileLength;
         }
 
-        long newSize = _fileLength;
+        var newSize = _fileLength;
         //if (this.currFileSize != newSize)
         {
             _logger.Info("file size changed. new size={0}, file: {1}", newSize, _fileName);
@@ -1564,7 +1564,7 @@ public class LogfileReader : IAutoLogLineColumnizerCallback
         LogEventArgs args = new();
         args.PrevFileSize = FileSize;
         args.PrevLineCount = LineCount;
-        long newSize = _fileLength;
+        var newSize = _fileLength;
         if (newSize < FileSize || _isDeleted)
         {
             _logger.Info("File was created anew: new size={0}, oldSize={1}", newSize, FileSize);
@@ -1593,7 +1593,7 @@ public class LogfileReader : IAutoLogLineColumnizerCallback
                 }
                 else
                 {
-                    int offset = ShiftBuffers();
+                    var offset = ShiftBuffers();
                     //this.currFileSize = newSize;    // removed because ShiftBuffers() calls ReadToBuffer() which will set the actual read size
                     args.FileSize = newSize;
                     args.LineCount = LineCount;

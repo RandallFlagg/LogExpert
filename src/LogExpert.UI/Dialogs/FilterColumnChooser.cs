@@ -38,10 +38,10 @@ public partial class FilterColumnChooser : Form
 
     private void Init()
     {
-        int count = _columnizer.GetColumnCount();
-        string[] names = _columnizer.GetColumnNames();
+        var count = _columnizer.GetColumnCount();
+        var names = _columnizer.GetColumnNames();
 
-        for (int i = 0; i < count; ++i)
+        for (var i = 0; i < count; ++i)
         {
             columnListBox.Items.Add(names[i], _filterParams.ColumnList.Contains(i));
         }

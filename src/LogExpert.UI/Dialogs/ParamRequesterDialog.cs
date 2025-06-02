@@ -44,7 +44,7 @@ public partial class ParamRequesterDialog : Form
 
         if (Values != null)
         {
-            foreach (string value in Values)
+            foreach (var value in Values)
             {
                 comboBoxValue.Items.Add(value);
             }

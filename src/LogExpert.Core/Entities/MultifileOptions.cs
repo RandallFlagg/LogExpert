@@ -1,14 +1,13 @@
-﻿namespace LogExpert.Core.Entities
+﻿namespace LogExpert.Core.Entities;
+
+[Serializable]
+public class MultiFileOptions
 {
-    [Serializable]
-    public class MultiFileOptions
-    {
-        #region Properties
+    #region Properties
 
-        public int MaxDayTry { get; set; } = 3;
+    public int MaxDayTry { get; set; } = 3;
 
-        public string FormatPattern { get; set; } = "*$J(.)";
+    public string FormatPattern { get; set; } = "*$J(.)";
 
-        #endregion
-    }
+    #endregion
 }

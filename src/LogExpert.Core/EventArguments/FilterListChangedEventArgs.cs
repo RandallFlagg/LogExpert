@@ -1,14 +1,13 @@
 ﻿
 using LogExpert.Core.Interface;
 
-namespace LogExpert.Core.EventArguments
+namespace LogExpert.Core.EventArguments;
+
+public class FilterListChangedEventArgs(ILogWindow logWindow)
 {
-    public class FilterListChangedEventArgs(ILogWindow logWindow)
-    {
-        #region Properties
+    #region Properties
 
-        public ILogWindow LogWindow { get; } = logWindow;
+    public ILogWindow LogWindow { get; } = logWindow;
 
-        #endregion
-    }
+    #endregion
 }

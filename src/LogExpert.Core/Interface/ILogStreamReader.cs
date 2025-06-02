@@ -1,24 +1,23 @@
 ﻿using System.Text;
 
-namespace LogExpert.Core.Interface
+namespace LogExpert.Core.Interface;
+
+public interface ILogStreamReader : IDisposable
 {
-    public interface ILogStreamReader : IDisposable
-    {
-        #region Properties
+    #region Properties
 
-        long Position { get; set; }
+    long Position { get; set; }
 
-        bool IsBufferComplete { get; }
+    bool IsBufferComplete { get; }
 
-        Encoding Encoding { get; }
+    Encoding Encoding { get; }
 
-        #endregion
+    #endregion
 
-        #region Public methods
+    #region Public methods
 
-        int ReadChar();
-        string ReadLine();
+    int ReadChar();
+    string ReadLine();
 
-        #endregion
-    }
+    #endregion
 }

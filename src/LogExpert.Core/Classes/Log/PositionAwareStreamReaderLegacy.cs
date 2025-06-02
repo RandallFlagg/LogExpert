@@ -1,110 +1,109 @@
 ﻿using LogExpert.Core.Entities;
 
-namespace LogExpert.Core.Classes.Log
+namespace LogExpert.Core.Classes.Log;
+
+public class PositionAwareStreamReaderLegacy : PositionAwareStreamReaderBase
 {
-    public class PositionAwareStreamReaderLegacy : PositionAwareStreamReaderBase
+    #region Fields
+
+    private readonly char[] _charBuffer = new char[MaxLineLen];
+
+    private int _charBufferPos;
+    private bool _crDetect;
+
+    #endregion
+
+    #region cTor
+
+    public PositionAwareStreamReaderLegacy(Stream stream, EncodingOptions encodingOptions) : base(stream, encodingOptions)
     {
-        #region Fields
 
-        private readonly char[] _charBuffer = new char[MaxLineLen];
+    }
 
-        private int _charBufferPos;
-        private bool _crDetect;
+    #endregion
 
-        #endregion
+    #region Public methods
 
-        #region cTor
+    public override string ReadLine()
+    {
+        int readInt;
 
-        public PositionAwareStreamReaderLegacy(Stream stream, EncodingOptions encodingOptions) : base(stream, encodingOptions)
+        while (-1 != (readInt = ReadChar()))
         {
+            var readChar = (char)readInt;
 
-        }
-
-        #endregion
-
-        #region Public methods
-
-        public override string ReadLine()
-        {
-            int readInt;
-
-            while (-1 != (readInt = ReadChar()))
+            switch (readChar)
             {
-                char readChar = (char)readInt;
-
-                switch (readChar)
-                {
-                    case '\n':
+                case '\n':
+                    {
+                        _crDetect = false;
+                        return GetLineAndResetCharBufferPos();
+                    }
+                case '\r':
+                    {
+                        if (_crDetect)
                         {
-                            _crDetect = false;
                             return GetLineAndResetCharBufferPos();
                         }
-                    case '\r':
-                        {
-                            if (_crDetect)
-                            {
-                                return GetLineAndResetCharBufferPos();
-                            }
 
-                            _crDetect = true;
-                            break;
-                        }
-                    default:
+                        _crDetect = true;
+                        break;
+                    }
+                default:
+                    {
+                        if (_crDetect)
                         {
-                            if (_crDetect)
-                            {
-                                _crDetect = false;
-                                string line = GetLineAndResetCharBufferPos();
-                                AppendToCharBuffer(readChar);
-                                return line;
-                            }
-
+                            _crDetect = false;
+                            var line = GetLineAndResetCharBufferPos();
                             AppendToCharBuffer(readChar);
-                            break;
+                            return line;
                         }
-                }
-            }
 
-            string result = GetLineAndResetCharBufferPos();
-            if (readInt == -1 && result.Length == 0 && !_crDetect)
-            {
-                return null; // EOF
-            }
-            _crDetect = false;
-            return result;
-        }
-
-        protected override void ResetReader()
-        {
-            ResetCharBufferPos();
-
-            base.ResetReader();
-        }
-
-        #endregion
-
-        #region Private Methods
-
-        private string GetLineAndResetCharBufferPos()
-        {
-            string result = new(_charBuffer, 0, _charBufferPos);
-            ResetCharBufferPos();
-            return result;
-        }
-
-        private void AppendToCharBuffer(char readChar)
-        {
-            if (_charBufferPos < MaxLineLen)
-            {
-                _charBuffer[_charBufferPos++] = readChar;
+                        AppendToCharBuffer(readChar);
+                        break;
+                    }
             }
         }
 
-        private void ResetCharBufferPos()
+        var result = GetLineAndResetCharBufferPos();
+        if (readInt == -1 && result.Length == 0 && !_crDetect)
         {
-            _charBufferPos = 0;
+            return null; // EOF
         }
-
-        #endregion
+        _crDetect = false;
+        return result;
     }
+
+    protected override void ResetReader()
+    {
+        ResetCharBufferPos();
+
+        base.ResetReader();
+    }
+
+    #endregion
+
+    #region Private Methods
+
+    private string GetLineAndResetCharBufferPos()
+    {
+        string result = new(_charBuffer, 0, _charBufferPos);
+        ResetCharBufferPos();
+        return result;
+    }
+
+    private void AppendToCharBuffer(char readChar)
+    {
+        if (_charBufferPos < MaxLineLen)
+        {
+            _charBuffer[_charBufferPos++] = readChar;
+        }
+    }
+
+    private void ResetCharBufferPos()
+    {
+        _charBufferPos = 0;
+    }
+
+    #endregion
 }

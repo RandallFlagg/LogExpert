@@ -14,7 +14,8 @@ using LogExpert.UI.Dialogs.LogTabWindow;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace LogExpert.UI.Controls.LogTabWindow;
-partial class LogTabWindow
+
+public partial class LogTabWindow
 {
     #region Events handler
 
@@ -44,7 +45,7 @@ partial class LogTabWindow
         {
             List<string> tmpList = ObjectClone.Clone(ConfigManager.Settings.lastOpenFilesList);
 
-            foreach (string name in tmpList)
+            foreach (var name in tmpList)
             {
                 if (string.IsNullOrEmpty(name) == false)
                 {
@@ -126,7 +127,7 @@ partial class LogTabWindow
 
     private void OnLogWindowDisposed (object sender, EventArgs e)
     {
-        LogWindow.LogWindow logWindow = sender as LogWindow.LogWindow;
+        var logWindow = sender as LogWindow.LogWindow;
 
         if (sender == CurrentLogWindow)
         {
@@ -218,7 +219,7 @@ partial class LogTabWindow
         DialogResult res = dlg.ShowDialog();
         if (res == DialogResult.OK)
         {
-            int line = dlg.Line - 1;
+            var line = dlg.Line - 1;
             if (line >= 0)
             {
                 CurrentLogWindow.GotoLine(line);
@@ -244,9 +245,9 @@ partial class LogTabWindow
     private void OnLogTabWindowDragEnter (object sender, DragEventArgs e)
     {
 #if DEBUG
-        string[] formats = e.Data.GetFormats();
-        string s = "Dragging something over LogExpert. Formats:  ";
-        foreach (string format in formats)
+        var formats = e.Data.GetFormats();
+        var s = "Dragging something over LogExpert. Formats:  ";
+        foreach (var format in formats)
         {
             s += format;
             s += " , ";
@@ -271,9 +272,9 @@ partial class LogTabWindow
     private void OnLogWindowDragDrop (object sender, DragEventArgs e)
     {
 #if DEBUG
-        string[] formats = e.Data.GetFormats();
-        string s = "Dropped formats:  ";
-        foreach (string format in formats)
+        var formats = e.Data.GetFormats();
+        var s = "Dropped formats:  ";
+        foreach (var format in formats)
         {
             s += format;
             s += " , ";
@@ -284,7 +285,7 @@ partial class LogTabWindow
 
         if (e.Data.GetDataPresent(DataFormats.FileDrop))
         {
-            object o = e.Data.GetData(DataFormats.FileDrop);
+            var o = e.Data.GetData(DataFormats.FileDrop);
             if (o is string[] names)
             {
                 LoadFiles(names, (e.KeyState & 4) == 4); // (shift pressed?)
@@ -416,7 +417,7 @@ partial class LogTabWindow
     {
         if (sender.GetType().IsAssignableFrom(typeof(LogWindow.LogWindow)))
         {
-            int diff = e.LineCount - e.PrevLineCount;
+            var diff = e.LineCount - e.PrevLineCount;
             if (diff < 0)
             {
                 return;
@@ -488,7 +489,7 @@ partial class LogTabWindow
         {
             if (dockPanel.ActiveContent == sender)
             {
-                LogWindowData data = ((LogWindow.LogWindow)sender).Tag as LogWindowData;
+                var data = ((LogWindow.LogWindow)sender).Tag as LogWindowData;
                 data.dirty = false;
                 Icon icon = GetIcon(data.diffSum, data);
                 BeginInvoke(new SetTabIconDelegate(SetTabIcon), (LogWindow.LogWindow)sender, icon);
@@ -500,7 +501,7 @@ partial class LogTabWindow
     {
         if (!Disposing)
         {
-            LogWindowData data = ((LogWindow.LogWindow)sender).Tag as LogWindowData;
+            var data = ((LogWindow.LogWindow)sender).Tag as LogWindowData;
             data.syncMode = e.IsTimeSynced ? 1 : 0;
             Icon icon = GetIcon(data.diffSum, data);
             BeginInvoke(new SetTabIconDelegate(SetTabIcon), (LogWindow.LogWindow)sender, icon);
@@ -555,7 +556,7 @@ partial class LogTabWindow
     {
         if (CurrentLogWindow != null)
         {
-            LogWindowData data = CurrentLogWindow.Tag as LogWindowData;
+            var data = CurrentLogWindow.Tag as LogWindowData;
             Icon icon = GetIcon(0, data);
             BeginInvoke(new SetTabIconDelegate(SetTabIcon), CurrentLogWindow, icon);
             CurrentLogWindow.Reload();
@@ -692,9 +693,9 @@ partial class LogTabWindow
 
     private void OnTabColorToolStripMenuItemClick (object sender, EventArgs e)
     {
-        LogWindow.LogWindow logWindow = dockPanel.ActiveContent as LogWindow.LogWindow;
+        var logWindow = dockPanel.ActiveContent as LogWindow.LogWindow;
 
-        LogWindowData data = logWindow.Tag as LogWindowData;
+        var data = logWindow.Tag as LogWindowData;
 
         if (data == null)
         {
@@ -746,15 +747,15 @@ partial class LogTabWindow
 
         if (dlg.ShowDialog() == DialogResult.OK)
         {
-            string fileName = dlg.FileName;
+            var fileName = dlg.FileName;
             List<string> fileNames = [];
 
             lock (_logWindowList)
             {
                 foreach (DockContent content in dockPanel.Contents)
                 {
-                    LogWindow.LogWindow logWindow = content as LogWindow.LogWindow;
-                    string persistenceFileName = logWindow?.SavePersistenceData(true);
+                    var logWindow = content as LogWindow.LogWindow;
+                    var persistenceFileName = logWindow?.SavePersistenceData(true);
                     if (persistenceFileName != null)
                     {
                         fileNames.Add(persistenceFileName);
@@ -763,8 +764,8 @@ partial class LogTabWindow
             }
 
             ProjectData projectData = new();
-            projectData.memberList = fileNames;
-            projectData.tabLayoutXml = SaveLayout();
+            projectData.MemberList = fileNames;
+            projectData.TabLayoutXml = SaveLayout();
             ProjectPersister.SaveProjectData(fileName, projectData);
         }
     }
@@ -777,7 +778,7 @@ partial class LogTabWindow
 
         if (dlg.ShowDialog() == DialogResult.OK)
         {
-            string projectFileName = dlg.FileName;
+            var projectFileName = dlg.FileName;
             LoadProject(projectFileName, true);
         }
     }
@@ -792,13 +793,13 @@ partial class LogTabWindow
 
     private void OnCopyPathToClipboardToolStripMenuItemClick (object sender, EventArgs e)
     {
-        LogWindow.LogWindow logWindow = dockPanel.ActiveContent as LogWindow.LogWindow;
+        var logWindow = dockPanel.ActiveContent as LogWindow.LogWindow;
         Clipboard.SetText(logWindow.Title);
     }
 
     private void OnFindInExplorerToolStripMenuItemClick (object sender, EventArgs e)
     {
-        LogWindow.LogWindow logWindow = dockPanel.ActiveContent as LogWindow.LogWindow;
+        var logWindow = dockPanel.ActiveContent as LogWindow.LogWindow;
 
         Process explorer = new();
         explorer.StartInfo.FileName = "explorer.exe";
