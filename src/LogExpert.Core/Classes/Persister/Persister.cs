@@ -174,7 +174,7 @@ public class Persister
         rootElement.AppendChild(fileElement);
         fileElement.SetAttribute("fileName", persistenceData.fileName);
         fileElement.SetAttribute("lineCount", "" + persistenceData.lineCount);
-        WriteBookmarks(xmlDoc, fileElement, persistenceData.bookmarkList);
+        WriteBookmarks(xmlDoc, fileElement, persistenceData.BookmarkList);
         WriteRowHeightList(xmlDoc, fileElement, persistenceData.rowHeightList);
         WriteOptions(xmlDoc, fileElement, persistenceData);
         WriteFilter(xmlDoc, fileElement, persistenceData.filterParamsList);
@@ -207,7 +207,7 @@ public class Persister
                 PersistenceData persistenceData = data.PersistenceData;
                 XmlElement filterTabElement = xmlDoc.CreateElement("filterTab");
                 filterTabsElement.AppendChild(filterTabElement);
-                WriteBookmarks(xmlDoc, filterTabElement, persistenceData.bookmarkList);
+                WriteBookmarks(xmlDoc, filterTabElement, persistenceData.BookmarkList);
                 WriteRowHeightList(xmlDoc, filterTabElement, persistenceData.rowHeightList);
                 WriteOptions(xmlDoc, filterTabElement, persistenceData);
                 WriteFilter(xmlDoc, filterTabElement, persistenceData.filterParamsList);
@@ -280,7 +280,7 @@ public class Persister
             {
                 foreach (XmlNode subNode in node.ChildNodes)
                 {
-                    if (subNode.Name.Equals("params"))
+                    if (subNode.Name.Equals("params", StringComparison.OrdinalIgnoreCase))
                     {
                         var base64Text = subNode.InnerText;
                         var data = Convert.FromBase64String(base64Text);
@@ -344,7 +344,7 @@ public class Persister
     {
         PersistenceData persistenceData = new();
         var fileElement = node as XmlElement;
-        persistenceData.bookmarkList = ReadBookmarks(fileElement);
+        persistenceData.BookmarkList = ReadBookmarks(fileElement);
         persistenceData.rowHeightList = ReadRowHeightList(fileElement);
         ReadOptions(fileElement, persistenceData);
         persistenceData.fileName = fileElement.GetAttribute("fileName");
@@ -401,29 +401,29 @@ public class Persister
 
                 foreach (XmlAttribute attr in node.Attributes)
                 {
-                    if (attr.Name.Equals("line"))
+                    if (attr.Name.Equals("line", StringComparison.OrdinalIgnoreCase))
                     {
                         line = attr.InnerText;
                     }
                 }
                 foreach (XmlNode subNode in node.ChildNodes)
                 {
-                    if (subNode.Name.Equals("text"))
+                    if (subNode.Name.Equals("text", StringComparison.OrdinalIgnoreCase))
                     {
                         text = subNode.InnerText;
                     }
-                    else if (subNode.Name.Equals("posX"))
+                    else if (subNode.Name.Equals("posX", StringComparison.OrdinalIgnoreCase))
                     {
                         posX = subNode.InnerText;
                     }
-                    else if (subNode.Name.Equals("posY"))
+                    else if (subNode.Name.Equals("posY", StringComparison.OrdinalIgnoreCase))
                     {
                         posY = subNode.InnerText;
                     }
                 }
                 if (line == null || posX == null || posY == null)
                 {
-                    _logger.Error("Invalid XML format for bookmark: {0}", node.InnerText);
+                    _logger.Error($"Invalid XML format for bookmark: {node.InnerText}");
                     continue;
                 }
                 var lineNum = int.Parse(line);
@@ -469,11 +469,11 @@ public class Persister
                 string line = null;
                 foreach (XmlAttribute attr in node.Attributes)
                 {
-                    if (attr.Name.Equals("line"))
+                    if (attr.Name.Equals("line", StringComparison.OrdinalIgnoreCase))
                     {
                         line = attr.InnerText;
                     }
-                    else if (attr.Name.Equals("height"))
+                    else if (attr.Name.Equals("height", StringComparison.OrdinalIgnoreCase))
                     {
                         height = attr.InnerText;
                     }
@@ -505,7 +505,7 @@ public class Persister
         optionsElement.AppendChild(element);
 
         element = xmlDoc.CreateElement("currentline");
-        element.SetAttribute("line", "" + persistenceData.currentLine);
+        element.SetAttribute("line", "" + persistenceData.CurrentLine);
         optionsElement.AppendChild(element);
 
         element = xmlDoc.CreateElement("firstDisplayedLine");
@@ -519,8 +519,8 @@ public class Persister
         optionsElement.AppendChild(element);
 
         element = xmlDoc.CreateElement("bookmarklist");
-        element.SetAttribute("visible", persistenceData.bookmarkListVisible ? "1" : "0");
-        element.SetAttribute("position", "" + persistenceData.bookmarkListPosition);
+        element.SetAttribute("visible", persistenceData.BookmarkListVisible ? "1" : "0");
+        element.SetAttribute("position", "" + persistenceData.BookmarkListPosition);
         optionsElement.AppendChild(element);
 
         element = xmlDoc.CreateElement("followTail");
@@ -532,7 +532,7 @@ public class Persister
         rootElement.AppendChild(element);
 
         element = xmlDoc.CreateElement("columnizer");
-        element.SetAttribute("name", persistenceData.columnizerName);
+        element.SetAttribute("name", persistenceData.ColumnizerName);
         rootElement.AppendChild(element);
 
         element = xmlDoc.CreateElement("highlightGroup");
@@ -553,7 +553,7 @@ public class Persister
     {
         XmlNode optionsNode = startNode.SelectSingleNode("options");
         var value = GetOptionsAttribute(optionsNode, "multifile", "enabled");
-        persistenceData.multiFile = value != null && value.Equals("1");
+        persistenceData.multiFile = value != null && value.Equals("1", StringComparison.OrdinalIgnoreCase);
         persistenceData.multiFilePattern = GetOptionsAttribute(optionsNode, "multifile", "pattern");
         value = GetOptionsAttribute(optionsNode, "multifile", "maxDays");
         try
@@ -574,7 +574,7 @@ public class Persister
                 string fileName = null;
                 foreach (XmlAttribute attr in node.Attributes)
                 {
-                    if (attr.Name.Equals("fileName"))
+                    if (attr.Name.Equals("fileName", StringComparison.OrdinalIgnoreCase))
                     {
                         fileName = attr.InnerText;
                     }
@@ -586,7 +586,7 @@ public class Persister
         value = GetOptionsAttribute(optionsNode, "currentline", "line");
         if (value != null)
         {
-            persistenceData.currentLine = int.Parse(value);
+            persistenceData.CurrentLine = int.Parse(value);
         }
         value = GetOptionsAttribute(optionsNode, "firstDisplayedLine", "line");
         if (value != null)
@@ -595,9 +595,9 @@ public class Persister
         }
 
         value = GetOptionsAttribute(optionsNode, "filter", "visible");
-        persistenceData.filterVisible = value != null && value.Equals("1");
+        persistenceData.filterVisible = value != null && value.Equals("1", StringComparison.OrdinalIgnoreCase);
         value = GetOptionsAttribute(optionsNode, "filter", "advanced");
-        persistenceData.filterAdvanced = value != null && value.Equals("1");
+        persistenceData.filterAdvanced = value != null && value.Equals("1", StringComparison.OrdinalIgnoreCase);
         value = GetOptionsAttribute(optionsNode, "filter", "position");
         if (value != null)
         {
@@ -605,21 +605,21 @@ public class Persister
         }
 
         value = GetOptionsAttribute(optionsNode, "bookmarklist", "visible");
-        persistenceData.bookmarkListVisible = value != null && value.Equals("1");
+        persistenceData.BookmarkListVisible = value != null && value.Equals("1", StringComparison.OrdinalIgnoreCase);
         value = GetOptionsAttribute(optionsNode, "bookmarklist", "position");
         if (value != null)
         {
-            persistenceData.bookmarkListPosition = int.Parse(value);
+            persistenceData.BookmarkListPosition = int.Parse(value);
         }
 
         value = GetOptionsAttribute(optionsNode, "followTail", "enabled");
-        persistenceData.followTail = value != null && value.Equals("1");
+        persistenceData.followTail = value != null && value.Equals("1", StringComparison.OrdinalIgnoreCase);
 
         value = GetOptionsAttribute(optionsNode, "bookmarkCommentColumn", "visible");
-        persistenceData.showBookmarkCommentColumn = value != null && value.Equals("1");
+        persistenceData.showBookmarkCommentColumn = value != null && value.Equals("1", StringComparison.OrdinalIgnoreCase);
 
         value = GetOptionsAttribute(optionsNode, "filterSaveList", "visible");
-        persistenceData.filterSaveListVisible = value != null && value.Equals("1");
+        persistenceData.filterSaveListVisible = value != null && value.Equals("1", StringComparison.OrdinalIgnoreCase);
 
         XmlNode tabNode = startNode.SelectSingleNode("tab");
         if (tabNode != null)
@@ -629,7 +629,7 @@ public class Persister
         XmlNode columnizerNode = startNode.SelectSingleNode("columnizer");
         if (columnizerNode != null)
         {
-            persistenceData.columnizerName = (columnizerNode as XmlElement).GetAttribute("name");
+            persistenceData.ColumnizerName = (columnizerNode as XmlElement).GetAttribute("name");
         }
         XmlNode highlightGroupNode = startNode.SelectSingleNode("highlightGroup");
         if (highlightGroupNode != null)

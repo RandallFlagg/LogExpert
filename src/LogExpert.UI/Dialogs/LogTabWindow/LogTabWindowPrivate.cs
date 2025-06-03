@@ -4,7 +4,6 @@ using System.Runtime.Versioning;
 using System.Security;
 using System.Text;
 
-using LogExpert.Classes;
 using LogExpert.Core.Classes;
 using LogExpert.Core.Classes.Columnizer;
 using LogExpert.Core.Classes.Persister;
@@ -15,6 +14,7 @@ using LogExpert.Core.EventArguments;
 using LogExpert.Dialogs;
 using LogExpert.PluginRegistry.FileSystem;
 using LogExpert.UI.Dialogs;
+using LogExpert.UI.Entities;
 using LogExpert.UI.Extensions;
 
 using WeifenLuo.WinFormsUI.Docking;
@@ -175,7 +175,7 @@ public partial class LogTabWindow
 
         LogWindowData data = new()
         {
-            diffSum = 0
+            DiffSum = 0
         };
 
         logWindow.Tag = data;
@@ -819,10 +819,10 @@ public partial class LogTabWindow
         var data = logWin.Tag as LogWindowData;
         lock (data)
         {
-            data.diffSum = DIFF_MAX;
+            data.DiffSum = DIFF_MAX;
         }
 
-        Icon icon = GetIcon(data.diffSum, data);
+        Icon icon = GetIcon(data.DiffSum, data);
         BeginInvoke(new SetTabIconDelegate(SetTabIcon), logWin, icon);
     }
 
@@ -866,15 +866,15 @@ public partial class LogTabWindow
                 foreach (LogWindow.LogWindow logWindow in _logWindowList)
                 {
                     var data = logWindow.Tag as LogWindowData;
-                    if (data.diffSum > 0)
+                    if (data.DiffSum > 0)
                     {
-                        data.diffSum -= 10;
-                        if (data.diffSum < 0)
+                        data.DiffSum -= 10;
+                        if (data.DiffSum < 0)
                         {
-                            data.diffSum = 0;
+                            data.DiffSum = 0;
                         }
 
-                        Icon icon = GetIcon(data.diffSum, data);
+                        Icon icon = GetIcon(data.DiffSum, data);
                         BeginInvoke(new SetTabIconDelegate(SetTabIcon), logWindow, icon);
                     }
                 }
@@ -896,8 +896,8 @@ public partial class LogTabWindow
     {
         Icon icon =
             _ledIcons[
-                GetLevelFromDiff(diff), data.dirty ? 1 : 0, Preferences.showTailState ? data.tailState : 3,
-                data.syncMode
+                GetLevelFromDiff(diff), data.Dirty ? 1 : 0, Preferences.showTailState ? data.TailState : 3,
+                data.SyncMode
             ];
         return icon;
     }
@@ -1018,7 +1018,7 @@ public partial class LogTabWindow
             foreach (LogWindow.LogWindow logWindow in _logWindowList)
             {
                 var data = logWindow.Tag as LogWindowData;
-                Icon icon = GetIcon(data.diffSum, data);
+                Icon icon = GetIcon(data.DiffSum, data);
                 BeginInvoke(new SetTabIconDelegate(SetTabIcon), logWindow, icon);
             }
         }

@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -47,7 +47,7 @@ public class RolloverFilenameBuilder
 
     #region cTor
 
-    public RolloverFilenameBuilder(string formatString)
+    public RolloverFilenameBuilder (string formatString)
     {
         ParseFormatString(formatString);
     }
@@ -66,7 +66,7 @@ public class RolloverFilenameBuilder
 
     #region Public methods
 
-    public void SetFileName(string fileName)
+    public void SetFileName (string fileName)
     {
         _currentFileName = fileName;
         Match match = _regex.Match(fileName);
@@ -91,18 +91,18 @@ public class RolloverFilenameBuilder
         }
     }
 
-    public void IncrementDate()
+    public void IncrementDate ()
     {
         _dateTime = _dateTime.AddDays(1);
     }
 
-    public void DecrementDate()
+    public void DecrementDate ()
     {
         _dateTime = _dateTime.AddDays(-1);
     }
 
 
-    public string BuildFileName()
+    public string BuildFileName ()
     {
         var fileName = _currentFileName;
         if (_dateGroup != null && _dateGroup.Success)
@@ -136,10 +136,10 @@ public class RolloverFilenameBuilder
 
     #region Private Methods
 
-    private void ParseFormatString(string formatString)
+    private void ParseFormatString (string formatString)
     {
         var fmt = EscapeNonvarRegions(formatString);
-        var datePos = formatString.IndexOf("$D(");
+        var datePos = formatString.IndexOf("$D(", StringComparison.Ordinal);
         if (datePos != -1)
         {
             var endPos = formatString.IndexOf(')', datePos);
@@ -151,9 +151,9 @@ public class RolloverFilenameBuilder
 
                 var dtf = _dateTimeFormat;
                 dtf = dtf.ToUpper();
-                dtf = dtf.Replace("D", "\\d");
-                dtf = dtf.Replace("Y", "\\d");
-                dtf = dtf.Replace("M", "\\d");
+                dtf = dtf.Replace("D", "\\d", StringComparison.Ordinal);
+                dtf = dtf.Replace("Y", "\\d", StringComparison.Ordinal);
+                dtf = dtf.Replace("M", "\\d", StringComparison.Ordinal);
                 fmt = fmt.Remove(datePos, 2); // remove $D
                 fmt = fmt.Remove(datePos + 1, _dateTimeFormat.Length); // replace with regex version of format
                 fmt = fmt.Insert(datePos + 1, dtf);
@@ -161,7 +161,7 @@ public class RolloverFilenameBuilder
             }
         }
 
-        var condPos = fmt.IndexOf("$J(");
+        var condPos = fmt.IndexOf("$J(", StringComparison.Ordinal);
         if (condPos != -1)
         {
             var endPos = fmt.IndexOf(')', condPos);
@@ -172,20 +172,22 @@ public class RolloverFilenameBuilder
             }
         }
 
-        fmt = fmt.Replace("*", ".*");
-        _hideZeroIndex = fmt.Contains("$J");
-        fmt = fmt.Replace("$I", "(?'index'[\\d]+)");
-        fmt = fmt.Replace("$J", "(?'index'[\\d]*)");
+        fmt = fmt.Replace("*", ".*", StringComparison.Ordinal);
+        _hideZeroIndex = fmt.Contains("$J", StringComparison.Ordinal);
+        fmt = fmt.Replace("$I", "(?'index'[\\d]+)", StringComparison.Ordinal);
+        fmt = fmt.Replace("$J", "(?'index'[\\d]*)", StringComparison.Ordinal);
 
         _regex = new Regex(fmt);
     }
 
-    private string EscapeNonvarRegions(string formatString)
+    private string EscapeNonvarRegions (string formatString)
     {
         var fmt = formatString.Replace('*', '\xFFFD');
-        StringBuilder result = new();
         var state = 0;
+
+        StringBuilder result = new();
         StringBuilder segment = new();
+
         for (var i = 0; i < fmt.Length; ++i)
         {
             switch (state)
@@ -193,41 +195,45 @@ public class RolloverFilenameBuilder
                 case 0: // looking for $
                     if (fmt[i] == '$')
                     {
-                        result.Append(Regex.Escape(segment.ToString()));
+                        _ = result.Append(Regex.Escape(segment.ToString()));
                         segment = new StringBuilder();
                         state = 1;
                     }
-                    segment.Append(fmt[i]);
+
+                    _ = segment.Append(fmt[i]);
                     break;
                 case 1: // the char behind $
-                    segment.Append(fmt[i]);
-                    result.Append(segment.ToString());
+                    _ = segment.Append(fmt[i]);
+                    _ = result.Append(segment);
                     segment = new StringBuilder();
                     state = 2;
                     break;
                 case 2: // checking if ( or other char
                     if (fmt[i] == '(')
                     {
-                        segment.Append(fmt[i]);
+                        _ = segment.Append(fmt[i]);
                         state = 3;
                     }
                     else
                     {
-                        segment.Append(fmt[i]);
+                        _ = segment.Append(fmt[i]);
                         state = 0;
                     }
+
                     break;
                 case 3: // looking for )
-                    segment.Append(fmt[i]);
+                    _ = segment.Append(fmt[i]);
                     if (fmt[i] == ')')
                     {
-                        result.Append(segment.ToString());
+                        _ = result.Append(segment);
                         segment = new StringBuilder();
                         state = 0;
                     }
+
                     break;
             }
         }
+
         fmt = result.ToString().Replace('\xFFFD', '*');
         return fmt;
     }

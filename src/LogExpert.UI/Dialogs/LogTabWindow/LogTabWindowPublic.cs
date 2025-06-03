@@ -1,3 +1,4 @@
+using System.Runtime.Versioning;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -18,36 +19,42 @@ public partial class LogTabWindow
 {
     #region Public methods
 
+    [SupportedOSPlatform("windows")]
     public LogWindow.LogWindow AddTempFileTab (string fileName, string title)
     {
         return AddFileTab(fileName, true, title, false, null);
     }
 
+    [SupportedOSPlatform("windows")]
     public LogWindow.LogWindow AddFilterTab (FilterPipe pipe, string title, ILogLineColumnizer preProcessColumnizer)
     {
         LogWindow.LogWindow logWin = AddFileTab(pipe.FileName, true, title, false, preProcessColumnizer);
         if (pipe.FilterParams.SearchText.Length > 0)
         {
             ToolTip tip = new(components);
+
             tip.SetToolTip(logWin,
                 "Filter: \"" + pipe.FilterParams.SearchText + "\"" +
                 (pipe.FilterParams.IsInvert ? " (Invert match)" : "") +
                 (pipe.FilterParams.ColumnRestrict ? "\nColumn restrict" : "")
             );
+
             tip.AutomaticDelay = 10;
             tip.AutoPopDelay = 5000;
             var data = logWin.Tag as LogWindowData;
-            data.toolTip = tip;
+            data.ToolTip = tip;
         }
 
         return logWin;
     }
 
+    [SupportedOSPlatform("windows")]
     public LogWindow.LogWindow AddFileTabDeferred (string givenFileName, bool isTempFile, string title, bool forcePersistenceLoading, ILogLineColumnizer preProcessColumnizer)
     {
         return AddFileTab(givenFileName, isTempFile, title, forcePersistenceLoading, preProcessColumnizer, true);
     }
 
+    [SupportedOSPlatform("windows")]
     public LogWindow.LogWindow AddFileTab (string givenFileName, bool isTempFile, string title, bool forcePersistenceLoading, ILogLineColumnizer preProcessColumnizer, bool doNotAddToDockPanel = false)
     {
         var logFileName = FindFilenameForSettings(givenFileName);
@@ -87,16 +94,16 @@ public partial class LogTabWindow
         }
 
         var data = logWindow.Tag as LogWindowData;
-        data.color = _defaultTabColor;
+        data.Color = _defaultTabColor;
         SetTabColor(logWindow, _defaultTabColor);
         //data.tabPage.BorderColor = this.defaultTabBorderColor;
         if (!isTempFile)
         {
             foreach (ColorEntry colorEntry in ConfigManager.Settings.fileColors)
             {
-                if (colorEntry.FileName.ToLower().Equals(logFileName.ToLower()))
+                if (colorEntry.FileName.ToUpperInvariant().Equals(logFileName.ToUpperInvariant(), StringComparison.Ordinal))
                 {
-                    data.color = colorEntry.Color;
+                    data.Color = colorEntry.Color;
                     SetTabColor(logWindow, colorEntry.Color);
                     break;
                 }
@@ -108,7 +115,7 @@ public partial class LogTabWindow
             SetTooltipText(logWindow, logFileName);
         }
 
-        if (givenFileName.EndsWith(".lxp"))
+        if (givenFileName.EndsWith(".lxp", StringComparison.Ordinal))
         {
             logWindow.ForcedPersistenceFileName = givenFileName;
         }
@@ -118,6 +125,7 @@ public partial class LogTabWindow
         return logWindow;
     }
 
+    [SupportedOSPlatform("windows")]
     public LogWindow.LogWindow AddMultiFileTab (string[] fileNames)
     {
         if (fileNames.Length < 1)
@@ -125,8 +133,8 @@ public partial class LogTabWindow
             return null;
         }
 
-        LogWindow.LogWindow logWindow = new(this, fileNames[fileNames.Length - 1], false, false, ConfigManager);
-        AddLogWindow(logWindow, fileNames[fileNames.Length - 1], false);
+        LogWindow.LogWindow logWindow = new(this, fileNames[^1], false, false, ConfigManager);
+        AddLogWindow(logWindow, fileNames[^1], false);
         multiFileToolStripMenuItem.Checked = true;
         multiFileEnabledStripMenuItem.Checked = true;
         EncodingOptions encodingOptions = new();
@@ -136,11 +144,13 @@ public partial class LogTabWindow
         return logWindow;
     }
 
+    [SupportedOSPlatform("windows")]
     public void LoadFiles (string[] fileNames)
     {
         Invoke(new AddFileTabsDelegate(AddFileTabs), [fileNames]);
     }
 
+    [SupportedOSPlatform("windows")]
     public void OpenSearchDialog ()
     {
         if (CurrentLogWindow == null)
@@ -169,7 +179,7 @@ public partial class LogTabWindow
         {
             foreach (ILogLineColumnizer columnizer in PluginRegistry.PluginRegistry.Instance.RegisteredColumnizers)
             {
-                if (columnizer.GetName().Equals(entry.ColumnizerName))
+                if (columnizer.GetName().Equals(entry.ColumnizerName, StringComparison.Ordinal))
                 {
                     return columnizer;
                 }
@@ -311,16 +321,16 @@ public partial class LogTabWindow
 
         if (isEnabled)
         {
-            data.tailState = 0;
+            data.TailState = 0;
         }
         else
         {
-            data.tailState = offByTrigger ? 2 : 1;
+            data.TailState = offByTrigger ? 2 : 1;
         }
 
         if (Preferences.showTailState)
         {
-            Icon icon = GetIcon(data.diffSum, data);
+            Icon icon = GetIcon(data.DiffSum, data);
             BeginInvoke(new SetTabIconDelegate(SetTabIcon), logWindow, icon);
         }
     }

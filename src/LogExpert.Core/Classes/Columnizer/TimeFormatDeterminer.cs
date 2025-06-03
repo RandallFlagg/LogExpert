@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 
 namespace LogExpert.Core.Classes.Columnizer;
 
@@ -6,26 +6,16 @@ internal class TimeFormatDeterminer
 {
     #region FormatInfo helper class
 
-    public class FormatInfo
+    public class FormatInfo (string dateFormat, string timeFormat, CultureInfo cultureInfo)
     {
-        #region cTor
-
-        public FormatInfo(string dateFormat, string timeFormat, CultureInfo cultureInfo)
-        {
-            DateFormat = dateFormat;
-            TimeFormat = timeFormat;
-            CultureInfo = cultureInfo;
-        }
-
-        #endregion
 
         #region Properties
 
-        public string DateFormat { get; }
+        public string DateFormat { get; } = dateFormat;
 
-        public string TimeFormat { get; }
+        public string TimeFormat { get; } = timeFormat;
 
-        public CultureInfo CultureInfo { get; }
+        public CultureInfo CultureInfo { get; } = cultureInfo;
 
         public string DateTimeFormat => DateFormat + " " + TimeFormat;
 
@@ -36,30 +26,30 @@ internal class TimeFormatDeterminer
 
     #endregion
 
-    protected FormatInfo formatInfo1 = new("dd.MM.yyyy", "HH:mm:ss.fff", new CultureInfo("de-DE"));
-    protected FormatInfo formatInfo2 = new("dd.MM.yyyy", "HH:mm:ss", new CultureInfo("de-DE"));
-    protected FormatInfo formatInfo3 = new("yyyy/MM/dd", "HH:mm:ss.fff", new CultureInfo("en-US"));
-    protected FormatInfo formatInfo4 = new("yyyy/MM/dd", "HH:mm:ss", new CultureInfo("en-US"));
-    protected FormatInfo formatInfo5 = new("yyyy.MM.dd", "HH:mm:ss.fff", new CultureInfo("de-DE"));
-    protected FormatInfo formatInfo6 = new("yyyy.MM.dd", "HH:mm:ss", new CultureInfo("de-DE"));
-    protected FormatInfo formatInfo7 = new("dd.MM.yyyy", "HH:mm:ss,fff", new CultureInfo("de-DE"));
-    protected FormatInfo formatInfo8 = new("yyyy/MM/dd", "HH:mm:ss,fff", new CultureInfo("en-US"));
-    protected FormatInfo formatInfo9 = new("yyyy.MM.dd", "HH:mm:ss,fff", new CultureInfo("de-DE"));
-    protected FormatInfo formatInfo10 = new("yyyy-MM-dd", "HH:mm:ss.fff", new CultureInfo("en-US"));
-    protected FormatInfo formatInfo11 = new("yyyy-MM-dd", "HH:mm:ss,fff", new CultureInfo("en-US"));
-    protected FormatInfo formatInfo12 = new("yyyy-MM-dd", "HH:mm:ss", new CultureInfo("en-US"));
-    protected FormatInfo formatInfo13 = new("dd MMM yyyy", "HH:mm:ss,fff", new CultureInfo("de-DE"));
-    protected FormatInfo formatInfo14 = new("dd MMM yyyy", "HH:mm:ss.fff", new CultureInfo("de-DE"));
-    protected FormatInfo formatInfo15 = new("dd MMM yyyy", "HH:mm:ss", new CultureInfo("de-DE"));
-    protected FormatInfo formatInfo16 = new("dd.MM.yy", "HH:mm:ss.fff", new CultureInfo("de-DE"));
-    protected FormatInfo formatInfo17 = new("yyyy-MM-dd", "HH:mm:ss:ffff", new CultureInfo("en-US"));
-    protected FormatInfo formatInfo18 = new("dd/MM/yyyy", "HH:mm:ss.fff", new CultureInfo("en-US"));
-    protected FormatInfo formatInfo19 = new("dd/MM/yyyy", "HH:mm:ss:fff", new CultureInfo("en-US"));
-    protected FormatInfo formatInfo20 = new("yyyy-MM-dd", "HH:mm:ss.ffff", new CultureInfo("en-US"));
-    protected FormatInfo formatInfo21 = new("yyyy-MM-dd", "HH:mm:ss,ffff", new CultureInfo("en-US"));
+    private readonly FormatInfo formatInfo1 = new("dd.MM.yyyy", "HH:mm:ss.fff", new CultureInfo("de-DE"));
+    private readonly FormatInfo formatInfo2 = new("dd.MM.yyyy", "HH:mm:ss", new CultureInfo("de-DE"));
+    private readonly FormatInfo formatInfo3 = new("yyyy/MM/dd", "HH:mm:ss.fff", new CultureInfo("en-US"));
+    private readonly FormatInfo formatInfo4 = new("yyyy/MM/dd", "HH:mm:ss", new CultureInfo("en-US"));
+    private readonly FormatInfo formatInfo5 = new("yyyy.MM.dd", "HH:mm:ss.fff", new CultureInfo("de-DE"));
+    private readonly FormatInfo formatInfo6 = new("yyyy.MM.dd", "HH:mm:ss", new CultureInfo("de-DE"));
+    private readonly FormatInfo formatInfo7 = new("dd.MM.yyyy", "HH:mm:ss,fff", new CultureInfo("de-DE"));
+    private readonly FormatInfo formatInfo8 = new("yyyy/MM/dd", "HH:mm:ss,fff", new CultureInfo("en-US"));
+    private readonly FormatInfo formatInfo9 = new("yyyy.MM.dd", "HH:mm:ss,fff", new CultureInfo("de-DE"));
+    private readonly FormatInfo formatInfo10 = new("yyyy-MM-dd", "HH:mm:ss.fff", new CultureInfo("en-US"));
+    private readonly FormatInfo formatInfo11 = new("yyyy-MM-dd", "HH:mm:ss,fff", new CultureInfo("en-US"));
+    private readonly FormatInfo formatInfo12 = new("yyyy-MM-dd", "HH:mm:ss", new CultureInfo("en-US"));
+    private readonly FormatInfo formatInfo13 = new("dd MMM yyyy", "HH:mm:ss,fff", new CultureInfo("de-DE"));
+    private readonly FormatInfo formatInfo14 = new("dd MMM yyyy", "HH:mm:ss.fff", new CultureInfo("de-DE"));
+    private readonly FormatInfo formatInfo15 = new("dd MMM yyyy", "HH:mm:ss", new CultureInfo("de-DE"));
+    private readonly FormatInfo formatInfo16 = new("dd.MM.yy", "HH:mm:ss.fff", new CultureInfo("de-DE"));
+    private readonly FormatInfo formatInfo17 = new("yyyy-MM-dd", "HH:mm:ss:ffff", new CultureInfo("en-US"));
+    private readonly FormatInfo formatInfo18 = new("dd/MM/yyyy", "HH:mm:ss.fff", new CultureInfo("en-US"));
+    private readonly FormatInfo formatInfo19 = new("dd/MM/yyyy", "HH:mm:ss:fff", new CultureInfo("en-US"));
+    private readonly FormatInfo formatInfo20 = new("yyyy-MM-dd", "HH:mm:ss.ffff", new CultureInfo("en-US"));
+    private readonly FormatInfo formatInfo21 = new("yyyy-MM-dd", "HH:mm:ss,ffff", new CultureInfo("en-US"));
 
 
-    public FormatInfo DetermineDateTimeFormatInfo(string line)
+    public FormatInfo DetermineDateTimeFormatInfo (string line)
     {
         if (line.Length < 21)
         {
@@ -70,9 +60,9 @@ internal class TimeFormatDeterminer
         var ignoreFirst = false;
 
         // determine if string starts with bracket and remove it
-        if (temp[0] == '[' || temp[0] == '(' || temp[0] == '{')
+        if (temp[0] is '[' or '(' or '{')
         {
-            temp = temp.Substring(1);
+            temp = temp[1..];
             ignoreFirst = true;
 
         }
@@ -212,7 +202,7 @@ internal class TimeFormatDeterminer
         return null;
     }
 
-    public FormatInfo DetermineTimeFormatInfo(string field)
+    public FormatInfo DetermineTimeFormatInfo (string field)
     {
         // dirty hardcoded probing of time format (much faster than DateTime.ParseExact()
         if (field[2] == ':' && field[5] == ':')
@@ -233,6 +223,7 @@ internal class TimeFormatDeterminer
                 return formatInfo2;
             }
         }
+
         return null;
     }
 }

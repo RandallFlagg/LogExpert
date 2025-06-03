@@ -1,6 +1,9 @@
-﻿using LogExpert.Core.Classes;
+using System.Runtime.Versioning;
+
+using LogExpert.Core.Classes;
 using LogExpert.Core.EventArguments;
 using LogExpert.UI.Extensions;
+
 using NLog;
 
 namespace LogExpert.UI.Controls.LogWindow;
@@ -25,7 +28,8 @@ internal partial class TimeSpreadingControl : UserControl
 
     #region cTor
 
-    public TimeSpreadingControl()
+    [SupportedOSPlatform("windows")]
+    public TimeSpreadingControl ()
     {
         InitializeComponent();
         _toolTip = new ToolTip();
@@ -40,7 +44,7 @@ internal partial class TimeSpreadingControl : UserControl
 
     #region Delegates
 
-    public delegate void LineSelectedEventHandler(object sender, SelectLineEventArgs e);
+    public delegate void LineSelectedEventHandler (object sender, SelectLineEventArgs e);
 
     #endregion
 
@@ -70,7 +74,7 @@ internal partial class TimeSpreadingControl : UserControl
 
     #region Overrides
 
-    protected override void OnPaint(PaintEventArgs e)
+    protected override void OnPaint (PaintEventArgs e)
     {
         base.OnPaint(e);
         lock (_monitor)
@@ -94,7 +98,7 @@ internal partial class TimeSpreadingControl : UserControl
 
     #region Private Methods
 
-    private SpreadEntry GetEntryForMouse(MouseEventArgs e)
+    private SpreadEntry GetEntryForMouse (MouseEventArgs e)
     {
         List<SpreadEntry> list = TimeSpreadCalc.DiffList;
         var y = e.Y - _edgeOffset;
@@ -121,7 +125,7 @@ internal partial class TimeSpreadingControl : UserControl
         }
     }
 
-    private void DragContrast(MouseEventArgs e)
+    private void DragContrast (MouseEventArgs e)
     {
         if (_lastMouseY == 0)
         {
@@ -132,7 +136,7 @@ internal partial class TimeSpreadingControl : UserControl
         _lastMouseY = e.Y;
     }
 
-    private void OnLineSelected(SelectLineEventArgs e)
+    private void OnLineSelected (SelectLineEventArgs e)
     {
         LineSelected?.Invoke(this, e);
     }
@@ -141,7 +145,8 @@ internal partial class TimeSpreadingControl : UserControl
 
     #region Events handler
 
-    private void TimeSpreadCalc_CalcDone(object sender, EventArgs e)
+    [SupportedOSPlatform("windows")]
+    private void TimeSpreadCalc_CalcDone (object sender, EventArgs e)
     {
         _logger.Debug("timeSpreadCalc_CalcDone()");
 
@@ -203,10 +208,12 @@ internal partial class TimeSpreadingControl : UserControl
                 }
             }
         }
+
         BeginInvoke(new MethodInvoker(Refresh));
     }
 
-    private void TimeSpreadCalc_StartCalc(object sender, EventArgs e)
+    [SupportedOSPlatform("windows")]
+    private void TimeSpreadCalc_StartCalc (object sender, EventArgs e)
     {
         lock (_monitor)
         {
@@ -241,7 +248,8 @@ internal partial class TimeSpreadingControl : UserControl
         BeginInvoke(new MethodInvoker(Refresh));
     }
 
-    private void TimeSpreadingControl_SizeChanged(object sender, EventArgs e)
+    [SupportedOSPlatform("windows")]
+    private void TimeSpreadingControl_SizeChanged (object sender, EventArgs e)
     {
         if (TimeSpreadCalc != null)
         {
@@ -250,11 +258,12 @@ internal partial class TimeSpreadingControl : UserControl
         }
     }
 
-    private void TimeSpreadingControl_MouseDown(object sender, MouseEventArgs e)
+    private void TimeSpreadingControl_MouseDown (object sender, MouseEventArgs e)
     {
     }
 
-    private void TimeSpreadingControl_MouseUp(object sender, MouseEventArgs e)
+    [SupportedOSPlatform("windows")]
+    private void TimeSpreadingControl_MouseUp (object sender, MouseEventArgs e)
     {
         if (e.Button == MouseButtons.Left)
         {
@@ -267,17 +276,20 @@ internal partial class TimeSpreadingControl : UserControl
         }
     }
 
-    private void TimeSpreadingControl_MouseEnter(object sender, EventArgs e)
+    [SupportedOSPlatform("windows")]
+    private void TimeSpreadingControl_MouseEnter (object sender, EventArgs e)
     {
         _toolTip.Active = true;
     }
 
-    private void TimeSpreadingControl_MouseLeave(object sender, EventArgs e)
+    [SupportedOSPlatform("windows")]
+    private void TimeSpreadingControl_MouseLeave (object sender, EventArgs e)
     {
         _toolTip.Active = false;
     }
 
-    private void TimeSpreadingControl_MouseMove(object sender, MouseEventArgs e)
+    [SupportedOSPlatform("windows")]
+    private void TimeSpreadingControl_MouseMove (object sender, MouseEventArgs e)
     {
         if (e.Y == _lastMouseY)
         {
@@ -296,6 +308,7 @@ internal partial class TimeSpreadingControl : UserControl
         {
             return;
         }
+
         _lastMouseY = e.Y;
         var dts = entry.Timestamp.ToString("dd.MM.yyyy HH:mm:ss");
         _toolTip.SetToolTip(this, "Line " + (entry.LineNum + 1) + "\n" + dts);

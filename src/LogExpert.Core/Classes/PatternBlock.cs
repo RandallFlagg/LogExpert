@@ -1,42 +1,31 @@
-﻿using System.Collections.Generic;
-
 namespace LogExpert.Core.Classes;
-
-public class QualityInfo
-{
-    #region Fields
-
-    public int quality;
-
-    #endregion
-}
 
 public class PatternBlock
 {
-    #region Fields
+    public int BlockId { get; set; }
 
-    public int blockId;
-
-    public int endLine;
+    public int EndLine { get; set; }
 
     // key: line num
-    public Dictionary<int, QualityInfo> qualityInfoList = [];
+    public Dictionary<int, QualityInfo> QualityInfoList { get; set; } = [];
 
-    public SortedDictionary<int, int> srcLines = [];
-    public int startLine;
-    public int targetEnd;
-    public SortedDictionary<int, int> targetLines = [];
-    public int targetStart;
-    public int weigth;
+    public SortedDictionary<int, int> SrcLines { get; set; } = [];
 
-    #endregion
+    public int StartLine { get; set; }
+
+    public int TargetEnd { get; set; }
+
+    public SortedDictionary<int, int> TargetLines { get; set; } = [];
+
+    public int TargetStart { get; set; }
+
+    public int Weigth { get; set; }
 
     #region Public methods
 
-    public override string ToString()
+    public override string ToString ()
     {
-        return "srcStart=" + startLine + ", srcEnd=" + endLine + ", targetStart=" + targetStart +
-               ", targetEnd=" + targetEnd + ", weight=" + weigth;
+        return $"srcStart={StartLine}, srcEnd={EndLine}, targetStart={TargetStart}, targetEnd={TargetEnd}, weight={Weigth}";
     }
 
     #endregion

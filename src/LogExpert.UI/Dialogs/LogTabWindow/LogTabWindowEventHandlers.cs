@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Runtime.Versioning;
 using System.Text;
 
 using LogExpert.Core.Classes;
@@ -294,6 +295,7 @@ public partial class LogTabWindow
         }
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnTimeShiftToolStripMenuItemCheckStateChanged (object sender, EventArgs e)
     {
         if (!_skipEvents && CurrentLogWindow != null)
@@ -305,6 +307,7 @@ public partial class LogTabWindow
         }
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnAboutToolStripMenuItemClick (object sender, EventArgs e)
     {
         AboutBox aboutBox = new();
@@ -317,12 +320,14 @@ public partial class LogTabWindow
         CurrentLogWindow?.ToggleFilterPanel();
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnMultiFileToolStripMenuItemClick (object sender, EventArgs e)
     {
         ToggleMultiFile();
         fileToolStripMenuItem.HideDropDown();
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnGuiStateUpdate (object sender, GuiStateArgs e)
     {
         BeginInvoke(GuiStateUpdateWorker, e);
@@ -384,6 +389,7 @@ public partial class LogTabWindow
         CurrentLogWindow?.Close();
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnCellSelectModeToolStripMenuItemClick (object sender, EventArgs e)
     {
         CurrentLogWindow?.SetCellSelectionMode(cellSelectModeToolStripMenuItem.Checked);
@@ -408,6 +414,7 @@ public partial class LogTabWindow
         }
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnAlwaysOnTopToolStripMenuItemClick (object sender, EventArgs e)
     {
         TopMost = alwaysOnTopToolStripMenuItem.Checked;
@@ -427,19 +434,19 @@ public partial class LogTabWindow
             {
                 lock (data)
                 {
-                    data.diffSum += diff;
-                    if (data.diffSum > DIFF_MAX)
+                    data.DiffSum += diff;
+                    if (data.DiffSum > DIFF_MAX)
                     {
-                        data.diffSum = DIFF_MAX;
+                        data.DiffSum = DIFF_MAX;
                     }
                 }
 
                 //if (this.dockPanel.ActiveContent != null &&
                 //    this.dockPanel.ActiveContent != sender || data.tailState != 0)
                 if (CurrentLogWindow != null &&
-                    CurrentLogWindow != sender || data.tailState != 0)
+                    CurrentLogWindow != sender || data.TailState != 0)
                 {
-                    data.dirty = true;
+                    data.Dirty = true;
                 }
                 Icon icon = GetIcon(diff, data);
                 BeginInvoke(new SetTabIconDelegate(SetTabIcon), (LogWindow.LogWindow)sender, icon);
@@ -490,8 +497,8 @@ public partial class LogTabWindow
             if (dockPanel.ActiveContent == sender)
             {
                 var data = ((LogWindow.LogWindow)sender).Tag as LogWindowData;
-                data.dirty = false;
-                Icon icon = GetIcon(data.diffSum, data);
+                data.Dirty = false;
+                Icon icon = GetIcon(data.DiffSum, data);
                 BeginInvoke(new SetTabIconDelegate(SetTabIcon), (LogWindow.LogWindow)sender, icon);
             }
         }
@@ -502,8 +509,8 @@ public partial class LogTabWindow
         if (!Disposing)
         {
             var data = ((LogWindow.LogWindow)sender).Tag as LogWindowData;
-            data.syncMode = e.IsTimeSynced ? 1 : 0;
-            Icon icon = GetIcon(data.diffSum, data);
+            data.SyncMode = e.IsTimeSynced ? 1 : 0;
+            Icon icon = GetIcon(data.DiffSum, data);
             BeginInvoke(new SetTabIconDelegate(SetTabIcon), (LogWindow.LogWindow)sender, icon);
         }
         else
@@ -703,17 +710,17 @@ public partial class LogTabWindow
         }
 
         ColorDialog dlg = new();
-        dlg.Color = data.color;
+        dlg.Color = data.Color;
         if (dlg.ShowDialog() == DialogResult.OK)
         {
-            data.color = dlg.Color;
-            SetTabColor(logWindow, data.color);
+            data.Color = dlg.Color;
+            SetTabColor(logWindow, data.Color);
         }
         List<ColorEntry> delList = [];
 
         foreach (ColorEntry entry in ConfigManager.Settings.fileColors)
         {
-            if (entry.FileName.ToLower().Equals(logWindow.FileName.ToLower()))
+            if (entry.FileName.Equals(logWindow.FileName, StringComparison.Ordinal))
             {
                 delList.Add(entry);
             }
@@ -926,6 +933,7 @@ public partial class LogTabWindow
         //debugToolStripMenuItem1.Checked = _logger.Get_logger().LogLevel == _logger.Level.DEBUG;
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnDisableWordHighlightModeToolStripMenuItemClick (object sender, EventArgs e)
     {
         DebugOptions.DisableWordHighlight = disableWordHighlightModeToolStripMenuItem.Checked;
@@ -937,6 +945,7 @@ public partial class LogTabWindow
         CurrentLogWindow?.ChangeMultifileMask();
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnMultiFileEnabledStripMenuItemClick (object sender, EventArgs e)
     {
         ToggleMultiFile();
@@ -947,22 +956,26 @@ public partial class LogTabWindow
         AbstractLogTabWindow.StaticData.CurrentLockedMainWindow = lockInstanceToolStripMenuItem.Checked ? null : this;
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnOptionToolStripMenuItemDropDownOpening (object sender, EventArgs e)
     {
         lockInstanceToolStripMenuItem.Enabled = !ConfigManager.Settings.Preferences.allowOnlyOneInstance;
         lockInstanceToolStripMenuItem.Checked = AbstractLogTabWindow.StaticData.CurrentLockedMainWindow == this;
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnFileToolStripMenuItemDropDownOpening (object sender, EventArgs e)
     {
         newFromClipboardToolStripMenuItem.Enabled = Clipboard.ContainsText();
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnNewFromClipboardToolStripMenuItemClick (object sender, EventArgs e)
     {
         PasteFromClipboard();
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnOpenURIToolStripMenuItemClick (object sender, EventArgs e)
     {
         OpenUriDialog dlg = new()
@@ -981,6 +994,7 @@ public partial class LogTabWindow
         }
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnColumnFinderToolStripMenuItemClick (object sender, EventArgs e)
     {
         if (CurrentLogWindow != null && !_skipEvents)

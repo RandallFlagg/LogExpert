@@ -1,3 +1,6 @@
+using System.Runtime.Versioning;
+using System.Text;
+
 using LogExpert.Core.Classes;
 using LogExpert.Core.Classes.Columnizer;
 using LogExpert.Core.Config;
@@ -7,12 +10,11 @@ using LogExpert.Core.Interface;
 using LogExpert.UI.Controls.LogTabWindow;
 using LogExpert.UI.Dialogs;
 using LogExpert.UI.Extensions;
-using System.Runtime.InteropServices;
-using System.Text;
 
 namespace LogExpert.Dialogs;
 
 //TODO: This class should not knoow ConfigManager?
+[SupportedOSPlatform("windows")]
 internal partial class SettingsDialog : Form
 {
     #region Fields
@@ -27,7 +29,7 @@ internal partial class SettingsDialog : Form
 
     #region cTor
 
-    private SettingsDialog(Preferences prefs, LogTabWindow logTabWin)
+    private SettingsDialog (Preferences prefs, LogTabWindow logTabWin)
     {
         Preferences = prefs;
         _logTabWin = logTabWin; //TODO: uses only HighlightGroupList. Can we pass IList instead?
@@ -38,7 +40,7 @@ internal partial class SettingsDialog : Form
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
     }
 
-    public SettingsDialog(Preferences prefs, LogTabWindow logTabWin, int tabToOpen, IConfigManager configManager) : this(prefs, logTabWin)
+    public SettingsDialog (Preferences prefs, LogTabWindow logTabWin, int tabToOpen, IConfigManager configManager) : this(prefs, logTabWin)
     {
         tabControlSettings.SelectedIndex = tabToOpen;
         ConfigManager = configManager;
@@ -56,7 +58,7 @@ internal partial class SettingsDialog : Form
 
     #region Private Methods
 
-    private void FillDialog()
+    private void FillDialog ()
     {
         Preferences ??= new Preferences();
 
@@ -174,18 +176,18 @@ internal partial class SettingsDialog : Form
         checkBoxShowErrorMessageOnlyOneInstance.Checked = Preferences.ShowErrorMessageAllowOnlyOneInstances;
     }
 
-    private void FillPortableMode()
+    private void FillPortableMode ()
     {
         checkBoxPortableMode.CheckState = Preferences.PortableMode ? CheckState.Checked : CheckState.Unchecked;
     }
 
-    private void DisplayFontName()
+    private void DisplayFontName ()
     {
         labelFont.Text = Preferences.fontName + @" " + (int)Preferences.fontSize;
         labelFont.Font = new Font(new FontFamily(Preferences.fontName), Preferences.fontSize);
     }
 
-    private void SaveMultifileData()
+    private void SaveMultifileData ()
     {
         if (radioButtonLoadEveryFileIntoSeperatedTab.Checked)
         {
@@ -206,7 +208,7 @@ internal partial class SettingsDialog : Form
         Preferences.multiFileOptions.MaxDayTry = (int)upDownMultifileDays.Value;
     }
 
-    private void OnBtnToolClickInternal(TextBox textBox)
+    private void OnBtnToolClickInternal (TextBox textBox)
     {
         OpenFileDialog dlg = new();
         dlg.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
@@ -227,7 +229,7 @@ internal partial class SettingsDialog : Form
     }
 
     //TODO: what is the purpose of this method?
-    private void OnBtnArgsClickInternal(TextBox textBox)
+    private void OnBtnArgsClickInternal (TextBox textBox)
     {
         ToolArgsDialog dlg = new(_logTabWin, this)
         {
@@ -240,7 +242,7 @@ internal partial class SettingsDialog : Form
         }
     }
 
-    private void OnBtnWorkingDirClick(TextBox textBox)
+    private void OnBtnWorkingDirClick (TextBox textBox)
     {
         FolderBrowserDialog dlg = new()
         {
@@ -263,7 +265,7 @@ internal partial class SettingsDialog : Form
         }
     }
 
-    private void FillColumnizerForToolsList()
+    private void FillColumnizerForToolsList ()
     {
         if (_selectedTool != null)
         {
@@ -271,7 +273,7 @@ internal partial class SettingsDialog : Form
         }
     }
 
-    private void FillColumnizerForToolsList(ComboBox comboBox, string columnizerName)
+    private void FillColumnizerForToolsList (ComboBox comboBox, string columnizerName)
     {
         var selIndex = 0;
         comboBox.Items.Clear();
@@ -280,7 +282,7 @@ internal partial class SettingsDialog : Form
         foreach (ILogLineColumnizer columnizer in columnizers)
         {
             var index = comboBox.Items.Add(columnizer.GetName());
-            if (columnizer.GetName().Equals(columnizerName))
+            if (columnizer.GetName().Equals(columnizerName, StringComparison.Ordinal))
             {
                 selIndex = index;
             }
@@ -292,7 +294,7 @@ internal partial class SettingsDialog : Form
         comboBox.SelectedIndex = selIndex;
     }
 
-    private void FillColumnizerList()
+    private void FillColumnizerList ()
     {
         dataGridViewColumnizer.Rows.Clear();
 
@@ -339,7 +341,7 @@ internal partial class SettingsDialog : Form
         }
     }
 
-    private void FillHighlightMaskList()
+    private void FillHighlightMaskList ()
     {
         dataGridViewHighlightMask.Rows.Clear();
 
@@ -386,7 +388,7 @@ internal partial class SettingsDialog : Form
         }
     }
 
-    private void SaveColumnizerList()
+    private void SaveColumnizerList ()
     {
         Preferences.columnizerMaskList.Clear();
 
@@ -402,7 +404,7 @@ internal partial class SettingsDialog : Form
         }
     }
 
-    private void SaveHighlightMaskList()
+    private void SaveHighlightMaskList ()
     {
         Preferences.highlightMaskList.Clear();
 
@@ -418,7 +420,7 @@ internal partial class SettingsDialog : Form
         }
     }
 
-    private void FillPluginList()
+    private void FillPluginList ()
     {
         listBoxPlugin.Items.Clear();
 
@@ -452,7 +454,7 @@ internal partial class SettingsDialog : Form
         buttonConfigPlugin.Enabled = false;
     }
 
-    private void SavePluginSettings()
+    private void SavePluginSettings ()
     {
         _selectedPlugin?.HideConfigForm();
 
@@ -473,7 +475,7 @@ internal partial class SettingsDialog : Form
         }
     }
 
-    private void FillToolListbox()
+    private void FillToolListbox ()
     {
         listBoxTools.Items.Clear();
 
@@ -488,7 +490,7 @@ internal partial class SettingsDialog : Form
         }
     }
 
-    private void FillMultifileSettings()
+    private void FillMultifileSettings ()
     {
         switch (Preferences.multiFileOption)
         {
@@ -513,7 +515,7 @@ internal partial class SettingsDialog : Form
         upDownMultifileDays.Value = Preferences.multiFileOptions.MaxDayTry;
     }
 
-    private void GetToolListBoxData()
+    private void GetToolListBoxData ()
     {
         GetCurrentToolValues();
         Preferences.toolEntries.Clear();
@@ -525,7 +527,7 @@ internal partial class SettingsDialog : Form
         }
     }
 
-    private void GetCurrentToolValues()
+    private void GetCurrentToolValues ()
     {
         if (_selectedTool != null)
         {
@@ -538,7 +540,7 @@ internal partial class SettingsDialog : Form
         }
     }
 
-    private void ShowCurrentToolValues()
+    private void ShowCurrentToolValues ()
     {
         if (_selectedTool != null)
         {
@@ -552,7 +554,7 @@ internal partial class SettingsDialog : Form
         }
     }
 
-    private void DisplayCurrentIcon()
+    private void DisplayCurrentIcon ()
     {
         if (_selectedTool != null)
         {
@@ -571,7 +573,7 @@ internal partial class SettingsDialog : Form
         }
     }
 
-    private void FillEncodingList()
+    private void FillEncodingList ()
     {
         comboBoxEncoding.Items.Clear();
 
@@ -589,12 +591,12 @@ internal partial class SettingsDialog : Form
 
     #region Events handler
 
-    private void OnSettingsDialogLoad(object sender, EventArgs e)
+    private void OnSettingsDialogLoad (object sender, EventArgs e)
     {
         FillDialog();
     }
 
-    private void OnBtnChangeFontClick(object sender, EventArgs e)
+    private void OnBtnChangeFontClick (object sender, EventArgs e)
     {
         FontDialog dlg = new()
         {
@@ -613,7 +615,7 @@ internal partial class SettingsDialog : Form
         DisplayFontName();
     }
 
-    private void OnBtnOkClick(object sender, EventArgs e)
+    private void OnBtnOkClick (object sender, EventArgs e)
     {
         Preferences.timestampControl = checkBoxTimestamp.Checked;
         Preferences.filterSync = checkBoxSyncFilter.Checked;
@@ -687,19 +689,19 @@ internal partial class SettingsDialog : Form
         SaveMultifileData();
     }
 
-    private void OnBtnToolClick(object sender, EventArgs e)
+    private void OnBtnToolClick (object sender, EventArgs e)
     {
         OnBtnToolClickInternal(textBoxTool);
     }
 
     //TODO: what is the purpose of this click?
-    private void OnBtnArgClick(object sender, EventArgs e)
+    private void OnBtnArgClick (object sender, EventArgs e)
     {
         OnBtnArgsClickInternal(textBoxArguments);
     }
 
     //TODO Remove or refactor this function
-    private void OnDataGridViewColumnizerRowsAdded(object sender, DataGridViewRowsAddedEventArgs e)
+    private void OnDataGridViewColumnizerRowsAdded (object sender, DataGridViewRowsAddedEventArgs e)
     {
         var comboCell = (DataGridViewComboBoxCell)dataGridViewColumnizer.Rows[e.RowIndex].Cells[1];
         if (comboCell.Items.Count > 0)
@@ -708,7 +710,7 @@ internal partial class SettingsDialog : Form
         }
     }
 
-    private void OnBtnDeleteClick(object sender, EventArgs e)
+    private void OnBtnDeleteClick (object sender, EventArgs e)
     {
         if (dataGridViewColumnizer.CurrentRow != null && !dataGridViewColumnizer.CurrentRow.IsNewRow)
         {
@@ -718,17 +720,17 @@ internal partial class SettingsDialog : Form
         }
     }
 
-    private void OnDataGridViewColumnizerDataError(object sender, DataGridViewDataErrorEventArgs e)
+    private void OnDataGridViewColumnizerDataError (object sender, DataGridViewDataErrorEventArgs e)
     {
         e.Cancel = true;
     }
 
-    private void OnChkBoxSysoutCheckedChanged(object sender, EventArgs e)
+    private void OnChkBoxSysoutCheckedChanged (object sender, EventArgs e)
     {
         comboBoxColumnizer.Enabled = checkBoxSysout.Checked;
     }
 
-    private void OnBtnTailColorClick(object sender, EventArgs e)
+    private void OnBtnTailColorClick (object sender, EventArgs e)
     {
         ColorDialog dlg = new()
         {
@@ -741,12 +743,12 @@ internal partial class SettingsDialog : Form
         }
     }
 
-    private void OnChkBoxColumnSizeCheckedChanged(object sender, EventArgs e)
+    private void OnChkBoxColumnSizeCheckedChanged (object sender, EventArgs e)
     {
         cpDownColumnWidth.Enabled = checkBoxColumnSize.Checked;
     }
 
-    private void OnBtnTimespreadColorClick(object sender, EventArgs e)
+    private void OnBtnTimespreadColorClick (object sender, EventArgs e)
     {
         ColorDialog dlg = new()
         {
@@ -759,7 +761,7 @@ internal partial class SettingsDialog : Form
         }
     }
 
-    private void OnListBoxPluginSelectedIndexChanged(object sender, EventArgs e)
+    private void OnListBoxPluginSelectedIndexChanged (object sender, EventArgs e)
     {
         _selectedPlugin?.HideConfigForm();
 
@@ -791,7 +793,7 @@ internal partial class SettingsDialog : Form
         }
     }
 
-    private void OnBtnSessionSaveDirClick(object sender, EventArgs e)
+    private void OnBtnSessionSaveDirClick (object sender, EventArgs e)
     {
         FolderBrowserDialog dlg = new();
 
@@ -809,7 +811,7 @@ internal partial class SettingsDialog : Form
         }
     }
 
-    private void OnPortableModeCheckedChanged(object sender, EventArgs e)
+    private void OnPortableModeCheckedChanged (object sender, EventArgs e)
     {
         try
         {
@@ -858,7 +860,7 @@ internal partial class SettingsDialog : Form
 
     }
 
-    private void OnBtnConfigPluginClick(object sender, EventArgs e)
+    private void OnBtnConfigPluginClick (object sender, EventArgs e)
     {
         if (!_selectedPlugin.HasEmbeddedForm())
         {
@@ -866,12 +868,12 @@ internal partial class SettingsDialog : Form
         }
     }
 
-    private void OnNumericUpDown1ValueChanged(object sender, EventArgs e)
+    private void OnNumericUpDown1ValueChanged (object sender, EventArgs e)
     {
         //TODO implement
     }
 
-    private void OnListBoxToolSelectedIndexChanged(object sender, EventArgs e)
+    private void OnListBoxToolSelectedIndexChanged (object sender, EventArgs e)
     {
         GetCurrentToolValues();
         _selectedTool = listBoxTools.SelectedItem as ToolEntry;
@@ -881,7 +883,7 @@ internal partial class SettingsDialog : Form
         DisplayCurrentIcon();
     }
 
-    private void OnBtnToolUpClick(object sender, EventArgs e)
+    private void OnBtnToolUpClick (object sender, EventArgs e)
     {
         var i = listBoxTools.SelectedIndex;
 
@@ -897,7 +899,7 @@ internal partial class SettingsDialog : Form
         }
     }
 
-    private void OnBtnToolDownClick(object sender, EventArgs e)
+    private void OnBtnToolDownClick (object sender, EventArgs e)
     {
         var i = listBoxTools.SelectedIndex;
 
@@ -913,13 +915,15 @@ internal partial class SettingsDialog : Form
         }
     }
 
-    private void OnBtnToolAddClick(object sender, EventArgs e)
+    [SupportedOSPlatform("windows")]
+    private void OnBtnToolAddClick (object sender, EventArgs e)
     {
         listBoxTools.Items.Add(new ToolEntry());
         listBoxTools.SelectedIndex = listBoxTools.Items.Count - 1;
     }
 
-    private void OnToolDeleteButtonClick(object sender, EventArgs e)
+    [SupportedOSPlatform("windows")]
+    private void OnToolDeleteButtonClick (object sender, EventArgs e)
     {
         var i = listBoxTools.SelectedIndex;
 
@@ -940,7 +944,8 @@ internal partial class SettingsDialog : Form
         }
     }
 
-    private void OnBtnIconClick(object sender, EventArgs e)
+    [SupportedOSPlatform("windows")]
+    private void OnBtnIconClick (object sender, EventArgs e)
     {
         if (_selectedTool != null)
         {
@@ -962,23 +967,25 @@ internal partial class SettingsDialog : Form
         }
     }
 
-    private void OnBtnCancelClick(object sender, EventArgs e)
+    private void OnBtnCancelClick (object sender, EventArgs e)
     {
         _selectedPlugin?.HideConfigForm();
     }
 
-    private void OnBtnWorkingDirClick(object sender, EventArgs e)
+    private void OnBtnWorkingDirClick (object sender, EventArgs e)
     {
         OnBtnWorkingDirClick(textBoxWorkingDir);
     }
 
-    private void OnMultiFilePatternTextChanged(object sender, EventArgs e)
+    [SupportedOSPlatform("windows")]
+    private void OnMultiFilePatternTextChanged (object sender, EventArgs e)
     {
         var pattern = textBoxMultifilePattern.Text;
-        upDownMultifileDays.Enabled = pattern.Contains("$D");
+        upDownMultifileDays.Enabled = pattern.Contains("$D", System.StringComparison.Ordinal);
     }
 
-    private void OnBtnExportClick(object sender, EventArgs e)
+    [SupportedOSPlatform("windows")]
+    private void OnBtnExportClick (object sender, EventArgs e)
     {
         SaveFileDialog dlg = new()
         {
@@ -1002,7 +1009,7 @@ internal partial class SettingsDialog : Form
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    private void OnBtnImportClick(object sender, EventArgs e)
+    private void OnBtnImportClick (object sender, EventArgs e)
     {
         ImportSettingsDialog dlg = new(ExportImportFlags.All);
 

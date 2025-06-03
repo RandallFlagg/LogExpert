@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Runtime.Versioning;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -101,9 +102,11 @@ partial class LogWindow
             }
 
             IsMultiFile = persistenceData.multiFile;
-            _multiFileOptions = new MultiFileOptions();
-            _multiFileOptions.FormatPattern = persistenceData.multiFilePattern;
-            _multiFileOptions.MaxDayTry = persistenceData.multiFileMaxDays;
+            _multiFileOptions = new MultiFileOptions
+            {
+                FormatPattern = persistenceData.multiFilePattern,
+                MaxDayTry = persistenceData.multiFileMaxDays
+            };
 
             if (string.IsNullOrEmpty(_multiFileOptions.FormatPattern))
             {
@@ -117,7 +120,7 @@ partial class LogWindow
 
             if (_reloadMemento == null)
             {
-                PreselectColumnizer(persistenceData.columnizerName);
+                PreselectColumnizer(persistenceData.ColumnizerName);
             }
 
             FollowTailChanged(persistenceData.followTail, false);
@@ -203,13 +206,13 @@ partial class LogWindow
                 return;
             }
 
-            _bookmarkProvider.SetBookmarks(persistenceData.bookmarkList);
+            _bookmarkProvider.SetBookmarks(persistenceData.BookmarkList);
             _rowHeightList = persistenceData.rowHeightList;
             try
             {
-                if (persistenceData.currentLine >= 0 && persistenceData.currentLine < dataGridView.RowCount)
+                if (persistenceData.CurrentLine >= 0 && persistenceData.CurrentLine < dataGridView.RowCount)
                 {
-                    SelectLine(persistenceData.currentLine, false, true);
+                    SelectLine(persistenceData.CurrentLine, false, true);
                 }
                 else
                 {
@@ -493,8 +496,10 @@ partial class LogWindow
                 SavePersistenceData(false);
                 _loadingFinishedEvent.Reset();
                 _externaLoadingFinishedEvent.Reset();
-                Thread reloadFinishedThread = new(ReloadFinishedThreadFx);
-                reloadFinishedThread.IsBackground = true;
+                Thread reloadFinishedThread = new(ReloadFinishedThreadFx)
+                {
+                    IsBackground = true
+                };
                 reloadFinishedThread.Start();
                 LoadFile(FileName, EncodingOptions);
 
@@ -1315,14 +1320,14 @@ partial class LogWindow
         {
             if (entry.IsCaseSensitive)
             {
-                if (column.Text.Contains(entry.SearchText))
+                if (column.Text.Contains(entry.SearchText, StringComparison.Ordinal))
                 {
                     return true;
                 }
             }
             else
             {
-                if (column.Text.ToLower().Contains(entry.SearchText.ToLower()))
+                if (column.Text.ToUpperInvariant().Contains(entry.SearchText.ToUpperInvariant(), StringComparison.OrdinalIgnoreCase))
                 {
                     return true;
                 }
@@ -1364,10 +1369,13 @@ partial class LogWindow
                 MatchCollection matches = entry.Regex.Matches(line.Text);
                 foreach (Match match in matches)
                 {
-                    HilightMatchEntry me = new();
-                    me.HilightEntry = entry;
-                    me.StartPos = match.Index;
-                    me.Length = match.Length;
+                    HilightMatchEntry me = new()
+                    {
+                        HilightEntry = entry,
+                        StartPos = match.Index,
+                        Length = match.Length
+                    };
+
                     resultList.Add(me);
                 }
             }
@@ -1375,18 +1383,20 @@ partial class LogWindow
             {
                 if (CheckHighlightEntryMatch(entry, line))
                 {
-                    HilightMatchEntry me = new();
-                    me.HilightEntry = entry;
-                    me.StartPos = 0;
-                    me.Length = line.Text.Length;
+                    HilightMatchEntry me = new()
+                    {
+                        HilightEntry = entry,
+                        StartPos = 0,
+                        Length = line.Text.Length
+                    };
+
                     resultList.Add(me);
                 }
             }
         }
     }
 
-    private void GetHilightActions (IList<HighlightEntry> matchingList, out bool noLed, out bool stopTail,
-        out bool setBookmark, out string bookmarkComment)
+    private void GetHilightActions (IList<HighlightEntry> matchingList, out bool noLed, out bool stopTail, out bool setBookmark, out string bookmarkComment)
     {
         noLed = stopTail = setBookmark = false;
         bookmarkComment = string.Empty;
@@ -1430,6 +1440,7 @@ partial class LogWindow
         cts.Cancel();
     }
 
+    [SupportedOSPlatform("windows")]
     private void SyncTimestampDisplay ()
     {
         if (CurrentColumnizer.IsTimeshiftImplemented())
@@ -1441,6 +1452,7 @@ partial class LogWindow
         }
     }
 
+    [SupportedOSPlatform("windows")]
     private void SyncTimestampDisplay (int lineNum)
     {
         _timeShiftSyncLine = lineNum;
@@ -1448,6 +1460,7 @@ partial class LogWindow
         _timeShiftSyncWakeupEvent.Set();
     }
 
+    [SupportedOSPlatform("windows")]
     private void SyncTimestampDisplayWorker ()
     {
         const int WAIT_TIME = 500;
@@ -1532,6 +1545,7 @@ partial class LogWindow
         }
     }
 
+    [SupportedOSPlatform("windows")]
     private void SyncFilterGridPos ()
     {
         try
@@ -1570,6 +1584,7 @@ partial class LogWindow
         SendStatusLineUpdate();
     }
 
+    [SupportedOSPlatform("windows")]
     private int Search (SearchParams searchParams)
     {
         if (searchParams.SearchText == null)
@@ -1581,7 +1596,7 @@ partial class LogWindow
             ? 0
             : searchParams.CurrentLine;
 
-        var lowerSearchText = searchParams.SearchText.ToLower();
+        var lowerSearchText = searchParams.SearchText.ToLowerInvariant();
         var count = 0;
         var hasWrapped = false;
 
@@ -1636,16 +1651,16 @@ partial class LogWindow
             }
             else
             {
-                if (!searchParams.IsCaseSensitive)
+                if (searchParams.IsCaseSensitive)
                 {
-                    if (line.FullLine.Contains(lowerSearchText, StringComparison.CurrentCultureIgnoreCase))
+                    if (line.FullLine.Contains(searchParams.SearchText, StringComparison.Ordinal))
                     {
                         return lineNum;
                     }
                 }
                 else
                 {
-                    if (line.FullLine.Contains(searchParams.SearchText))
+                    if (line.FullLine.Contains(lowerSearchText, StringComparison.OrdinalIgnoreCase))
                     {
                         return lineNum;
                     }
@@ -1690,6 +1705,7 @@ partial class LogWindow
         SendProgressBarUpdate();
     }
 
+    [SupportedOSPlatform("windows")]
     private void SelectLine (int line, bool triggerSyncCall, bool shouldScroll)
     {
         try
@@ -1738,6 +1754,7 @@ partial class LogWindow
         }
     }
 
+    [SupportedOSPlatform("windows")]
     private void StartEditMode ()
     {
         if (!dataGridView.CurrentCell.ReadOnly)
@@ -1762,6 +1779,7 @@ partial class LogWindow
         }
     }
 
+    [SupportedOSPlatform("windows")]
     private void UpdateEditColumnDisplay (DataGridViewTextBoxEditingControl editControl)
     {
         // prevents key events after edit mode has ended
@@ -1773,6 +1791,7 @@ partial class LogWindow
         }
     }
 
+    [SupportedOSPlatform("windows")]
     private void SelectPrevHighlightLine ()
     {
         var lineNum = dataGridView.CurrentCellAddress.Y;
@@ -1792,6 +1811,7 @@ partial class LogWindow
         }
     }
 
+    [SupportedOSPlatform("windows")]
     private void SelectNextHighlightLine ()
     {
         var lineNum = dataGridView.CurrentCellAddress.Y;
@@ -1811,6 +1831,7 @@ partial class LogWindow
         }
     }
 
+    [SupportedOSPlatform("windows")]
     private int FindNextBookmarkIndex (int lineNum)
     {
         if (lineNum >= dataGridView.RowCount)
@@ -1825,6 +1846,7 @@ partial class LogWindow
         return _bookmarkProvider.FindNextBookmarkIndex(lineNum);
     }
 
+    [SupportedOSPlatform("windows")]
     private int FindPrevBookmarkIndex (int lineNum)
     {
         if (lineNum <= 0)
@@ -1876,6 +1898,7 @@ partial class LogWindow
         }
     }
 
+    [SupportedOSPlatform("windows")]
     private void LoadFilterPipes ()
     {
         lock (_filterPipeList)
@@ -1906,6 +1929,7 @@ partial class LogWindow
         }
     }
 
+    [SupportedOSPlatform("windows")]
     private void ApplyFilterParams ()
     {
         filterComboBox.Text = _filterParams.SearchText;
@@ -1921,6 +1945,7 @@ partial class LogWindow
         filterRangeComboBox.Text = _filterParams.RangeSearchText;
     }
 
+    [SupportedOSPlatform("windows")]
     private void ResetFilterControls ()
     {
         filterComboBox.Text = "";
@@ -1936,12 +1961,13 @@ partial class LogWindow
         filterRangeComboBox.Text = "";
     }
 
+    [SupportedOSPlatform("windows")]
     private void FilterSearch ()
     {
         if (filterComboBox.Text.Length == 0)
         {
-            _filterParams.SearchText = "";
-            _filterParams.LowerSearchText = "";
+            _filterParams.SearchText = string.Empty;
+            _filterParams.LowerSearchText = string.Empty;
             _filterParams.IsRangeSearch = false;
             ClearFilterList();
             filterSearchButton.Image = null;
@@ -1953,12 +1979,13 @@ partial class LogWindow
         FilterSearch(filterComboBox.Text);
     }
 
+    [SupportedOSPlatform("windows")]
     private async void FilterSearch (string text)
     {
         FireCancelHandlers(); // make sure that there's no other filter running (maybe from filter restore)
 
         _filterParams.SearchText = text;
-        _filterParams.LowerSearchText = text.ToLower();
+        _filterParams.LowerSearchText = text.ToLowerInvariant();
         ConfigManager.Settings.filterHistoryList.Remove(text);
         ConfigManager.Settings.filterHistoryList.Insert(0, text);
         var maxHistory = ConfigManager.Settings.Preferences.maximumFilterEntries;
@@ -2048,14 +2075,17 @@ partial class LogWindow
         CheckForFilterDirty();
     }
 
-    private void MultiThreadedFilter (FilterParams filterParams, List<int> filterResultLines,
-        List<int> lastFilterLinesList, List<int> filterHitList)
+    private void MultiThreadedFilter (FilterParams filterParams, List<int> filterResultLines, List<int> lastFilterLinesList, List<int> filterHitList)
     {
         ColumnizerCallback callback = new(this);
-        FilterStarter fs = new(callback, Environment.ProcessorCount + 2);
-        fs.FilterHitList = _filterHitList;
-        fs.FilterResultLines = _filterResultList;
-        fs.LastFilterLinesList = _lastFilterLinesList;
+
+        FilterStarter fs = new(callback, Environment.ProcessorCount + 2)
+        {
+            FilterHitList = _filterHitList,
+            FilterResultLines = _filterResultList,
+            LastFilterLinesList = _lastFilterLinesList
+        };
+
         var cancelHandler = new FilterCancelHandler(fs);
         OnRegisterCancelHandler(cancelHandler);
         long startTime = Environment.TickCount;
@@ -2064,7 +2094,7 @@ partial class LogWindow
 
         long endTime = Environment.TickCount;
 
-        _logger.Debug("Multi threaded filter duration: {0} ms.", endTime - startTime);
+        _logger.Debug($"Multi threaded filter duration: {endTime - startTime} ms.");
 
         OnDeRegisterCancelHandler(cancelHandler);
         StatusLineText("Filter duration: " + (endTime - startTime) + " ms.");
@@ -2075,8 +2105,8 @@ partial class LogWindow
         UpdateProgressBar(lineCount);
     }
 
-    private void Filter (FilterParams filterParams, List<int> filterResultLines, List<int> lastFilterLinesList,
-        List<int> filterHitList)
+    [SupportedOSPlatform("windows")]
+    private void Filter (FilterParams filterParams, List<int> filterResultLines, List<int> lastFilterLinesList, List<int> filterHitList)
     {
         long startTime = Environment.TickCount;
         try
@@ -2115,14 +2145,12 @@ partial class LogWindow
         catch (Exception ex)
         {
             _logger.Error(ex, "Exception while filtering. Please report to developer: ");
-            MessageBox.Show(null,
-                "Exception while filtering. Please report to developer: \n\n" + ex + "\n\n" + ex.StackTrace,
-                "LogExpert");
+            MessageBox.Show(null, $"Exception while filtering. Please report to developer: \n\n{ex}\n\n{ex.StackTrace}", "LogExpert");
         }
 
         long endTime = Environment.TickCount;
 
-        _logger.Info("Single threaded filter duration: {0} ms.", endTime - startTime);
+        _logger.Info($"Single threaded filter duration: {endTime - startTime} ms.");
 
         StatusLineText("Filter duration: " + (endTime - startTime) + " ms.");
     }
@@ -2182,8 +2210,8 @@ partial class LogWindow
         return resultList;
     }
 
-    private void AddFilterLine (int lineNum, bool immediate, FilterParams filterParams, List<int> filterResultLines,
-        List<int> lastFilterLinesList, List<int> filterHitList)
+    [SupportedOSPlatform("windows")]
+    private void AddFilterLine (int lineNum, bool immediate, FilterParams filterParams, List<int> filterResultLines, List<int> lastFilterLinesList, List<int> filterHitList)
     {
         int count;
         lock (_filterResultList)
@@ -2210,6 +2238,7 @@ partial class LogWindow
         }
     }
 
+    [SupportedOSPlatform("windows")]
     private void TriggerFilterLineGuiUpdate ()
     {
         //lock (this.filterUpdateThread)
@@ -2272,6 +2301,7 @@ partial class LogWindow
     //  this.filterUpdateThread.Join();
     //}
 
+    [SupportedOSPlatform("windows")]
     private void AddFilterLineGuiUpdate ()
     {
         try
@@ -2316,6 +2346,7 @@ partial class LogWindow
         SendProgressBarUpdate();
     }
 
+    [SupportedOSPlatform("windows")]
     private void FilterComplete ()
     {
         if (!IsDisposed && !_waitingForClose && !Disposing)
@@ -2324,6 +2355,7 @@ partial class LogWindow
         }
     }
 
+    [SupportedOSPlatform("windows")]
     private void FilterComplete (IAsyncResult result)
     {
         if (!IsDisposed && !_waitingForClose && !Disposing)
@@ -2332,6 +2364,7 @@ partial class LogWindow
         }
     }
 
+    [SupportedOSPlatform("windows")]
     private void ResetStatusAfterFilter ()
     {
         try
@@ -2361,6 +2394,7 @@ partial class LogWindow
         }
     }
 
+    [SupportedOSPlatform("windows")]
     private void ClearFilterList ()
     {
         try
@@ -2394,7 +2428,7 @@ partial class LogWindow
     /**
    * Shift filter list line entries after a logfile rollover
    */
-
+    [SupportedOSPlatform("windows")]
     private void ShiftFilterLines (int offset)
     {
         List<int> newFilterList = [];
@@ -2439,6 +2473,7 @@ partial class LogWindow
         TriggerFilterLineGuiUpdate();
     }
 
+    [SupportedOSPlatform("windows")]
     private void CheckForFilterDirty ()
     {
         if (IsFilterSearchDirty(_filterParams))
@@ -2453,9 +2488,10 @@ partial class LogWindow
         }
     }
 
+    [SupportedOSPlatform("windows")]
     private bool IsFilterSearchDirty (FilterParams filterParams)
     {
-        if (!filterParams.SearchText.Equals(filterComboBox.Text))
+        if (!filterParams.SearchText.Equals(filterComboBox.Text, StringComparison.Ordinal))
         {
             return true;
         }
@@ -2465,7 +2501,7 @@ partial class LogWindow
             return true;
         }
 
-        if (filterParams.IsRangeSearch && !filterParams.RangeSearchText.Equals(filterRangeComboBox.Text))
+        if (filterParams.IsRangeSearch && !filterParams.RangeSearchText.Equals(filterRangeComboBox.Text, StringComparison.Ordinal))
         {
             return true;
         }
@@ -2508,6 +2544,7 @@ partial class LogWindow
         return false;
     }
 
+    [SupportedOSPlatform("windows")]
     private void AdjustMinimumGridWith ()
     {
         if (dataGridView.Columns.Count > 1)
@@ -2526,6 +2563,7 @@ partial class LogWindow
         }
     }
 
+    [SupportedOSPlatform("windows")]
     private void InvalidateCurrentRow (BufferedDataGridView gridView)
     {
         if (gridView.CurrentCellAddress.Y > -1)
@@ -2540,6 +2578,7 @@ partial class LogWindow
         InvalidateCurrentRow(filterGridView);
     }
 
+    [SupportedOSPlatform("windows")]
     private void DisplayCurrentFileOnStatusline ()
     {
         if (_logFileReader.IsMultiFile)
@@ -2574,6 +2613,7 @@ partial class LogWindow
         }
     }
 
+    [SupportedOSPlatform("windows")]
     private void UpdateFilterHistoryFromSettings ()
     {
         ConfigManager.Settings.filterHistoryList = ConfigManager.Settings.filterHistoryList;
@@ -2623,6 +2663,7 @@ partial class LogWindow
         OnStatusLine(_statusEventArgs);
     }
 
+    [SupportedOSPlatform("windows")]
     private void ShowAdvancedFilterPanel (bool show)
     {
         if (show)
@@ -2641,44 +2682,37 @@ partial class LogWindow
         _showAdvanced = show;
     }
 
+    [SupportedOSPlatform("windows")]
     private void CheckForAdvancedButtonDirty ()
     {
-        if (IsAdvancedOptionActive() && !_showAdvanced)
-        {
-            advancedButton.Image = _advancedButtonImage;
-        }
-        else
-        {
-            advancedButton.Image = null;
-        }
+        advancedButton.Image = IsAdvancedOptionActive() && !_showAdvanced
+            ? _advancedButtonImage
+            : null;
     }
 
+    [SupportedOSPlatform("windows")]
     private void FilterToTab ()
     {
         filterSearchButton.Enabled = false;
         Task.Run(() => WriteFilterToTab());
     }
 
+    [SupportedOSPlatform("windows")]
     private void WriteFilterToTab ()
     {
         FilterPipe pipe = new(_filterParams.Clone(), this);
         lock (_filterResultList)
         {
             var namePrefix = "->F";
-            string title;
-            if (IsTempFile)
-            {
-                title = TempTitleName + namePrefix + ++_filterPipeNameCounter;
-            }
-            else
-            {
-                title = Util.GetNameFromPath(FileName) + namePrefix + ++_filterPipeNameCounter;
-            }
+            var title = IsTempFile
+                ? TempTitleName + namePrefix + ++_filterPipeNameCounter
+                : Util.GetNameFromPath(FileName) + namePrefix + ++_filterPipeNameCounter;
 
             WritePipeToTab(pipe, _filterResultList, title, null);
         }
     }
 
+    [SupportedOSPlatform("windows")]
     private void WritePipeToTab (FilterPipe pipe, IList<int> lineNumberList, string name, PersistenceData persistenceData)
     {
         _logger.Info("WritePipeToTab(): {0} lines.", lineNumberList.Count);
@@ -2729,6 +2763,7 @@ partial class LogWindow
         Invoke(new WriteFilterToTabFinishedFx(WriteFilterToTabFinished), pipe, name, persistenceData);
     }
 
+    [SupportedOSPlatform("windows")]
     private void WriteFilterToTabFinished (FilterPipe pipe, string name, PersistenceData persistenceData)
     {
         _isSearching = false;
@@ -2764,25 +2799,29 @@ partial class LogWindow
     /// </summary>
     /// <param name="lineEntryList"></param>
     /// <param name="title"></param>
+    [SupportedOSPlatform("windows")]
     internal void WritePipeTab (IList<LineEntry> lineEntryList, string title)
     {
-        FilterPipe pipe = new(new FilterParams(), this);
-        pipe.IsStopped = true;
+        FilterPipe pipe = new(new FilterParams(), this)
+        {
+            IsStopped = true
+        };
         pipe.Closed += OnPipeDisconnected;
         pipe.OpenFile();
         foreach (LineEntry entry in lineEntryList)
         {
-            pipe.WriteToPipe(entry.logLine, entry.lineNum);
+            pipe.WriteToPipe(entry.LogLine, entry.LineNum);
         }
 
         pipe.CloseFile();
         Invoke(new WriteFilterToTabFinishedFx(WriteFilterToTabFinished), [pipe, title, null]);
     }
 
+    [SupportedOSPlatform("windows")]
     private void FilterRestore (LogWindow newWin, PersistenceData persistenceData)
     {
         newWin.WaitForLoadingFinished();
-        ILogLineColumnizer columnizer = ColumnizerPicker.FindColumnizerByName(persistenceData.columnizerName,
+        ILogLineColumnizer columnizer = ColumnizerPicker.FindColumnizerByName(persistenceData.ColumnizerName,
             PluginRegistry.PluginRegistry.Instance.RegisteredColumnizers);
         if (columnizer != null)
         {
@@ -2791,12 +2830,13 @@ partial class LogWindow
         }
         else
         {
-            _logger.Warn("FilterRestore(): Columnizer {0} not found", persistenceData.columnizerName);
+            _logger.Warn($"FilterRestore(): Columnizer {persistenceData.ColumnizerName} not found");
         }
 
         newWin.BeginInvoke(new RestoreFiltersFx(newWin.RestoreFilters), [persistenceData]);
     }
 
+    [SupportedOSPlatform("windows")]
     private void ProcessFilterPipes (int lineNum)
     {
         ILogLine searchLine = _logFileReader.GetLogLine(lineNum);
@@ -2805,8 +2845,10 @@ partial class LogWindow
             return;
         }
 
-        ColumnizerCallback callback = new(this);
-        callback.LineNum = lineNum;
+        ColumnizerCallback callback = new(this)
+        {
+            LineNum = lineNum
+        };
         IList<FilterPipe> deleteList = [];
         lock (_filterPipeList)
         {
@@ -2817,7 +2859,7 @@ partial class LogWindow
                     continue;
                 }
 
-                long startTime = Environment.TickCount;
+                //long startTime = Environment.TickCount;
                 if (Util.TestFilterCondition(pipe.FilterParams, searchLine, callback))
                 {
                     IList<int> filterResult =
@@ -2842,7 +2884,7 @@ partial class LogWindow
                     pipe.CloseFile();
                 }
 
-                long endTime = Environment.TickCount;
+                //long endTime = Environment.TickCount;
                 //_logger.logDebug("ProcessFilterPipes(" + lineNum + ") duration: " + ((endTime - startTime)));
             }
         }
@@ -2853,6 +2895,7 @@ partial class LogWindow
         }
     }
 
+    [SupportedOSPlatform("windows")]
     private void CopyMarkedLinesToClipboard ()
     {
         if (_guiStateArgs.CellSelectMode)
@@ -2902,6 +2945,7 @@ partial class LogWindow
         EncodingOptions.Encoding = encoding;
     }
 
+    [SupportedOSPlatform("windows")]
     private void ApplyDataGridViewPrefs (BufferedDataGridView dataGridView, Preferences prefs)
     {
         if (dataGridView.Columns.GetColumnCount(DataGridViewElementStates.None) > 1)
@@ -2929,6 +2973,7 @@ partial class LogWindow
         AutoResizeColumns(dataGridView);
     }
 
+    [SupportedOSPlatform("windows")]
     private IList<int> GetSelectedContent ()
     {
         if (dataGridView.SelectionMode == DataGridViewSelectionMode.FullRowSelect)
@@ -2954,6 +2999,7 @@ partial class LogWindow
      * Timestamp stuff
      * =======================================================================*/
 
+    [SupportedOSPlatform("windows")]
     private void SetTimestampLimits ()
     {
         if (!CurrentColumnizer.IsTimeshiftImplemented())
@@ -2977,10 +3023,13 @@ partial class LogWindow
         //this.highlightSplitContainer.SplitterDistance = distance;
     }
 
+    [SupportedOSPlatform("windows")]
     private void BookmarkComment (Bookmark bookmark)
     {
-        BookmarkCommentDlg dlg = new();
-        dlg.Comment = bookmark.Text;
+        BookmarkCommentDlg dlg = new()
+        {
+            Comment = bookmark.Text
+        };
         if (dlg.ShowDialog() == DialogResult.OK)
         {
             bookmark.Text = dlg.Comment;
@@ -2994,6 +3043,7 @@ partial class LogWindow
     /// </summary>
     /// <param name="filter"></param>
     /// <returns></returns>
+    [SupportedOSPlatform("windows")]
     private string CalculateColumnNames (FilterParams filter)
     {
         var names = string.Empty;
@@ -3018,6 +3068,7 @@ partial class LogWindow
         return names;
     }
 
+    [SupportedOSPlatform("windows")]
     private void ApplyFrozenState (BufferedDataGridView gridView)
     {
         SortedDictionary<int, DataGridViewColumn> dict = [];
@@ -3037,6 +3088,7 @@ partial class LogWindow
         }
     }
 
+    [SupportedOSPlatform("windows")]
     private void ShowTimeSpread (bool show)
     {
         if (show)
@@ -3051,6 +3103,7 @@ partial class LogWindow
         _timeSpreadCalc.Enabled = show;
     }
 
+    [SupportedOSPlatform("windows")]
     protected internal void AddTempFileTab (string fileName, string title)
     {
         _parentLogTabWin.AddTempFileTab(fileName, title);
@@ -3070,10 +3123,11 @@ partial class LogWindow
         //this.patternWindow.Show();
     }
 
+    [SupportedOSPlatform("windows")]
     private void TestStatistic (PatternArgs patternArgs)
     {
         var beginLine = patternArgs.StartLine;
-        _logger.Info("TestStatistics() called with start line {0}", beginLine);
+        _logger.Info($"TestStatistics() called with start line {beginLine}");
 
         _patternArgs = patternArgs;
 
@@ -3115,7 +3169,7 @@ partial class LogWindow
                            processedLinesDict)) != null)
             {
                 _logger.Debug("Found block: {0}", block);
-                if (block.weigth >= _patternArgs.MinWeight)
+                if (block.Weigth >= _patternArgs.MinWeight)
                 {
                     //PatternBlock existingBlock = FindExistingBlock(block, blockList);
                     //if (existingBlock != null)
@@ -3129,18 +3183,18 @@ partial class LogWindow
                     //else
                     {
                         blockList.Add(block);
-                        addBlockTargetLinesToDict(processedLinesDict, block);
+                        AddBlockTargetLinesToDict(processedLinesDict, block);
                     }
-                    block.blockId = blockId;
+                    block.BlockId = blockId;
                     //if (firstBlock)
                     //{
                     //  addBlockSrcLinesToDict(processedLinesDict, block);
                     //}
-                    searchLine = block.targetEnd + 1;
+                    searchLine = block.TargetEnd + 1;
                 }
                 else
                 {
-                    searchLine = block.targetStart + 1;
+                    searchLine = block.TargetStart + 1;
                 }
 
                 UpdateProgressBar(searchLine);
@@ -3163,14 +3217,11 @@ partial class LogWindow
         _logger.Info("TestStatistics() ended");
     }
 
-    private void addBlockTargetLinesToDict (Dictionary<int, int> dict, PatternBlock block)
+    private void AddBlockTargetLinesToDict (Dictionary<int, int> dict, PatternBlock block)
     {
-        foreach (var lineNum in block.targetLines.Keys)
+        foreach (var lineNum in block.TargetLines.Keys)
         {
-            if (!dict.ContainsKey(lineNum))
-            {
-                dict.Add(lineNum, lineNum);
-            }
+            _ = dict.TryAdd(lineNum, lineNum);
         }
     }
 
@@ -3179,12 +3230,10 @@ partial class LogWindow
     {
         foreach (PatternBlock searchBlock in blockList)
         {
-            if ((block.startLine > searchBlock.startLine &&
-                 block.startLine < searchBlock.endLine
-                 ||
-                 block.endLine > searchBlock.startLine &&
-                 block.endLine < searchBlock.endLine) && block.startLine != searchBlock.startLine &&
-                block.endLine != searchBlock.endLine
+            if (((block.StartLine > searchBlock.StartLine && block.StartLine < searchBlock.EndLine) ||
+                 (block.EndLine > searchBlock.StartLine && block.EndLine < searchBlock.EndLine)) &&
+                  block.StartLine != searchBlock.StartLine &&
+                  block.EndLine != searchBlock.EndLine
             )
             {
                 return searchBlock;
@@ -3194,8 +3243,7 @@ partial class LogWindow
         return null;
     }
 
-    private PatternBlock DetectBlock (int startNum, int startLineToSearch, int maxBlockLen, int maxDiffInBlock,
-        int maxMisses, Dictionary<int, int> processedLinesDict)
+    private PatternBlock DetectBlock (int startNum, int startLineToSearch, int maxBlockLen, int maxDiffInBlock, int maxMisses, Dictionary<int, int> processedLinesDict)
     {
         var targetLine = FindSimilarLine(startNum, startLineToSearch, processedLinesDict);
         if (targetLine == -1)
@@ -3203,17 +3251,21 @@ partial class LogWindow
             return null;
         }
 
-        PatternBlock block = new();
-        block.startLine = startNum;
-        var srcLine = block.startLine;
-        block.targetStart = targetLine;
+        PatternBlock block = new()
+        {
+            StartLine = startNum
+        };
+        var srcLine = block.StartLine;
+        block.TargetStart = targetLine;
         var srcMisses = 0;
-        block.srcLines.Add(srcLine, srcLine);
+        block.SrcLines.Add(srcLine, srcLine);
         //block.targetLines.Add(targetLine, targetLine);
         var len = 0;
-        QualityInfo qi = new();
-        qi.quality = block.weigth;
-        block.qualityInfoList[targetLine] = qi;
+        QualityInfo qi = new()
+        {
+            Quality = block.Weigth
+        };
+        block.QualityInfoList[targetLine] = qi;
 
         while (!_shouldCancel)
         {
@@ -3229,34 +3281,40 @@ partial class LogWindow
             var nextTargetLine = FindSimilarLine(srcLine, targetLine + 1, processedLinesDict);
             if (nextTargetLine > -1 && nextTargetLine - targetLine - 1 <= maxDiffInBlock)
             {
-                block.weigth += maxDiffInBlock - (nextTargetLine - targetLine - 1) + 1;
-                block.endLine = srcLine;
+                block.Weigth += maxDiffInBlock - (nextTargetLine - targetLine - 1) + 1;
+                block.EndLine = srcLine;
                 //block.targetLines.Add(nextTargetLine, nextTargetLine);
-                block.srcLines.Add(srcLine, srcLine);
+                block.SrcLines.Add(srcLine, srcLine);
                 if (nextTargetLine - targetLine > 1)
                 {
-                    var tempWeight = block.weigth;
+                    var tempWeight = block.Weigth;
                     for (var tl = targetLine + 1; tl < nextTargetLine; ++tl)
                     {
-                        qi = new QualityInfo();
-                        qi.quality = --tempWeight;
-                        block.qualityInfoList[tl] = qi;
+                        qi = new QualityInfo
+                        {
+                            Quality = --tempWeight
+                        };
+                        block.QualityInfoList[tl] = qi;
                     }
                 }
 
                 targetLine = nextTargetLine;
-                qi = new QualityInfo();
-                qi.quality = block.weigth;
-                block.qualityInfoList[targetLine] = qi;
+                qi = new QualityInfo
+                {
+                    Quality = block.Weigth
+                };
+                block.QualityInfoList[targetLine] = qi;
             }
             else
             {
                 srcMisses++;
-                block.weigth--;
+                block.Weigth--;
                 targetLine++;
-                qi = new QualityInfo();
-                qi.quality = block.weigth;
-                block.qualityInfoList[targetLine] = qi;
+                qi = new QualityInfo
+                {
+                    Quality = block.Weigth
+                };
+                block.QualityInfoList[targetLine] = qi;
                 if (srcMisses > maxMisses)
                 {
                     break;
@@ -3264,13 +3322,17 @@ partial class LogWindow
             }
         }
 
-        block.targetEnd = targetLine;
-        qi = new QualityInfo();
-        qi.quality = block.weigth;
-        block.qualityInfoList[targetLine] = qi;
-        for (var k = block.targetStart; k <= block.targetEnd; ++k)
+        block.TargetEnd = targetLine;
+        qi = new QualityInfo
         {
-            block.targetLines.Add(k, k);
+            Quality = block.Weigth
+        };
+
+        block.QualityInfoList[targetLine] = qi;
+
+        for (var k = block.TargetStart; k <= block.TargetEnd; ++k)
+        {
+            block.TargetLines.Add(k, k);
         }
 
         return block;
@@ -3288,7 +3350,7 @@ partial class LogWindow
             var msg = GetMsgForLine(i);
             if (msg != null)
             {
-                msg = msg.ToLower();
+                msg = msg.ToLowerInvariant();
                 msg = regex.Replace(msg, "0");
                 msg = regex2.Replace(msg, " ");
                 var chars = msg.ToCharArray();
@@ -3321,7 +3383,7 @@ partial class LogWindow
         }
     }
 
-    private int _FindSimilarLine (int srcLine, int startLine)
+    private int FindSimilarLine (int srcLine, int startLine)
     {
         var value = _lineHashList[srcLine];
 
@@ -3424,6 +3486,7 @@ partial class LogWindow
         return cols.ColumnValues.Last().FullValue;
     }
 
+    [SupportedOSPlatform("windows")]
     private void ChangeRowHeight (bool decrease)
     {
         var rowNum = dataGridView.CurrentCellAddress.Y;
@@ -3434,13 +3497,12 @@ partial class LogWindow
 
         if (decrease)
         {
-            if (!_rowHeightList.ContainsKey(rowNum))
+            if (!_rowHeightList.TryGetValue(rowNum, out RowHeightEntry? entry))
             {
                 return;
             }
             else
             {
-                RowHeightEntry entry = _rowHeightList[rowNum];
                 entry.Height -= _lineHeight;
                 if (entry.Height <= _lineHeight)
                 {
@@ -3451,16 +3513,19 @@ partial class LogWindow
         else
         {
             RowHeightEntry entry;
-            if (!_rowHeightList.ContainsKey(rowNum))
+            if (!_rowHeightList.TryGetValue(rowNum, out RowHeightEntry? value))
             {
-                entry = new RowHeightEntry();
-                entry.LineNum = rowNum;
-                entry.Height = _lineHeight;
+                entry = new RowHeightEntry
+                {
+                    LineNum = rowNum,
+                    Height = _lineHeight
+                };
+
                 _rowHeightList[rowNum] = entry;
             }
             else
             {
-                entry = _rowHeightList[rowNum];
+                entry = value;
             }
 
             entry.Height += _lineHeight;
@@ -3477,14 +3542,9 @@ partial class LogWindow
 
     private int GetRowHeight (int rowNum)
     {
-        if (_rowHeightList.ContainsKey(rowNum))
-        {
-            return _rowHeightList[rowNum].Height;
-        }
-        else
-        {
-            return _lineHeight;
-        }
+        return _rowHeightList.TryGetValue(rowNum, out RowHeightEntry? value)
+            ? value.Height
+            : _lineHeight;
     }
 
     private void AddBookmarkAtLineSilently (int lineNum)
@@ -3495,6 +3555,7 @@ partial class LogWindow
         }
     }
 
+    [SupportedOSPlatform("windows")]
     private void AddBookmarkAndEditComment ()
     {
         var lineNum = dataGridView.CurrentCellAddress.Y;
@@ -3506,6 +3567,7 @@ partial class LogWindow
         BookmarkComment(_bookmarkProvider.GetBookmarkForLine(lineNum));
     }
 
+    [SupportedOSPlatform("windows")]
     private void AddBookmarkComment (string text)
     {
         var lineNum = dataGridView.CurrentCellAddress.Y;
@@ -3525,6 +3587,7 @@ partial class LogWindow
         OnBookmarkTextChanged(bookmark);
     }
 
+    [SupportedOSPlatform("windows")]
     private void MarkCurrentFilterRange ()
     {
         _filterParams.RangeSearchText = filterRangeComboBox.Text;
@@ -3545,6 +3608,7 @@ partial class LogWindow
         }
     }
 
+    [SupportedOSPlatform("windows")]
     private void RemoveTempHighlights ()
     {
         lock (_tempHighlightEntryListLock)
@@ -3555,6 +3619,7 @@ partial class LogWindow
         RefreshAllGrids();
     }
 
+    [SupportedOSPlatform("windows")]
     private void ToggleHighlightPanel (bool open)
     {
         highlightSplitContainer.Panel2Collapsed = !open;
@@ -3563,6 +3628,7 @@ partial class LogWindow
             : new Bitmap(_panelOpenButtonImage, new Size(btnToggleHighlightPanel.Size.Height, btnToggleHighlightPanel.Size.Height));
     }
 
+    [SupportedOSPlatform("windows")]
     private void SetBookmarksForSelectedFilterLines ()
     {
         lock (_filterResultList)
@@ -3592,6 +3658,7 @@ partial class LogWindow
         }
     }
 
+    [SupportedOSPlatform("windows")]
     private void HandleChangedFilterOnLoadSetting ()
     {
         _parentLogTabWin.Preferences.isFilterOnLoad = filterOnLoadCheckBox.Checked;
@@ -3603,7 +3670,7 @@ partial class LogWindow
     {
         lock (_cancelHandlerList)
         {
-            foreach (var handler in _cancelHandlerList)
+            foreach (Core.Interface.IBackgroundProcessCancelHandler handler in _cancelHandlerList)
             {
                 handler.EscapePressed();
             }
@@ -3618,6 +3685,7 @@ partial class LogWindow
         }
     }
 
+    [SupportedOSPlatform("windows")]
     private void AddSlaveToTimesync (LogWindow slave)
     {
         lock (_timeSyncListLock)
@@ -3660,6 +3728,7 @@ partial class LogWindow
         SyncModeChanged?.Invoke(this, new SyncModeEventArgs(IsTimeSynced));
     }
 
+    [SupportedOSPlatform("windows")]
     private void AddSearchHitHighlightEntry (SearchParams para)
     {
         HighlightEntry he = new()
@@ -3686,6 +3755,7 @@ partial class LogWindow
         RefreshAllGrids();
     }
 
+    [SupportedOSPlatform("windows")]
     private void RemoveAllSearchHighlightEntries ()
     {
         lock (_tempHighlightEntryListLock)
@@ -3705,11 +3775,12 @@ partial class LogWindow
         RefreshAllGrids();
     }
 
+    [SupportedOSPlatform("windows")]
     private DataGridViewColumn GetColumnByName (BufferedDataGridView dataGridView, string name)
     {
         foreach (DataGridViewColumn col in dataGridView.Columns)
         {
-            if (col.HeaderText.Equals(name))
+            if (col.HeaderText.Equals(name, StringComparison.Ordinal))
             {
                 return col;
             }
@@ -3718,6 +3789,7 @@ partial class LogWindow
         return null;
     }
 
+    [SupportedOSPlatform("windows")]
     private void SelectColumn ()
     {
         var colName = columnComboBox.SelectedItem as string;

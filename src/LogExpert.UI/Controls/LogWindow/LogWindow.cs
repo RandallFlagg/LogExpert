@@ -1,3 +1,5 @@
+using System.Runtime.Versioning;
+
 using LogExpert.Classes.Filter;
 using LogExpert.Core.Callback;
 using LogExpert.Core.Classes.Bookmark;
@@ -134,6 +136,7 @@ public partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, ILog
 
     #region cTor
 
+    [SupportedOSPlatform("windows")]
     public LogWindow (LogTabWindow.LogTabWindow parent, string fileName, bool isTempFile, bool forcePersistenceLoading, IConfigManager configManager)
     {
         SuspendLayout();
@@ -267,6 +270,8 @@ public partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, ILog
     #endregion
 
     #region ColorTheme
+
+    [SupportedOSPlatform("windows")]
     public void ChangeTheme (Control.ControlCollection container)
     {
         #region ApplyColorToAllControls
@@ -448,6 +453,7 @@ public partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, ILog
         }
     }
 
+    [SupportedOSPlatform("windows")]
     public bool ShowBookmarkBubbles
     {
         get => _guiStateArgs.ShowBookmarkBubbles;
@@ -563,12 +569,14 @@ public partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, ILog
         //}
     }
 
+    [SupportedOSPlatform("windows")]
     internal void RefreshAllGrids ()
     {
         dataGridView.Refresh();
         filterGridView.Refresh();
     }
 
+    [SupportedOSPlatform("windows")]
     internal void ChangeMultifileMask ()
     {
         MultiFileMaskDialog dlg = new(this, FileName)
@@ -589,6 +597,7 @@ public partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, ILog
         }
     }
 
+    [SupportedOSPlatform("windows")]
     internal void ToggleColumnFinder (bool show, bool setFocus)
     {
         _guiStateArgs.ColumnFinderVisible = show;
@@ -621,6 +630,7 @@ public partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, ILog
 
     #endregion
 
+    [SupportedOSPlatform("windows")]
     private void OnButtonSizeChanged (object sender, EventArgs e)
     {
         if (sender is Button button && button.Image != null)

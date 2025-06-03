@@ -63,7 +63,7 @@ public class Util
 
     public static bool TestFilterCondition (FilterParams filterParams, ILogLine line, ILogLineColumnizerCallback columnizerCallback)
     {
-        if (filterParams.LastLine.Equals(line.FullLine))
+        if (filterParams.LastLine.Equals(line.FullLine, StringComparison.OrdinalIgnoreCase))
         {
             return filterParams.LastResult;
         }
@@ -550,14 +550,14 @@ public class Util
             {
                 if (exactMatch)
                 {
-                    if (line.ToLower().Trim().Equals(lowerSearchText))
+                    if (line.ToLowerInvariant().Trim().Equals(lowerSearchText, StringComparison.Ordinal))
                     {
                         return true;
                     }
                 }
                 else
                 {
-                    if (line.Contains(lowerSearchText, StringComparison.CurrentCultureIgnoreCase))
+                    if (line.Contains(lowerSearchText, StringComparison.OrdinalIgnoreCase))
                     {
                         return true;
                     }
@@ -567,14 +567,14 @@ public class Util
             {
                 if (exactMatch)
                 {
-                    if (line.Equals(searchText))
+                    if (line.Equals(searchText, StringComparison.Ordinal))
                     {
                         return true;
                     }
                 }
                 else
                 {
-                    if (line.Contains(searchText))
+                    if (line.Contains(searchText, StringComparison.OrdinalIgnoreCase))
                     {
                         return true;
                     }
@@ -592,7 +592,7 @@ public class Util
 
                         if (!filterParams.IsCaseSensitive)
                         {
-                            src = src.ToLower();
+                            src = src.ToLowerInvariant();
                         }
 
                         var dist = DamerauLevenshteinDistance(src, searchText);
@@ -603,9 +603,11 @@ public class Util
                         }
                     }
                 }
+
                 return false;
             }
         }
+
         return false;
     }
 

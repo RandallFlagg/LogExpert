@@ -1,25 +1,15 @@
-﻿using System.Text;
+using System.Text;
 using System.Text.RegularExpressions;
 
 using LogExpert.Core.Classes;
 using LogExpert.Dialogs;
 
-namespace LogExpert.Classes;
+namespace LogExpert.UI.Entities;
 
-internal class ArgParser
+internal class ArgParser (string argTemplate)
 {
-    #region Fields
-
-    private readonly string argLine;
-
-    #endregion
 
     #region cTor
-
-    public ArgParser (string argTemplate)
-    {
-        argLine = argTemplate;
-    }
 
     #endregion
 
@@ -27,25 +17,27 @@ internal class ArgParser
 
     public string BuildArgs (ILogLine logLine, int lineNum, ILogFileInfo logFileInfo, Form parent)
     {
-        StringBuilder builder = new(argLine);
-        builder.Replace("%L", "" + lineNum);
-        builder.Replace("%P", logFileInfo.DirectoryName);
-        builder.Replace("%N", logFileInfo.FileName);
-        builder.Replace("%F", logFileInfo.FullName);
-        builder.Replace("%E", Util.GetExtension(logFileInfo.FileName));
-        var stripped = Util.StripExtension(logFileInfo.FileName);
-        builder.Replace("%M", stripped);
+        StringBuilder builder = new(argTemplate);
 
-        builder.Replace("%URI", logFileInfo.Uri.AbsoluteUri);
+        _ = builder.Replace("%L", "" + lineNum);
+        _ = builder.Replace("%P", logFileInfo.DirectoryName);
+        _ = builder.Replace("%N", logFileInfo.FileName);
+        _ = builder.Replace("%F", logFileInfo.FullName);
+        _ = builder.Replace("%E", Util.GetExtension(logFileInfo.FileName));
+        var stripped = Util.StripExtension(logFileInfo.FileName);
+        _ = builder.Replace("%M", stripped);
+        _ = builder.Replace("%URI", logFileInfo.Uri.AbsoluteUri);
         var user = logFileInfo.Uri.UserInfo;
-        if (user.Contains(":"))
+
+        if (user.Contains(':', StringComparison.Ordinal))
         {
-            user = user.Substring(0, user.IndexOf(':'));
+            user = user[..user.IndexOf(':', StringComparison.Ordinal)];
         }
-        builder.Replace("%S", user);
-        builder.Replace("%R", logFileInfo.Uri.PathAndQuery);
-        builder.Replace("%H", logFileInfo.Uri.Host);
-        builder.Replace("%T", logFileInfo.Uri.Port.ToString());
+
+        _ = builder.Replace("%S", user);
+        _ = builder.Replace("%R", logFileInfo.Uri.PathAndQuery);
+        _ = builder.Replace("%H", logFileInfo.Uri.Host);
+        _ = builder.Replace("%T", logFileInfo.Uri.Port.ToString());
 
         var sPos = 0;
         string reg;
@@ -57,7 +49,7 @@ internal class ArgParser
             if (reg != null && replace != null)
             {
                 var result = Regex.Replace(logLine.FullLine, reg, replace);
-                builder.Insert(sPos, result);
+                _ = builder.Insert(sPos, result);
             }
         } while (replace != null);
 
@@ -78,10 +70,12 @@ internal class ArgParser
                     }
                     ask = builder.ToString().Substring(i + 2, end - i - 2);
                 }
+
                 string[] values = null;
+
                 if (builder[end + 1] == '(')
                 {
-                    var end2 = builder.ToString().IndexOf(')');
+                    var end2 = builder.ToString().IndexOf(')', StringComparison.Ordinal);
                     if (end2 == -1)
                     {
                         end2 = builder.Length - 1;
@@ -91,17 +85,20 @@ internal class ArgParser
                     end = end2;
                 }
 
-                ParamRequesterDialog dlg = new();
-                dlg.ParamName = ask;
-                dlg.Values = values;
+                ParamRequesterDialog dlg = new()
+                {
+                    ParamName = ask,
+                    Values = values
+                };
+
                 DialogResult res = dlg.ShowDialog(parent);
 
-                if (res == DialogResult.OK)
+                if (res is DialogResult.OK)
                 {
-                    builder.Remove(i, end - i + 1);
-                    builder.Insert(i, dlg.ParamValue);
+                    _ = builder.Remove(i, end - i + 1);
+                    _ = builder.Insert(i, dlg.ParamValue);
                 }
-                else if (res == DialogResult.Cancel || res == DialogResult.Abort)
+                else if (res is DialogResult.Cancel or DialogResult.Abort)
                 {
                     return null;
                 }
@@ -126,27 +123,33 @@ internal class ArgParser
             {
                 ePos = sPos + 1;
                 var count = 1;
+
                 while (ePos < builder.Length)
                 {
                     if (builder[ePos] == '{')
                     {
                         count++;
                     }
+
                     if (builder[ePos] == '}')
                     {
                         count--;
                     }
+
                     if (count == 0)
                     {
                         var reg = builder.ToString(sPos + 1, ePos - sPos - 1);
-                        builder.Remove(sPos, ePos - sPos + 1);
+                        _ = builder.Remove(sPos, ePos - sPos + 1);
                         return reg;
                     }
+
                     ePos++;
                 }
             }
+
             sPos++;
         }
+
         return null;
     }
 

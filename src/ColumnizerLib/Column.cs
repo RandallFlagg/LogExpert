@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace LogExpert;
@@ -18,42 +18,35 @@ public class Column : IColumn
 
     #region cTor
 
-    static Column()
+    static Column ()
     {
         var replacements = new List<Func<string, string>>(
-            new Func<string, string>[]
-            {
+            [
                 //replace tab with 3 spaces, from old coding. Needed???
-                input => input.Replace("\t", "  "),
+                input => input.Replace("\t", "  ", StringComparison.Ordinal),
 
                 //shorten string if it exceeds maxLength
-                input =>
-                {
-                    if (input.Length > _maxLength)
-                    {
-                        return input.Substring(0, _maxLength) + _replacement;
-                    }
-
-                    return input;
-                }
-            });
+                input => input.Length > _maxLength
+                        ? string.Concat(input.AsSpan(0, _maxLength), _replacement)
+                        : input
+            ]);
 
         if (Environment.Version >= Version.Parse("6.2"))
         {
             //Win8 or newer support full UTF8 chars with the preinstalled fonts.
-            //Replace null char with UTF8 Symbol U+2400 (␀) 
-            replacements.Add(input => input.Replace("\0", "␀"));
+            //Replace null char with UTF8 Symbol U+2400 (␀)
+            replacements.Add(input => input.Replace("\0", "␀", StringComparison.Ordinal));
         }
         else
         {
             //Everything below Win8 the installed fonts seems to not to support reliabel
             //Replace null char with space
-            replacements.Add(input => input.Replace("\0", " "));
+            replacements.Add(input => input.Replace("\0", " ", StringComparison.Ordinal));
         }
 
         _replacements = replacements;
 
-        EmptyColumn = new Column {FullValue = string.Empty};
+        EmptyColumn = new Column { FullValue = string.Empty };
     }
 
     #endregion
@@ -90,24 +83,24 @@ public class Column : IColumn
 
     #region Public methods
 
-    public static Column[] CreateColumns(int count, IColumnizedLogLine parent)
+    public static Column[] CreateColumns (int count, IColumnizedLogLine parent)
     {
         return CreateColumns(count, parent, string.Empty);
     }
 
-    public static Column[] CreateColumns(int count, IColumnizedLogLine parent, string defaultValue)
+    public static Column[] CreateColumns (int count, IColumnizedLogLine parent, string defaultValue)
     {
         var output = new Column[count];
 
         for (var i = 0; i < count; i++)
         {
-            output[i] = new Column {FullValue = defaultValue, Parent = parent};
+            output[i] = new Column { FullValue = defaultValue, Parent = parent };
         }
 
         return output;
     }
 
-    public override string ToString()
+    public override string ToString ()
     {
         return DisplayValue ?? string.Empty;
     }

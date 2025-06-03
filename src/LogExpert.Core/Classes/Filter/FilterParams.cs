@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Drawing;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
@@ -111,7 +111,7 @@ public class FilterParams : ICloneable
     /// Returns a new FilterParams object with the current columnizer set to the one used in this object.
     /// </summary>
     /// <returns></returns>
-    public FilterParams CloneWithCurrentColumnizer()
+    public FilterParams CloneWithCurrentColumnizer ()
     {
         FilterParams newParams = Clone();
         newParams.Init();
@@ -122,22 +122,22 @@ public class FilterParams : ICloneable
     }
 
     // call after deserialization!
-    public void Init()
+    public void Init ()
     {
         LastNonEmptyCols = [];
-        LowerRangeSearchText = RangeSearchText.ToLower();
-        LowerSearchText = SearchText.ToLower();
+        LowerRangeSearchText = RangeSearchText.ToLowerInvariant();
+        LowerSearchText = SearchText.ToLowerInvariant();
         LastLine = string.Empty;
     }
 
     // Reset before a new search
-    public void Reset()
+    public void Reset ()
     {
         LastNonEmptyCols.Clear();
         IsInRange = false;
     }
 
-    public void CreateRegex()
+    public void CreateRegex ()
     {
         if (SearchText != null)
         {
@@ -153,7 +153,7 @@ public class FilterParams : ICloneable
     /// Shallow Copy
     /// </summary>
     /// <returns></returns>
-    public FilterParams Clone()
+    public FilterParams Clone ()
     {
         return (FilterParams)MemberwiseClone();
     }
@@ -162,7 +162,7 @@ public class FilterParams : ICloneable
     /// Shallow Copy
     /// </summary>
     /// <returns></returns>
-    object ICloneable.Clone()
+    object ICloneable.Clone ()
     {
         return Clone();
     }

@@ -1,16 +1,16 @@
-﻿using LogExpert.Core.Entities;
-
 using System.Reflection;
+
+using LogExpert.Core.Entities;
 
 namespace LogExpert.Core.Classes.Columnizer;
 
 public class ColumnizerPicker
 {
-    public static ILogLineColumnizer FindColumnizerByName(string name, IList<ILogLineColumnizer> list)
+    public static ILogLineColumnizer FindColumnizerByName (string name, IList<ILogLineColumnizer> list)
     {
         foreach (ILogLineColumnizer columnizer in list)
         {
-            if (columnizer.GetName().Equals(name))
+            if (columnizer.GetName().Equals(name, StringComparison.Ordinal))
             {
                 return columnizer;
             }
@@ -18,11 +18,11 @@ public class ColumnizerPicker
         return null;
     }
 
-    public static ILogLineColumnizer DecideColumnizerByName(string name, IList<ILogLineColumnizer> list)
+    public static ILogLineColumnizer DecideColumnizerByName (string name, IList<ILogLineColumnizer> list)
     {
         foreach (ILogLineColumnizer columnizer in list)
         {
-            if (columnizer.GetName().Equals(name))
+            if (columnizer.GetName().Equals(name, StringComparison.Ordinal))
             {
                 return columnizer;
             }
@@ -31,7 +31,7 @@ public class ColumnizerPicker
         return FindColumnizer(null, null, list);
     }
 
-    public static ILogLineColumnizer CloneColumnizer(ILogLineColumnizer columnizer, string directory)
+    public static ILogLineColumnizer CloneColumnizer (ILogLineColumnizer columnizer, string directory)
     {
         if (columnizer == null)
         {
@@ -60,7 +60,7 @@ public class ColumnizerPicker
     /// <param name="logFileReader"></param>
     /// <param name="logLineColumnizer"></param>
     /// <returns></returns>
-    public static ILogLineColumnizer FindReplacementForAutoColumnizer(string fileName,
+    public static ILogLineColumnizer FindReplacementForAutoColumnizer (string fileName,
         IAutoLogLineColumnizerCallback logFileReader,
         ILogLineColumnizer logLineColumnizer,
         IList<ILogLineColumnizer> list)
@@ -72,7 +72,7 @@ public class ColumnizerPicker
         return logLineColumnizer;
     }
 
-    public static ILogLineColumnizer FindBetterColumnizer(string fileName,
+    public static ILogLineColumnizer FindBetterColumnizer (string fileName,
         IAutoLogLineColumnizerCallback logFileReader,
         ILogLineColumnizer logLineColumnizer,
         IList<ILogLineColumnizer> list)
@@ -93,7 +93,7 @@ public class ColumnizerPicker
     /// <param name="fileName"></param>
     /// <param name="logFileReader"></param>
     /// <returns></returns>
-    public static ILogLineColumnizer FindColumnizer(string fileName, IAutoLogLineColumnizerCallback logFileReader, IList<ILogLineColumnizer> list)
+    public static ILogLineColumnizer FindColumnizer (string fileName, IAutoLogLineColumnizerCallback logFileReader, IList<ILogLineColumnizer> list)
     {
         if (string.IsNullOrEmpty(fileName))
         {

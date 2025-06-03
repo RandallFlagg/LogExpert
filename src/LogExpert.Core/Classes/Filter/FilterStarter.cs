@@ -160,7 +160,7 @@ public class FilterStarter
         }
 
         _ = filter.DoFilter(threadFilterParams, startLine, maxCount, progressCallback);
-        _logger.Info("Filter worker [{0}] for line {1} has completed.", Thread.CurrentThread.ManagedThreadId, startLine);
+        _logger.Info("Filter worker [{0}] for line {1} has completed.", Environment.CurrentManagedThreadId, startLine);
 
         lock (_filterReadyList)
         {

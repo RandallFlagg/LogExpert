@@ -212,12 +212,12 @@ partial class LogWindow
     {
         PersistenceData persistenceData = new()
         {
-            bookmarkList = _bookmarkProvider.BookmarkList,
+            BookmarkList = _bookmarkProvider.BookmarkList,
             rowHeightList = _rowHeightList,
             multiFile = IsMultiFile,
             multiFilePattern = _multiFileOptions.FormatPattern,
             multiFileMaxDays = _multiFileOptions.MaxDayTry,
-            currentLine = dataGridView.CurrentCellAddress.Y,
+            CurrentLine = dataGridView.CurrentCellAddress.Y,
             firstDisplayedLine = dataGridView.FirstDisplayedScrollingRowIndex,
             filterVisible = !splitContainerLogWindow.Panel2Collapsed,
             filterAdvanced = !advancedFilterSplitContainer.Panel1Collapsed,
@@ -226,7 +226,7 @@ partial class LogWindow
             fileName = FileName,
             tabName = Text,
             sessionFileName = SessionFileName,
-            columnizerName = CurrentColumnizer.GetName(),
+            ColumnizerName = CurrentColumnizer.GetName(),
             lineCount = _logFileReader.LineCount
         };
 

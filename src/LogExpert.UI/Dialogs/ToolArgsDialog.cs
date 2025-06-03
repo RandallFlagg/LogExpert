@@ -1,6 +1,6 @@
-﻿using LogExpert.Classes;
-using LogExpert.UI.Controls.LogTabWindow;
+﻿using LogExpert.UI.Controls.LogTabWindow;
 using LogExpert.UI.Dialogs;
+using LogExpert.UI.Entities;
 
 using System;
 using System.Drawing;

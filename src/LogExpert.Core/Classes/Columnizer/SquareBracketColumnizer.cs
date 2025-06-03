@@ -8,8 +8,8 @@ public class SquareBracketColumnizer : ILogLineColumnizer, IColumnizerPriority
 {
     #region ILogLineColumnizer implementation
 
-    protected int timeOffset;
-    private TimeFormatDeterminer _timeFormatDeterminer = new();
+    private int _timeOffset;
+    private readonly TimeFormatDeterminer _timeFormatDeterminer = new();
 
     // TODO: need preparing this columnizer with sample log lines before use it.
     private int _columnCount = 5;
@@ -38,15 +38,15 @@ public class SquareBracketColumnizer : ILogLineColumnizer, IColumnizerPriority
 
     public void SetTimeOffset (int msecOffset)
     {
-        timeOffset = msecOffset;
+        _timeOffset = msecOffset;
     }
 
     public int GetTimeOffset ()
     {
-        return timeOffset;
+        return _timeOffset;
     }
 
-    public DateTime GetTimestamp (LogExpert.ILogLineColumnizerCallback callback, ILogLine line)
+    public DateTime GetTimestamp (ILogLineColumnizerCallback callback, ILogLine line)
     {
         IColumnizedLogLine cols = SplitLine(callback, line);
         if (cols == null || cols.ColumnValues == null || cols.ColumnValues.Length < 2)
@@ -78,7 +78,7 @@ public class SquareBracketColumnizer : ILogLineColumnizer, IColumnizerPriority
         }
     }
 
-    public void PushValue (LogExpert.ILogLineColumnizerCallback callback, int column, string value, string oldValue)
+    public void PushValue (ILogLineColumnizerCallback callback, int column, string value, string oldValue)
     {
         if (column == 1)
         {
@@ -94,7 +94,7 @@ public class SquareBracketColumnizer : ILogLineColumnizer, IColumnizerPriority
                 var oldDateTime = DateTime.ParseExact(oldValue, formatInfo.TimeFormat, formatInfo.CultureInfo);
                 var mSecsOld = oldDateTime.Ticks / TimeSpan.TicksPerMillisecond;
                 var mSecsNew = newDateTime.Ticks / TimeSpan.TicksPerMillisecond;
-                timeOffset = (int)(mSecsNew - mSecsOld);
+                _timeOffset = (int)(mSecsNew - mSecsOld);
             }
             catch (FormatException)
             {
@@ -187,11 +187,11 @@ public class SquareBracketColumnizer : ILogLineColumnizer, IColumnizerPriority
             var dateLen = formatInfo.DateFormat.Length;
             try
             {
-                if (timeOffset != 0)
+                if (_timeOffset != 0)
                 {
-                    var dateTime = DateTime.ParseExact(temp.Substring(0, endPos), formatInfo.DateTimeFormat,
+                    var dateTime = DateTime.ParseExact(temp[..endPos], formatInfo.DateTimeFormat,
                         formatInfo.CultureInfo);
-                    dateTime = dateTime.Add(new TimeSpan(0, 0, 0, 0, timeOffset));
+                    dateTime = dateTime.Add(new TimeSpan(0, 0, 0, 0, _timeOffset));
                     var newDate = dateTime.ToString(formatInfo.DateTimeFormat, formatInfo.CultureInfo);
 
                     SquareSplit(ref columns, newDate, dateLen, timeLen, endPos, clogLine);
@@ -220,7 +220,7 @@ public class SquareBracketColumnizer : ILogLineColumnizer, IColumnizerPriority
         var restColumn = _columnCount;
         if (_isTimeExists)
         {
-            columnList.Add(new Column { FullValue = line.Substring(0, dateLen), Parent = clogLine });
+            columnList.Add(new Column { FullValue = line[..dateLen], Parent = clogLine });
             columnList.Add(new Column { FullValue = line.Substring(dateLen + 1, timeLen), Parent = clogLine });
             restColumn -= 2;
         }
@@ -231,17 +231,17 @@ public class SquareBracketColumnizer : ILogLineColumnizer, IColumnizerPriority
 
         for (var i = 0; i < restColumn; i++)
         {
-            rest = rest.Substring(nextPos);
+            rest = rest[nextPos..];
             //var fullValue = rest.Substring(0, rest.IndexOf(']')).TrimStart(new char[] {' '}).TrimEnd(new char[] { ' ' });
             var trimmed = rest.TrimStart([' ']);
-            if (string.IsNullOrEmpty(trimmed) || trimmed[0] != '[' || rest.IndexOf(']') < 0 || i == restColumn - 1)
+            if (string.IsNullOrEmpty(trimmed) || trimmed[0] != '[' || rest.IndexOf(']', StringComparison.Ordinal) < 0 || i == restColumn - 1)
             {
                 columnList.Add(new Column { FullValue = rest, Parent = clogLine });
                 break;
             }
 
-            nextPos = rest.IndexOf(']') + 1;
-            var fullValue = rest.Substring(0, nextPos);
+            nextPos = rest.IndexOf(']', StringComparison.Ordinal) + 1;
+            var fullValue = rest[..nextPos];
             columnList.Add(new Column { FullValue = fullValue, Parent = clogLine });
         }
 
@@ -261,7 +261,7 @@ public class SquareBracketColumnizer : ILogLineColumnizer, IColumnizerPriority
         var bracketsExistsCount = 0;
         var maxBracketNumbers = 1;
 
-        foreach (var logline in samples)
+        foreach (ILogLine logline in samples)
         {
             var line = logline?.FullLine;
             if (string.IsNullOrEmpty(line))
@@ -279,9 +279,9 @@ public class SquareBracketColumnizer : ILogLineColumnizer, IColumnizerPriority
                 timeStampExistsCount--;
             }
 
-            var noSpaceLine = line.Replace(" ", string.Empty);
-            if (noSpaceLine.IndexOf('[') >= 0 && noSpaceLine.IndexOf(']') >= 0
-                                              && noSpaceLine.IndexOf('[') < noSpaceLine.IndexOf(']'))
+            var noSpaceLine = line.Replace(" ", string.Empty, StringComparison.Ordinal);
+            if (noSpaceLine.Contains('[', StringComparison.Ordinal) && noSpaceLine.Contains(']', StringComparison.Ordinal)
+                                              && noSpaceLine.IndexOf('[', StringComparison.Ordinal) < noSpaceLine.IndexOf(']', StringComparison.Ordinal))
             {
                 bracketNumbers += Regex.Matches(noSpaceLine, @"\]\[").Count;
                 bracketsExistsCount++;

@@ -1,6 +1,6 @@
-﻿using LogExpert.Core.Entities;
-
 using System.Text;
+
+using LogExpert.Core.Entities;
 
 namespace LogExpert.Core.Classes.Log;
 
@@ -24,7 +24,7 @@ public abstract class PositionAwareStreamReaderBase : LogStreamReaderBase
 
     #region cTor
 
-    protected PositionAwareStreamReaderBase(Stream stream, EncodingOptions encodingOptions)
+    protected PositionAwareStreamReaderBase (Stream stream, EncodingOptions encodingOptions)
     {
         _stream = new BufferedStream(stream);
 
@@ -82,7 +82,7 @@ public abstract class PositionAwareStreamReaderBase : LogStreamReaderBase
     /// Destroy and release the current stream reader.
     /// </summary>
     /// <param name="disposing">Specifies whether or not the managed objects should be released.</param>
-    protected override void Dispose(bool disposing)
+    protected override void Dispose (bool disposing)
     {
         if (disposing)
         {
@@ -92,13 +92,9 @@ public abstract class PositionAwareStreamReaderBase : LogStreamReaderBase
     }
 
     //TODO This is unsafe and should be refactored
-    public override unsafe int ReadChar()
+    public override unsafe int ReadChar ()
     {
-        //ObjectDisposedException.ThrowIf
-        if (IsDisposed)
-        {
-            throw new ObjectDisposedException(ToString());
-        }
+        ObjectDisposedException.ThrowIf(true, ToString());
 
         try
         {
@@ -123,17 +119,19 @@ public abstract class PositionAwareStreamReaderBase : LogStreamReaderBase
         }
     }
 
-    protected virtual void ResetReader()
+    protected virtual void ResetReader ()
     {
         _reader.DiscardBufferedData();
     }
 
-    protected StreamReader GetStreamReader()
+    protected StreamReader GetStreamReader ()
     {
-        return IsDisposed ? throw new ObjectDisposedException(ToString()) : _reader;
+        return IsDisposed
+            ? throw new ObjectDisposedException(ToString())
+            : _reader;
     }
 
-    protected void MovePosition(int offset)
+    protected void MovePosition (int offset)
     {
         _position += offset;
     }
@@ -146,7 +144,7 @@ public abstract class PositionAwareStreamReaderBase : LogStreamReaderBase
     /// Determines the actual number of preamble bytes in the file.
     /// </summary>
     /// <returns>Number of preamble bytes in the file</returns>
-    private int DetectPreambleLengthAndEncoding(out Encoding detectedEncoding)
+    private int DetectPreambleLengthAndEncoding (out Encoding detectedEncoding)
     {
         /*
         UTF-8:                          EF BB BF
@@ -189,7 +187,7 @@ public abstract class PositionAwareStreamReaderBase : LogStreamReaderBase
         return 0;
     }
 
-    private Encoding GetUsedEncoding(EncodingOptions encodingOptions, Encoding detectedEncoding)
+    private Encoding GetUsedEncoding (EncodingOptions encodingOptions, Encoding detectedEncoding)
     {
         if (encodingOptions.Encoding != null)
         {
@@ -203,15 +201,15 @@ public abstract class PositionAwareStreamReaderBase : LogStreamReaderBase
 
         return encodingOptions.DefaultEncoding ?? Encoding.Default;
     }
-    private int GetPosIncPrecomputed(Encoding usedEncoding)
+    private int GetPosIncPrecomputed (Encoding usedEncoding)
     {
         switch (usedEncoding)
         {
-            case UTF8Encoding _:
+            case UTF8Encoding:
                 {
                     return 0;
                 }
-            case UnicodeEncoding _:
+            case UnicodeEncoding:
                 {
                     return 2;
                 }
