@@ -1,8 +1,8 @@
-﻿using LogExpert.Core.Entities;
-using LogExpert.UI.Dialogs;
-
 using System.Runtime.Versioning;
 using System.Text.RegularExpressions;
+
+using LogExpert.Core.Entities;
+using LogExpert.UI.Dialogs;
 
 namespace LogExpert.Dialogs;
 
@@ -11,13 +11,13 @@ public partial class SearchDialog : Form
 {
     #region Fields
 
-    private static readonly int MAX_HISTORY = 30;
+    private const int MAX_HISTORY = 30;
 
     #endregion
 
     #region cTor
 
-    public SearchDialog()
+    public SearchDialog ()
     {
         InitializeComponent();
 
@@ -37,7 +37,7 @@ public partial class SearchDialog : Form
 
     #region Events handler
 
-    private void OnSearchDialogLoad(object? sender, EventArgs e)
+    private void OnSearchDialogLoad (object? sender, EventArgs e)
     {
         if (SearchParams != null)
         {
@@ -79,7 +79,7 @@ public partial class SearchDialog : Form
         }
     }
 
-    private void OnButtonRegexClick(object sender, EventArgs e)
+    private void OnButtonRegexClick (object sender, EventArgs e)
     {
         RegexHelperDialog dlg = new()
         {
@@ -95,7 +95,7 @@ public partial class SearchDialog : Form
         }
     }
 
-    private void OnButtonOkClick(object sender, EventArgs e)
+    private void OnButtonOkClick (object sender, EventArgs e)
     {
         try
         {
@@ -130,7 +130,7 @@ public partial class SearchDialog : Form
 
     #endregion
 
-    private void OnButtonCancelClick(object sender, EventArgs e)
+    private void OnButtonCancelClick (object sender, EventArgs e)
     {
         Close();
     }

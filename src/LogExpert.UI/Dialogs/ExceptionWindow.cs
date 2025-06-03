@@ -1,5 +1,8 @@
-﻿namespace LogExpert.UI.Dialogs;
+using System.Runtime.Versioning;
 
+namespace LogExpert.UI.Dialogs;
+
+[SupportedOSPlatform("windows")]
 public partial class ExceptionWindow : Form
 {
     #region Fields
@@ -12,9 +15,9 @@ public partial class ExceptionWindow : Form
 
     #region cTor
 
-    //TODO: for HighDPI SuspendLayout() before InitializeComponent() and then ResumeLayout() as last command in the CTOR can help in complex forms to reduce flickering and miscalculations. Also, it is a good practice.
-    public ExceptionWindow(string errorText, string stackTrace)
+    public ExceptionWindow (string errorText, string stackTrace)
     {
+        SuspendLayout();
         InitializeComponent();
 
         AutoScaleDimensions = new SizeF(96F, 96F);
@@ -25,13 +28,14 @@ public partial class ExceptionWindow : Form
 
         stackTraceTextBox.Text = _errorText + @"\n\n" + _stackTrace;
         stackTraceTextBox.Select(0, 0);
+        ResumeLayout();
     }
 
     #endregion
 
     #region Private Methods
 
-    private void CopyToClipboard()
+    private void CopyToClipboard ()
     {
         Clipboard.SetText(_errorText + @"\n\n" + _stackTrace);
     }
@@ -40,7 +44,7 @@ public partial class ExceptionWindow : Form
 
     #region Events handler
 
-    private void copyButton_Click(object sender, EventArgs e)
+    private void copyButton_Click (object sender, EventArgs e)
     {
         CopyToClipboard();
     }

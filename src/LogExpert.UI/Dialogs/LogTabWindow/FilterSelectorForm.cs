@@ -1,11 +1,10 @@
-﻿using LogExpert.Core.Interface;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Windows.Forms;
+using System.Runtime.Versioning;
+
+using LogExpert.Core.Interface;
 
 namespace LogExpert.Dialogs;
 
+[SupportedOSPlatform("windows")]
 internal partial class FilterSelectorForm : Form //TODO: Can this be changed to UserControl?
 {
     #region Fields
@@ -17,7 +16,7 @@ internal partial class FilterSelectorForm : Form //TODO: Can this be changed to 
 
     #region cTor
 
-    public FilterSelectorForm(IList<ILogLineColumnizer> existingColumnizerList, ILogLineColumnizer currentColumnizer, ILogLineColumnizerCallback callback, IConfigManager configManager)
+    public FilterSelectorForm (IList<ILogLineColumnizer> existingColumnizerList, ILogLineColumnizer currentColumnizer, ILogLineColumnizerCallback callback, IConfigManager configManager)
     {
         SelectedColumnizer = currentColumnizer;
         _callback = callback;
@@ -34,7 +33,7 @@ internal partial class FilterSelectorForm : Form //TODO: Can this be changed to 
         // columnizer registry. This ensures that changes made in columnizer config dialogs
         // will apply to the current instance
         _columnizerList = new List<ILogLineColumnizer>();
-        
+
         foreach (ILogLineColumnizer col in existingColumnizerList)
         {
             _columnizerList.Add(col.GetType() == SelectedColumnizer.GetType() ? SelectedColumnizer : col);
@@ -70,7 +69,7 @@ internal partial class FilterSelectorForm : Form //TODO: Can this be changed to 
 
     #region Events handler
 
-    private void OnFilterComboBoxSelectedIndexChanged(object sender, EventArgs e)
+    private void OnFilterComboBoxSelectedIndexChanged (object sender, EventArgs e)
     {
         ILogLineColumnizer col = _columnizerList[filterComboBox.SelectedIndex];
         SelectedColumnizer = col;
@@ -82,7 +81,7 @@ internal partial class FilterSelectorForm : Form //TODO: Can this be changed to 
 
 
     //TODO: Check if this logic can be remoed from this class and remove all the config manager instances from here.
-    private void OnConfigButtonClick(object sender, EventArgs e)
+    private void OnConfigButtonClick (object sender, EventArgs e)
     {
         if (SelectedColumnizer is IColumnizerConfigurator configurator)
         {

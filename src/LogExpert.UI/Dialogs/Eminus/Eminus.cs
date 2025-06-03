@@ -1,16 +1,15 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Net.Sockets;
 using System.Runtime.Serialization;
 using System.Runtime.Versioning;
+
 //using System.Windows.Forms;
 using System.Xml;
 
+using Newtonsoft.Json;
+
 //TODO: This whole Eminus folder is not in use. Can be deleted? What is it?
 //[assembly: SupportedOSPlatform("windows")]
-namespace LogExpert;
+namespace LogExpert.UI.Dialogs.Eminus;
 
 internal class Eminus : IContextMenuEntry, ILogExpertPluginConfigurator
 {
@@ -35,7 +34,8 @@ internal class Eminus : IContextMenuEntry, ILogExpertPluginConfigurator
 
     #region Private Methods
 
-    private XmlDocument BuildParam(ILogLine line)
+    [SupportedOSPlatform("windows")]
+    private XmlDocument BuildParam (ILogLine line)
     {
         var fullLogLine = line.FullLine;
         // no Java stacktrace but some special logging of our applications at work:
@@ -127,13 +127,14 @@ internal class Eminus : IContextMenuEntry, ILogExpertPluginConfigurator
         return null;
     }
 
-    private XmlDocument BuildXmlDocument(string className, string lineNum)
+    [SupportedOSPlatform("windows")]
+    private XmlDocument BuildXmlDocument (string className, string lineNum)
     {
         XmlDocument xmlDoc = new();
         xmlDoc.CreateXmlDeclaration("1.0", "UTF-8", "yes");
         XmlElement rootElement = xmlDoc.CreateElement("eminus");
         xmlDoc.AppendChild(rootElement);
-        rootElement.SetAttribute("authKey", _config.password);
+        rootElement.SetAttribute("authKey", _config.Password);
 
         XmlElement loadElement = xmlDoc.CreateElement("loadclass");
         loadElement.SetAttribute("mode", "dialog");
@@ -152,30 +153,27 @@ internal class Eminus : IContextMenuEntry, ILogExpertPluginConfigurator
 
     #region IContextMenuEntry Member
 
-    public string GetMenuText(IList<int> logLines, ILogLineColumnizer columnizer, ILogExpertCallback callback)
+    public string GetMenuText (IList<int> logLines, ILogLineColumnizer columnizer, ILogExpertCallback callback)
     {
         //not used
         return string.Empty;
     }
 
-    public string GetMenuText(int logLinesCount, ILogLineColumnizer columnizer, ILogLine logline)
+    [SupportedOSPlatform("windows")]
+    public string GetMenuText (int logLinesCount, ILogLineColumnizer columnizer, ILogLine logline)
     {
-        if (logLinesCount == 1 && BuildParam(logline) != null)
-        {
-            return "Load class in Eclipse";
-        }
-        else
-        {
-            return $"{DISABLED}Load class in Eclipse";
-        }
+        return logLinesCount == 1 && BuildParam(logline) != null
+            ? "Load class in Eclipse"
+            : $"{DISABLED}Load class in Eclipse";
     }
 
-    public void MenuSelected(IList<int> logLines, ILogLineColumnizer columnizer, ILogExpertCallback callback)
+    public void MenuSelected (IList<int> logLines, ILogLineColumnizer columnizer, ILogExpertCallback callback)
     {
         //Not used
     }
 
-    public void MenuSelected(int logLinesCount, ILogLineColumnizer columnizer, ILogLine logline)
+    [SupportedOSPlatform("windows")]
+    public void MenuSelected (int logLinesCount, ILogLineColumnizer columnizer, ILogLine logline)
     {
         if (logLinesCount != 1)
         {
@@ -192,7 +190,7 @@ internal class Eminus : IContextMenuEntry, ILogExpertPluginConfigurator
         {
             try
             {
-                TcpClient client = new(_config.host, _config.port);
+                TcpClient client = new(_config.Host, _config.Port);
                 NetworkStream stream = client.GetStream();
                 StreamWriter writer = new(stream);
                 doc.Save(writer);
@@ -213,7 +211,8 @@ internal class Eminus : IContextMenuEntry, ILogExpertPluginConfigurator
 
     #region ILogExpertPluginConfigurator Member
 
-    public void LoadConfig(string configDir)
+    [SupportedOSPlatform("windows")]
+    public void LoadConfig (string configDir)
     {
         var configPath = configDir + CFG_FILE_NAME;
 
@@ -237,8 +236,8 @@ internal class Eminus : IContextMenuEntry, ILogExpertPluginConfigurator
         }
     }
 
-
-    public void SaveConfig(string configDir)
+    [SupportedOSPlatform("windows")]
+    public void SaveConfig (string configDir)
     {
         FileInfo fileInfo = new(configDir + Path.DirectorySeparatorChar + CFG_FILE_NAME);
 
@@ -251,12 +250,13 @@ internal class Eminus : IContextMenuEntry, ILogExpertPluginConfigurator
         serializer.Serialize(sw, _config);
     }
 
-    public bool HasEmbeddedForm()
+    public bool HasEmbeddedForm ()
     {
         return true;
     }
 
-    public void ShowConfigForm(object panel)
+    [SupportedOSPlatform("windows")]
+    public void ShowConfigForm (object panel)
     {
         dlg = new EminusConfigDlg(tmpConfig)
         {
@@ -270,7 +270,8 @@ internal class Eminus : IContextMenuEntry, ILogExpertPluginConfigurator
     /// is pressed (HasEmbeddedForm() must return false for this).
     /// </summary>
     /// <param name="owner"></param>
-    public void ShowConfigDialog(object owner)
+    [SupportedOSPlatform("windows")]
+    public void ShowConfigDialog (object owner)
     {
         dlg = new EminusConfigDlg(tmpConfig)
         {
@@ -282,8 +283,8 @@ internal class Eminus : IContextMenuEntry, ILogExpertPluginConfigurator
         dlg.ApplyChanges();
     }
 
-
-    public void HideConfigForm()
+    [SupportedOSPlatform("windows")]
+    public void HideConfigForm ()
     {
         if (dlg != null)
         {
@@ -294,7 +295,7 @@ internal class Eminus : IContextMenuEntry, ILogExpertPluginConfigurator
         }
     }
 
-    public void StartConfig()
+    public void StartConfig ()
     {
         tmpConfig = _config.Clone();
     }

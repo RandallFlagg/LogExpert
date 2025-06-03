@@ -1,27 +1,23 @@
-﻿using System;
-
-namespace LogExpert;
+namespace LogExpert.UI.Dialogs.Eminus;
 
 [Serializable]
 internal class EminusConfig
 {
-    #region Fields
+    public string Host { get; set; } = "127.0.0.1";
 
-    public string host = "127.0.0.1";
-    public string password = "";
-    public int port = 12345;
+    public string Password { get; set; } = string.Empty;
 
-    #endregion
+    public int Port { get; set; } = 12345;
 
     #region Public methods
 
-    public EminusConfig Clone()
+    public EminusConfig Clone ()
     {
         EminusConfig config = new()
         {
-            host = host,
-            port = port,
-            password = password
+            Host = Host,
+            Port = Port,
+            Password = Password
         };
         return config;
     }

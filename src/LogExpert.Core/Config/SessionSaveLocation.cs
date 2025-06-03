@@ -14,7 +14,7 @@ public enum SessionSaveLocation
     SameDir,
     //uses configured folder to save the session files 
     /// <summary>
-    /// <see cref="Preferences.sessionSaveDirectory"/>
+    /// <see cref="Preferences.SessionSaveDirectory"/>
     /// </summary>
     OwnDir,
     /// <summary>

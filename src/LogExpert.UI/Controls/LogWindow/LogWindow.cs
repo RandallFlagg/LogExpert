@@ -1,4 +1,5 @@
-using LogExpert.Classes.Filter;
+using System.Runtime.Versioning;
+
 using LogExpert.Core.Callback;
 using LogExpert.Core.Classes.Bookmark;
 using LogExpert.Core.Classes.Filter;
@@ -23,6 +24,7 @@ using WeifenLuo.WinFormsUI.Docking;
 namespace LogExpert.UI.Controls.LogWindow;
 
 //TODO: Implemented 4 interfaces explicitly. Find them by searching: ILogWindow.<method name>
+[SupportedOSPlatform("windows")]
 public partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, ILogWindow
 {
     #region Fields
@@ -134,6 +136,7 @@ public partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, ILog
 
     #region cTor
 
+    [SupportedOSPlatform("windows")]
     public LogWindow (LogTabWindow.LogTabWindow parent, string fileName, bool isTempFile, bool forcePersistenceLoading, IConfigManager configManager)
     {
         SuspendLayout();
@@ -190,12 +193,12 @@ public partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, ILog
         //this.toolwinTabControl.TabPages.Add(this.bookmarkWindow);
 
         _filterParams = new FilterParams();
-        foreach (var item in configManager.Settings.filterHistoryList)
+        foreach (var item in configManager.Settings.FilterHistoryList)
         {
             filterComboBox.Items.Add(item);
         }
 
-        filterComboBox.DropDownHeight = filterComboBox.ItemHeight * configManager.Settings.Preferences.maximumFilterEntriesDisplayed;
+        filterComboBox.DropDownHeight = filterComboBox.ItemHeight * configManager.Settings.Preferences.MaximumFilterEntriesDisplayed;
         AutoResizeFilterBox();
 
         filterRegexCheckBox.Checked = _filterParams.IsRegex;
@@ -232,9 +235,9 @@ public partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, ILog
 
         Settings settings = configManager.Settings;
 
-        if (settings.appBounds.Right > 0)
+        if (settings.AppBounds.Right > 0)
         {
-            Bounds = settings.appBounds;
+            Bounds = settings.AppBounds;
         }
 
         _waitingForClose = false;
@@ -267,6 +270,8 @@ public partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, ILog
     #endregion
 
     #region ColorTheme
+
+    [SupportedOSPlatform("windows")]
     public void ChangeTheme (Control.ControlCollection container)
     {
         #region ApplyColorToAllControls
@@ -448,6 +453,7 @@ public partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, ILog
         }
     }
 
+    [SupportedOSPlatform("windows")]
     public bool ShowBookmarkBubbles
     {
         get => _guiStateArgs.ShowBookmarkBubbles;
@@ -563,12 +569,14 @@ public partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, ILog
         //}
     }
 
+    [SupportedOSPlatform("windows")]
     internal void RefreshAllGrids ()
     {
         dataGridView.Refresh();
         filterGridView.Refresh();
     }
 
+    [SupportedOSPlatform("windows")]
     internal void ChangeMultifileMask ()
     {
         MultiFileMaskDialog dlg = new(this, FileName)
@@ -589,6 +597,7 @@ public partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, ILog
         }
     }
 
+    [SupportedOSPlatform("windows")]
     internal void ToggleColumnFinder (bool show, bool setFocus)
     {
         _guiStateArgs.ColumnFinderVisible = show;
@@ -621,6 +630,7 @@ public partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, ILog
 
     #endregion
 
+    [SupportedOSPlatform("windows")]
     private void OnButtonSizeChanged (object sender, EventArgs e)
     {
         if (sender is Button button && button.Image != null)
@@ -660,6 +670,7 @@ public partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, ILog
     // =================== ILogLineColumnizerCallback ============================
 
 #if DEBUG
+    [SupportedOSPlatform("windows")]
     internal void DumpBufferInfo ()
     {
         var currentLineNum = dataGridView.CurrentCellAddress.Y;
@@ -671,16 +682,19 @@ public partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, ILog
         _logFileReader.LogBufferDiagnostic();
     }
 
+    [SupportedOSPlatform("windows")]
     void ILogWindow.SelectLine (int lineNum, bool v1, bool v2)
     {
         SelectLine(lineNum, v1, v2);
     }
 
+    [SupportedOSPlatform("windows")]
     void ILogWindow.AddTempFileTab (string fileName, string title)
     {
         AddTempFileTab(fileName, title);
     }
 
+    [SupportedOSPlatform("windows")]
     void ILogWindow.WritePipeTab (IList<LineEntry> lineEntryList, string title)
     {
         WritePipeTab(lineEntryList, title);

@@ -1,36 +1,35 @@
-﻿using LogExpert.Core.Classes;
+using System.Runtime.Versioning;
+
+using LogExpert.Core.Classes;
 using LogExpert.Core.EventArguments;
 using LogExpert.Dialogs;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Windows.Forms;
 
 namespace LogExpert.UI.Controls.LogWindow;
 
+[SupportedOSPlatform("windows")]
 internal partial class PatternWindow : Form //TODO: Can this be changed to UserControl?
 {
     #region Fields
 
-    private readonly List<List<PatternBlock>> blockList = [];
-    private PatternBlock currentBlock;
-    private List<PatternBlock> currentList;
+    private readonly List<List<PatternBlock>> _blockList = [];
+    private PatternBlock _currentBlock;
+    private List<PatternBlock> _currentList;
 
-    private readonly LogWindow logWindow;
-    private PatternArgs patternArgs = new();
+    private readonly LogWindow _logWindow;
+    private PatternArgs _patternArgs = new();
 
     #endregion
 
     #region cTor
 
-    public PatternWindow()
+    public PatternWindow ()
     {
         InitializeComponent();
     }
 
-    public PatternWindow(LogWindow logWindow)
+    public PatternWindow (LogWindow logWindow)
     {
-        this.logWindow = logWindow;
+        this._logWindow = logWindow;
         InitializeComponent();
         recalcButton.Enabled = false;
     }
@@ -67,10 +66,10 @@ internal partial class PatternWindow : Form //TODO: Can this be changed to UserC
 
     #region Public methods
 
-    public void SetBlockList(List<PatternBlock> flatBlockList, PatternArgs patternArgs)
+    public void SetBlockList (List<PatternBlock> flatBlockList, PatternArgs patternArgs)
     {
-        this.patternArgs = patternArgs;
-        blockList.Clear();
+        this._patternArgs = patternArgs;
+        _blockList.Clear();
         List<PatternBlock> singeList = [];
         //int blockId = -1;
         for (var i = 0; i < flatBlockList.Count; ++i)
@@ -94,15 +93,15 @@ internal partial class PatternWindow : Form //TODO: Can this be changed to UserC
             //  singeList.Add(block);
             //}
         }
-        blockList.Add(singeList);
+        _blockList.Add(singeList);
         Invoke(new MethodInvoker(SetBlockListGuiStuff));
     }
 
 
-    public void SetColumnizer(ILogLineColumnizer columnizer)
+    public void SetColumnizer (ILogLineColumnizer columnizer)
     {
-        logWindow.SetColumnizer(columnizer, patternHitsDataGridView);
-        logWindow.SetColumnizer(columnizer, contentDataGridView);
+        _logWindow.SetColumnizer(columnizer, patternHitsDataGridView);
+        _logWindow.SetColumnizer(columnizer, contentDataGridView);
         patternHitsDataGridView.Columns[0].Width = 20;
         contentDataGridView.Columns[0].Width = 20;
 
@@ -126,7 +125,7 @@ internal partial class PatternWindow : Form //TODO: Can this be changed to UserC
         contentDataGridView.Columns.Insert(1, contentInfoColumn);
     }
 
-    public void SetFont(string fontName, float fontSize)
+    public void SetFont (string fontName, float fontSize)
     {
         Font font = new(new FontFamily(fontName), fontSize);
         var lineSpacing = font.FontFamily.GetLineSpacing(FontStyle.Regular);
@@ -143,7 +142,7 @@ internal partial class PatternWindow : Form //TODO: Can this be changed to UserC
 
     #region Private Methods
 
-    private void SetBlockListGuiStuff()
+    private void SetBlockListGuiStuff ()
     {
         patternHitsDataGridView.RowCount = 0;
         blockCountLabel.Text = "0";
@@ -151,32 +150,32 @@ internal partial class PatternWindow : Form //TODO: Can this be changed to UserC
         blockLinesLabel.Text = "0";
         recalcButton.Enabled = true;
         setRangeButton.Enabled = true;
-        if (blockList.Count > 0)
+        if (_blockList.Count > 0)
         {
-            SetCurrentList(blockList[0]);
+            SetCurrentList(_blockList[0]);
         }
     }
 
-    private void SetCurrentList(List<PatternBlock> patternList)
+    private void SetCurrentList (List<PatternBlock> patternList)
     {
         patternHitsDataGridView.RowCount = 0;
-        currentList = patternList;
-        patternHitsDataGridView.RowCount = currentList.Count;
+        _currentList = patternList;
+        patternHitsDataGridView.RowCount = _currentList.Count;
         patternHitsDataGridView.Refresh();
-        blockCountLabel.Text = "" + currentList.Count;
+        blockCountLabel.Text = "" + _currentList.Count;
     }
 
-    private int GetLineForHitGrid(int rowIndex)
+    private int GetLineForHitGrid (int rowIndex)
     {
         int line;
-        line = currentList[rowIndex].targetStart;
+        line = _currentList[rowIndex].TargetStart;
         return line;
     }
 
-    private int GetLineForContentGrid(int rowIndex)
+    private int GetLineForContentGrid (int rowIndex)
     {
         int line;
-        line = currentBlock.targetStart + rowIndex;
+        line = _currentBlock.TargetStart + rowIndex;
         return line;
     }
 
@@ -184,9 +183,9 @@ internal partial class PatternWindow : Form //TODO: Can this be changed to UserC
 
     #region Events handler
 
-    private void patternHitsDataGridView_CellValueNeeded(object sender, DataGridViewCellValueEventArgs e)
+    private void patternHitsDataGridView_CellValueNeeded (object sender, DataGridViewCellValueEventArgs e)
     {
-        if (currentList == null || e.RowIndex < 0)
+        if (_currentList == null || e.RowIndex < 0)
         {
             return;
         }
@@ -194,7 +193,7 @@ internal partial class PatternWindow : Form //TODO: Can this be changed to UserC
         var colIndex = e.ColumnIndex;
         if (colIndex == 1)
         {
-            e.Value = currentList[e.RowIndex].weigth;
+            e.Value = _currentList[e.RowIndex].Weigth;
         }
         else
         {
@@ -202,21 +201,23 @@ internal partial class PatternWindow : Form //TODO: Can this be changed to UserC
             {
                 colIndex--; // correct the additional inserted col
             }
-            e.Value = logWindow.GetCellValue(rowIndex, colIndex);
+
+            e.Value = _logWindow.GetCellValue(rowIndex, colIndex);
         }
     }
 
-    private void patternHitsDataGridView_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)
+    private void patternHitsDataGridView_CellPainting (object sender, DataGridViewCellPaintingEventArgs e)
     {
-        if (currentList == null || e.RowIndex < 0)
+        if (_currentList == null || e.RowIndex < 0)
         {
             return;
         }
+
         if (e.ColumnIndex == 1)
         {
             e.PaintBackground(e.CellBounds, false);
-            var selCount = patternArgs.EndLine - patternArgs.StartLine;
-            var maxWeight = patternArgs.MaxDiffInBlock * selCount + selCount;
+            var selCount = _patternArgs.EndLine - _patternArgs.StartLine;
+            var maxWeight = _patternArgs.MaxDiffInBlock * selCount + selCount;
             if (maxWeight > 0)
             {
                 var width = (int)((int)e.Value / (double)maxWeight * e.CellBounds.Width);
@@ -235,11 +236,11 @@ internal partial class PatternWindow : Form //TODO: Can this be changed to UserC
         {
             var gridView = (BufferedDataGridView)sender;
             var rowIndex = GetLineForHitGrid(e.RowIndex);
-            logWindow.CellPainting(gridView, rowIndex, e);
+            _logWindow.CellPainting(gridView, rowIndex, e);
         }
     }
 
-    private void patternHitsDataGridView_MouseDoubleClick(object sender, MouseEventArgs e)
+    private void patternHitsDataGridView_MouseDoubleClick (object sender, MouseEventArgs e)
     {
         //if (this.currentList == null || patternHitsDataGridView.CurrentRow == null)
         //  return;
@@ -248,27 +249,29 @@ internal partial class PatternWindow : Form //TODO: Can this be changed to UserC
         //this.logWindow.SelectLogLine(rowIndex);
     }
 
-    private void patternHitsDataGridView_CurrentCellChanged(object sender, EventArgs e)
+    private void patternHitsDataGridView_CurrentCellChanged (object sender, EventArgs e)
     {
-        if (currentList == null || patternHitsDataGridView.CurrentRow == null)
+        if (_currentList == null || patternHitsDataGridView.CurrentRow == null)
         {
             return;
         }
-        if (patternHitsDataGridView.CurrentRow.Index > currentList.Count - 1)
+
+        if (patternHitsDataGridView.CurrentRow.Index > _currentList.Count - 1)
         {
             return;
         }
+
         contentDataGridView.RowCount = 0;
-        currentBlock = currentList[patternHitsDataGridView.CurrentRow.Index];
-        contentDataGridView.RowCount = currentBlock.targetEnd - currentBlock.targetStart + 1;
+        _currentBlock = _currentList[patternHitsDataGridView.CurrentRow.Index];
+        contentDataGridView.RowCount = _currentBlock.TargetEnd - _currentBlock.TargetStart + 1;
         contentDataGridView.Refresh();
         contentDataGridView.CurrentCell = contentDataGridView.Rows[0].Cells[0];
         blockLinesLabel.Text = "" + contentDataGridView.RowCount;
     }
 
-    private void contentDataGridView_CellValueNeeded(object sender, DataGridViewCellValueEventArgs e)
+    private void contentDataGridView_CellValueNeeded (object sender, DataGridViewCellValueEventArgs e)
     {
-        if (currentBlock == null || e.RowIndex < 0)
+        if (_currentBlock == null || e.RowIndex < 0)
         {
             return;
         }
@@ -277,9 +280,9 @@ internal partial class PatternWindow : Form //TODO: Can this be changed to UserC
         if (colIndex == 1)
         {
             QualityInfo qi;
-            if (currentBlock.qualityInfoList.TryGetValue(rowIndex, out qi))
+            if (_currentBlock.QualityInfoList.TryGetValue(rowIndex, out qi))
             {
-                e.Value = qi.quality;
+                e.Value = qi.Quality;
             }
             else
             {
@@ -292,67 +295,67 @@ internal partial class PatternWindow : Form //TODO: Can this be changed to UserC
             {
                 colIndex--; // adjust the inserted column
             }
-            e.Value = logWindow.GetCellValue(rowIndex, colIndex);
+            e.Value = _logWindow.GetCellValue(rowIndex, colIndex);
         }
     }
 
-    private void contentDataGridView_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)
+    private void contentDataGridView_CellPainting (object sender, DataGridViewCellPaintingEventArgs e)
     {
-        if (currentBlock == null || e.RowIndex < 0)
+        if (_currentBlock == null || e.RowIndex < 0)
         {
             return;
         }
         var gridView = (BufferedDataGridView)sender;
         var rowIndex = GetLineForContentGrid(e.RowIndex);
-        logWindow.CellPainting(gridView, rowIndex, e);
+        _logWindow.CellPainting(gridView, rowIndex, e);
     }
 
-    private void contentDataGridView_CellMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
+    private void contentDataGridView_CellMouseDoubleClick (object sender, DataGridViewCellMouseEventArgs e)
     {
-        if (currentBlock == null || contentDataGridView.CurrentRow == null)
+        if (_currentBlock == null || contentDataGridView.CurrentRow == null)
         {
             return;
         }
         var rowIndex = GetLineForContentGrid(contentDataGridView.CurrentRow.Index);
 
-        logWindow.SelectLogLine(rowIndex);
+        _logWindow.SelectLogLine(rowIndex);
     }
 
-    private void recalcButton_Click(object sender, EventArgs e)
+    private void recalcButton_Click (object sender, EventArgs e)
     {
-        patternArgs.Fuzzy = fuzzyKnobControl.Value;
-        patternArgs.MaxDiffInBlock = maxDiffKnobControl.Value;
-        patternArgs.MaxMisses = maxMissesKnobControl.Value;
-        patternArgs.MinWeight = weigthKnobControl.Value;
-        logWindow.PatternStatistic(patternArgs);
+        _patternArgs.Fuzzy = fuzzyKnobControl.Value;
+        _patternArgs.MaxDiffInBlock = maxDiffKnobControl.Value;
+        _patternArgs.MaxMisses = maxMissesKnobControl.Value;
+        _patternArgs.MinWeight = weigthKnobControl.Value;
+        _logWindow.PatternStatistic(_patternArgs);
         recalcButton.Enabled = false;
         setRangeButton.Enabled = false;
     }
 
-    private void closeButton_Click(object sender, EventArgs e)
+    private void closeButton_Click (object sender, EventArgs e)
     {
         Close();
     }
 
-    private void contentDataGridView_ColumnDividerDoubleClick(object sender,
+    private void contentDataGridView_ColumnDividerDoubleClick (object sender,
         DataGridViewColumnDividerDoubleClickEventArgs e)
     {
         e.Handled = true;
         contentDataGridView.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.DisplayedCells);
     }
 
-    private void patternHitsDataGridView_ColumnDividerDoubleClick(object sender,
+    private void patternHitsDataGridView_ColumnDividerDoubleClick (object sender,
         DataGridViewColumnDividerDoubleClickEventArgs e)
     {
         e.Handled = true;
         patternHitsDataGridView.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.DisplayedCells);
     }
 
-    private void setRangeButton_Click(object sender, EventArgs e)
+    private void setRangeButton_Click (object sender, EventArgs e)
     {
-        logWindow.PatternStatisticSelectRange(patternArgs);
+        _logWindow.PatternStatisticSelectRange(_patternArgs);
         recalcButton.Enabled = true;
-        rangeLabel.Text = "Start: " + patternArgs.StartLine + "\r\nEnd: " + patternArgs.EndLine;
+        rangeLabel.Text = "Start: " + _patternArgs.StartLine + "\r\nEnd: " + _patternArgs.EndLine;
     }
 
     #endregion

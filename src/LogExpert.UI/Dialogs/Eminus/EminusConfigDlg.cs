@@ -1,9 +1,10 @@
-﻿using System;
-using System.Drawing;
-using System.Windows.Forms;
+using System.Runtime.Versioning;
+
+using LogExpert.UI.Dialogs.Eminus;
 
 namespace LogExpert;
 
+[SupportedOSPlatform("windows")]
 internal partial class EminusConfigDlg : Form
 {
     #region Fields
@@ -12,7 +13,7 @@ internal partial class EminusConfigDlg : Form
 
     #region cTor
 
-    public EminusConfigDlg(EminusConfig config)
+    public EminusConfigDlg (EminusConfig config)
     {
         SuspendLayout();
 
@@ -24,9 +25,9 @@ internal partial class EminusConfigDlg : Form
         TopLevel = false;
         Config = config;
 
-        hostTextBox.Text = config.host;
-        portTextBox.Text = string.Empty + config.port;
-        passwordTextBox.Text = config.password;
+        hostTextBox.Text = config.Host;
+        portTextBox.Text = string.Empty + config.Port;
+        passwordTextBox.Text = config.Password;
 
         ResumeLayout();
     }
@@ -41,18 +42,19 @@ internal partial class EminusConfigDlg : Form
 
     #region Public methods
 
-    public void ApplyChanges()
+    public void ApplyChanges ()
     {
-        Config.host = hostTextBox.Text;
+        Config.Host = hostTextBox.Text;
         try
         {
-            Config.port = short.Parse(portTextBox.Text);
+            Config.Port = short.Parse(portTextBox.Text);
         }
         catch (FormatException)
         {
-            Config.port = 0;
+            Config.Port = 0;
         }
-        Config.password = passwordTextBox.Text;
+
+        Config.Password = passwordTextBox.Text;
     }
 
     #endregion

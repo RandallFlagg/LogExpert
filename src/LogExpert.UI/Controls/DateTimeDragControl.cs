@@ -1,14 +1,10 @@
-﻿using LogExpert.Core.Classes.DateTimeParser;
-using LogExpert.Core.Enums;
-
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.Globalization;
-using System.Linq;
-using System.Windows.Forms;
+using System.Runtime.Versioning;
+
+using LogExpert.Core.Classes.DateTimeParser;
+using LogExpert.Core.Enums;
 
 namespace LogExpert.Dialogs;
 
@@ -18,6 +14,7 @@ namespace LogExpert.Dialogs;
 /// We currently support only three: US (mm/dd/yyyy), French (yyyy-mm-dd) and German (dd.mm.yyyy).
 /// The control raises events (ValueChanged, ValueDragged) when the date/time changes so that owner can react accordingly.
 /// </summary>
+[SupportedOSPlatform("windows")]
 public partial class DateTimeDragControl : UserControl
 {
     #region Fields
@@ -27,11 +24,12 @@ public partial class DateTimeDragControl : UserControl
 
 
     private DateTime _dateTime;
-    private readonly IList<Rectangle> _digitRects = new List<Rectangle>();
+    private readonly IList<Rectangle> _digitRects = [];
+
     private readonly StringFormat _digitsFormat = new();
     private int _draggedDigit;
 
-    public DragOrientationsEnum dragOrientation = DragOrientationsEnum.Vertical;
+    private DragOrientationsEnum _dragOrientation = DragOrientationsEnum.Vertical;
 
     private readonly ToolStripItem toolStripItemHorizontalDrag = new ToolStripMenuItem();
     private readonly ToolStripItem toolStripItemVerticalDrag = new ToolStripMenuItem();
@@ -51,7 +49,7 @@ public partial class DateTimeDragControl : UserControl
     /// <summary>
     /// Default Constructor
     /// </summary>
-    public DateTimeDragControl()
+    public DateTimeDragControl ()
     {
         InitializeComponent();
 
@@ -70,9 +68,9 @@ public partial class DateTimeDragControl : UserControl
 
     #region Delegates
 
-    public delegate void ValueChangedEventHandler(object sender, EventArgs e);
+    public delegate void ValueChangedEventHandler (object sender, EventArgs e);
 
-    public delegate void ValueDraggedEventHandler(object sender, EventArgs e);
+    public delegate void ValueDraggedEventHandler (object sender, EventArgs e);
 
     #endregion
 
@@ -91,10 +89,10 @@ public partial class DateTimeDragControl : UserControl
 
     public DragOrientationsEnum DragOrientation
     {
-        get => dragOrientation;
+        get => _dragOrientation;
         set
         {
-            dragOrientation = value;
+            _dragOrientation = value;
             UpdateContextMenu();
         }
     }
@@ -124,7 +122,7 @@ public partial class DateTimeDragControl : UserControl
     #region Private Methods
 
     // Returns the index of the rectangle (digitRects) under the mouse cursor
-    private int DetermineDraggedDigit(MouseEventArgs e)
+    private int DetermineDraggedDigit (MouseEventArgs e)
     {
         for (var i = 0; i < _digitRects.Count; ++i)
         {
@@ -138,39 +136,41 @@ public partial class DateTimeDragControl : UserControl
     }
 
     // Return the value corresponding to current dragged digit
-    private int GetDraggedValue()
+    private int GetDraggedValue ()
     {
         var datePart = _dateParts[_draggedDigit];
 
-        if (datePart.StartsWith("y", StringComparison.OrdinalIgnoreCase))
+        if (datePart.StartsWith('y'))
         {
             return _dateTime.Year;
         }
 
-        if (datePart.StartsWith("M"))
+        if (datePart.StartsWith('M'))
         {
             return _dateTime.Month;
         }
 
-        if (datePart.StartsWith("d", StringComparison.OrdinalIgnoreCase))
+        if (datePart.StartsWith('d'))
         {
             return _dateTime.Day;
         }
 
-        if (datePart.StartsWith("h", StringComparison.OrdinalIgnoreCase))
+        if (datePart.StartsWith('h'))
         {
             return _dateTime.Hour;
         }
 
-        if (datePart.StartsWith("m"))
+        if (datePart.StartsWith('m'))
         {
             return _dateTime.Minute;
         }
 
-        return datePart.StartsWith("s", StringComparison.OrdinalIgnoreCase) ? _dateTime.Second : NO_DIGIT_DRAGGED;
+        return datePart.StartsWith('s')
+            ? _dateTime.Second
+            : NO_DIGIT_DRAGGED;
     }
 
-    private bool SetDraggedValue(int delta)
+    private bool SetDraggedValue (int delta)
     {
         if (_draggedDigit == NO_DIGIT_DRAGGED)
         {
@@ -182,27 +182,27 @@ public partial class DateTimeDragControl : UserControl
         {
             var datePart = _dateParts[_draggedDigit];
 
-            if (datePart.StartsWith("y", StringComparison.OrdinalIgnoreCase))
+            if (datePart.StartsWith('y'))
             {
                 _dateTime = _dateTime.AddYears(delta);
             }
-            else if (datePart.StartsWith("M"))
+            else if (datePart.StartsWith('M'))
             {
                 _dateTime = _dateTime.AddMonths(delta);
             }
-            else if (datePart.StartsWith("d", StringComparison.OrdinalIgnoreCase))
+            else if (datePart.StartsWith('d'))
             {
                 _dateTime = _dateTime.AddDays(delta);
             }
-            else if (datePart.StartsWith("h", StringComparison.OrdinalIgnoreCase))
+            else if (datePart.StartsWith('h'))
             {
                 _dateTime = _dateTime.AddHours(delta);
             }
-            else if (datePart.StartsWith("m"))
+            else if (datePart.StartsWith('m'))
             {
                 _dateTime = _dateTime.AddMinutes(delta);
             }
-            else if (datePart.StartsWith("s", StringComparison.OrdinalIgnoreCase))
+            else if (datePart.StartsWith('s'))
             {
                 _dateTime = _dateTime.AddSeconds(delta);
             }
@@ -217,6 +217,7 @@ public partial class DateTimeDragControl : UserControl
             _dateTime = MaxDateTime;
             changed = false;
         }
+
         if (_dateTime < MinDateTime)
         {
             _dateTime = MinDateTime;
@@ -226,7 +227,7 @@ public partial class DateTimeDragControl : UserControl
         return changed;
     }
 
-    private void InitCustomRects(Section dateSection)
+    private void InitCustomRects (Section dateSection)
     {
         _dateParts = dateSection
             .GeneralTextDateDurationParts
@@ -248,9 +249,9 @@ public partial class DateTimeDragControl : UserControl
 
     }
 
-    private void InitDigitRects()
+    private void InitDigitRects ()
     {
-        CultureInfo culture = System.Threading.Thread.CurrentThread.CurrentCulture;
+        CultureInfo culture = CultureInfo.CurrentCulture;
 
         var datePattern = string.Concat(culture.DateTimeFormat.ShortDatePattern, " ", culture.DateTimeFormat.LongTimePattern);
 
@@ -270,7 +271,7 @@ public partial class DateTimeDragControl : UserControl
 
     #region Events handler
 
-    private void DateTimeDragControl_Load(object sender, EventArgs e)
+    private void DateTimeDragControl_Load (object sender, EventArgs e)
     {
         InitDigitRects();
 
@@ -279,22 +280,25 @@ public partial class DateTimeDragControl : UserControl
 
     #endregion
 
-    protected void OnValueChanged(EventArgs e)
+    protected void OnValueChanged (EventArgs e)
     {
         ValueChanged?.Invoke(this, e);
     }
 
-    protected void OnValueDragged(EventArgs e)
+    protected void OnValueDragged (EventArgs e)
     {
         ValueDragged?.Invoke(this, e);
     }
 
     #region Contextual Menu
 
-    private void BuildContextualMenu()
+    private void BuildContextualMenu ()
     {
-        ContextMenuStrip = new ContextMenuStrip();
-        ContextMenuStrip.Name = "Timestamp selector";
+        ContextMenuStrip = new ContextMenuStrip
+        {
+            Name = "Timestamp selector"
+        };
+
         ContextMenuStrip.Items.Add(toolStripItemHorizontalDrag);
         ContextMenuStrip.Items.Add(toolStripItemVerticalDrag);
         ContextMenuStrip.Items.Add(toolStripItemVerticalInvertedDrag);
@@ -313,14 +317,14 @@ public partial class DateTimeDragControl : UserControl
         UpdateContextMenu();
     }
 
-    private void UpdateContextMenu()
+    private void UpdateContextMenu ()
     {
         toolStripItemHorizontalDrag.Enabled = DragOrientation != DragOrientationsEnum.Horizontal;
         toolStripItemVerticalDrag.Enabled = DragOrientation != DragOrientationsEnum.Vertical;
         toolStripItemVerticalInvertedDrag.Enabled = DragOrientation != DragOrientationsEnum.InvertedVertical;
     }
 
-    private void OnContextMenuStripOpening(object sender, CancelEventArgs e)
+    private void OnContextMenuStripOpening (object sender, CancelEventArgs e)
     {
         if (Capture)
         {
@@ -328,7 +332,7 @@ public partial class DateTimeDragControl : UserControl
         }
     }
 
-    private void OnToolStripItemHorizontalDragClick(object sender, EventArgs e)
+    private void OnToolStripItemHorizontalDragClick (object sender, EventArgs e)
     {
         DragOrientation = DragOrientationsEnum.Horizontal;
         toolStripItemHorizontalDrag.Enabled = false;
@@ -336,7 +340,7 @@ public partial class DateTimeDragControl : UserControl
         toolStripItemVerticalInvertedDrag.Enabled = true;
     }
 
-    private void OnToolStripItemVerticalDragClick(object sender, EventArgs e)
+    private void OnToolStripItemVerticalDragClick (object sender, EventArgs e)
     {
         DragOrientation = DragOrientationsEnum.Vertical;
         toolStripItemHorizontalDrag.Enabled = true;
@@ -344,7 +348,7 @@ public partial class DateTimeDragControl : UserControl
         toolStripItemVerticalInvertedDrag.Enabled = true;
     }
 
-    private void OnToolStripItemVerticalInvertedDragClick(object sender, EventArgs e)
+    private void OnToolStripItemVerticalInvertedDragClick (object sender, EventArgs e)
     {
         DragOrientation = DragOrientationsEnum.InvertedVertical;
         toolStripItemHorizontalDrag.Enabled = true;
@@ -356,7 +360,7 @@ public partial class DateTimeDragControl : UserControl
 
     #region Rendering
 
-    protected override void OnPaint(PaintEventArgs e)
+    protected override void OnPaint (PaintEventArgs e)
     {
         base.OnPaint(e);
 
@@ -370,37 +374,35 @@ public partial class DateTimeDragControl : UserControl
         }
 
         // Display current value with user-defined date format and fixed time format ("HH:mm:ss")
-        using (Brush brush = new SolidBrush(Color.Black))
+        using Brush brush = new SolidBrush(Color.Black);
+        for (var i = 0; i < _dateParts.Length; i++)
         {
-            for (var i = 0; i < _dateParts.Length; i++)
-            {
-                var datePart = _dateParts[i];
-                Rectangle rect = _digitRects[i];
-                string value;
+            var datePart = _dateParts[i];
+            Rectangle rect = _digitRects[i];
+            string value;
 
-                if (Token.IsDatePart(datePart))
+            if (Token.IsDatePart(datePart))
+            {
+                try
                 {
-                    try
-                    {
-                        value = _dateTime.ToString("-" + datePart + "-");
-                        value = value.Substring(1, value.Length - 2);
-                    }
-                    catch
-                    {
-                        value = datePart;
-                    }
+                    value = _dateTime.ToString("-" + datePart + "-");
+                    value = value[1..^1];
                 }
-                else
+                catch
                 {
                     value = datePart;
                 }
-
-                e.Graphics.DrawString(value, Font, brush, rect, _digitsFormat);
             }
+            else
+            {
+                value = datePart;
+            }
+
+            e.Graphics.DrawString(value, Font, brush, rect, _digitsFormat);
         }
     }
 
-    private void DateTimeDragControl_Resize(object sender, EventArgs e)
+    private void DateTimeDragControl_Resize (object sender, EventArgs e)
     {
         InitDigitRects();
     }
@@ -409,7 +411,7 @@ public partial class DateTimeDragControl : UserControl
 
     #region Mouse callbacks
 
-    protected override void OnMouseDown(MouseEventArgs e)
+    protected override void OnMouseDown (MouseEventArgs e)
     {
         base.OnMouseDown(e);
 
@@ -420,6 +422,7 @@ public partial class DateTimeDragControl : UserControl
             {
                 return;
             }
+
             Capture = true;
             _startMouseY = e.Y;
             _startMouseX = e.X;
@@ -431,10 +434,11 @@ public partial class DateTimeDragControl : UserControl
             Capture = false;
             SetDraggedValue(0); //undo
         }
+
         Invalidate(); // repaint with the selected item (or none)
     }
 
-    protected override void OnMouseUp(MouseEventArgs e)
+    protected override void OnMouseUp (MouseEventArgs e)
     {
         if (!Capture)
         {
@@ -450,7 +454,7 @@ public partial class DateTimeDragControl : UserControl
         OnValueChanged(EventArgs.Empty);
     }
 
-    protected override void OnMouseMove(MouseEventArgs e)
+    protected override void OnMouseMove (MouseEventArgs e)
     {
         base.OnMouseMove(e);
 
@@ -479,7 +483,7 @@ public partial class DateTimeDragControl : UserControl
                 }
         }
 
-        var delta = diff / 5 - _addedValue; // one unit per 5 pixels move
+        var delta = (diff / 5) - _addedValue; // one unit per 5 pixels move
 
         if (delta == 0)
         {
@@ -496,7 +500,7 @@ public partial class DateTimeDragControl : UserControl
         OnValueDragged(EventArgs.Empty);
     }
 
-    private void DateTimeDragControl_MouseLeave(object sender, EventArgs e)
+    private void DateTimeDragControl_MouseLeave (object sender, EventArgs e)
     {
         if (Capture)
         {

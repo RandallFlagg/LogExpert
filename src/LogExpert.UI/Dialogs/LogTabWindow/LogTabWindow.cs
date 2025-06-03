@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Runtime.Versioning;
 using System.Text;
 
 using LogExpert.Core.Config;
@@ -14,6 +15,7 @@ namespace LogExpert.UI.Controls.LogTabWindow;
 
 // Data shared over all LogTabWindow instances
 //TODO: Can we get rid of this class?
+[SupportedOSPlatform("windows")]
 public partial class LogTabWindow : Form, ILogTabWindow
 {
     #region Fields
@@ -22,7 +24,7 @@ public partial class LogTabWindow : Form, ILogTabWindow
     private const int MAX_COLOR_HISTORY = 40;
     private const int DIFF_MAX = 100;
     private const int MAX_FILE_HISTORY = 10;
-    private static readonly ILogger _logger = LogManager.GetCurrentClassLogger();
+    private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
     private readonly Icon _deadIcon;
 
     private readonly Color _defaultTabColor = Color.FromArgb(255, 192, 192, 192);
@@ -34,7 +36,7 @@ public partial class LogTabWindow : Form, ILogTabWindow
 
     private readonly Rectangle[] _leds = new Rectangle[5];
 
-    private readonly IList<LogWindow.LogWindow> _logWindowList = new List<LogWindow.LogWindow>();
+    private readonly IList<LogWindow.LogWindow> _logWindowList = [];
     private readonly Brush _offLedBrush;
     private readonly bool _showInstanceNumbers;
 
@@ -43,7 +45,10 @@ public partial class LogTabWindow : Form, ILogTabWindow
     private readonly EventWaitHandle _statusLineEventHandle = new AutoResetEvent(false);
     private readonly EventWaitHandle _statusLineEventWakeupHandle = new ManualResetEvent(false);
     private readonly Brush _syncLedBrush;
+
+    [SupportedOSPlatform("windows")]
     private readonly StringFormat _tabStringFormat = new();
+
     private readonly Brush[] _tailLedBrush = new Brush[3];
 
     private BookmarkWindow _bookmarkWindow;
@@ -64,6 +69,8 @@ public partial class LogTabWindow : Form, ILogTabWindow
     #endregion
 
     #region cTor
+
+    [SupportedOSPlatform("windows")]
     public LogTabWindow (string[] fileNames, int instanceNumber, bool showInstanceNumbers, IConfigManager configManager)
     {
         AutoScaleDimensions = new SizeF(96F, 96F);
@@ -158,9 +165,11 @@ public partial class LogTabWindow : Form, ILogTabWindow
     #endregion
 
     #region ColorTheme
+
+    [SupportedOSPlatform("windows")]
     public void ChangeTheme (Control.ControlCollection container)
     {
-        ColorMode.LoadColorMode(ConfigManager.Settings.Preferences.darkMode);
+        ColorMode.LoadColorMode(ConfigManager.Settings.Preferences.DarkMode);
         Win32.UseImmersiveDarkMode(Handle, ColorMode.DarkModeEnabled);
 
         #region ApplyColorToAllControls
@@ -189,7 +198,7 @@ public partial class LogTabWindow : Form, ILogTabWindow
                     {
                         for (var x = 0; x < item.DropDownItems.Count; x++)
                         {
-                            var children = item.DropDownItems[x];
+                            ToolStripItem children = item.DropDownItems[x];
                             children.ForeColor = ColorMode.ForeColor;
                             children.BackColor = ColorMode.MenuBackgroundColor;
 
@@ -197,7 +206,7 @@ public partial class LogTabWindow : Form, ILogTabWindow
                             {
                                 for (var y = 0; y < toolstripDropDownItem.DropDownItems.Count; y++)
                                 {
-                                    var subChildren = toolstripDropDownItem.DropDownItems[y];
+                                    ToolStripItem subChildren = toolstripDropDownItem.DropDownItems[y];
                                     subChildren.ForeColor = ColorMode.ForeColor;
                                     subChildren.BackColor = ColorMode.MenuBackgroundColor;
                                 }
@@ -228,7 +237,7 @@ public partial class LogTabWindow : Form, ILogTabWindow
         // Tabs menu
         for (var y = 0; y < tabContextMenuStrip.Items.Count; y++)
         {
-            var item = tabContextMenuStrip.Items[y];
+            ToolStripItem item = tabContextMenuStrip.Items[y];
             item.ForeColor = ColorMode.ForeColor;
             item.BackColor = ColorMode.MenuBackgroundColor;
         }
@@ -284,6 +293,7 @@ public partial class LogTabWindow : Form, ILogTabWindow
 
     #region Properties
 
+    [SupportedOSPlatform("windows")]
     public LogWindow.LogWindow CurrentLogWindow
     {
         get => _currentLogWindow;
@@ -314,11 +324,12 @@ public partial class LogTabWindow : Form, ILogTabWindow
         {
             foreach (HighlightGroup group in HighlightGroupList)
             {
-                if (group.GroupName.Equals(groupName))
+                if (group.GroupName.Equals(groupName, StringComparison.Ordinal))
                 {
                     return group;
                 }
             }
+
             return null;
         }
     }
@@ -330,13 +341,28 @@ public partial class LogTabWindow : Form, ILogTabWindow
         #region Fields
 
         // public MdiTabControl.TabPage tabPage;
-        public Color color = Color.FromKnownColor(KnownColor.Gray);
 
-        public int diffSum;
-        public bool dirty;
-        public int syncMode; // 0 = off, 1 = timeSynced
-        public int tailState; // tailState: 0,1,2 = on/off/off by Trigger
-        public ToolTip toolTip;
+        public Color Color { get; set; } = Color.FromKnownColor(KnownColor.Gray);
+
+        public int DiffSum { get; set; }
+
+        public bool Dirty { get; set; }
+
+        // tailState:
+        /// <summary>
+        /// 0 = on<br></br>
+        /// 1 = off<br></br>
+        /// 2 = off by Trigger<br></br>
+        /// </summary>
+        public int TailState { get; set; }
+
+        public ToolTip ToolTip { get; set; }
+
+        /// <summary>
+        /// 0 = off<br></br>
+        /// 1 = timeSynced
+        /// </summary>
+        public int SyncMode { get; set; }
 
         #endregion
     }

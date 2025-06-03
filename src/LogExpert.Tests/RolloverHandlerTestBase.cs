@@ -1,8 +1,8 @@
-using LogExpert.Core.Classes.Log;
-
 using System;
 using System.Collections.Generic;
 using System.IO;
+
+using LogExpert.Core.Classes.Log;
 
 namespace LogExpert.Tests;
 
@@ -11,43 +11,43 @@ internal class RolloverHandlerTestBase
     #region Fields
 
     public const string TEST_DIR_NAME = "test";
-    public DirectoryInfo testDirectory;
 
     #endregion
 
+    public DirectoryInfo TestDirectory { get; set; }
 
-    protected LinkedList<string> CreateTestFilesWithDate()
+    protected LinkedList<string> CreateTestFilesWithDate ()
     {
         LinkedList<string> createdFiles = new();
         DirectoryInfo dInfo = Directory.CreateDirectory(TEST_DIR_NAME);
-        testDirectory = dInfo;
-        createdFiles.AddLast(CreateFile(dInfo, "engine_2010-06-08_1.log"));
-        createdFiles.AddLast(CreateFile(dInfo, "engine_2010-06-08_0.log"));
-        createdFiles.AddLast(CreateFile(dInfo, "engine_2010-06-10_0.log"));
-        createdFiles.AddLast(CreateFile(dInfo, "engine_2010-06-11_1.log"));
-        createdFiles.AddLast(CreateFile(dInfo, "engine_2010-06-11_0.log"));
-        createdFiles.AddLast(CreateFile(dInfo, "engine_2010-06-12_2.log"));
-        createdFiles.AddLast(CreateFile(dInfo, "engine_2010-06-12_1.log"));
-        createdFiles.AddLast(CreateFile(dInfo, "engine_2010-06-12_0.log"));
+        TestDirectory = dInfo;
+        _ = createdFiles.AddLast(CreateFile(dInfo, "engine_2010-06-08_1.log"));
+        _ = createdFiles.AddLast(CreateFile(dInfo, "engine_2010-06-08_0.log"));
+        _ = createdFiles.AddLast(CreateFile(dInfo, "engine_2010-06-10_0.log"));
+        _ = createdFiles.AddLast(CreateFile(dInfo, "engine_2010-06-11_1.log"));
+        _ = createdFiles.AddLast(CreateFile(dInfo, "engine_2010-06-11_0.log"));
+        _ = createdFiles.AddLast(CreateFile(dInfo, "engine_2010-06-12_2.log"));
+        _ = createdFiles.AddLast(CreateFile(dInfo, "engine_2010-06-12_1.log"));
+        _ = createdFiles.AddLast(CreateFile(dInfo, "engine_2010-06-12_0.log"));
         return createdFiles;
     }
 
-    protected LinkedList<string> CreateTestFilesWithoutDate()
+    protected LinkedList<string> CreateTestFilesWithoutDate ()
     {
         LinkedList<string> createdFiles = new();
         DirectoryInfo dInfo = Directory.CreateDirectory(TEST_DIR_NAME);
-        testDirectory = dInfo;
-        createdFiles.AddLast(CreateFile(dInfo, "engine.log.6"));
-        createdFiles.AddLast(CreateFile(dInfo, "engine.log.5"));
-        createdFiles.AddLast(CreateFile(dInfo, "engine.log.4"));
-        createdFiles.AddLast(CreateFile(dInfo, "engine.log.3"));
-        createdFiles.AddLast(CreateFile(dInfo, "engine.log.2"));
-        createdFiles.AddLast(CreateFile(dInfo, "engine.log.1"));
-        createdFiles.AddLast(CreateFile(dInfo, "engine.log"));
+        TestDirectory = dInfo;
+        _ = createdFiles.AddLast(CreateFile(dInfo, "engine.log.6"));
+        _ = createdFiles.AddLast(CreateFile(dInfo, "engine.log.5"));
+        _ = createdFiles.AddLast(CreateFile(dInfo, "engine.log.4"));
+        _ = createdFiles.AddLast(CreateFile(dInfo, "engine.log.3"));
+        _ = createdFiles.AddLast(CreateFile(dInfo, "engine.log.2"));
+        _ = createdFiles.AddLast(CreateFile(dInfo, "engine.log.1"));
+        _ = createdFiles.AddLast(CreateFile(dInfo, "engine.log"));
         return createdFiles;
     }
 
-    protected LinkedList<string> RolloverSimulation(LinkedList<string> files, string formatPattern,
+    protected LinkedList<string> RolloverSimulation (LinkedList<string> files, string formatPattern,
         bool deleteLatestFile)
     {
         LinkedList<string> fileList = files;
@@ -65,6 +65,7 @@ internal class RolloverHandlerTestBase
             File.Move(nextEnumerator.Current, enumerator.Current);
             enumerator.MoveNext();
         }
+
         CreateFile(null, nextEnumerator.Current);
 
         if (deleteLatestFile)
@@ -72,11 +73,12 @@ internal class RolloverHandlerTestBase
             File.Delete(fileList.First.Value);
             fileList.RemoveFirst();
         }
+
         return fileList;
     }
 
 
-    protected void Cleanup()
+    protected void Cleanup ()
     {
         try
         {
@@ -87,7 +89,7 @@ internal class RolloverHandlerTestBase
         }
     }
 
-    protected string CreateFile(DirectoryInfo dInfo, string fileName)
+    protected string CreateFile (DirectoryInfo dInfo, string fileName)
     {
         var lineCount = 10;
         var fullName = dInfo == null ? fileName : dInfo.FullName + Path.DirectorySeparatorChar + fileName;

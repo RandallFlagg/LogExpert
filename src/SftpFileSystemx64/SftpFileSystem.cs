@@ -1,33 +1,24 @@
-﻿using LogExpert;
-
-using Renci.SshNet;
-
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 using System.Xml.Serialization;
 
+using LogExpert;
+
+using Renci.SshNet;
+
 namespace SftpFileSystem;
 
-public class SftpFileSystem : IFileSystemPlugin, ILogExpertPluginConfigurator
+public class SftpFileSystem (IFileSystemCallback callback) : IFileSystemPlugin, ILogExpertPluginConfigurator
 {
     #region Private Fields
 
-    private readonly ILogExpertLogger _logger;
+    private readonly ILogExpertLogger _logger = callback.GetLogger();
 
     private ConfigDialog _configDialog;
     private volatile PrivateKeyFile _privateKeyFile;
-
-    #endregion
-
-    #region Ctor
-
-    public SftpFileSystem(IFileSystemCallback callback)
-    {
-        _logger = callback.GetLogger();
-        CredentialsCache = new CredentialCache();
-    }
+    private object _lock = new object();
 
     #endregion
 
@@ -37,12 +28,12 @@ public class SftpFileSystem : IFileSystemPlugin, ILogExpertPluginConfigurator
 
     public string Text => "SFTP plugin";
 
-    public bool CanHandleUri(string uriString)
+    public bool CanHandleUri (string uriString)
     {
         try
         {
             Uri uri = new(uriString);
-            return uri.Scheme.Equals("sftp", StringComparison.InvariantCultureIgnoreCase);
+            return uri.Scheme.Equals("sftp", StringComparison.OrdinalIgnoreCase);
         }
         catch (Exception e)
         {
@@ -51,7 +42,7 @@ public class SftpFileSystem : IFileSystemPlugin, ILogExpertPluginConfigurator
         }
     }
 
-    public ILogFileInfo GetLogfileInfo(string uriString)
+    public ILogFileInfo GetLogfileInfo (string uriString)
     {
         try
         {
@@ -69,19 +60,20 @@ public class SftpFileSystem : IFileSystemPlugin, ILogExpertPluginConfigurator
 
     #region Interface ILogExpertPluginConfigurator
 
-    public bool HasEmbeddedForm()
+    public bool HasEmbeddedForm ()
     {
         return true;
     }
 
-    public void HideConfigForm()
+    public void HideConfigForm ()
     {
         ConfigData = _configDialog.ConfigData;
         _configDialog.Hide();
         _configDialog.Dispose();
     }
 
-    public void LoadConfig(string configDir)
+    //TODO JSON config should be used
+    public void LoadConfig (string configDir)
     {
         XmlSerializer xml = new(ConfigData.GetType());
 
@@ -112,7 +104,7 @@ public class SftpFileSystem : IFileSystemPlugin, ILogExpertPluginConfigurator
         }
     }
 
-    public void SaveConfig(string configDir)
+    public void SaveConfig (string configDir)
     {
         _logger.Info("Saving SFTP config");
         XmlSerializer xml = new(ConfigData.GetType());
@@ -137,12 +129,12 @@ public class SftpFileSystem : IFileSystemPlugin, ILogExpertPluginConfigurator
         }
     }
 
-    public void ShowConfigDialog(object owner)
+    public void ShowConfigDialog (object owner)
     {
         throw new NotImplementedException();
     }
 
-    public void ShowConfigForm(object parentPanel)
+    public void ShowConfigForm (object parentPanel)
     {
         _configDialog = new ConfigDialog(ConfigData)
         {
@@ -152,7 +144,7 @@ public class SftpFileSystem : IFileSystemPlugin, ILogExpertPluginConfigurator
         _configDialog.Show();
     }
 
-    public void StartConfig()
+    public void StartConfig ()
     {
     }
 
@@ -168,15 +160,15 @@ public class SftpFileSystem : IFileSystemPlugin, ILogExpertPluginConfigurator
         set => _privateKeyFile = value;
     }
 
-    private CredentialCache CredentialsCache { get; }
+    private CredentialCache CredentialsCache { get; } = new CredentialCache();
 
     #endregion
 
-    internal Credentials GetCredentials(Uri uri, bool cacheAllowed, bool hidePasswordField)
+    internal Credentials GetCredentials (Uri uri, bool cacheAllowed, bool hidePasswordField)
     {
         // Synchronized access to the GetCredentials() method prevents multiple login dialogs when loading multiple files at once
         // (e.g. on startup). So the user only needs to enter credentials once for the same host.
-        lock (this)
+        lock (_lock)
         {
             string userName = null;
             string password = null;

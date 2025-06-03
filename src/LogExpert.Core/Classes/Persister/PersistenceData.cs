@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 
 using LogExpert.Core.Classes.Filter;
 using LogExpert.Core.Entities;
@@ -7,36 +7,55 @@ namespace LogExpert.Core.Classes.Persister;
 
 public class PersistenceData
 {
-    #region Fields
+    public SortedList<int, Entities.Bookmark> BookmarkList { get; set; } = [];
 
-    public SortedList<int, Entities.Bookmark> bookmarkList = [];
-    public int bookmarkListPosition = 300;
-    public bool bookmarkListVisible;
-    public string columnizerName;
-    public int currentLine = -1;
-    public Encoding encoding;
-    public string fileName;
-    public bool filterAdvanced;
-    public List<FilterParams> filterParamsList = [];
-    public int filterPosition = 222;
-    public bool filterSaveListVisible;
-    public List<FilterTabData> filterTabDataList = [];
-    public bool filterVisible;
-    public int firstDisplayedLine = -1;
-    public bool followTail = true;
-    public string highlightGroupName;
-    public int lineCount;
+    public int BookmarkListPosition { get; set; } = 300;
 
-    public bool multiFile;
-    public int multiFileMaxDays;
-    public List<string> multiFileNames = [];
-    public string multiFilePattern;
-    public SortedList<int, RowHeightEntry> rowHeightList = [];
-    public string sessionFileName;
-    public bool showBookmarkCommentColumn;
-    public string tabName;
+    public bool BookmarkListVisible { get; set; }
 
-    public string settingsSaveLoadLocation;
+    public string ColumnizerName { get; set; }
 
-    #endregion
+    public int CurrentLine { get; set; } = -1;
+
+    public Encoding Encoding { get; set; }
+
+    public string FileName { get; set; }
+
+    public bool FilterAdvanced { get; set; }
+
+    public List<FilterParams> FilterParamsList { get; set; } = [];
+
+    public int FilterPosition { get; set; } = 222;
+
+    public bool FilterSaveListVisible { get; set; }
+
+    public List<FilterTabData> FilterTabDataList { get; set; } = [];
+
+    public int FirstDisplayedLine { get; set; } = -1;
+
+    public bool FollowTail { get; set; } = true;
+
+    public string HighlightGroupName { get; set; }
+
+    public bool FilterVisible { get; set; }
+
+    public int LineCount { get; set; }
+
+    public bool MultiFile { get; set; }
+
+    public int MultiFileMaxDays { get; set; }
+
+    public List<string> MultiFileNames { get; set; } = [];
+
+    public string MultiFilePattern { get; set; }
+
+    public SortedList<int, RowHeightEntry> RowHeightList { get; set; } = [];
+
+    public string SessionFileName { get; set; }
+
+    public bool ShowBookmarkCommentColumn { get; set; }
+
+    public string TabName { get; set; }
+
+    public string SettingsSaveLoadLocation { get; set; }
 }

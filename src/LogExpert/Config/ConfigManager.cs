@@ -26,6 +26,7 @@ public class ConfigManager : IConfigManager
     private static readonly object _monitor = new();
     private static ConfigManager _instance;
     private readonly object _loadSaveLock = new();
+    private readonly object _saveSaveLock = new();
     private Settings _settings;
 
     #endregion
@@ -184,45 +185,45 @@ public class ConfigManager : IConfigManager
 
             settings.Preferences ??= new Preferences();
 
-            settings.Preferences.toolEntries ??= [];
+            settings.Preferences.ToolEntries ??= [];
 
-            settings.Preferences.columnizerMaskList ??= [];
+            settings.Preferences.ColumnizerMaskList ??= [];
 
-            settings.fileHistoryList ??= [];
+            settings.FileHistoryList ??= [];
 
-            settings.lastOpenFilesList ??= [];
+            settings.LastOpenFilesList ??= [];
 
-            settings.fileColors ??= [];
+            settings.FileColors ??= [];
 
-            if (settings.Preferences.showTailColor == Color.Empty)
+            if (settings.Preferences.ShowTailColor == Color.Empty)
             {
-                settings.Preferences.showTailColor = Color.FromKnownColor(KnownColor.Blue);
+                settings.Preferences.ShowTailColor = Color.FromKnownColor(KnownColor.Blue);
             }
 
-            if (settings.Preferences.timeSpreadColor == Color.Empty)
+            if (settings.Preferences.TimeSpreadColor == Color.Empty)
             {
-                settings.Preferences.timeSpreadColor = Color.Gray;
+                settings.Preferences.TimeSpreadColor = Color.Gray;
             }
 
-            if (settings.Preferences.bufferCount < 10)
+            if (settings.Preferences.BufferCount < 10)
             {
-                settings.Preferences.bufferCount = 100;
+                settings.Preferences.BufferCount = 100;
             }
 
-            if (settings.Preferences.linesPerBuffer < 1)
+            if (settings.Preferences.LinesPerBuffer < 1)
             {
-                settings.Preferences.linesPerBuffer = 500;
+                settings.Preferences.LinesPerBuffer = 500;
             }
 
-            settings.filterList ??= [];
+            settings.FilterList ??= [];
 
-            settings.searchHistoryList ??= [];
+            settings.SearchHistoryList ??= [];
 
-            settings.filterHistoryList ??= [];
+            settings.FilterHistoryList ??= [];
 
-            settings.filterRangeHistoryList ??= [];
+            settings.FilterRangeHistoryList ??= [];
 
-            foreach (FilterParams filterParams in settings.filterList)
+            foreach (FilterParams filterParams in settings.FilterList)
             {
                 filterParams.Init();
             }
@@ -232,25 +233,25 @@ public class ConfigManager : IConfigManager
                 settings.Preferences.HighlightGroupList = [];
             }
 
-            settings.Preferences.highlightMaskList ??= [];
+            settings.Preferences.HighlightMaskList ??= [];
 
-            if (settings.Preferences.pollingInterval < 20)
+            if (settings.Preferences.PollingInterval < 20)
             {
-                settings.Preferences.pollingInterval = 250;
+                settings.Preferences.PollingInterval = 250;
             }
 
-            settings.Preferences.multiFileOptions ??= new MultiFileOptions();
+            settings.Preferences.MultiFileOptions ??= new MultiFileOptions();
 
-            settings.Preferences.defaultEncoding ??= Encoding.Default.HeaderName;
+            settings.Preferences.DefaultEncoding ??= Encoding.Default.HeaderName;
 
-            if (settings.Preferences.maximumFilterEntriesDisplayed == 0)
+            if (settings.Preferences.MaximumFilterEntriesDisplayed == 0)
             {
-                settings.Preferences.maximumFilterEntriesDisplayed = 20;
+                settings.Preferences.MaximumFilterEntriesDisplayed = 20;
             }
 
-            if (settings.Preferences.maximumFilterEntries == 0)
+            if (settings.Preferences.MaximumFilterEntries == 0)
             {
-                settings.Preferences.maximumFilterEntries = 30;
+                settings.Preferences.MaximumFilterEntries = 30;
             }
 
             SetBoundsWithinVirtualScreen(settings);
@@ -269,18 +270,15 @@ public class ConfigManager : IConfigManager
         lock (_loadSaveLock)
         {
             _logger.Info("Saving settings");
-            lock (this)
+            var dir = Settings.Preferences.PortableMode ? Application.StartupPath : ConfigDir;
+
+            if (!Directory.Exists(dir))
             {
-                var dir = Settings.Preferences.PortableMode ? Application.StartupPath : ConfigDir;
-
-                if (!Directory.Exists(dir))
-                {
-                    Directory.CreateDirectory(dir);
-                }
-
-                FileInfo fileInfo = new(dir + Path.DirectorySeparatorChar + "settings.json");
-                Save(fileInfo, settings);
+                Directory.CreateDirectory(dir);
             }
+
+            FileInfo fileInfo = new(dir + Path.DirectorySeparatorChar + "settings.json");
+            Save(fileInfo, settings);
 
             OnConfigChanged(flags);
         }
@@ -311,7 +309,7 @@ public class ConfigManager : IConfigManager
 
     private static void SaveAsJSON (FileInfo fileInfo, Settings settings)
     {
-        settings.versionBuild = Assembly.GetExecutingAssembly().GetName().Version.Build;
+        settings.VersionBuild = Assembly.GetExecutingAssembly().GetName().Version.Build;
 
         using StreamWriter sw = new(fileInfo.Create());
         JsonSerializer serializer = new();
@@ -370,10 +368,10 @@ public class ConfigManager : IConfigManager
         {
             newSettings = ownSettings;
             newSettings.Preferences = ObjectClone.Clone(importSettings.Preferences);
-            newSettings.Preferences.columnizerMaskList = ownSettings.Preferences.columnizerMaskList;
-            newSettings.Preferences.highlightMaskList = ownSettings.Preferences.highlightMaskList;
+            newSettings.Preferences.ColumnizerMaskList = ownSettings.Preferences.ColumnizerMaskList;
+            newSettings.Preferences.HighlightMaskList = ownSettings.Preferences.HighlightMaskList;
             newSettings.Preferences.HighlightGroupList = ownSettings.Preferences.HighlightGroupList;
-            newSettings.Preferences.toolEntries = ownSettings.Preferences.toolEntries;
+            newSettings.Preferences.ToolEntries = ownSettings.Preferences.ToolEntries;
         }
         else
         {
@@ -382,11 +380,11 @@ public class ConfigManager : IConfigManager
 
         if ((flags & ExportImportFlags.ColumnizerMasks) == ExportImportFlags.ColumnizerMasks)
         {
-            newSettings.Preferences.columnizerMaskList = ReplaceOrKeepExisting(flags, ownSettings.Preferences.columnizerMaskList, importSettings.Preferences.columnizerMaskList);
+            newSettings.Preferences.ColumnizerMaskList = ReplaceOrKeepExisting(flags, ownSettings.Preferences.ColumnizerMaskList, importSettings.Preferences.ColumnizerMaskList);
         }
         if ((flags & ExportImportFlags.HighlightMasks) == ExportImportFlags.HighlightMasks)
         {
-            newSettings.Preferences.highlightMaskList = ReplaceOrKeepExisting(flags, ownSettings.Preferences.highlightMaskList, importSettings.Preferences.highlightMaskList);
+            newSettings.Preferences.HighlightMaskList = ReplaceOrKeepExisting(flags, ownSettings.Preferences.HighlightMaskList, importSettings.Preferences.HighlightMaskList);
         }
         if ((flags & ExportImportFlags.HighlightSettings) == ExportImportFlags.HighlightSettings)
         {
@@ -394,7 +392,7 @@ public class ConfigManager : IConfigManager
         }
         if ((flags & ExportImportFlags.ToolEntries) == ExportImportFlags.ToolEntries)
         {
-            newSettings.Preferences.toolEntries = ReplaceOrKeepExisting(flags, ownSettings.Preferences.toolEntries, importSettings.Preferences.toolEntries);
+            newSettings.Preferences.ToolEntries = ReplaceOrKeepExisting(flags, ownSettings.Preferences.ToolEntries, importSettings.Preferences.ToolEntries);
         }
 
         return newSettings;
@@ -415,10 +413,10 @@ public class ConfigManager : IConfigManager
     private void SetBoundsWithinVirtualScreen (Settings settings)
     {
         var vs = SystemInformation.VirtualScreen;
-        if (vs.X + vs.Width < settings.appBounds.X + settings.appBounds.Width ||
-            vs.Y + vs.Height < settings.appBounds.Y + settings.appBounds.Height)
+        if (vs.X + vs.Width < settings.AppBounds.X + settings.AppBounds.Width ||
+            vs.Y + vs.Height < settings.AppBounds.Y + settings.AppBounds.Height)
         {
-            settings.appBounds = new Rectangle();
+            settings.AppBounds = new Rectangle();
         }
     }
     #endregion

@@ -19,8 +19,8 @@ public class LogfileReader : IAutoLogLineColumnizerCallback
     private readonly GetLogLineFx _logLineFx;
 
     private readonly string _fileName;
-    private readonly int _MAX_BUFFERS = 10;
-    private readonly int _MAX_LINES_PER_BUFFER = 100;
+    private readonly int _max_buffers;
+    private readonly int _maxLinesPerBuffer;
 
     private readonly object _monitor = new();
     private readonly MultiFileOptions _multiFileOptions;
@@ -64,8 +64,8 @@ public class LogfileReader : IAutoLogLineColumnizerCallback
         _fileName = fileName;
         EncodingOptions = encodingOptions;
         IsMultiFile = multiFile;
-        _MAX_BUFFERS = bufferCount;
-        _MAX_LINES_PER_BUFFER = linesPerBuffer;
+        _max_buffers = bufferCount;
+        _maxLinesPerBuffer = linesPerBuffer;
         _multiFileOptions = multiFileOptions;
         _pluginRegistry = pluginRegistry;
         _logLineFx = GetLogLineInternal;
@@ -102,8 +102,8 @@ public class LogfileReader : IAutoLogLineColumnizerCallback
 
         EncodingOptions = encodingOptions;
         IsMultiFile = true;
-        _MAX_BUFFERS = bufferCount;
-        _MAX_LINES_PER_BUFFER = linesPerBuffer;
+        _max_buffers = bufferCount;
+        _maxLinesPerBuffer = linesPerBuffer;
         _multiFileOptions = multiFileOptions;
         _pluginRegistry = pluginRegistry;
         _logLineFx = GetLogLineInternal;
@@ -799,9 +799,9 @@ public class LogfileReader : IAutoLogLineColumnizerCallback
     private void InitLruBuffers ()
     {
         _bufferList = [];
-        _bufferLru = new List<LogBuffer>(_MAX_BUFFERS + 1);
+        _bufferLru = new List<LogBuffer>(_max_buffers + 1);
         //this.lruDict = new Dictionary<int, int>(this.MAX_BUFFERS + 1);  // key=startline, value = index in bufferLru
-        _lruCacheDict = new Dictionary<int, LogBufferCacheEntry>(_MAX_BUFFERS + 1);
+        _lruCacheDict = new Dictionary<int, LogBufferCacheEntry>(_max_buffers + 1);
         _lruCacheDictLock = new ReaderWriterLock();
         _bufferListLock = new ReaderWriterLock();
         _disposeLock = new ReaderWriterLock();
@@ -853,7 +853,7 @@ public class LogfileReader : IAutoLogLineColumnizerCallback
         {
             if (buffer.FileInfo == oldLogFileInfo)
             {
-                _logger.Debug("Buffer with startLine={0}, lineCount={1}, filePos={2}, size={3} gets new filename {4}", buffer.StartLine, buffer.LineCount, buffer.StartPos, buffer.Size, newLogFileInfo.FullName);
+                _logger.Debug($"Buffer with startLine={buffer.StartLine}, lineCount={buffer.LineCount}, filePos={buffer.StartPos}, size={buffer.Size} gets new filename {newLogFileInfo.FullName}");
                 buffer.FileInfo = newLogFileInfo;
             }
         }
@@ -863,7 +863,7 @@ public class LogfileReader : IAutoLogLineColumnizerCallback
 
     private LogBuffer DeleteBuffersForInfo (ILogFileInfo ILogFileInfo, bool matchNamesOnly)
     {
-        _logger.Info("Deleting buffers for file {0}", ILogFileInfo.FullName);
+        _logger.Info($"Deleting buffers for file {ILogFileInfo.FullName}");
         LogBuffer lastRemovedBuffer = null;
         IList<LogBuffer> deleteList = [];
         AcquireBufferListWriterLock();
@@ -872,7 +872,7 @@ public class LogfileReader : IAutoLogLineColumnizerCallback
         {
             foreach (LogBuffer buffer in _bufferList)
             {
-                if (buffer.FileInfo.FullName.ToLower().Equals(ILogFileInfo.FullName.ToLower()))
+                if (buffer.FileInfo.FullName.Equals(ILogFileInfo.FullName, StringComparison.Ordinal))
                 {
                     lastRemovedBuffer = buffer;
                     deleteList.Add(buffer);
@@ -938,9 +938,11 @@ public class LogfileReader : IAutoLogLineColumnizerCallback
                 AcquireBufferListReaderLock();
                 if (_bufferList.Count == 0)
                 {
-                    logBuffer = new LogBuffer(logFileInfo, _MAX_LINES_PER_BUFFER);
-                    logBuffer.StartLine = startLine;
-                    logBuffer.StartPos = filePos;
+                    logBuffer = new LogBuffer(logFileInfo, _maxLinesPerBuffer)
+                    {
+                        StartLine = startLine,
+                        StartPos = filePos
+                    };
                     LockCookie cookie = UpgradeBufferListLockToWriter();
                     AddBufferToList(logBuffer);
                     DowngradeBufferListLockFromWriter(ref cookie);
@@ -949,11 +951,13 @@ public class LogfileReader : IAutoLogLineColumnizerCallback
                 {
                     logBuffer = _bufferList[_bufferList.Count - 1];
 
-                    if (!logBuffer.FileInfo.FullName.Equals(logFileInfo.FullName))
+                    if (!logBuffer.FileInfo.FullName.Equals(logFileInfo.FullName, StringComparison.Ordinal))
                     {
-                        logBuffer = new LogBuffer(logFileInfo, _MAX_LINES_PER_BUFFER);
-                        logBuffer.StartLine = startLine;
-                        logBuffer.StartPos = filePos;
+                        logBuffer = new LogBuffer(logFileInfo, _maxLinesPerBuffer)
+                        {
+                            StartLine = startLine,
+                            StartPos = filePos
+                        };
                         LockCookie cookie = UpgradeBufferListLockToWriter();
                         AddBufferToList(logBuffer);
                         DowngradeBufferListLockFromWriter(ref cookie);
@@ -993,12 +997,12 @@ public class LogfileReader : IAutoLogLineColumnizerCallback
                     }
 
                     lineCount++;
-                    if (lineCount > _MAX_LINES_PER_BUFFER && reader.IsBufferComplete)
+                    if (lineCount > _maxLinesPerBuffer && reader.IsBufferComplete)
                     {
                         OnLoadFile(new LoadFileEventArgs(logFileInfo.FullName, filePos, false, logFileInfo.Length, false));
 
                         Monitor.Exit(logBuffer);
-                        logBuffer = new LogBuffer(logFileInfo, _MAX_LINES_PER_BUFFER);
+                        logBuffer = new LogBuffer(logFileInfo, _maxLinesPerBuffer);
                         Monitor.Enter(logBuffer);
                         logBuffer.StartLine = lineNum;
                         logBuffer.StartPos = filePos;
@@ -1132,9 +1136,9 @@ public class LogfileReader : IAutoLogLineColumnizerCallback
         var threshold = 10;
         _lruCacheDictLock.AcquireWriterLock(Timeout.Infinite);
         var diff = 0;
-        if (_lruCacheDict.Count - (_MAX_BUFFERS + threshold) > 0)
+        if (_lruCacheDict.Count - (_max_buffers + threshold) > 0)
         {
-            diff = _lruCacheDict.Count - _MAX_BUFFERS;
+            diff = _lruCacheDict.Count - _max_buffers;
 #if DEBUG
             if (diff > 0)
             {

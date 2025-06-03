@@ -1,8 +1,12 @@
-﻿namespace LogExpert.UI.Extensions;
+using System.Runtime.Versioning;
+
+namespace LogExpert.UI.Extensions;
+
 
 internal static class Utils
 {
-    public static string GetWordFromPos(int xPos, string text, Graphics g, Font font)
+    [SupportedOSPlatform("windows")]
+    public static string GetWordFromPos (int xPos, string text, Graphics g, Font font)
     {
         var words = text.Split([' ', '.', ':', ';']);
 
@@ -44,13 +48,8 @@ internal static class Utils
             y++;
         }
 
-        if (found)
-        {
-            return words[y];
-        }
-        else
-        {
-            return null;
-        }
+        return found
+            ? words[y]
+            : null;
     }
 }

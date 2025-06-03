@@ -5,8 +5,8 @@ using LogExpert.Core.Classes.IPC;
 using LogExpert.Core.Config;
 using LogExpert.Core.Interface;
 using LogExpert.Dialogs;
+using LogExpert.UI.Controls.LogWindow;
 using LogExpert.UI.Dialogs;
-using LogExpert.UI.Dialogs.LogTabWindow;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -70,7 +70,7 @@ internal static class Program
                     MessageBox.Show(@"Config file not found", @"LogExpert");
                 }
             }
-            PluginRegistry.PluginRegistry.Instance.Create(ConfigManager.Instance.ConfigDir, ConfigManager.Instance.Settings.Preferences.pollingInterval);
+            PluginRegistry.PluginRegistry.Instance.Create(ConfigManager.Instance.ConfigDir, ConfigManager.Instance.Settings.Preferences.PollingInterval);
 
             var pId = Process.GetCurrentProcess().SessionId;
 
@@ -107,7 +107,7 @@ internal static class Program
                         try
                         {
                             var wi = WindowsIdentity.GetCurrent();
-                            var command = SerializeCommandIntoNonFormattedJSON(absoluteFilePaths, settings.Preferences.allowOnlyOneInstance);
+                            var command = SerializeCommandIntoNonFormattedJSON(absoluteFilePaths, settings.Preferences.AllowOnlyOneInstance);
                             SendCommandToServer(command);
                             break;
                         }
@@ -126,7 +126,7 @@ internal static class Program
                         MessageBox.Show($"Cannot open connection to first instance ({errMsg})", "LogExpert");
                     }
 
-                    if (settings.Preferences.allowOnlyOneInstance && settings.Preferences.ShowErrorMessageAllowOnlyOneInstances)
+                    if (settings.Preferences.AllowOnlyOneInstance && settings.Preferences.ShowErrorMessageAllowOnlyOneInstances)
                     {
                         AllowOnlyOneInstanceErrorDialog a = new();
                         if (a.ShowDialog() == DialogResult.OK)

@@ -1,3 +1,5 @@
+using System.Runtime.Versioning;
+
 using LogExpert.Core.Config;
 using LogExpert.Core.Entities;
 using LogExpert.Core.Enums;
@@ -13,6 +15,7 @@ using WeifenLuo.WinFormsUI.Docking;
 namespace LogExpert.Dialogs;
 
 //TODO can be moved to Logexpert.UI if the PaintHelper has been refactored
+[SupportedOSPlatform("windows")]
 public partial class BookmarkWindow : DockContent, ISharedToolWindow, IBookmarkView
 {
     #region Fields
@@ -198,11 +201,11 @@ public partial class BookmarkWindow : DockContent, ISharedToolWindow, IBookmarkV
     {
         if ((flags & SettingsFlags.GuiOrColors) == SettingsFlags.GuiOrColors)
         {
-            SetFont(newPreferences.fontName, newPreferences.fontSize);
-            if (bookmarkDataGridView.Columns.Count > 1 && newPreferences.setLastColumnWidth)
+            SetFont(newPreferences.FontName, newPreferences.FontSize);
+            if (bookmarkDataGridView.Columns.Count > 1 && newPreferences.SetLastColumnWidth)
             {
                 bookmarkDataGridView.Columns[bookmarkDataGridView.Columns.Count - 1].MinimumWidth =
-                    newPreferences.lastColumnWidth;
+                    newPreferences.LastColumnWidth;
             }
 
             PaintHelper.ApplyDataGridViewPrefs(bookmarkDataGridView, newPreferences, configManager);

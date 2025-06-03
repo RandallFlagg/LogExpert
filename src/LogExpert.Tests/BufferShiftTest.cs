@@ -41,7 +41,7 @@ internal class BufferShiftTest : RolloverHandlerTestBase
             Encoding = Encoding.Default
         };
 
-        PluginRegistry.PluginRegistry.Instance.Create(testDirectory.FullName, 500);
+        PluginRegistry.PluginRegistry.Instance.Create(TestDirectory.FullName, 500);
         LogfileReader reader = new(files.Last.Value, encodingOptions, true, 40, 50, options, PluginRegistry.PluginRegistry.Instance);
         reader.ReadFiles();
 
@@ -110,7 +110,7 @@ internal class BufferShiftTest : RolloverHandlerTestBase
         {
             LogBuffer logBuffer = logBuffers[i];
             ILogLine line = logBuffer.GetLineOfBlock(0);
-            Assert.That(line.FullLine.Contains(enumerator.Current));
+            Assert.That(line.FullLine.Contains(enumerator.Current, System.StringComparison.Ordinal));
             enumerator.MoveNext();
         }
         enumerator.MoveNext();
@@ -119,7 +119,7 @@ internal class BufferShiftTest : RolloverHandlerTestBase
         {
             LogBuffer logBuffer = logBuffers[i];
             ILogLine line = logBuffer.GetLineOfBlock(0);
-            Assert.That(line.FullLine.Contains(enumerator.Current));
+            Assert.That(line.FullLine.Contains(enumerator.Current, System.StringComparison.Ordinal));
         }
 
         oldCount = lil.Count;
@@ -142,6 +142,6 @@ internal class BufferShiftTest : RolloverHandlerTestBase
         ILogLine firstLine = reader.GetLogLine(0);
         var names = new string[files.Count];
         files.CopyTo(names, 0);
-        Assert.That(firstLine.FullLine.Contains(names[2]));
+        Assert.That(firstLine.FullLine.Contains(names[2], System.StringComparison.Ordinal));
     }
 }

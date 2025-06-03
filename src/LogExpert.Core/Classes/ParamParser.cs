@@ -1,41 +1,34 @@
-﻿using System.Text;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace LogExpert.Core.Classes;
 
-public class ParamParser
+public class ParamParser (string argTemplate)
 {
-    #region Fields
-
-    private readonly string argLine;
-
-    #endregion
-
-    #region cTor
-
-    public ParamParser(string argTemplate)
-    {
-        argLine = argTemplate;
-    }
-
-    #endregion
-
     #region Public methods
 
-    public string ReplaceParams(ILogLine logLine, int lineNum, string fileName)
+    public string ReplaceParams (ILogLine logLine, int lineNum, string fileName)
     {
         FileInfo fileInfo = new(fileName);
-        StringBuilder builder = new(argLine);
-        builder.Replace("%L", "" + lineNum);
-        builder.Replace("%P",
-            fileInfo.DirectoryName.Contains(" ") ? "\"" + fileInfo.DirectoryName + "\"" : fileInfo.DirectoryName);
-        builder.Replace("%N", fileInfo.Name.Contains(" ") ? "\"" + fileInfo.Name + "\"" : fileInfo.Name);
-        builder.Replace("%F",
-            fileInfo.FullName.Contains(" ") ? "\"" + fileInfo.FullName + "\"" : fileInfo.FullName);
-        builder.Replace("%E",
-            fileInfo.Extension.Contains(" ") ? "\"" + fileInfo.Extension + "\"" : fileInfo.Extension);
+        StringBuilder builder = new(argTemplate);
+        _ = builder.Replace("%L", "" + lineNum);
+        _ = builder.Replace("%P", fileInfo.DirectoryName.Contains(' ', StringComparison.Ordinal)
+                ? "\"" + fileInfo.DirectoryName + "\""
+                : fileInfo.DirectoryName);
+        _ = builder.Replace("%N", fileInfo.Name.Contains(' ', StringComparison.Ordinal)
+                ? "\"" + fileInfo.Name + "\""
+                : fileInfo.Name);
+        _ = builder.Replace("%F",
+            fileInfo.FullName.Contains(' ', StringComparison.Ordinal)
+                ? "\"" + fileInfo.FullName + "\""
+                : fileInfo.FullName);
+        _ = builder.Replace("%E", fileInfo.Extension.Contains(' ', StringComparison.Ordinal)
+                ? "\"" + fileInfo.Extension + "\""
+                : fileInfo.Extension);
         var stripped = StripExtension(fileInfo.Name);
-        builder.Replace("%M", stripped.Contains(" ") ? "\"" + stripped + "\"" : stripped);
+        _ = builder.Replace("%M", stripped.Contains(' ', StringComparison.Ordinal)
+                ? "\"" + stripped + "\""
+                : stripped);
         var sPos = 0;
         string reg;
         string replace;
@@ -52,21 +45,23 @@ public class ParamParser
         return builder.ToString();
     }
 
-    public static string StripExtension(string fileName)
+    public static string StripExtension (string fileName)
     {
         var i = fileName.LastIndexOf('.');
+
         if (i < 0)
         {
             i = fileName.Length - 1;
         }
-        return fileName.Substring(0, i);
+
+        return fileName[..i];
     }
 
     #endregion
 
     #region Private Methods
 
-    private string GetNextGroup(StringBuilder builder, ref int sPos)
+    private string GetNextGroup (StringBuilder builder, ref int sPos)
     {
         int ePos;
         while (sPos < builder.Length)
@@ -81,21 +76,26 @@ public class ParamParser
                     {
                         count++;
                     }
+
                     if (builder[ePos] == '}')
                     {
                         count--;
                     }
+
                     if (count == 0)
                     {
                         var reg = builder.ToString(sPos + 1, ePos - sPos - 1);
-                        builder.Remove(sPos, ePos - sPos + 1);
+                        _ = builder.Remove(sPos, ePos - sPos + 1);
                         return reg;
                     }
+
                     ePos++;
                 }
             }
+
             sPos++;
         }
+
         return null;
     }
 

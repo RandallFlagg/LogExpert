@@ -62,7 +62,7 @@ private void InitializeComponent()
         this.buttonOk.TabIndex = 2;
         this.buttonOk.Text = "OK";
         this.buttonOk.UseVisualStyleBackColor = true;
-        this.buttonOk.Click += new System.EventHandler(this.okButton_Click);
+        this.buttonOk.Click += new System.EventHandler(this.OnButtonOkClick);
         // 
         // comboBoxValue
         // 

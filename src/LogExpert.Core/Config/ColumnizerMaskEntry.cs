@@ -1,14 +1,9 @@
-using System;
-
 namespace LogExpert.Core.Config;
 
 [Serializable]
 public class ColumnizerMaskEntry
 {
-    #region Fields
+    public string ColumnizerName { get; set; }
 
-    public string columnizerName;
-    public string mask;
-
-    #endregion
+    public string Mask { get; set; }
 }
