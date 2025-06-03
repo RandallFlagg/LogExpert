@@ -15,6 +15,7 @@ namespace LogExpert.UI.Controls.LogTabWindow;
 
 // Data shared over all LogTabWindow instances
 //TODO: Can we get rid of this class?
+[SupportedOSPlatform("windows")]
 public partial class LogTabWindow : Form, ILogTabWindow
 {
     #region Fields
@@ -168,7 +169,7 @@ public partial class LogTabWindow : Form, ILogTabWindow
     [SupportedOSPlatform("windows")]
     public void ChangeTheme (Control.ControlCollection container)
     {
-        ColorMode.LoadColorMode(ConfigManager.Settings.Preferences.darkMode);
+        ColorMode.LoadColorMode(ConfigManager.Settings.Preferences.DarkMode);
         Win32.UseImmersiveDarkMode(Handle, ColorMode.DarkModeEnabled);
 
         #region ApplyColorToAllControls

@@ -62,58 +62,58 @@ internal partial class SettingsDialog : Form
     {
         Preferences ??= new Preferences();
 
-        if (Preferences.fontName == null)
+        if (Preferences.FontName == null)
         {
-            Preferences.fontName = "Courier New";
+            Preferences.FontName = "Courier New";
         }
 
-        if (Math.Abs(Preferences.fontSize) < 0.1)
+        if (Math.Abs(Preferences.FontSize) < 0.1)
         {
-            Preferences.fontSize = 9.0f;
+            Preferences.FontSize = 9.0f;
         }
 
         FillPortableMode();
 
-        checkBoxDarkMode.Checked = Preferences.darkMode;
-        checkBoxTimestamp.Checked = Preferences.timestampControl;
-        checkBoxSyncFilter.Checked = Preferences.filterSync;
-        checkBoxFilterTail.Checked = Preferences.filterTail;
-        checkBoxFollowTail.Checked = Preferences.followTail;
+        checkBoxDarkMode.Checked = Preferences.DarkMode;
+        checkBoxTimestamp.Checked = Preferences.TimestampControl;
+        checkBoxSyncFilter.Checked = Preferences.FilterSync;
+        checkBoxFilterTail.Checked = Preferences.FilterTail;
+        checkBoxFollowTail.Checked = Preferences.FollowTail;
 
-        radioButtonHorizMouseDrag.Checked = Preferences.timestampControlDragOrientation == DragOrientationsEnum.Horizontal;
-        radioButtonVerticalMouseDrag.Checked = Preferences.timestampControlDragOrientation == DragOrientationsEnum.Vertical;
-        radioButtonVerticalMouseDragInverted.Checked = Preferences.timestampControlDragOrientation == DragOrientationsEnum.InvertedVertical;
+        radioButtonHorizMouseDrag.Checked = Preferences.TimestampControlDragOrientation == DragOrientationsEnum.Horizontal;
+        radioButtonVerticalMouseDrag.Checked = Preferences.TimestampControlDragOrientation == DragOrientationsEnum.Vertical;
+        radioButtonVerticalMouseDragInverted.Checked = Preferences.TimestampControlDragOrientation == DragOrientationsEnum.InvertedVertical;
 
-        checkBoxSingleInstance.Checked = Preferences.allowOnlyOneInstance;
-        checkBoxOpenLastFiles.Checked = Preferences.openLastFiles;
-        checkBoxTailState.Checked = Preferences.showTailState;
-        checkBoxColumnSize.Checked = Preferences.setLastColumnWidth;
-        cpDownColumnWidth.Enabled = Preferences.setLastColumnWidth;
+        checkBoxSingleInstance.Checked = Preferences.AllowOnlyOneInstance;
+        checkBoxOpenLastFiles.Checked = Preferences.OpenLastFiles;
+        checkBoxTailState.Checked = Preferences.ShowTailState;
+        checkBoxColumnSize.Checked = Preferences.SetLastColumnWidth;
+        cpDownColumnWidth.Enabled = Preferences.SetLastColumnWidth;
 
-        if (Preferences.lastColumnWidth != 0)
+        if (Preferences.LastColumnWidth != 0)
         {
-            if (Preferences.lastColumnWidth < cpDownColumnWidth.Minimum)
+            if (Preferences.LastColumnWidth < cpDownColumnWidth.Minimum)
             {
-                Preferences.lastColumnWidth = (int)cpDownColumnWidth.Minimum;
+                Preferences.LastColumnWidth = (int)cpDownColumnWidth.Minimum;
             }
 
-            if (Preferences.lastColumnWidth > cpDownColumnWidth.Maximum)
+            if (Preferences.LastColumnWidth > cpDownColumnWidth.Maximum)
             {
-                Preferences.lastColumnWidth = (int)cpDownColumnWidth.Maximum;
+                Preferences.LastColumnWidth = (int)cpDownColumnWidth.Maximum;
             }
 
-            cpDownColumnWidth.Value = Preferences.lastColumnWidth;
+            cpDownColumnWidth.Value = Preferences.LastColumnWidth;
         }
 
-        checkBoxTimeSpread.Checked = Preferences.showTimeSpread;
-        checkBoxReverseAlpha.Checked = Preferences.reverseAlpha;
+        checkBoxTimeSpread.Checked = Preferences.ShowTimeSpread;
+        checkBoxReverseAlpha.Checked = Preferences.ReverseAlpha;
 
-        radioButtonTimeView.Checked = Preferences.timeSpreadTimeMode;
-        radioButtonLineView.Checked = !Preferences.timeSpreadTimeMode;
+        radioButtonTimeView.Checked = Preferences.TimeSpreadTimeMode;
+        radioButtonLineView.Checked = !Preferences.TimeSpreadTimeMode;
 
-        checkBoxSaveSessions.Checked = Preferences.saveSessions;
+        checkBoxSaveSessions.Checked = Preferences.SaveSessions;
 
-        switch (Preferences.saveLocation)
+        switch (Preferences.SaveLocation)
         {
             case SessionSaveLocation.OwnDir:
                 {
@@ -145,15 +145,15 @@ internal partial class SettingsDialog : Form
 
         upDownMaximumLineLength.Value = Preferences.MaxLineLength;
 
-        upDownMaximumFilterEntriesDisplayed.Value = Preferences.maximumFilterEntriesDisplayed;
-        upDownMaximumFilterEntries.Value = Preferences.maximumFilterEntries;
+        upDownMaximumFilterEntriesDisplayed.Value = Preferences.MaximumFilterEntriesDisplayed;
+        upDownMaximumFilterEntries.Value = Preferences.MaximumFilterEntries;
 
-        labelSessionSaveOwnDir.Text = Preferences.sessionSaveDirectory ?? string.Empty;
-        checkBoxSaveFilter.Checked = Preferences.saveFilters;
-        upDownBlockCount.Value = Preferences.bufferCount;
-        upDownLinesPerBlock.Value = Preferences.linesPerBuffer;
-        upDownPollingInterval.Value = Preferences.pollingInterval;
-        checkBoxMultiThread.Checked = Preferences.multiThreadFilter;
+        labelSessionSaveOwnDir.Text = Preferences.SessionSaveDirectory ?? string.Empty;
+        checkBoxSaveFilter.Checked = Preferences.SaveFilters;
+        upDownBlockCount.Value = Preferences.BufferCount;
+        upDownLinesPerBlock.Value = Preferences.LinesPerBuffer;
+        upDownPollingInterval.Value = Preferences.PollingInterval;
+        checkBoxMultiThread.Checked = Preferences.MultiThreadFilter;
 
         dataGridViewColumnizer.DataError += OnDataGridViewColumnizerDataError;
 
@@ -165,14 +165,14 @@ internal partial class SettingsDialog : Form
         FillMultifileSettings();
         FillEncodingList();
 
-        var temp = Encoding.GetEncoding(Preferences.defaultEncoding);
+        var temp = Encoding.GetEncoding(Preferences.DefaultEncoding);
 
-        comboBoxEncoding.SelectedItem = Encoding.GetEncoding(Preferences.defaultEncoding);
-        checkBoxMaskPrio.Checked = Preferences.maskPrio;
-        checkBoxAutoPick.Checked = Preferences.autoPick;
-        checkBoxAskCloseTabs.Checked = Preferences.askForClose;
-        checkBoxColumnFinder.Checked = Preferences.showColumnFinder;
-        checkBoxLegacyReader.Checked = Preferences.useLegacyReader;
+        comboBoxEncoding.SelectedItem = Encoding.GetEncoding(Preferences.DefaultEncoding);
+        checkBoxMaskPrio.Checked = Preferences.MaskPrio;
+        checkBoxAutoPick.Checked = Preferences.AutoPick;
+        checkBoxAskCloseTabs.Checked = Preferences.AskForClose;
+        checkBoxColumnFinder.Checked = Preferences.ShowColumnFinder;
+        checkBoxLegacyReader.Checked = Preferences.UseLegacyReader;
         checkBoxShowErrorMessageOnlyOneInstance.Checked = Preferences.ShowErrorMessageAllowOnlyOneInstances;
     }
 
@@ -183,29 +183,29 @@ internal partial class SettingsDialog : Form
 
     private void DisplayFontName ()
     {
-        labelFont.Text = Preferences.fontName + @" " + (int)Preferences.fontSize;
-        labelFont.Font = new Font(new FontFamily(Preferences.fontName), Preferences.fontSize);
+        labelFont.Text = Preferences.FontName + @" " + (int)Preferences.FontSize;
+        labelFont.Font = new Font(new FontFamily(Preferences.FontName), Preferences.FontSize);
     }
 
     private void SaveMultifileData ()
     {
         if (radioButtonLoadEveryFileIntoSeperatedTab.Checked)
         {
-            Preferences.multiFileOption = MultiFileOption.SingleFiles;
+            Preferences.MultiFileOption = MultiFileOption.SingleFiles;
         }
 
         if (radioButtonTreatAllFilesAsOneMultifile.Checked)
         {
-            Preferences.multiFileOption = MultiFileOption.MultiFile;
+            Preferences.MultiFileOption = MultiFileOption.MultiFile;
         }
 
         if (radioButtonAskWhatToDo.Checked)
         {
-            Preferences.multiFileOption = MultiFileOption.Ask;
+            Preferences.MultiFileOption = MultiFileOption.Ask;
         }
 
-        Preferences.multiFileOptions.FormatPattern = textBoxMultifilePattern.Text;
-        Preferences.multiFileOptions.MaxDayTry = (int)upDownMultifileDays.Value;
+        Preferences.MultiFileOptions.FormatPattern = textBoxMultifilePattern.Text;
+        Preferences.MultiFileOptions.MaxDayTry = (int)upDownMultifileDays.Value;
     }
 
     private void OnBtnToolClickInternal (TextBox textBox)
@@ -312,7 +312,7 @@ internal partial class SettingsDialog : Form
         //comboColumn.DisplayMember = "Name";
         //comboColumn.ValueMember = "Columnizer";
 
-        foreach (ColumnizerMaskEntry maskEntry in Preferences.columnizerMaskList)
+        foreach (ColumnizerMaskEntry maskEntry in Preferences.ColumnizerMaskList)
         {
             DataGridViewRow row = new();
             row.Cells.Add(new DataGridViewTextBoxCell());
@@ -356,7 +356,7 @@ internal partial class SettingsDialog : Form
             comboColumn.Items.Add(group.GroupName);
         }
 
-        foreach (HighlightMaskEntry maskEntry in Preferences.highlightMaskList)
+        foreach (HighlightMaskEntry maskEntry in Preferences.HighlightMaskList)
         {
             DataGridViewRow row = new();
             row.Cells.Add(new DataGridViewTextBoxCell());
@@ -390,7 +390,7 @@ internal partial class SettingsDialog : Form
 
     private void SaveColumnizerList ()
     {
-        Preferences.columnizerMaskList.Clear();
+        Preferences.ColumnizerMaskList.Clear();
 
         foreach (DataGridViewRow row in dataGridViewColumnizer.Rows)
         {
@@ -399,14 +399,14 @@ internal partial class SettingsDialog : Form
                 ColumnizerMaskEntry entry = new();
                 entry.Mask = (string)row.Cells[0].Value;
                 entry.ColumnizerName = (string)row.Cells[1].Value;
-                Preferences.columnizerMaskList.Add(entry);
+                Preferences.ColumnizerMaskList.Add(entry);
             }
         }
     }
 
     private void SaveHighlightMaskList ()
     {
-        Preferences.highlightMaskList.Clear();
+        Preferences.HighlightMaskList.Clear();
 
         foreach (DataGridViewRow row in dataGridViewHighlightMask.Rows)
         {
@@ -415,7 +415,7 @@ internal partial class SettingsDialog : Form
                 HighlightMaskEntry entry = new();
                 entry.Mask = (string)row.Cells[0].Value;
                 entry.HighlightGroupName = (string)row.Cells[1].Value;
-                Preferences.highlightMaskList.Add(entry);
+                Preferences.HighlightMaskList.Add(entry);
             }
         }
     }
@@ -479,7 +479,7 @@ internal partial class SettingsDialog : Form
     {
         listBoxTools.Items.Clear();
 
-        foreach (ToolEntry tool in Preferences.toolEntries)
+        foreach (ToolEntry tool in Preferences.ToolEntries)
         {
             listBoxTools.Items.Add(tool.Clone(), tool.IsFavourite);
         }
@@ -492,7 +492,7 @@ internal partial class SettingsDialog : Form
 
     private void FillMultifileSettings ()
     {
-        switch (Preferences.multiFileOption)
+        switch (Preferences.MultiFileOption)
         {
             case MultiFileOption.SingleFiles:
                 {
@@ -511,18 +511,18 @@ internal partial class SettingsDialog : Form
                 }
         }
 
-        textBoxMultifilePattern.Text = Preferences.multiFileOptions.FormatPattern; //TODO: Impport settings file throws an exception. Fix or I caused it?
-        upDownMultifileDays.Value = Preferences.multiFileOptions.MaxDayTry;
+        textBoxMultifilePattern.Text = Preferences.MultiFileOptions.FormatPattern; //TODO: Impport settings file throws an exception. Fix or I caused it?
+        upDownMultifileDays.Value = Preferences.MultiFileOptions.MaxDayTry;
     }
 
     private void GetToolListBoxData ()
     {
         GetCurrentToolValues();
-        Preferences.toolEntries.Clear();
+        Preferences.ToolEntries.Clear();
 
         for (var i = 0; i < listBoxTools.Items.Count; ++i)
         {
-            Preferences.toolEntries.Add(listBoxTools.Items[i] as ToolEntry);
+            Preferences.ToolEntries.Add(listBoxTools.Items[i] as ToolEntry);
             (listBoxTools.Items[i] as ToolEntry).IsFavourite = listBoxTools.GetItemChecked(i);
         }
     }
@@ -603,13 +603,13 @@ internal partial class SettingsDialog : Form
             ShowEffects = false,
             AllowVerticalFonts = false,
             AllowScriptChange = false,
-            Font = new Font(new FontFamily(Preferences.fontName), Preferences.fontSize)
+            Font = new Font(new FontFamily(Preferences.FontName), Preferences.FontSize)
         };
 
         if (dlg.ShowDialog() == DialogResult.OK)
         {
-            Preferences.fontSize = dlg.Font.Size;
-            Preferences.fontName = dlg.Font.FontFamily.Name;
+            Preferences.FontSize = dlg.Font.Size;
+            Preferences.FontName = dlg.Font.FontFamily.Name;
         }
 
         DisplayFontName();
@@ -617,71 +617,71 @@ internal partial class SettingsDialog : Form
 
     private void OnBtnOkClick (object sender, EventArgs e)
     {
-        Preferences.timestampControl = checkBoxTimestamp.Checked;
-        Preferences.filterSync = checkBoxSyncFilter.Checked;
-        Preferences.filterTail = checkBoxFilterTail.Checked;
-        Preferences.followTail = checkBoxFollowTail.Checked;
+        Preferences.TimestampControl = checkBoxTimestamp.Checked;
+        Preferences.FilterSync = checkBoxSyncFilter.Checked;
+        Preferences.FilterTail = checkBoxFilterTail.Checked;
+        Preferences.FollowTail = checkBoxFollowTail.Checked;
 
         if (radioButtonVerticalMouseDrag.Checked)
         {
-            Preferences.timestampControlDragOrientation = DragOrientationsEnum.Vertical;
+            Preferences.TimestampControlDragOrientation = DragOrientationsEnum.Vertical;
         }
         else if (radioButtonVerticalMouseDragInverted.Checked)
         {
-            Preferences.timestampControlDragOrientation = DragOrientationsEnum.InvertedVertical;
+            Preferences.TimestampControlDragOrientation = DragOrientationsEnum.InvertedVertical;
         }
         else
         {
-            Preferences.timestampControlDragOrientation = DragOrientationsEnum.Horizontal;
+            Preferences.TimestampControlDragOrientation = DragOrientationsEnum.Horizontal;
         }
 
         SaveColumnizerList();
 
-        Preferences.maskPrio = checkBoxMaskPrio.Checked;
-        Preferences.autoPick = checkBoxAutoPick.Checked;
-        Preferences.askForClose = checkBoxAskCloseTabs.Checked;
-        Preferences.allowOnlyOneInstance = checkBoxSingleInstance.Checked;
-        Preferences.openLastFiles = checkBoxOpenLastFiles.Checked;
-        Preferences.showTailState = checkBoxTailState.Checked;
-        Preferences.setLastColumnWidth = checkBoxColumnSize.Checked;
-        Preferences.lastColumnWidth = (int)cpDownColumnWidth.Value;
-        Preferences.showTimeSpread = checkBoxTimeSpread.Checked;
-        Preferences.reverseAlpha = checkBoxReverseAlpha.Checked;
-        Preferences.timeSpreadTimeMode = radioButtonTimeView.Checked;
+        Preferences.MaskPrio = checkBoxMaskPrio.Checked;
+        Preferences.AutoPick = checkBoxAutoPick.Checked;
+        Preferences.AskForClose = checkBoxAskCloseTabs.Checked;
+        Preferences.AllowOnlyOneInstance = checkBoxSingleInstance.Checked;
+        Preferences.OpenLastFiles = checkBoxOpenLastFiles.Checked;
+        Preferences.ShowTailState = checkBoxTailState.Checked;
+        Preferences.SetLastColumnWidth = checkBoxColumnSize.Checked;
+        Preferences.LastColumnWidth = (int)cpDownColumnWidth.Value;
+        Preferences.ShowTimeSpread = checkBoxTimeSpread.Checked;
+        Preferences.ReverseAlpha = checkBoxReverseAlpha.Checked;
+        Preferences.TimeSpreadTimeMode = radioButtonTimeView.Checked;
 
-        Preferences.saveSessions = checkBoxSaveSessions.Checked;
-        Preferences.sessionSaveDirectory = labelSessionSaveOwnDir.Text;
+        Preferences.SaveSessions = checkBoxSaveSessions.Checked;
+        Preferences.SessionSaveDirectory = labelSessionSaveOwnDir.Text;
 
         if (radioButtonsessionSaveDocuments.Checked)
         {
-            Preferences.saveLocation = SessionSaveLocation.DocumentsDir;
+            Preferences.SaveLocation = SessionSaveLocation.DocumentsDir;
         }
         else if (radioButtonSessionSaveOwn.Checked)
         {
-            Preferences.saveLocation = SessionSaveLocation.OwnDir;
+            Preferences.SaveLocation = SessionSaveLocation.OwnDir;
         }
         else if (radioButtonSessionApplicationStartupDir.Checked)
         {
-            Preferences.saveLocation = SessionSaveLocation.ApplicationStartupDir;
+            Preferences.SaveLocation = SessionSaveLocation.ApplicationStartupDir;
         }
         else
         {
-            Preferences.saveLocation = SessionSaveLocation.SameDir;
+            Preferences.SaveLocation = SessionSaveLocation.SameDir;
         }
 
-        Preferences.saveFilters = checkBoxSaveFilter.Checked;
-        Preferences.bufferCount = (int)upDownBlockCount.Value;
-        Preferences.linesPerBuffer = (int)upDownLinesPerBlock.Value;
-        Preferences.pollingInterval = (int)upDownPollingInterval.Value;
-        Preferences.multiThreadFilter = checkBoxMultiThread.Checked;
-        Preferences.defaultEncoding = comboBoxEncoding.SelectedItem != null ? (comboBoxEncoding.SelectedItem as Encoding).HeaderName : Encoding.Default.HeaderName;
-        Preferences.showColumnFinder = checkBoxColumnFinder.Checked;
-        Preferences.useLegacyReader = checkBoxLegacyReader.Checked;
+        Preferences.SaveFilters = checkBoxSaveFilter.Checked;
+        Preferences.BufferCount = (int)upDownBlockCount.Value;
+        Preferences.LinesPerBuffer = (int)upDownLinesPerBlock.Value;
+        Preferences.PollingInterval = (int)upDownPollingInterval.Value;
+        Preferences.MultiThreadFilter = checkBoxMultiThread.Checked;
+        Preferences.DefaultEncoding = comboBoxEncoding.SelectedItem != null ? (comboBoxEncoding.SelectedItem as Encoding).HeaderName : Encoding.Default.HeaderName;
+        Preferences.ShowColumnFinder = checkBoxColumnFinder.Checked;
+        Preferences.UseLegacyReader = checkBoxLegacyReader.Checked;
 
-        Preferences.maximumFilterEntries = (int)upDownMaximumFilterEntries.Value;
-        Preferences.maximumFilterEntriesDisplayed = (int)upDownMaximumFilterEntriesDisplayed.Value;
+        Preferences.MaximumFilterEntries = (int)upDownMaximumFilterEntries.Value;
+        Preferences.MaximumFilterEntriesDisplayed = (int)upDownMaximumFilterEntriesDisplayed.Value;
         Preferences.ShowErrorMessageAllowOnlyOneInstances = checkBoxShowErrorMessageOnlyOneInstance.Checked;
-        Preferences.darkMode = checkBoxDarkMode.Checked;
+        Preferences.DarkMode = checkBoxDarkMode.Checked;
 
         SavePluginSettings();
         SaveHighlightMaskList();
@@ -734,12 +734,12 @@ internal partial class SettingsDialog : Form
     {
         ColorDialog dlg = new()
         {
-            Color = Preferences.showTailColor
+            Color = Preferences.ShowTailColor
         };
 
         if (dlg.ShowDialog() == DialogResult.OK)
         {
-            Preferences.showTailColor = dlg.Color;
+            Preferences.ShowTailColor = dlg.Color;
         }
     }
 
@@ -752,12 +752,12 @@ internal partial class SettingsDialog : Form
     {
         ColorDialog dlg = new()
         {
-            Color = Preferences.timeSpreadColor
+            Color = Preferences.TimeSpreadColor
         };
 
         if (dlg.ShowDialog() == DialogResult.OK)
         {
-            Preferences.timeSpreadColor = dlg.Color;
+            Preferences.TimeSpreadColor = dlg.Color;
         }
     }
 
@@ -797,9 +797,9 @@ internal partial class SettingsDialog : Form
     {
         FolderBrowserDialog dlg = new();
 
-        if (Preferences.sessionSaveDirectory != null)
+        if (Preferences.SessionSaveDirectory != null)
         {
-            dlg.SelectedPath = Preferences.sessionSaveDirectory;
+            dlg.SelectedPath = Preferences.SessionSaveDirectory;
         }
 
         dlg.ShowNewFolderButton = true;

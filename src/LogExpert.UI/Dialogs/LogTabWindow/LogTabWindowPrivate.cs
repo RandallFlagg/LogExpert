@@ -52,11 +52,13 @@ public partial class LogTabWindow
         }
     }
 
+    [SupportedOSPlatform("windows")]
     private void InitToolWindows ()
     {
         InitBookmarkWindow();
     }
 
+    [SupportedOSPlatform("windows")]
     private void DestroyToolWindows ()
     {
         DestroyBookmarkWindow();
@@ -85,14 +87,14 @@ public partial class LogTabWindow
 
     private void SaveLastOpenFilesList ()
     {
-        ConfigManager.Settings.lastOpenFilesList.Clear();
+        ConfigManager.Settings.LastOpenFilesList.Clear();
         foreach (DockContent content in dockPanel.Contents)
         {
             if (content is LogWindow.LogWindow logWin)
             {
                 if (!logWin.IsTempFile)
                 {
-                    ConfigManager.Settings.lastOpenFilesList.Add(logWin.GivenFileName);
+                    ConfigManager.Settings.LastOpenFilesList.Add(logWin.GivenFileName);
                 }
             }
         }
@@ -104,15 +106,15 @@ public partial class LogTabWindow
         SuspendLayout();
         if (WindowState == FormWindowState.Normal)
         {
-            ConfigManager.Settings.appBounds = Bounds;
-            ConfigManager.Settings.isMaximized = false;
+            ConfigManager.Settings.AppBounds = Bounds;
+            ConfigManager.Settings.IsMaximized = false;
         }
         else
         {
-            ConfigManager.Settings.appBoundsFullscreen = Bounds;
-            ConfigManager.Settings.isMaximized = true;
+            ConfigManager.Settings.AppBoundsFullscreen = Bounds;
+            ConfigManager.Settings.IsMaximized = true;
             WindowState = FormWindowState.Normal;
-            ConfigManager.Settings.appBounds = Bounds;
+            ConfigManager.Settings.AppBounds = Bounds;
         }
 
         ResumeLayout();
@@ -125,15 +127,15 @@ public partial class LogTabWindow
 
     private void FillDefaultEncodingFromSettings (EncodingOptions encodingOptions)
     {
-        if (ConfigManager.Settings.Preferences.defaultEncoding != null)
+        if (ConfigManager.Settings.Preferences.DefaultEncoding != null)
         {
             try
             {
-                encodingOptions.DefaultEncoding = Encoding.GetEncoding(ConfigManager.Settings.Preferences.defaultEncoding);
+                encodingOptions.DefaultEncoding = Encoding.GetEncoding(ConfigManager.Settings.Preferences.DefaultEncoding);
             }
             catch (ArgumentException)
             {
-                _logger.Warn("Encoding " + ConfigManager.Settings.Preferences.defaultEncoding + " is not a valid encoding");
+                _logger.Warn("Encoding " + ConfigManager.Settings.Preferences.DefaultEncoding + " is not a valid encoding");
                 encodingOptions.DefaultEncoding = null;
             }
         }
@@ -216,22 +218,23 @@ public partial class LogTabWindow
         //data.tabPage = null;
     }
 
+    [SupportedOSPlatform("windows")]
     private void AddToFileHistory (string fileName)
     {
         bool FindName (string s) => s.ToUpperInvariant().Equals(fileName.ToUpperInvariant(), StringComparison.Ordinal);
 
-        var index = ConfigManager.Settings.fileHistoryList.FindIndex(FindName);
+        var index = ConfigManager.Settings.FileHistoryList.FindIndex(FindName);
 
         if (index != -1)
         {
-            ConfigManager.Settings.fileHistoryList.RemoveAt(index);
+            ConfigManager.Settings.FileHistoryList.RemoveAt(index);
         }
 
-        ConfigManager.Settings.fileHistoryList.Insert(0, fileName);
+        ConfigManager.Settings.FileHistoryList.Insert(0, fileName);
 
-        while (ConfigManager.Settings.fileHistoryList.Count > MAX_FILE_HISTORY)
+        while (ConfigManager.Settings.FileHistoryList.Count > MAX_FILE_HISTORY)
         {
-            ConfigManager.Settings.fileHistoryList.RemoveAt(ConfigManager.Settings.fileHistoryList.Count - 1);
+            ConfigManager.Settings.FileHistoryList.RemoveAt(ConfigManager.Settings.FileHistoryList.Count - 1);
         }
 
         ConfigManager.Save(SettingsFlags.FileHistory);
@@ -301,7 +304,7 @@ public partial class LogTabWindow
     {
         ToolStripDropDown strip = new ToolStripDropDownMenu();
 
-        foreach (var file in ConfigManager.Settings.fileHistoryList)
+        foreach (var file in ConfigManager.Settings.FileHistoryList)
         {
             ToolStripItem item = new ToolStripMenuItem(file);
             strip.Items.Add(item);
@@ -390,9 +393,9 @@ public partial class LogTabWindow
         }
         else
         {
-            if (!string.IsNullOrEmpty(ConfigManager.Settings.lastDirectory))
+            if (!string.IsNullOrEmpty(ConfigManager.Settings.LastDirectory))
             {
-                openFileDialog.InitialDirectory = ConfigManager.Settings.lastDirectory;
+                openFileDialog.InitialDirectory = ConfigManager.Settings.LastDirectory;
             }
             else
             {
@@ -415,7 +418,7 @@ public partial class LogTabWindow
             FileInfo info = new(openFileDialog.FileName);
             if (info.Directory.Exists)
             {
-                ConfigManager.Settings.lastDirectory = info.DirectoryName;
+                ConfigManager.Settings.LastDirectory = info.DirectoryName;
                 ConfigManager.Save(SettingsFlags.FileHistory);
             }
 
@@ -443,7 +446,7 @@ public partial class LogTabWindow
             return;
         }
 
-        MultiFileOption option = ConfigManager.Settings.Preferences.multiFileOption;
+        MultiFileOption option = ConfigManager.Settings.Preferences.MultiFileOption;
         if (option == MultiFileOption.Ask)
         {
             MultiLoadRequestDialog dlg = new();
@@ -487,21 +490,21 @@ public partial class LogTabWindow
         ColumnizerHistoryEntry entry = FindColumnizerHistoryEntry(fileName);
         if (entry != null)
         {
-            _ = ConfigManager.Settings.columnizerHistoryList.Remove(entry);
+            _ = ConfigManager.Settings.ColumnizerHistoryList.Remove(entry);
 
         }
 
-        ConfigManager.Settings.columnizerHistoryList.Add(new ColumnizerHistoryEntry(fileName, columnizer.GetName()));
+        ConfigManager.Settings.ColumnizerHistoryList.Add(new ColumnizerHistoryEntry(fileName, columnizer.GetName()));
 
-        if (ConfigManager.Settings.columnizerHistoryList.Count > MAX_COLUMNIZER_HISTORY)
+        if (ConfigManager.Settings.ColumnizerHistoryList.Count > MAX_COLUMNIZER_HISTORY)
         {
-            ConfigManager.Settings.columnizerHistoryList.RemoveAt(0);
+            ConfigManager.Settings.ColumnizerHistoryList.RemoveAt(0);
         }
     }
 
     private ColumnizerHistoryEntry FindColumnizerHistoryEntry (string fileName)
     {
-        foreach (ColumnizerHistoryEntry entry in ConfigManager.Settings.columnizerHistoryList)
+        foreach (ColumnizerHistoryEntry entry in ConfigManager.Settings.ColumnizerHistoryList)
         {
             if (entry.FileName.Equals(fileName, StringComparison.Ordinal))
             {
@@ -633,7 +636,7 @@ public partial class LogTabWindow
         cellSelectModeToolStripMenuItem.Checked = e.CellSelectMode;
         RefreshEncodingMenuBar(e.CurrentEncoding);
 
-        if (e.TimeshiftPossible && ConfigManager.Settings.Preferences.timestampControl)
+        if (e.TimeshiftPossible && ConfigManager.Settings.Preferences.TimestampControl)
         {
             dragControlDateTime.MinDateTime = e.MinTimestamp;
             dragControlDateTime.MaxDateTime = e.MaxTimestamp;
@@ -778,6 +781,7 @@ public partial class LogTabWindow
         return icon;
     }
 
+    [SupportedOSPlatform("windows")]
     private void CreateIcons ()
     {
         for (var syncMode = 0; syncMode <= 1; syncMode++) // LED indicating time synced tabs
@@ -896,7 +900,7 @@ public partial class LogTabWindow
     {
         Icon icon =
             _ledIcons[
-                GetLevelFromDiff(diff), data.Dirty ? 1 : 0, Preferences.showTailState ? data.TailState : 3,
+                GetLevelFromDiff(diff), data.Dirty ? 1 : 0, Preferences.ShowTailState ? data.TailState : 3,
                 data.SyncMode
             ];
         return icon;
@@ -940,6 +944,7 @@ public partial class LogTabWindow
         toolStripEncodingANSIItem.Text = Encoding.Default.HeaderName;
     }
 
+    [SupportedOSPlatform("windows")]
     private void OpenSettings (int tabToOpen)
     {
         SettingsDialog dlg = new(ConfigManager.Settings.Preferences, this, tabToOpen, ConfigManager)
@@ -955,6 +960,7 @@ public partial class LogTabWindow
         }
     }
 
+    [SupportedOSPlatform("windows")]
     private void NotifyWindowsForChangedPrefs (SettingsFlags flags)
     {
         _logger.Info("The preferences have changed");
@@ -982,9 +988,9 @@ public partial class LogTabWindow
     {
         if ((flags & SettingsFlags.WindowPosition) == SettingsFlags.WindowPosition)
         {
-            TopMost = alwaysOnTopToolStripMenuItem.Checked = settings.alwaysOnTop;
-            dragControlDateTime.DragOrientation = settings.Preferences.timestampControlDragOrientation;
-            hideLineColumnToolStripMenuItem.Checked = settings.hideLineColumn;
+            TopMost = alwaysOnTopToolStripMenuItem.Checked = settings.AlwaysOnTop;
+            dragControlDateTime.DragOrientation = settings.Preferences.TimestampControlDragOrientation;
+            hideLineColumnToolStripMenuItem.Checked = settings.HideLineColumn;
         }
 
         if ((flags & SettingsFlags.FileHistory) == SettingsFlags.FileHistory)
@@ -1011,7 +1017,7 @@ public partial class LogTabWindow
     [SupportedOSPlatform("windows")]
     private void SetTabIcons (Preferences preferences)
     {
-        _tailLedBrush[0] = new SolidBrush(preferences.showTailColor);
+        _tailLedBrush[0] = new SolidBrush(preferences.ShowTailColor);
         CreateIcons();
         lock (_logWindowList)
         {
@@ -1050,6 +1056,7 @@ public partial class LogTabWindow
         }
     }
 
+    [SupportedOSPlatform("windows")]
     private void ToolButtonClick (ToolEntry toolEntry)
     {
         if (string.IsNullOrEmpty(toolEntry.Cmd))
@@ -1069,8 +1076,7 @@ public partial class LogTabWindow
                 var argLine = parser.BuildArgs(line, CurrentLogWindow.GetRealLineNum() + 1, info, this);
                 if (argLine != null)
                 {
-                    StartTool(toolEntry.Cmd, argLine, toolEntry.Sysout, toolEntry.ColumnizerName,
-                        toolEntry.WorkingDir);
+                    StartTool(toolEntry.Cmd, argLine, toolEntry.Sysout, toolEntry.ColumnizerName, toolEntry.WorkingDir);
                 }
             }
         }
@@ -1243,7 +1249,7 @@ public partial class LogTabWindow
         externalToolsToolStrip.Items.Clear();
         var num = 0;
         externalToolsToolStrip.SuspendLayout();
-        foreach (ToolEntry tool in Preferences.toolEntries)
+        foreach (ToolEntry tool in Preferences.ToolEntries)
         {
             if (tool.IsFavourite)
             {
@@ -1314,6 +1320,7 @@ public partial class LogTabWindow
         return resultXml;
     }
 
+    [SupportedOSPlatform("windows")]
     private void RestoreLayout (string layoutXml)
     {
         using MemoryStream memStream = new(2000);
@@ -1326,6 +1333,7 @@ public partial class LogTabWindow
         dockPanel.LoadFromXml(memStream, DeserializeDockContent, true);
     }
 
+    [SupportedOSPlatform("windows")]
     private IDockContent DeserializeDockContent (string persistString)
     {
         if (persistString.Equals(WindowTypes.BookmarkWindow.ToString(), StringComparison.Ordinal))

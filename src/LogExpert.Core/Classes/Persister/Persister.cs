@@ -26,7 +26,7 @@ public class Persister
     {
         var fileName = persistenceData.SessionFileName ?? BuildPersisterFileName(logFileName, preferences);
 
-        if (preferences.saveLocation == SessionSaveLocation.SameDir)
+        if (preferences.SaveLocation == SessionSaveLocation.SameDir)
         {
             // make to log file in .lxp file relative
             var filePart = Path.GetFileName(persistenceData.FileName);
@@ -106,7 +106,7 @@ public class Persister
         string dir;
         string file;
 
-        switch (preferences.saveLocation)
+        switch (preferences.SaveLocation)
         {
             case SessionSaveLocation.SameDir:
             default:
@@ -126,7 +126,7 @@ public class Persister
                 }
             case SessionSaveLocation.OwnDir:
                 {
-                    dir = preferences.sessionSaveDirectory;
+                    dir = preferences.SessionSaveDirectory;
                     file = dir + Path.DirectorySeparatorChar + BuildSessionFileNameFromPath(logFileName);
                     break;
                 }

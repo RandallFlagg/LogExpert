@@ -33,6 +33,7 @@ public class WindowFileEntry (LogWindow logWindow)
         }
     }
 
+    [SupportedOSPlatform("windows")]
     public string FileName => LogWindow.FileName;
 
     public LogWindow LogWindow { get; } = logWindow;

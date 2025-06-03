@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 
 using LogExpert.Core.Classes;
 using LogExpert.Core.Classes.Bookmark;
@@ -78,9 +78,9 @@ partial class LogWindow
 
             try
             {
-                _logFileReader = new(fileName, EncodingOptions, IsMultiFile, Preferences.bufferCount, Preferences.linesPerBuffer, _multiFileOptions, PluginRegistry.PluginRegistry.Instance)
+                _logFileReader = new(fileName, EncodingOptions, IsMultiFile, Preferences.BufferCount, Preferences.LinesPerBuffer, _multiFileOptions, PluginRegistry.PluginRegistry.Instance)
                 {
-                    UseNewReader = !Preferences.useLegacyReader
+                    UseNewReader = !Preferences.UseLegacyReader
                 };
             }
             catch (LogFileException lfe)
@@ -118,7 +118,7 @@ partial class LogWindow
 
             if (isUsingDefaultColumnizer)
             {
-                if (Preferences.autoPick)
+                if (Preferences.AutoPick)
                 {
                     ILogLineColumnizer newColumnizer = ColumnizerPicker.FindBetterColumnizer(FileName, _logFileReader, CurrentColumnizer, PluginRegistry.PluginRegistry.Instance.RegisteredColumnizers);
 
@@ -153,9 +153,9 @@ partial class LogWindow
         EncodingOptions = encodingOptions;
         _columnCache = new ColumnCache();
 
-        _logFileReader = new(fileNames, EncodingOptions, Preferences.bufferCount, Preferences.linesPerBuffer, _multiFileOptions, PluginRegistry.PluginRegistry.Instance)
+        _logFileReader = new(fileNames, EncodingOptions, Preferences.BufferCount, Preferences.LinesPerBuffer, _multiFileOptions, PluginRegistry.PluginRegistry.Instance)
         {
-            UseNewReader = !Preferences.useLegacyReader
+            UseNewReader = !Preferences.UseLegacyReader
         };
 
         RegisterLogFileReaderEvents();
@@ -173,7 +173,7 @@ partial class LogWindow
     {
         if (!force)
         {
-            if (!Preferences.saveSessions)
+            if (!Preferences.SaveSessions)
             {
                 return null;
             }
@@ -231,7 +231,7 @@ partial class LogWindow
 
         _filterParams.IsFilterTail = filterTailCheckBox.Checked; // this option doesnt need a press on 'search'
 
-        if (Preferences.saveFilters)
+        if (Preferences.SaveFilters)
         {
             List<FilterParams> filterList = [_filterParams];
             persistenceData.FilterParamsList = filterList;
@@ -266,7 +266,7 @@ partial class LogWindow
 
     public void Close (bool dontAsk)
     {
-        Preferences.askForClose = !dontAsk;
+        Preferences.AskForClose = !dontAsk;
         Close();
     }
 
@@ -486,7 +486,7 @@ partial class LogWindow
                             Alignment = StringAlignment.Center
                         };
                         Brush brush2 = new SolidBrush(Color.FromArgb(255, 190, 100, 0));
-                        Font font = new("Courier New", Preferences.fontSize, FontStyle.Bold);
+                        Font font = new("Courier New", Preferences.FontSize, FontStyle.Bold);
                         e.Graphics.DrawString("i", font, brush2, new RectangleF(r.Left, r.Top, r.Width, r.Height),
                             format);
                         font.Dispose();
@@ -1137,7 +1137,7 @@ partial class LogWindow
         {
             OnTailFollowed(EventArgs.Empty);
         }
-        if (Preferences.timestampControl)
+        if (Preferences.TimestampControl)
         {
             SetTimestampLimits();
             SyncTimestampDisplay();
@@ -1264,9 +1264,9 @@ partial class LogWindow
     {
         if ((flags & SettingsFlags.GuiOrColors) == SettingsFlags.GuiOrColors)
         {
-            NormalFont = new Font(new FontFamily(newPreferences.fontName), newPreferences.fontSize);
+            NormalFont = new Font(new FontFamily(newPreferences.FontName), newPreferences.FontSize);
             BoldFont = new Font(NormalFont, FontStyle.Bold);
-            MonospacedFont = new Font("Courier New", Preferences.fontSize, FontStyle.Bold);
+            MonospacedFont = new Font("Courier New", Preferences.FontSize, FontStyle.Bold);
 
             var lineSpacing = NormalFont.FontFamily.GetLineSpacing(FontStyle.Regular);
             var lineSpacingPixel = NormalFont.Size * lineSpacing / NormalFont.FontFamily.GetEmHeight(FontStyle.Regular);
@@ -1276,32 +1276,32 @@ partial class LogWindow
             _lineHeight = NormalFont.Height + 4;
             dataGridView.RowTemplate.Height = NormalFont.Height + 4;
 
-            ShowBookmarkBubbles = Preferences.showBubbles;
+            ShowBookmarkBubbles = Preferences.ShowBubbles;
 
             ApplyDataGridViewPrefs(dataGridView, newPreferences);
             ApplyDataGridViewPrefs(filterGridView, newPreferences);
 
-            if (Preferences.timestampControl)
+            if (Preferences.TimestampControl)
             {
                 SetTimestampLimits();
                 SyncTimestampDisplay();
             }
             if (isLoadTime)
             {
-                filterTailCheckBox.Checked = Preferences.filterTail;
-                syncFilterCheckBox.Checked = Preferences.filterSync;
+                filterTailCheckBox.Checked = Preferences.FilterTail;
+                syncFilterCheckBox.Checked = Preferences.FilterSync;
                 //this.FollowTailChanged(this.Preferences.followTail, false);
             }
 
-            _timeSpreadCalc.TimeMode = Preferences.timeSpreadTimeMode;
-            timeSpreadingControl.ForeColor = Preferences.timeSpreadColor;
-            timeSpreadingControl.ReverseAlpha = Preferences.reverseAlpha;
+            _timeSpreadCalc.TimeMode = Preferences.TimeSpreadTimeMode;
+            timeSpreadingControl.ForeColor = Preferences.TimeSpreadColor;
+            timeSpreadingControl.ReverseAlpha = Preferences.ReverseAlpha;
             if (CurrentColumnizer.IsTimeshiftImplemented())
             {
                 timeSpreadingControl.Invoke(new MethodInvoker(timeSpreadingControl.Refresh));
-                ShowTimeSpread(Preferences.showTimeSpread);
+                ShowTimeSpread(Preferences.ShowTimeSpread);
             }
-            ToggleColumnFinder(Preferences.showColumnFinder, false);
+            ToggleColumnFinder(Preferences.ShowColumnFinder, false);
         }
 
         if ((flags & SettingsFlags.FilterList) == SettingsFlags.FilterList)
@@ -1738,7 +1738,7 @@ partial class LogWindow
     {
         var index = filterListBox.SelectedIndex;
         filterListBox.Items.Clear();
-        foreach (FilterParams filterParam in ConfigManager.Settings.filterList)
+        foreach (FilterParams filterParam in ConfigManager.Settings.FilterList)
         {
             filterListBox.Items.Add(filterParam);
         }
@@ -1747,8 +1747,8 @@ partial class LogWindow
         {
             filterListBox.SelectedIndex = index;
         }
-        filterOnLoadCheckBox.Checked = Preferences.isFilterOnLoad;
-        hideFilterListOnLoadCheckBox.Checked = Preferences.isAutoHideFilterList;
+        filterOnLoadCheckBox.Checked = Preferences.IsFilterOnLoad;
+        hideFilterListOnLoadCheckBox.Checked = Preferences.IsAutoHideFilterList;
     }
 
     public void SetCurrentHighlightGroup (string groupName)

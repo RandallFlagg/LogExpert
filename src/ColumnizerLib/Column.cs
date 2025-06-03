@@ -7,8 +7,8 @@ public class Column : IColumn
 {
     #region Fields
 
-    private static readonly int _maxLength = 4678 - 3;
-    private static readonly string _replacement = "...";
+    private const int MAXLENGTH = 4678 - 3;
+    private const string REPLACEMENT = "...";
 
     private static readonly IEnumerable<Func<string, string>> _replacements;
 
@@ -26,8 +26,8 @@ public class Column : IColumn
                 input => input.Replace("\t", "  ", StringComparison.Ordinal),
 
                 //shorten string if it exceeds maxLength
-                input => input.Length > _maxLength
-                        ? string.Concat(input.AsSpan(0, _maxLength), _replacement)
+                input => input.Length > MAXLENGTH
+                        ? string.Concat(input.AsSpan(0, MAXLENGTH), REPLACEMENT)
                         : input
             ]);
 

@@ -99,7 +99,7 @@ public partial class LogTabWindow
         //data.tabPage.BorderColor = this.defaultTabBorderColor;
         if (!isTempFile)
         {
-            foreach (ColorEntry colorEntry in ConfigManager.Settings.fileColors)
+            foreach (ColorEntry colorEntry in ConfigManager.Settings.FileColors)
             {
                 if (colorEntry.FileName.ToUpperInvariant().Equals(logFileName.ToUpperInvariant(), StringComparison.Ordinal))
                 {
@@ -161,7 +161,7 @@ public partial class LogTabWindow
         SearchDialog dlg = new();
         AddOwnedForm(dlg);
         dlg.TopMost = TopMost;
-        SearchParams.HistoryList = ConfigManager.Settings.searchHistoryList;
+        SearchParams.HistoryList = ConfigManager.Settings.SearchHistoryList;
         dlg.SearchParams = SearchParams;
         DialogResult res = dlg.ShowDialog();
         if (res == DialogResult.OK && dlg.SearchParams != null && !string.IsNullOrWhiteSpace(dlg.SearchParams.SearchText))
@@ -185,7 +185,7 @@ public partial class LogTabWindow
                 }
             }
 
-            ConfigManager.Settings.columnizerHistoryList.Remove(entry); // no valid name -> remove entry
+            ConfigManager.Settings.ColumnizerHistoryList.Remove(entry); // no valid name -> remove entry
         }
 
         return null;
@@ -241,7 +241,7 @@ public partial class LogTabWindow
 
     public ILogLineColumnizer FindColumnizerByFileMask (string fileName)
     {
-        foreach (ColumnizerMaskEntry entry in ConfigManager.Settings.Preferences.columnizerMaskList)
+        foreach (ColumnizerMaskEntry entry in ConfigManager.Settings.Preferences.ColumnizerMaskList)
         {
             if (entry.Mask != null)
             {
@@ -266,7 +266,7 @@ public partial class LogTabWindow
 
     public HighlightGroup FindHighlightGroupByFileMask (string fileName)
     {
-        foreach (HighlightMaskEntry entry in ConfigManager.Settings.Preferences.highlightMaskList)
+        foreach (HighlightMaskEntry entry in ConfigManager.Settings.Preferences.HighlightMaskList)
         {
             if (entry.Mask != null)
             {
@@ -294,6 +294,7 @@ public partial class LogTabWindow
         logWindow.Activate();
     }
 
+    [SupportedOSPlatform("windows")]
     public void SetForeground ()
     {
         Win32.SetForegroundWindow(Handle);
@@ -311,10 +312,10 @@ public partial class LogTabWindow
     }
 
     // called from LogWindow when follow tail was changed
+    [SupportedOSPlatform("windows")]
     public void FollowTailChanged (LogWindow.LogWindow logWindow, bool isEnabled, bool offByTrigger)
     {
-        var data = logWindow.Tag as LogWindowData;
-        if (data == null)
+        if (logWindow.Tag is not LogWindowData data)
         {
             return;
         }
@@ -328,13 +329,14 @@ public partial class LogTabWindow
             data.TailState = offByTrigger ? 2 : 1;
         }
 
-        if (Preferences.showTailState)
+        if (Preferences.ShowTailState)
         {
             Icon icon = GetIcon(data.DiffSum, data);
             BeginInvoke(new SetTabIconDelegate(SetTabIcon), logWindow, icon);
         }
     }
 
+    [SupportedOSPlatform("windows")]
     public void NotifySettingsChanged (object sender, SettingsFlags flags)
     {
         if (sender != this)
@@ -345,7 +347,7 @@ public partial class LogTabWindow
 
     public IList<WindowFileEntry> GetListOfOpenFiles ()
     {
-        IList<WindowFileEntry> list = new List<WindowFileEntry>();
+        IList<WindowFileEntry> list = [];
         lock (_logWindowList)
         {
             foreach (LogWindow.LogWindow logWindow in _logWindowList)

@@ -1,10 +1,13 @@
-﻿using LogExpert.Core.Classes.Highlight;
+using System.Runtime.Versioning;
+
+using LogExpert.Core.Classes.Highlight;
 using LogExpert.Core.Config;
 using LogExpert.Core.Entities;
 using LogExpert.Core.Interface;
 using LogExpert.Dialogs;
 using LogExpert.UI.Controls;
 using LogExpert.UI.Interface;
+
 using NLog;
 
 namespace LogExpert.UI.Entities;
@@ -24,13 +27,15 @@ internal static class PaintHelper
 
     #region Properties
     public static IConfigManager ConfigManager { get; set; }
+
     private static Preferences Preferences => ConfigManager.Settings.Preferences;
 
     #endregion
 
     #region Public methods
 
-    public static void CellPainting(ILogPaintContextUI logPaintCtx, BufferedDataGridView gridView, int rowIndex,
+    [SupportedOSPlatform("windows")]
+    public static void CellPainting (ILogPaintContextUI logPaintCtx, BufferedDataGridView gridView, int rowIndex,
         DataGridViewCellPaintingEventArgs e)
     {
         if (rowIndex < 0 || e.ColumnIndex < 0)
@@ -102,9 +107,11 @@ internal static class PaintHelper
                     brush.Dispose();
                     if (bookmark.Text.Length > 0)
                     {
-                        StringFormat format = new();
-                        format.LineAlignment = StringAlignment.Center;
-                        format.Alignment = StringAlignment.Center;
+                        StringFormat format = new()
+                        {
+                            LineAlignment = StringAlignment.Center,
+                            Alignment = StringAlignment.Center
+                        };
                         Brush brush2 = new SolidBrush(Color.FromArgb(255, 190, 100, 0));
                         Font font = logPaintCtx.MonospacedFont;
                         e.Graphics.DrawString("i", font, brush2, new RectangleF(r.Left, r.Top, r.Width, r.Height),
@@ -119,45 +126,55 @@ internal static class PaintHelper
         }
     }
 
-    public static DataGridViewTextBoxColumn CreateMarkerColumn()
+    [SupportedOSPlatform("windows")]
+    public static DataGridViewTextBoxColumn CreateMarkerColumn ()
     {
-        DataGridViewTextBoxColumn markerColumn = new();
-        markerColumn.HeaderText = "";
-        markerColumn.AutoSizeMode = DataGridViewAutoSizeColumnMode.NotSet;
-        markerColumn.Resizable = DataGridViewTriState.False;
-        markerColumn.DividerWidth = 1;
-        markerColumn.ReadOnly = true;
-        markerColumn.SortMode = DataGridViewColumnSortMode.NotSortable;
+        DataGridViewTextBoxColumn markerColumn = new()
+        {
+            HeaderText = "",
+            AutoSizeMode = DataGridViewAutoSizeColumnMode.NotSet,
+            Resizable = DataGridViewTriState.False,
+            DividerWidth = 1,
+            ReadOnly = true,
+            SortMode = DataGridViewColumnSortMode.NotSortable
+        };
 
         return markerColumn;
     }
 
-    public static DataGridViewTextBoxColumn CreateLineNumberColumn()
+    [SupportedOSPlatform("windows")]
+    public static DataGridViewTextBoxColumn CreateLineNumberColumn ()
     {
-        DataGridViewTextBoxColumn lineNumberColumn = new();
-        lineNumberColumn.HeaderText = "Line";
-        lineNumberColumn.AutoSizeMode = DataGridViewAutoSizeColumnMode.NotSet;
-        lineNumberColumn.Resizable = DataGridViewTriState.NotSet;
-        lineNumberColumn.DividerWidth = 1;
-        lineNumberColumn.ReadOnly = true;
-        lineNumberColumn.SortMode = DataGridViewColumnSortMode.NotSortable;
+        DataGridViewTextBoxColumn lineNumberColumn = new()
+        {
+            HeaderText = "Line",
+            AutoSizeMode = DataGridViewAutoSizeColumnMode.NotSet,
+            Resizable = DataGridViewTriState.NotSet,
+            DividerWidth = 1,
+            ReadOnly = true,
+            SortMode = DataGridViewColumnSortMode.NotSortable
+        };
 
         return lineNumberColumn;
     }
 
-    public static DataGridViewColumn CreateTitleColumn(string colName)
+    [SupportedOSPlatform("windows")]
+    public static DataGridViewColumn CreateTitleColumn (string colName)
     {
-        DataGridViewColumn titleColumn = new LogTextColumn();
-        titleColumn.HeaderText = colName;
-        titleColumn.AutoSizeMode = DataGridViewAutoSizeColumnMode.NotSet;
-        titleColumn.Resizable = DataGridViewTriState.NotSet;
-        titleColumn.DividerWidth = 1;
-        titleColumn.SortMode = DataGridViewColumnSortMode.NotSortable;
+        DataGridViewColumn titleColumn = new LogTextColumn
+        {
+            HeaderText = colName,
+            AutoSizeMode = DataGridViewAutoSizeColumnMode.NotSet,
+            Resizable = DataGridViewTriState.NotSet,
+            DividerWidth = 1,
+            SortMode = DataGridViewColumnSortMode.NotSortable
+        };
 
         return titleColumn;
     }
 
-    public static void SetColumnizer(ILogLineColumnizer columnizer, BufferedDataGridView gridView)
+    [SupportedOSPlatform("windows")]
+    public static void SetColumnizer (ILogLineColumnizer columnizer, BufferedDataGridView gridView)
     {
         var rowCount = gridView.RowCount;
         var currLine = gridView.CurrentCellAddress.Y;
@@ -188,6 +205,7 @@ internal static class PaintHelper
         {
             gridView.CurrentCell = gridView.Rows[currLine].Cells[0];
         }
+
         if (currFirstLine != -1)
         {
             gridView.FirstDisplayedScrollingRowIndex = currFirstLine;
@@ -198,18 +216,19 @@ internal static class PaintHelper
 
     //TODO: Original name is AutoResizeColumn. Where is this used?
     //TODO: Rename ConfigManager to configManager
-    private static void AutoResizeColumns(BufferedDataGridView gridView, IConfigManager CnofigManager)
+    [SupportedOSPlatform("windows")]
+    private static void AutoResizeColumns (BufferedDataGridView gridView, IConfigManager configManager)
     {
         try
         {
             gridView.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.DisplayedCells);
-            if (gridView.Columns.Count > 1 && Preferences.setLastColumnWidth &&
-                gridView.Columns[gridView.Columns.Count - 1].Width < Preferences.lastColumnWidth
+            if (gridView.Columns.Count > 1 && Preferences.SetLastColumnWidth &&
+                gridView.Columns[gridView.Columns.Count - 1].Width < Preferences.LastColumnWidth
             )
             {
                 // It seems that using 'MinimumWidth' instead of 'Width' prevents the DataGridView's NullReferenceExceptions
                 //gridView.Columns[gridView.Columns.Count - 1].Width = this.Preferences.lastColumnWidth;
-                gridView.Columns[gridView.Columns.Count - 1].MinimumWidth = Preferences.lastColumnWidth;
+                gridView.Columns[gridView.Columns.Count - 1].MinimumWidth = Preferences.LastColumnWidth;
             }
         }
         catch (NullReferenceException e)
@@ -222,18 +241,17 @@ internal static class PaintHelper
         }
     }
 
-    public static void ApplyDataGridViewPrefs(BufferedDataGridView dataGridView, Preferences prefs, IConfigManager configManager)
+    [SupportedOSPlatform("windows")]
+    public static void ApplyDataGridViewPrefs (BufferedDataGridView dataGridView, Preferences prefs, IConfigManager configManager)
     {
         //TODO: This is a very bad solution and should be solved ASAP
-        if (ConfigManager == null) {
-            ConfigManager = configManager;
-        }
+        ConfigManager ??= configManager;
 
         if (dataGridView.Columns.Count > 1)
         {
-            if (prefs.setLastColumnWidth)
+            if (prefs.SetLastColumnWidth)
             {
-                dataGridView.Columns[dataGridView.Columns.Count - 1].MinimumWidth = prefs.lastColumnWidth;
+                dataGridView.Columns[dataGridView.Columns.Count - 1].MinimumWidth = prefs.LastColumnWidth;
             }
             else
             {
@@ -243,20 +261,24 @@ internal static class PaintHelper
                 dataGridView.Columns[dataGridView.Columns.Count - 1].MinimumWidth = 5; // default
             }
         }
+
         if (dataGridView.RowCount > 0)
         {
             dataGridView.UpdateRowHeightInfo(0, true);
         }
+
         dataGridView.Invalidate();
         dataGridView.Refresh();
         AutoResizeColumns(dataGridView, ConfigManager);
     }
 
-    public static Rectangle BorderWidths(DataGridViewAdvancedBorderStyle advancedBorderStyle)
+    [SupportedOSPlatform("windows")]
+    public static Rectangle BorderWidths (DataGridViewAdvancedBorderStyle advancedBorderStyle)
     {
-        Rectangle rect = new();
-
-        rect.X = advancedBorderStyle.Left == DataGridViewAdvancedCellBorderStyle.None ? 0 : 1;
+        Rectangle rect = new()
+        {
+            X = advancedBorderStyle.Left == DataGridViewAdvancedCellBorderStyle.None ? 0 : 1
+        };
         if (advancedBorderStyle.Left == DataGridViewAdvancedCellBorderStyle.OutsetDouble ||
             advancedBorderStyle.Left == DataGridViewAdvancedCellBorderStyle.InsetDouble)
         {
@@ -294,12 +316,14 @@ internal static class PaintHelper
 
     #region Private Methods
 
-    private static void PaintCell(ILogPaintContextUI logPaintCtx, DataGridViewCellPaintingEventArgs e, BufferedDataGridView gridView, bool noBackgroundFill, HighlightEntry groundEntry)
+    [SupportedOSPlatform("windows")]
+    private static void PaintCell (ILogPaintContextUI logPaintCtx, DataGridViewCellPaintingEventArgs e, BufferedDataGridView gridView, bool noBackgroundFill, HighlightEntry groundEntry)
     {
         PaintHighlightedCell(logPaintCtx, e, gridView, noBackgroundFill, groundEntry);
     }
 
-    private static void PaintHighlightedCell(ILogPaintContextUI logPaintCtx, DataGridViewCellPaintingEventArgs e, BufferedDataGridView gridView, bool noBackgroundFill, HighlightEntry groundEntry)
+    [SupportedOSPlatform("windows")]
+    private static void PaintHighlightedCell (ILogPaintContextUI logPaintCtx, DataGridViewCellPaintingEventArgs e, BufferedDataGridView gridView, bool noBackgroundFill, HighlightEntry groundEntry)
     {
         var value = e.Value ?? string.Empty;
 
@@ -312,11 +336,13 @@ internal static class PaintHelper
 
         if (value is Column column)
         {
-            if (string.IsNullOrEmpty(column.FullValue) == false)
+            if (!string.IsNullOrEmpty(column.FullValue))
             {
-                HilightMatchEntry hme = new();
-                hme.StartPos = 0;
-                hme.Length = column.FullValue.Length;
+                HilightMatchEntry hme = new()
+                {
+                    StartPos = 0,
+                    Length = column.FullValue.Length
+                };
 
                 var he = new HighlightEntry
                 {
@@ -386,7 +412,7 @@ internal static class PaintHelper
             var matchWord = string.Empty;
             if (value is Column again)
             {
-                if (string.IsNullOrEmpty(again.FullValue) == false)
+                if (!string.IsNullOrEmpty(again.FullValue))
                 {
                     matchWord = again.FullValue.Substring(matchEntry.StartPos, matchEntry.Length);
                 }
@@ -411,6 +437,7 @@ internal static class PaintHelper
                     foreColor = Color.White;
                 }
             }
+
             TextRenderer.DrawText(e.Graphics, matchWord, font, wordRect, foreColor, flags);
 
             wordPos.Offset(wordSize.Width, 0);
@@ -428,7 +455,7 @@ internal static class PaintHelper
     /// <param name="matchList">List of all highlight matches for the current cell</param>
     /// <param name="groundEntry">The entry that is used as the default.</param>
     /// <returns>List of HilightMatchEntry objects. The list spans over the whole cell and contains color infos for every substring.</returns>
-    private static IList<HilightMatchEntry> MergeHighlightMatchEntries(IList<HilightMatchEntry> matchList, HilightMatchEntry groundEntry)
+    private static IList<HilightMatchEntry> MergeHighlightMatchEntries (IList<HilightMatchEntry> matchList, HilightMatchEntry groundEntry)
     {
         // Fill an area with lenth of whole text with a default hilight entry
         var entryArray = new HighlightEntry[groundEntry.Length];
@@ -456,7 +483,7 @@ internal static class PaintHelper
         }
 
         // collect areas with same hilight entry and build new highlight match entries for it
-        IList<HilightMatchEntry> mergedList = new List<HilightMatchEntry>();
+        IList<HilightMatchEntry> mergedList = [];
         if (entryArray.Length > 0)
         {
             HighlightEntry currentEntry = entryArray[0];
@@ -466,21 +493,26 @@ internal static class PaintHelper
             {
                 if (entryArray[pos] != currentEntry)
                 {
-                    HilightMatchEntry me = new();
-                    me.StartPos = lastStartPos;
-                    me.Length = pos - lastStartPos;
-                    me.HilightEntry = currentEntry;
+                    HilightMatchEntry me = new()
+                    {
+                        StartPos = lastStartPos,
+                        Length = pos - lastStartPos,
+                        HilightEntry = currentEntry
+                    };
                     mergedList.Add(me);
                     currentEntry = entryArray[pos];
                     lastStartPos = pos;
                 }
             }
-            HilightMatchEntry me2 = new();
-            me2.StartPos = lastStartPos;
-            me2.Length = pos - lastStartPos;
-            me2.HilightEntry = currentEntry;
+            HilightMatchEntry me2 = new()
+            {
+                StartPos = lastStartPos,
+                Length = pos - lastStartPos,
+                HilightEntry = currentEntry
+            };
             mergedList.Add(me2);
         }
+
         return mergedList;
     }
 

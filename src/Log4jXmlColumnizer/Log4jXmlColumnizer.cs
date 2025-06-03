@@ -22,7 +22,7 @@ public class Log4jXmlColumnizer : ILogLineXmlColumnizer, IColumnizerConfigurator
     protected const string DATETIME_FORMAT = "dd.MM.yyyy HH:mm:ss.fff";
 
     private static readonly XmlConfig xmlConfig = new();
-    private readonly char separatorChar = '\xFFFD';
+    private const char separatorChar = '\xFFFD';
     private readonly char[] trimChars = ['\xFFFD'];
     private Log4jXmlColumnizerConfig _config;
     private readonly CultureInfo _cultureInfo = new("de-DE");

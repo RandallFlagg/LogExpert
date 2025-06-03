@@ -1,3 +1,4 @@
+using System.Runtime.Versioning;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -8,13 +9,9 @@ namespace LogExpert.UI.Entities;
 
 internal class ArgParser (string argTemplate)
 {
-
-    #region cTor
-
-    #endregion
-
     #region Public methods
 
+    [SupportedOSPlatform("windows")]
     public string BuildArgs (ILogLine logLine, int lineNum, ILogFileInfo logFileInfo, Form parent)
     {
         StringBuilder builder = new(argTemplate);
@@ -68,6 +65,7 @@ internal class ArgParser (string argTemplate)
                     {
                         end = builder.Length - 1;
                     }
+
                     ask = builder.ToString().Substring(i + 2, end - i - 2);
                 }
 

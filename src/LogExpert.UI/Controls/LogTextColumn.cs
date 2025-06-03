@@ -1,4 +1,4 @@
-﻿using System.Windows.Forms;
+using System.Runtime.Versioning;
 
 namespace LogExpert.UI.Controls;
 
@@ -6,7 +6,8 @@ public class LogTextColumn : DataGridViewColumn
 {
     #region cTor
 
-    public LogTextColumn() : base(new LogGridCell())
+    [SupportedOSPlatform("windows")]
+    public LogTextColumn () : base(new LogGridCell())
     {
     }
 

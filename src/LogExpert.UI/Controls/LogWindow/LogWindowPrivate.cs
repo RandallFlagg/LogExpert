@@ -23,6 +23,7 @@ partial class LogWindow
 {
     #region Private Methods
 
+    [SupportedOSPlatform("windows")]
     private void RegisterLogFileReaderEvents ()
     {
         _logFileReader.LoadFile += OnLogFileReaderLoadFile;
@@ -33,6 +34,7 @@ partial class LogWindow
         // FileSizeChanged is not registered here because it's registered after loading has finished
     }
 
+    [SupportedOSPlatform("windows")]
     private void UnRegisterLogFileReaderEvents ()
     {
         if (_logFileReader != null)
@@ -46,6 +48,7 @@ partial class LogWindow
         }
     }
 
+    [SupportedOSPlatform("windows")]
     private void CreateDefaultViewStyle ()
     {
         DataGridViewCellStyle dataGridViewCellStyleMainGrid = new();
@@ -70,6 +73,7 @@ partial class LogWindow
         filterGridView.DefaultCellStyle = dataGridViewCellStyleFilterGrid;
     }
 
+    [SupportedOSPlatform("windows")]
     private bool LoadPersistenceOptions ()
     {
         if (InvokeRequired)
@@ -77,23 +81,16 @@ partial class LogWindow
             return (bool)Invoke(new BoolReturnDelegate(LoadPersistenceOptions));
         }
 
-        if (!Preferences.saveSessions && ForcedPersistenceFileName == null)
+        if (!Preferences.SaveSessions && ForcedPersistenceFileName == null)
         {
             return false;
         }
 
         try
         {
-            PersistenceData persistenceData;
-            if (ForcedPersistenceFileName == null)
-            {
-                persistenceData = Persister.LoadPersistenceDataOptionsOnly(FileName, Preferences);
-            }
-            else
-            {
-                persistenceData =
-                    Persister.LoadPersistenceDataOptionsOnlyFromFixedFile(ForcedPersistenceFileName);
-            }
+            PersistenceData persistenceData = ForcedPersistenceFileName == null
+                ? Persister.LoadPersistenceDataOptionsOnly(FileName, Preferences)
+                : Persister.LoadPersistenceDataOptionsOnlyFromFixedFile(ForcedPersistenceFileName);
 
             if (persistenceData == null)
             {
@@ -110,7 +107,7 @@ partial class LogWindow
 
             if (string.IsNullOrEmpty(_multiFileOptions.FormatPattern))
             {
-                _multiFileOptions = ObjectClone.Clone(Preferences.multiFileOptions);
+                _multiFileOptions = ObjectClone.Clone(Preferences.MultiFileOptions);
             }
 
             splitContainerLogWindow.SplitterDistance = persistenceData.FilterPosition;
@@ -154,14 +151,16 @@ partial class LogWindow
         }
     }
 
+    [SupportedOSPlatform("windows")]
     private void SetDefaultsFromPrefs ()
     {
-        filterTailCheckBox.Checked = Preferences.filterTail;
-        syncFilterCheckBox.Checked = Preferences.filterSync;
-        FollowTailChanged(Preferences.followTail, false);
-        _multiFileOptions = ObjectClone.Clone(Preferences.multiFileOptions);
+        filterTailCheckBox.Checked = Preferences.FilterTail;
+        syncFilterCheckBox.Checked = Preferences.FilterSync;
+        FollowTailChanged(Preferences.FollowTail, false);
+        _multiFileOptions = ObjectClone.Clone(Preferences.MultiFileOptions);
     }
 
+    [SupportedOSPlatform("windows")]
     private void LoadPersistenceData ()
     {
         if (InvokeRequired)
@@ -170,7 +169,7 @@ partial class LogWindow
             return;
         }
 
-        if (!Preferences.saveSessions && !ForcePersistenceLoading && ForcedPersistenceFileName == null)
+        if (!Preferences.SaveSessions && !ForcePersistenceLoading && ForcedPersistenceFileName == null)
         {
             SetDefaultsFromPrefs();
             return;
@@ -186,16 +185,9 @@ partial class LogWindow
 
         try
         {
-            PersistenceData persistenceData;
-
-            if (ForcedPersistenceFileName == null)
-            {
-                persistenceData = Persister.LoadPersistenceData(FileName, Preferences);
-            }
-            else
-            {
-                persistenceData = Persister.LoadPersistenceDataFromFixedFile(ForcedPersistenceFileName);
-            }
+            PersistenceData persistenceData = ForcedPersistenceFileName == null
+                ? Persister.LoadPersistenceData(FileName, Preferences)
+                : Persister.LoadPersistenceDataFromFixedFile(ForcedPersistenceFileName);
 
             if (persistenceData.LineCount > _logFileReader.LineCount)
             {
@@ -239,7 +231,7 @@ partial class LogWindow
                 // FirstDisplayedScrollingRowIndex calculates sometimes the wrong scrolling ranges???
             }
 
-            if (Preferences.saveFilters)
+            if (Preferences.SaveFilters)
             {
                 RestoreFilters(persistenceData);
             }
@@ -251,6 +243,7 @@ partial class LogWindow
         }
     }
 
+    [SupportedOSPlatform("windows")]
     private void RestoreFilters (PersistenceData persistenceData)
     {
         if (persistenceData.FilterParamsList.Count > 0)
@@ -341,6 +334,7 @@ partial class LogWindow
         _logger.Debug("EnterLoadFileStatus end");
     }
 
+    [SupportedOSPlatform("windows")]
     private void PositionAfterReload (ReloadMemento reloadMemento)
     {
         if (_reloadMemento.CurrentLine < dataGridView.RowCount && _reloadMemento.CurrentLine >= 0)
@@ -354,6 +348,7 @@ partial class LogWindow
         }
     }
 
+    [SupportedOSPlatform("windows")]
     private void LogfileDead ()
     {
         _logger.Info("File not found.");
@@ -380,6 +375,7 @@ partial class LogWindow
         OnFileNotFound(EventArgs.Empty);
     }
 
+    [SupportedOSPlatform("windows")]
     private void LogfileRespawned ()
     {
         _logger.Info("LogfileDead(): Reloading file because it has been respawned.");
@@ -390,21 +386,17 @@ partial class LogWindow
         Reload();
     }
 
+    [SupportedOSPlatform("windows")]
     private void SetGuiAfterLoading ()
     {
         if (Text.Length == 0)
         {
-            if (IsTempFile)
-            {
-                Text = TempTitleName;
-            }
-            else
-            {
-                Text = Util.GetNameFromPath(FileName);
-            }
+            Text = IsTempFile
+                ? TempTitleName
+                : Util.GetNameFromPath(FileName);
         }
 
-        ShowBookmarkBubbles = Preferences.showBubbles;
+        ShowBookmarkBubbles = Preferences.ShowBubbles;
         //if (this.forcedColumnizer == null)
         {
             ILogLineColumnizer columnizer;
@@ -438,6 +430,7 @@ partial class LogWindow
 
             Invoke(new SetColumnizerFx(SetColumnizer), columnizer);
         }
+
         dataGridView.Enabled = true;
         DisplayCurrentFileOnStatusline();
         //this.guiStateArgs.FollowTail = this.Preferences.followTail;
@@ -455,31 +448,25 @@ partial class LogWindow
         //}
         if (CurrentColumnizer.IsTimeshiftImplemented())
         {
-            if (Preferences.timestampControl)
+            if (Preferences.TimestampControl)
             {
                 SetTimestampLimits();
                 SyncTimestampDisplay();
             }
 
             Settings settings = ConfigManager.Settings;
-            ShowLineColumn(!settings.hideLineColumn);
+            ShowLineColumn(!settings.HideLineColumn);
         }
 
-        ShowTimeSpread(Preferences.showTimeSpread && CurrentColumnizer.IsTimeshiftImplemented());
+        ShowTimeSpread(Preferences.ShowTimeSpread && CurrentColumnizer.IsTimeshiftImplemented());
         locateLineInOriginalFileToolStripMenuItem.Enabled = FilterPipe != null;
     }
 
     private ILogLineColumnizer FindColumnizer ()
     {
-        ILogLineColumnizer columnizer;
-        if (Preferences.maskPrio)
-        {
-            columnizer = _parentLogTabWin.FindColumnizerByFileMask(Util.GetNameFromPath(FileName)) ?? _parentLogTabWin.GetColumnizerHistoryEntry(FileName);
-        }
-        else
-        {
-            columnizer = _parentLogTabWin.GetColumnizerHistoryEntry(FileName) ?? _parentLogTabWin.FindColumnizerByFileMask(Util.GetNameFromPath(FileName));
-        }
+        ILogLineColumnizer columnizer = Preferences.MaskPrio
+            ? _parentLogTabWin.FindColumnizerByFileMask(Util.GetNameFromPath(FileName)) ?? _parentLogTabWin.GetColumnizerHistoryEntry(FileName)
+            : _parentLogTabWin.GetColumnizerHistoryEntry(FileName) ?? _parentLogTabWin.FindColumnizerByFileMask(Util.GetNameFromPath(FileName));
 
         return columnizer;
     }
@@ -490,7 +477,7 @@ partial class LogWindow
         lock (_reloadLock)
         {
             _reloadOverloadCounter++;
-            _logger.Info("ReloadNewFile(): counter = {0}", _reloadOverloadCounter);
+            _logger.Info($"ReloadNewFile(): counter = {_reloadOverloadCounter}");
             if (_reloadOverloadCounter <= 1)
             {
                 SavePersistenceData(false);
@@ -524,6 +511,7 @@ partial class LogWindow
         }
     }
 
+    [SupportedOSPlatform("windows")]
     private void ReloadFinishedThreadFx ()
     {
         _logger.Info("Waiting for loading to be complete.");
@@ -746,7 +734,7 @@ partial class LogWindow
                 OnTailFollowed(EventArgs.Empty);
             }
 
-            if (Preferences.timestampControl && !_isLoading)
+            if (Preferences.TimestampControl && !_isLoading)
             {
                 SetTimestampLimits();
             }
@@ -1059,8 +1047,8 @@ partial class LogWindow
             }
 
             Settings settings = ConfigManager.Settings;
-            ShowLineColumn(!settings.hideLineColumn);
-            ShowTimeSpread(Preferences.showTimeSpread && columnizer.IsTimeshiftImplemented());
+            ShowLineColumn(!settings.HideLineColumn);
+            ShowTimeSpread(Preferences.ShowTimeSpread && columnizer.IsTimeshiftImplemented());
         }
 
         if (!columnizer.IsTimeshiftImplemented() && IsTimeSynced)
@@ -1085,13 +1073,13 @@ partial class LogWindow
         try
         {
             gridView.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.DisplayedCells);
-            if (gridView.Columns.Count > 1 && Preferences.setLastColumnWidth &&
-                gridView.Columns[gridView.Columns.Count - 1].Width < Preferences.lastColumnWidth
+            if (gridView.Columns.Count > 1 && Preferences.SetLastColumnWidth &&
+                gridView.Columns[gridView.Columns.Count - 1].Width < Preferences.LastColumnWidth
             )
             {
                 // It seems that using 'MinimumWidth' instead of 'Width' prevents the DataGridView's NullReferenceExceptions
                 //gridView.Columns[gridView.Columns.Count - 1].Width = this.Preferences.lastColumnWidth;
-                gridView.Columns[gridView.Columns.Count - 1].MinimumWidth = Preferences.lastColumnWidth;
+                gridView.Columns[gridView.Columns.Count - 1].MinimumWidth = Preferences.LastColumnWidth;
             }
         }
         catch (NullReferenceException e)
@@ -1986,17 +1974,17 @@ partial class LogWindow
 
         _filterParams.SearchText = text;
         _filterParams.LowerSearchText = text.ToLowerInvariant();
-        ConfigManager.Settings.filterHistoryList.Remove(text);
-        ConfigManager.Settings.filterHistoryList.Insert(0, text);
-        var maxHistory = ConfigManager.Settings.Preferences.maximumFilterEntries;
+        ConfigManager.Settings.FilterHistoryList.Remove(text);
+        ConfigManager.Settings.FilterHistoryList.Insert(0, text);
+        var maxHistory = ConfigManager.Settings.Preferences.MaximumFilterEntries;
 
-        if (ConfigManager.Settings.filterHistoryList.Count > maxHistory)
+        if (ConfigManager.Settings.FilterHistoryList.Count > maxHistory)
         {
-            ConfigManager.Settings.filterHistoryList.RemoveAt(filterComboBox.Items.Count - 1);
+            ConfigManager.Settings.FilterHistoryList.RemoveAt(filterComboBox.Items.Count - 1);
         }
 
         filterComboBox.Items.Clear();
-        foreach (var item in ConfigManager.Settings.filterHistoryList)
+        foreach (var item in ConfigManager.Settings.FilterHistoryList)
         {
             filterComboBox.Items.Add(item);
         }
@@ -2007,15 +1995,15 @@ partial class LogWindow
         _filterParams.RangeSearchText = filterRangeComboBox.Text;
         if (_filterParams.IsRangeSearch)
         {
-            ConfigManager.Settings.filterRangeHistoryList.Remove(filterRangeComboBox.Text);
-            ConfigManager.Settings.filterRangeHistoryList.Insert(0, filterRangeComboBox.Text);
-            if (ConfigManager.Settings.filterRangeHistoryList.Count > maxHistory)
+            ConfigManager.Settings.FilterRangeHistoryList.Remove(filterRangeComboBox.Text);
+            ConfigManager.Settings.FilterRangeHistoryList.Insert(0, filterRangeComboBox.Text);
+            if (ConfigManager.Settings.FilterRangeHistoryList.Count > maxHistory)
             {
-                ConfigManager.Settings.filterRangeHistoryList.RemoveAt(filterRangeComboBox.Items.Count - 1);
+                ConfigManager.Settings.FilterRangeHistoryList.RemoveAt(filterRangeComboBox.Items.Count - 1);
             }
 
             filterRangeComboBox.Items.Clear();
-            foreach (var item in ConfigManager.Settings.filterRangeHistoryList)
+            foreach (var item in ConfigManager.Settings.FilterRangeHistoryList)
             {
                 filterRangeComboBox.Items.Add(item);
             }
@@ -2046,7 +2034,7 @@ partial class LogWindow
         _filterParams.ColumnRestrict = columnRestrictCheckBox.Checked;
 
         //ConfigManager.SaveFilterParams(this.filterParams);
-        ConfigManager.Settings.filterParams = _filterParams; // wozu eigentlich? sinnlos seit MDI?
+        ConfigManager.Settings.FilterParams = _filterParams; // wozu eigentlich? sinnlos seit MDI?
 
         _shouldCancel = false;
         _isSearching = true;
@@ -2063,7 +2051,7 @@ partial class LogWindow
         Settings settings = ConfigManager.Settings;
 
         //FilterFx fx = settings.preferences.multiThreadFilter ? MultiThreadedFilter : new FilterFx(Filter);
-        FilterFxAction = settings.Preferences.multiThreadFilter ? MultiThreadedFilter : Filter;
+        FilterFxAction = settings.Preferences.MultiThreadFilter ? MultiThreadedFilter : Filter;
 
         //Task.Run(() => fx.Invoke(_filterParams, _filterResultList, _lastFilterLinesList, _filterHitList));
         var filterFxActionTask = Task.Run(() => Filter(_filterParams, _filterResultList, _lastFilterLinesList, _filterHitList));
@@ -2616,15 +2604,15 @@ partial class LogWindow
     [SupportedOSPlatform("windows")]
     private void UpdateFilterHistoryFromSettings ()
     {
-        ConfigManager.Settings.filterHistoryList = ConfigManager.Settings.filterHistoryList;
+        ConfigManager.Settings.FilterHistoryList = ConfigManager.Settings.FilterHistoryList;
         filterComboBox.Items.Clear();
-        foreach (var item in ConfigManager.Settings.filterHistoryList)
+        foreach (var item in ConfigManager.Settings.FilterHistoryList)
         {
             filterComboBox.Items.Add(item);
         }
 
         filterRangeComboBox.Items.Clear();
-        foreach (var item in ConfigManager.Settings.filterRangeHistoryList)
+        foreach (var item in ConfigManager.Settings.FilterRangeHistoryList)
         {
             filterRangeComboBox.Items.Add(item);
         }
@@ -2950,9 +2938,9 @@ partial class LogWindow
     {
         if (dataGridView.Columns.GetColumnCount(DataGridViewElementStates.None) > 1)
         {
-            if (prefs.setLastColumnWidth)
+            if (prefs.SetLastColumnWidth)
             {
-                dataGridView.Columns[dataGridView.Columns.GetColumnCount(DataGridViewElementStates.None) - 1].MinimumWidth = prefs.lastColumnWidth;
+                dataGridView.Columns[dataGridView.Columns.GetColumnCount(DataGridViewElementStates.None) - 1].MinimumWidth = prefs.LastColumnWidth;
             }
             else
             {
@@ -3115,7 +3103,7 @@ partial class LogWindow
         _patternWindow = new PatternWindow(this);
         _patternWindow.SetColumnizer(CurrentColumnizer);
         //this.patternWindow.SetBlockList(blockList);
-        _patternWindow.SetFont(Preferences.fontName, Preferences.fontSize);
+        _patternWindow.SetFont(Preferences.FontName, Preferences.FontSize);
         _patternWindow.Fuzzy = _patternArgs.Fuzzy;
         _patternWindow.MaxDiff = _patternArgs.MaxDiffInBlock;
         _patternWindow.MaxMisses = _patternArgs.MaxMisses;
@@ -3661,8 +3649,8 @@ partial class LogWindow
     [SupportedOSPlatform("windows")]
     private void HandleChangedFilterOnLoadSetting ()
     {
-        _parentLogTabWin.Preferences.isFilterOnLoad = filterOnLoadCheckBox.Checked;
-        _parentLogTabWin.Preferences.isAutoHideFilterList = hideFilterListOnLoadCheckBox.Checked;
+        _parentLogTabWin.Preferences.IsFilterOnLoad = filterOnLoadCheckBox.Checked;
+        _parentLogTabWin.Preferences.IsAutoHideFilterList = hideFilterListOnLoadCheckBox.Checked;
         OnFilterListChanged(this);
     }
 

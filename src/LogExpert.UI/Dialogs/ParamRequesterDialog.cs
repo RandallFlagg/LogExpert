@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
-using System.Windows.Forms;
+using System.Runtime.Versioning;
 
 namespace LogExpert.Dialogs;
 
+[SupportedOSPlatform("windows")]
 public partial class ParamRequesterDialog : Form
 {
     #region Fields
@@ -16,7 +11,7 @@ public partial class ParamRequesterDialog : Form
 
     #region cTor
 
-    public ParamRequesterDialog()
+    public ParamRequesterDialog ()
     {
         InitializeComponent();
 
@@ -38,7 +33,7 @@ public partial class ParamRequesterDialog : Form
 
     #region Events handler
 
-    private void ParamRequesterDialog_Shown(object sender, EventArgs e)
+    private void ParamRequesterDialog_Shown (object sender, EventArgs e)
     {
         labelValueForParameter.Text = ParamName;
 
@@ -48,11 +43,12 @@ public partial class ParamRequesterDialog : Form
             {
                 comboBoxValue.Items.Add(value);
             }
+
             comboBoxValue.SelectedIndex = 0;
         }
     }
 
-    private void okButton_Click(object sender, EventArgs e)
+    private void OnButtonOkClick (object sender, EventArgs e)
     {
         ParamValue = comboBoxValue.Text;
     }

@@ -1,4 +1,5 @@
 using System.Drawing.Drawing2D;
+using System.Runtime.Versioning;
 
 using LogExpert.Core.Entities;
 using LogExpert.Core.EventArguments;
@@ -8,6 +9,7 @@ using NLog;
 
 namespace LogExpert.Dialogs;
 
+[SupportedOSPlatform("windows")]
 public partial class BufferedDataGridView : DataGridView
 {
     #region Fields

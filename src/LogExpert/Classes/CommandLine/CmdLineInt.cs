@@ -14,8 +14,8 @@ public class CmdLineInt : CmdLineParameter
 {
     #region Fields
 
-    private readonly int _max = int.MaxValue;
-    private readonly int _min = int.MinValue;
+    private readonly int _max;
+    private readonly int _min;
 
     #endregion
 
@@ -27,9 +27,11 @@ public class CmdLineInt : CmdLineParameter
     /// <param name="name">Name of parameter.</param>
     /// <param name="required">Require that the parameter is present in the command line.</param>
     /// <param name="helpMessage">The explanation of the parameter to add to the help screen.</param>
-    public CmdLineInt(string name, bool required, string helpMessage)
+    public CmdLineInt (string name, bool required, string helpMessage)
         : base(name, required, helpMessage)
     {
+        _max = int.MaxValue;
+        _min = int.MinValue;
     }
 
     /// <summary>
@@ -40,10 +42,10 @@ public class CmdLineInt : CmdLineParameter
     /// <param name="helpMessage">The explanation of the parameter to add to the help screen.</param>
     /// <param name="min">The minimum value of the parameter.</param>
     /// <param name="max">The maximum valie of the parameter.</param>
-    public CmdLineInt(string name, bool required, string helpMessage, int min, int max)
+    public CmdLineInt (string name, bool required, string helpMessage, int min, int max)
         : base(name, required, helpMessage)
     {
-        _min = min;
+        _max = min;
         _max = max;
     }
 
@@ -54,7 +56,7 @@ public class CmdLineInt : CmdLineParameter
     /// <summary>
     /// Returns the current value of the parameter.
     /// </summary>
-    new public int Value { get; private set; }
+    public new int Value { get; private set; }
 
     #endregion
 
@@ -64,7 +66,7 @@ public class CmdLineInt : CmdLineParameter
     /// Sets the value of the parameter.
     /// </summary>
     /// <param name="value">A string containing a integer expression.</param>
-    public override void SetValue(string value)
+    public override void SetValue (string value)
     {
         base.SetValue(value);
         int i;
@@ -76,14 +78,17 @@ public class CmdLineInt : CmdLineParameter
         {
             throw new CmdLineException(Name, "Value is not an integer.");
         }
+
         if (i < _min)
         {
-            throw new CmdLineException(Name, string.Format("Value must be greather or equal to {0}.", _min));
+            throw new CmdLineException(Name, $"Value must be greather or equal to {_min}.");
         }
+
         if (i > _max)
         {
-            throw new CmdLineException(Name, string.Format("Value must be less or equal to {0}.", _max));
+            throw new CmdLineException(Name, $"Value must be less or equal to {_max}.");
         }
+
         Value = i;
     }
 
@@ -92,10 +97,7 @@ public class CmdLineInt : CmdLineParameter
     /// </summary>
     /// <param name="s"></param>
     /// <returns></returns>
-    public static implicit operator int(CmdLineInt s)
-    {
-        return s.Value;
-    }
+    public static implicit operator int (CmdLineInt s) => s.Value;
 
     #endregion
 }

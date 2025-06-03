@@ -41,7 +41,7 @@ internal class BufferShiftTest : RolloverHandlerTestBase
             Encoding = Encoding.Default
         };
 
-        PluginRegistry.PluginRegistry.Instance.Create(testDirectory.FullName, 500);
+        PluginRegistry.PluginRegistry.Instance.Create(TestDirectory.FullName, 500);
         LogfileReader reader = new(files.Last.Value, encodingOptions, true, 40, 50, options, PluginRegistry.PluginRegistry.Instance);
         reader.ReadFiles();
 

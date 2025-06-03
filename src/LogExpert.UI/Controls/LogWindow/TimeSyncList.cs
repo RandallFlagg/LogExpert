@@ -1,3 +1,5 @@
+using System.Runtime.Versioning;
+
 namespace LogExpert.UI.Controls.LogWindow;
 
 /// <summary>
@@ -7,7 +9,7 @@ public class TimeSyncList
 {
     #region Fields
 
-    private readonly IList<LogWindow> logWindowList = new List<LogWindow>();
+    private readonly IList<LogWindow> logWindowList = [];
 
     #endregion
 
@@ -27,12 +29,14 @@ public class TimeSyncList
 
     public DateTime CurrentTimestamp { get; set; }
 
+    [SupportedOSPlatform("windows")]
     public int Count => logWindowList.Count;
 
     #endregion
 
     #region Public methods
 
+    [SupportedOSPlatform("windows")]
     public void AddWindow (LogWindow logWindow)
     {
         lock (logWindowList)
@@ -44,7 +48,7 @@ public class TimeSyncList
         }
     }
 
-
+    [SupportedOSPlatform("windows")]
     public void RemoveWindow (LogWindow logWindow)
     {
         lock (logWindowList)
@@ -61,6 +65,7 @@ public class TimeSyncList
     /// </summary>
     /// <param name="timestamp"></param>
     /// <param name="sender"></param>
+    [SupportedOSPlatform("windows")]
     public void NavigateToTimestamp (DateTime timestamp, LogWindow sender)
     {
         CurrentTimestamp = timestamp;
@@ -76,7 +81,7 @@ public class TimeSyncList
         }
     }
 
-
+    [SupportedOSPlatform("windows")]
     public bool Contains (LogWindow logWindow)
     {
         return logWindowList.Contains(logWindow);

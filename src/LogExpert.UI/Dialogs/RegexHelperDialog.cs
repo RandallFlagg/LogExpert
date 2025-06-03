@@ -1,4 +1,4 @@
-﻿using System.Runtime.Versioning;
+using System.Runtime.Versioning;
 using System.Text.RegularExpressions;
 
 namespace LogExpert.UI.Dialogs;
@@ -8,7 +8,7 @@ public partial class RegexHelperDialog : Form
 {
     #region Fields
 
-    private static readonly int MAX_HISTORY = 30;
+    private const int MAX_HISTORY = 30;
     private bool _caseSensitive;
     private List<string> _expressionHistoryList = [];
     private List<string> _testtextHistoryList = [];
@@ -17,7 +17,7 @@ public partial class RegexHelperDialog : Form
 
     #region cTor
 
-    public RegexHelperDialog()
+    public RegexHelperDialog ()
     {
         InitializeComponent();
 
@@ -63,7 +63,7 @@ public partial class RegexHelperDialog : Form
 
     #region Private Methods
 
-    private void UpdateMatches()
+    private void UpdateMatches ()
     {
         textBoxMatches.Text = "";
         try
@@ -82,7 +82,7 @@ public partial class RegexHelperDialog : Form
         }
     }
 
-    private void LoadHistory()
+    private void LoadHistory ()
     {
         comboBoxRegex.Items.Clear();
         comboBoxRegex.DataSource = _expressionHistoryList;
@@ -95,18 +95,18 @@ public partial class RegexHelperDialog : Form
 
     #region Events handler
 
-    private void OnRegexHelperDialogLoad(object? sender, EventArgs e)
+    private void OnRegexHelperDialogLoad (object? sender, EventArgs e)
     {
         LoadHistory();
     }
 
-    private void OnCaseSensitiveCheckBoxCheckedChanged(object sender, EventArgs e)
+    private void OnCaseSensitiveCheckBoxCheckedChanged (object sender, EventArgs e)
     {
         _caseSensitive = checkBoxCaseSensitive.Checked;
         UpdateMatches();
     }
 
-    private void OnButtonOkClick(object sender, EventArgs e)
+    private void OnButtonOkClick (object sender, EventArgs e)
     {
         var text = comboBoxRegex.Text;
         comboBoxRegex.Items.Remove(text);
@@ -127,17 +127,17 @@ public partial class RegexHelperDialog : Form
         }
     }
 
-    private void OnComboBoxRegexTextChanged(object sender, EventArgs e)
+    private void OnComboBoxRegexTextChanged (object sender, EventArgs e)
     {
         UpdateMatches();
     }
 
-    private void OnComboBoxTestTextTextChanged(object sender, EventArgs e)
+    private void OnComboBoxTestTextTextChanged (object sender, EventArgs e)
     {
         UpdateMatches();
     }
 
-    private void OnButtonHelpClick(object sender, EventArgs e)
+    private void OnButtonHelpClick (object sender, EventArgs e)
     {
         Help.ShowHelp(this, "LogExpert.chm", HelpNavigator.Topic, "RegEx.htm");
     }

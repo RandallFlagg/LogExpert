@@ -14,11 +14,13 @@ internal class RolloverHandlerTestBase
 
     #endregion
 
+    public DirectoryInfo TestDirectory { get; set; }
 
     protected LinkedList<string> CreateTestFilesWithDate ()
     {
         LinkedList<string> createdFiles = new();
         DirectoryInfo dInfo = Directory.CreateDirectory(TEST_DIR_NAME);
+        TestDirectory = dInfo;
         _ = createdFiles.AddLast(CreateFile(dInfo, "engine_2010-06-08_1.log"));
         _ = createdFiles.AddLast(CreateFile(dInfo, "engine_2010-06-08_0.log"));
         _ = createdFiles.AddLast(CreateFile(dInfo, "engine_2010-06-10_0.log"));
@@ -34,6 +36,7 @@ internal class RolloverHandlerTestBase
     {
         LinkedList<string> createdFiles = new();
         DirectoryInfo dInfo = Directory.CreateDirectory(TEST_DIR_NAME);
+        TestDirectory = dInfo;
         _ = createdFiles.AddLast(CreateFile(dInfo, "engine.log.6"));
         _ = createdFiles.AddLast(CreateFile(dInfo, "engine.log.5"));
         _ = createdFiles.AddLast(CreateFile(dInfo, "engine.log.4"));

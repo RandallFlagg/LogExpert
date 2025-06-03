@@ -1,14 +1,12 @@
-﻿using LogExpert.UI.Controls.LogTabWindow;
+using System.Runtime.Versioning;
+
+using LogExpert.UI.Controls.LogTabWindow;
 using LogExpert.UI.Dialogs;
 using LogExpert.UI.Entities;
 
-using System;
-using System.Drawing;
-using System.Windows.Forms;
-
-
 namespace LogExpert.Dialogs;
 
+[SupportedOSPlatform("windows")]
 internal partial class ToolArgsDialog : Form
 {
     #region Fields
@@ -19,7 +17,7 @@ internal partial class ToolArgsDialog : Form
 
     #region cTor
 
-    public ToolArgsDialog(LogTabWindow logTabWin, Form parent)
+    public ToolArgsDialog (LogTabWindow logTabWin, Form parent)
     {
         this.logTabWin = logTabWin;
         parent.AddOwnedForm(this);
@@ -40,7 +38,7 @@ internal partial class ToolArgsDialog : Form
 
     #region Events handler
 
-    private void OnToolArgsDialogLoad(object sender, EventArgs e)
+    private void OnToolArgsDialogLoad (object sender, EventArgs e)
     {
         labelHelp.Text = "" +
                               "%L = Current line number\n" +
@@ -62,7 +60,7 @@ internal partial class ToolArgsDialog : Form
         textBoxArguments.Text = Arg;
     }
 
-    private void OnButtonRegexHelpClick(object sender, EventArgs e)
+    private void OnButtonRegexHelpClick (object sender, EventArgs e)
     {
         RegexHelperDialog regexDlg = new();
         if (regexDlg.ShowDialog() == DialogResult.OK)
@@ -72,7 +70,7 @@ internal partial class ToolArgsDialog : Form
     }
 
     //TODO: what is the purpose of this in the settings? Can we just send the line and info instead of the object?
-    private void OnButtonTestClick(object sender, EventArgs e)
+    private void OnButtonTestClick (object sender, EventArgs e)
     {
         if (logTabWin.CurrentLogWindow != null)
         {
@@ -87,7 +85,7 @@ internal partial class ToolArgsDialog : Form
         }
     }
 
-    private void OnButtonOkClick(object sender, EventArgs e)
+    private void OnButtonOkClick (object sender, EventArgs e)
     {
         Arg = textBoxArguments.Text;
     }

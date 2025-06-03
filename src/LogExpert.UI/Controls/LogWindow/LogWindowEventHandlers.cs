@@ -17,6 +17,7 @@ namespace LogExpert.UI.Controls.LogWindow;
 
 partial class LogWindow
 {
+    [SupportedOSPlatform("windows")]
     private void AutoResizeFilterBox ()
     {
         filterSplitContainer.SplitterDistance = filterComboBox.Left + filterComboBox.GetMaxTextWidth();
@@ -100,11 +101,13 @@ partial class LogWindow
         }
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnLogWindowLoad (object sender, EventArgs e)
     {
         PreferencesChanged(_parentLogTabWin.Preferences, true, SettingsFlags.GuiOrColors);
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnLogWindowDisposed (object sender, EventArgs e)
     {
         _waitingForClose = true;
@@ -114,11 +117,13 @@ partial class LogWindow
         FreeFromTimeSync();
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnLogFileReaderLoadingStarted (object sender, LoadFileEventArgs e)
     {
         Invoke(LoadingStarted, e);
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnLogFileReaderFinishedLoading (object sender, EventArgs e)
     {
         //Thread.CurrentThread.Name = "FinishedLoading event thread";
@@ -151,6 +156,7 @@ partial class LogWindow
         _reloadMemento = null;
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnLogFileReaderFileNotFound (object sender, EventArgs e)
     {
         if (!IsDisposed && !Disposing)
@@ -161,14 +167,16 @@ partial class LogWindow
         }
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnLogFileReaderRespawned (object sender, EventArgs e)
     {
         BeginInvoke(new MethodInvoker(LogfileRespawned));
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnLogWindowClosing (object sender, CancelEventArgs e)
     {
-        if (Preferences.askForClose)
+        if (Preferences.AskForClose)
         {
             if (MessageBox.Show("Sure to close?", "LogExpert", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
             {
@@ -181,6 +189,7 @@ partial class LogWindow
         CloseLogWindow();
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnDataGridViewColumnDividerDoubleClick (object sender, DataGridViewColumnDividerDoubleClickEventArgs e)
     {
         e.Handled = true;
@@ -190,6 +199,7 @@ partial class LogWindow
     /**
    * Event handler for the Load event from LogfileReader
    */
+    [SupportedOSPlatform("windows")]
     private void OnLogFileReaderLoadFile (object sender, LoadFileEventArgs e)
     {
         if (e.NewFile)
@@ -233,6 +243,7 @@ partial class LogWindow
         }
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnDataGridViewCellValueNeeded (object sender, DataGridViewCellValueEventArgs e)
     {
         var startCount = CurrentColumnizer?.GetColumnCount() ?? 0;
@@ -252,6 +263,7 @@ partial class LogWindow
         }
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnDataGridViewCellValuePushed (object sender, DataGridViewCellValueEventArgs e)
     {
         if (!CurrentColumnizer.IsTimeshiftImplemented())
@@ -287,11 +299,13 @@ partial class LogWindow
         SendGuiStateUpdate();
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnDataGridViewRowHeightInfoNeeded (object sender, DataGridViewRowHeightInfoNeededEventArgs e)
     {
         e.Height = GetRowHeight(e.RowIndex);
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnDataGridViewCurrentCellChanged (object sender, EventArgs e)
     {
         if (dataGridView.CurrentRow != null)
@@ -303,7 +317,7 @@ partial class LogWindow
                 SyncFilterGridPos();
             }
 
-            if (CurrentColumnizer.IsTimeshiftImplemented() && Preferences.timestampControl)
+            if (CurrentColumnizer.IsTimeshiftImplemented() && Preferences.TimestampControl)
             {
                 SyncTimestampDisplay();
             }
@@ -318,26 +332,31 @@ partial class LogWindow
         StatusLineText(string.Empty);
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnEditControlKeyUp (object sender, KeyEventArgs e)
     {
         UpdateEditColumnDisplay((DataGridViewTextBoxEditingControl)sender);
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnEditControlKeyPress (object sender, KeyPressEventArgs e)
     {
         UpdateEditColumnDisplay((DataGridViewTextBoxEditingControl)sender);
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnEditControlClick (object sender, EventArgs e)
     {
         UpdateEditColumnDisplay((DataGridViewTextBoxEditingControl)sender);
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnEditControlKeyDown (object sender, KeyEventArgs e)
     {
         UpdateEditColumnDisplay((DataGridViewTextBoxEditingControl)sender);
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnDataGridViewPaint (object sender, PaintEventArgs e)
     {
         if (ShowBookmarkBubbles)
@@ -350,11 +369,13 @@ partial class LogWindow
     // Filter Grid stuff
     // ======================================================================================
 
+    [SupportedOSPlatform("windows")]
     private void OnFilterSearchButtonClick (object sender, EventArgs e)
     {
         FilterSearch();
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnFilterGridViewCellPainting (object sender, DataGridViewCellPaintingEventArgs e)
     {
         var gridView = (BufferedDataGridView)sender;
@@ -446,7 +467,7 @@ partial class LogWindow
                         };
 
                         Brush brush2 = new SolidBrush(Color.FromArgb(255, 190, 100, 0));
-                        Font font = new("Verdana", Preferences.fontSize, FontStyle.Bold);
+                        Font font = new("Verdana", Preferences.FontSize, FontStyle.Bold);
                         e.Graphics.DrawString("!", font, brush2, new RectangleF(r.Left, r.Top, r.Width, r.Height), format);
                         font.Dispose();
                         brush2.Dispose();
@@ -459,6 +480,7 @@ partial class LogWindow
         }
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnFilterGridViewCellValueNeeded (object sender, DataGridViewCellValueEventArgs e)
     {
         if (e.RowIndex < 0 || e.ColumnIndex < 0 || _filterResultList.Count <= e.RowIndex)
@@ -471,11 +493,13 @@ partial class LogWindow
         e.Value = GetCellValue(lineNum, e.ColumnIndex);
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnFilterGridViewRowHeightInfoNeeded (object sender, DataGridViewRowHeightInfoNeededEventArgs e)
     {
         e.Height = _lineHeight;
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnFilterComboBoxKeyDown (object sender, KeyEventArgs e)
     {
         if (e.KeyCode == Keys.Enter)
@@ -484,6 +508,7 @@ partial class LogWindow
         }
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnFilterGridViewColumnDividerDoubleClick (object sender,
         DataGridViewColumnDividerDoubleClickEventArgs e)
     {
@@ -492,6 +517,7 @@ partial class LogWindow
         BeginInvoke(fx, filterGridView);
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnFilterGridViewCellDoubleClick (object sender, DataGridViewCellEventArgs e)
     {
         if (e.ColumnIndex == 0)
@@ -507,12 +533,14 @@ partial class LogWindow
         }
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnRangeCheckBoxCheckedChanged (object sender, EventArgs e)
     {
         filterRangeComboBox.Enabled = rangeCheckBox.Checked;
         CheckForFilterDirty();
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnDataGridViewScroll (object sender, ScrollEventArgs e)
     {
         if (e.ScrollOrientation == ScrollOrientation.VerticalScroll)
@@ -540,6 +568,7 @@ partial class LogWindow
         }
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnFilterGridViewKeyDown (object sender, KeyEventArgs e)
     {
         switch (e.KeyCode)
@@ -562,6 +591,7 @@ partial class LogWindow
         }
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnDataGridViewKeyDown (object sender, KeyEventArgs e)
     {
         switch (e.KeyCode)
@@ -584,6 +614,7 @@ partial class LogWindow
         _shouldCallTimeSync = true;
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnDataGridViewPreviewKeyDown (object sender, PreviewKeyDownEventArgs e)
     {
         if (e.KeyCode == Keys.Tab && e.Control)
@@ -592,6 +623,7 @@ partial class LogWindow
         }
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnDataGridViewCellContentDoubleClick (object sender, DataGridViewCellEventArgs e)
     {
         if (dataGridView.CurrentCell != null)
@@ -600,6 +632,7 @@ partial class LogWindow
         }
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnSyncFilterCheckBoxCheckedChanged (object sender, EventArgs e)
     {
         if (syncFilterCheckBox.Checked)
@@ -608,26 +641,31 @@ partial class LogWindow
         }
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnDataGridViewLeave (object sender, EventArgs e)
     {
         InvalidateCurrentRow(dataGridView);
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnDataGridViewEnter (object sender, EventArgs e)
     {
         InvalidateCurrentRow(dataGridView);
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnFilterGridViewEnter (object sender, EventArgs e)
     {
         InvalidateCurrentRow(filterGridView);
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnFilterGridViewLeave (object sender, EventArgs e)
     {
         InvalidateCurrentRow(filterGridView);
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnDataGridViewResize (object sender, EventArgs e)
     {
         if (_logFileReader != null && dataGridView.RowCount > 0 && _guiStateArgs.FollowTail)
@@ -641,6 +679,7 @@ partial class LogWindow
         UpdateSelectionDisplay();
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnSelectionChangedTriggerSignal (object sender, EventArgs e)
     {
         var selCount = 0;
@@ -671,11 +710,13 @@ partial class LogWindow
         }
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnFilterKnobControlValueChanged (object sender, EventArgs e)
     {
         CheckForFilterDirty();
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnFilterToTabButtonClick (object sender, EventArgs e)
     {
         FilterToTab();
@@ -697,22 +738,26 @@ partial class LogWindow
         }
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnAdvancedButtonClick (object sender, EventArgs e)
     {
         _showAdvanced = !_showAdvanced;
         ShowAdvancedFilterPanel(_showAdvanced);
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnFilterSplitContainerMouseDown (object sender, MouseEventArgs e)
     {
         ((SplitContainer)sender).IsSplitterFixed = true;
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnFilterSplitContainerMouseUp (object sender, MouseEventArgs e)
     {
         ((SplitContainer)sender).IsSplitterFixed = false;
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnFilterSplitContainerMouseMove (object sender, MouseEventArgs e)
     {
         var splitContainer = (SplitContainer)sender;
@@ -744,6 +789,7 @@ partial class LogWindow
         }
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnFilterSplitContainerMouseDoubleClick (object sender, MouseEventArgs e)
     {
         AutoResizeFilterBox();
@@ -863,7 +909,7 @@ partial class LogWindow
         if (sender is ToolStripItem item)
         {
             var menuArgs = item.Tag as ContextMenuPluginEventArgs;
-            var logLines = menuArgs.LogLines;
+            IList<int> logLines = menuArgs.LogLines;
             menuArgs.Entry.MenuSelected(logLines.Count, menuArgs.Columnizer, menuArgs.Callback.GetLogLine(logLines[0]));
         }
     }
@@ -887,6 +933,7 @@ partial class LogWindow
         }
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnCopyToolStripMenuItemClick (object sender, EventArgs e)
     {
         CopyMarkedLinesToClipboard();
@@ -897,6 +944,7 @@ partial class LogWindow
         CopyMarkedLinesToTab();
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnScrollAllTabsToTimestampToolStripMenuItemClick (object sender, EventArgs e)
     {
         if (CurrentColumnizer.IsTimeshiftImplemented())
@@ -916,6 +964,7 @@ partial class LogWindow
         }
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnLocateLineInOriginalFileToolStripMenuItemClick (object sender, EventArgs e)
     {
         if (dataGridView.CurrentRow != null && FilterPipe != null)
@@ -934,6 +983,7 @@ partial class LogWindow
         ToggleBookmark();
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnMarkEditModeToolStripMenuItemClick (object sender, EventArgs e)
     {
         StartEditMode();
@@ -947,6 +997,7 @@ partial class LogWindow
 
     #region BookMarkList
 
+    [SupportedOSPlatform("windows")]
     private void OnColumnRestrictCheckBoxCheckedChanged (object sender, EventArgs e)
     {
         columnButton.Enabled = columnRestrictCheckBox.Checked;
@@ -964,6 +1015,7 @@ partial class LogWindow
         CheckForFilterDirty();
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnColumnButtonClick (object sender, EventArgs e)
     {
         _filterParams.CurrentColumnizer = _currentColumnizer;
@@ -1168,11 +1220,13 @@ partial class LogWindow
         }
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnTimeSpreadingControlLineSelected (object sender, SelectLineEventArgs e)
     {
         SelectLine(e.Line, false, true);
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnBookmarkCommentToolStripMenuItemClick (object sender, EventArgs e)
     {
         AddBookmarkAndEditComment();
@@ -1251,11 +1305,13 @@ partial class LogWindow
         }
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnRemoveAllToolStripMenuItemClick (object sender, EventArgs e)
     {
         RemoveTempHighlights();
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnMakePermanentToolStripMenuItemClick (object sender, EventArgs e)
     {
         lock (_tempHighlightEntryListLock)
@@ -1269,6 +1325,7 @@ partial class LogWindow
         }
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnMarkCurrentFilterRangeToolStripMenuItemClick (object sender, EventArgs e)
     {
         MarkCurrentFilterRange();
@@ -1308,6 +1365,7 @@ partial class LogWindow
         }
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnDataGridViewOverlayDoubleClicked (object sender, OverlayEventArgs e)
     {
         BookmarkComment(e.BookmarkOverlay.Bookmark);
@@ -1354,7 +1412,7 @@ partial class LogWindow
     {
         FilterParams newParams = _filterParams.Clone();
         newParams.Color = Color.FromKnownColor(KnownColor.Black);
-        ConfigManager.Settings.filterList.Add(newParams);
+        ConfigManager.Settings.FilterList.Add(newParams);
         OnFilterListChanged(this);
     }
 
@@ -1365,7 +1423,7 @@ partial class LogWindow
         if (index >= 0)
         {
             var filterParams = (FilterParams)filterListBox.Items[index];
-            ConfigManager.Settings.filterList.Remove(filterParams);
+            ConfigManager.Settings.FilterList.Remove(filterParams);
             OnFilterListChanged(this);
             if (filterListBox.Items.Count > 0)
             {
@@ -1381,9 +1439,9 @@ partial class LogWindow
         if (i > 0)
         {
             var filterParams = (FilterParams)filterListBox.Items[i];
-            ConfigManager.Settings.filterList.RemoveAt(i);
+            ConfigManager.Settings.FilterList.RemoveAt(i);
             i--;
-            ConfigManager.Settings.filterList.Insert(i, filterParams);
+            ConfigManager.Settings.FilterList.Insert(i, filterParams);
             OnFilterListChanged(this);
             filterListBox.SelectedIndex = i;
         }
@@ -1401,9 +1459,9 @@ partial class LogWindow
         if (i < filterListBox.Items.Count - 1)
         {
             var filterParams = (FilterParams)filterListBox.Items[i];
-            ConfigManager.Settings.filterList.RemoveAt(i);
+            ConfigManager.Settings.FilterList.RemoveAt(i);
             i++;
-            ConfigManager.Settings.filterList.Insert(i, filterParams);
+            ConfigManager.Settings.FilterList.Insert(i, filterParams);
             OnFilterListChanged(this);
             filterListBox.SelectedIndex = i;
         }
@@ -1471,9 +1529,12 @@ partial class LogWindow
         if (i < filterListBox.Items.Count && i >= 0)
         {
             var filterParams = (FilterParams)filterListBox.Items[i];
-            ColorDialog dlg = new();
-            dlg.CustomColors = [filterParams.Color.ToArgb()];
-            dlg.Color = filterParams.Color;
+            ColorDialog dlg = new()
+            {
+                CustomColors = [filterParams.Color.ToArgb()],
+                Color = filterParams.Color
+            };
+
             if (dlg.ShowDialog() == DialogResult.OK)
             {
                 filterParams.Color = dlg.Color;
@@ -1482,6 +1543,7 @@ partial class LogWindow
         }
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnFilterCaseSensitiveCheckBoxCheckedChanged (object sender, EventArgs e)
     {
         CheckForFilterDirty();
@@ -1495,26 +1557,31 @@ partial class LogWindow
         CheckForFilterDirty();
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnInvertFilterCheckBoxCheckedChanged (object sender, EventArgs e)
     {
         CheckForFilterDirty();
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnFilterRangeComboBoxTextChanged (object sender, EventArgs e)
     {
         CheckForFilterDirty();
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnFuzzyKnobControlValueChanged (object sender, EventArgs e)
     {
         CheckForFilterDirty();
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnFilterComboBoxTextChanged (object sender, EventArgs e)
     {
         CheckForFilterDirty();
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnSetBookmarksOnSelectedLinesToolStripMenuItemClick (object sender, EventArgs e)
     {
         SetBookmarksForSelectedFilterLines();
@@ -1526,21 +1593,25 @@ partial class LogWindow
         SetCurrentHighlightGroup(groupName);
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnFilterOnLoadCheckBoxMouseClick (object sender, MouseEventArgs e)
     {
         HandleChangedFilterOnLoadSetting();
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnFilterOnLoadCheckBoxKeyPress (object sender, KeyPressEventArgs e)
     {
         HandleChangedFilterOnLoadSetting();
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnHideFilterListOnLoadCheckBoxMouseClick (object sender, MouseEventArgs e)
     {
         HandleChangedFilterOnLoadSetting();
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnFilterToTabToolStripMenuItemClick (object sender, EventArgs e)
     {
         FilterToTab();
@@ -1551,7 +1622,7 @@ partial class LogWindow
         var syncList = sender as TimeSyncList;
         lock (_timeSyncListLock)
         {
-            if (syncList.Count == 0 || syncList.Count == 1 && syncList.Contains(this))
+            if (syncList.Count == 0 || (syncList.Count == 1 && syncList.Contains(this)))
             {
                 if (syncList == TimeSyncList)
                 {
@@ -1573,6 +1644,7 @@ partial class LogWindow
         advancedFilterSplitContainer.SplitterDistance = FILTER_ADVANCED_SPLITTER_DISTANCE;
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnMarkFilterHitsInLogViewToolStripMenuItemClick (object sender, EventArgs e)
     {
         SearchParams p = new()
@@ -1585,6 +1657,7 @@ partial class LogWindow
         AddSearchHitHighlightEntry(p);
     }
 
+    [SupportedOSPlatform("windows")]
     private void OnColumnComboBoxSelectionChangeCommitted (object sender, EventArgs e)
     {
         SelectColumn();
