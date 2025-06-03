@@ -12,7 +12,7 @@ using NLog;
 namespace LogExpert.Core.Classes.Persister;
 
 //TODO Rewrite as json Persister, xml is outdated and difficult to parse and write
-public class Persister
+public static class Persister
 {
     #region Fields
 
