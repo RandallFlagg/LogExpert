@@ -1,6 +1,5 @@
 ﻿using System.Text;
 
-using LogExpert.Classes.Filter;
 using LogExpert.Core.Classes;
 using LogExpert.Core.Classes.Bookmark;
 using LogExpert.Core.Classes.Columnizer;
@@ -213,21 +212,21 @@ partial class LogWindow
         PersistenceData persistenceData = new()
         {
             BookmarkList = _bookmarkProvider.BookmarkList,
-            rowHeightList = _rowHeightList,
-            multiFile = IsMultiFile,
-            multiFilePattern = _multiFileOptions.FormatPattern,
-            multiFileMaxDays = _multiFileOptions.MaxDayTry,
+            RowHeightList = _rowHeightList,
+            MultiFile = IsMultiFile,
+            MultiFilePattern = _multiFileOptions.FormatPattern,
+            MultiFileMaxDays = _multiFileOptions.MaxDayTry,
             CurrentLine = dataGridView.CurrentCellAddress.Y,
-            firstDisplayedLine = dataGridView.FirstDisplayedScrollingRowIndex,
-            filterVisible = !splitContainerLogWindow.Panel2Collapsed,
-            filterAdvanced = !advancedFilterSplitContainer.Panel1Collapsed,
-            filterPosition = splitContainerLogWindow.SplitterDistance,
-            followTail = _guiStateArgs.FollowTail,
-            fileName = FileName,
-            tabName = Text,
-            sessionFileName = SessionFileName,
+            FirstDisplayedLine = dataGridView.FirstDisplayedScrollingRowIndex,
+            FilterVisible = !splitContainerLogWindow.Panel2Collapsed,
+            FilterAdvanced = !advancedFilterSplitContainer.Panel1Collapsed,
+            FilterPosition = splitContainerLogWindow.SplitterDistance,
+            FollowTail = _guiStateArgs.FollowTail,
+            FileName = FileName,
+            TabName = Text,
+            SessionFileName = SessionFileName,
             ColumnizerName = CurrentColumnizer.GetName(),
-            lineCount = _logFileReader.LineCount
+            LineCount = _logFileReader.LineCount
         };
 
         _filterParams.IsFilterTail = filterTailCheckBox.Checked; // this option doesnt need a press on 'search'
@@ -235,7 +234,7 @@ partial class LogWindow
         if (Preferences.saveFilters)
         {
             List<FilterParams> filterList = [_filterParams];
-            persistenceData.filterParamsList = filterList;
+            persistenceData.FilterParamsList = filterList;
 
             foreach (FilterPipe filterPipe in _filterPipeList)
             {
@@ -244,23 +243,23 @@ partial class LogWindow
                     PersistenceData = filterPipe.OwnLogWindow.GetPersistenceData(),
                     FilterParams = filterPipe.FilterParams
                 };
-                persistenceData.filterTabDataList.Add(data);
+                persistenceData.FilterTabDataList.Add(data);
             }
         }
 
         if (_currentHighlightGroup != null)
         {
-            persistenceData.highlightGroupName = _currentHighlightGroup.GroupName;
+            persistenceData.HighlightGroupName = _currentHighlightGroup.GroupName;
         }
 
         if (_fileNames != null && IsMultiFile)
         {
-            persistenceData.multiFileNames.AddRange(_fileNames);
+            persistenceData.MultiFileNames.AddRange(_fileNames);
         }
 
         //persistenceData.showBookmarkCommentColumn = this.bookmarkWindow.ShowBookmarkCommentColumn;
-        persistenceData.filterSaveListVisible = !highlightSplitContainer.Panel2Collapsed;
-        persistenceData.encoding = _logFileReader.CurrentEncoding;
+        persistenceData.FilterSaveListVisible = !highlightSplitContainer.Panel2Collapsed;
+        persistenceData.Encoding = _logFileReader.CurrentEncoding;
 
         return persistenceData;
     }

@@ -1,10 +1,10 @@
-﻿using LogExpert;
-
-using Newtonsoft.Json.Linq;
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
+using LogExpert;
+
+using Newtonsoft.Json.Linq;
 
 namespace JsonColumnizer;
 
@@ -15,28 +15,28 @@ public class JsonCompactColumnizer : JsonColumnizer, IColumnizerPriority
 {
     #region Public methods
 
-    public override string GetName()
+    public override string GetName ()
     {
         return "JSON Compact Columnizer";
     }
 
-    public override string GetDescription()
+    public override string GetDescription ()
     {
         return "A JSON columnier for Serilog.Formatting.Compact format.";
     }
 
-    public override void Selected(ILogLineColumnizerCallback callback)
+    public override void Selected (ILogLineColumnizerCallback callback)
     {
         ColumnList.Clear();
         // Create column header with cached column list.
 
-        foreach (var col in _tagDict.Keys)
+        foreach (var col in TagDict.Keys)
         {
-            ColumnList.Add(new JsonColumn(_tagDict[col]));
+            ColumnList.Add(new JsonColumn(TagDict[col]));
         }
     }
 
-    public override Priority GetPriority(string fileName, IEnumerable<ILogLine> samples)
+    public override Priority GetPriority (string fileName, IEnumerable<ILogLine> samples)
     {
         Priority result = Priority.NotSupport;
         if (fileName.EndsWith("json", StringComparison.OrdinalIgnoreCase))
@@ -72,7 +72,7 @@ public class JsonCompactColumnizer : JsonColumnizer, IColumnizerPriority
 
     #region Private Methods
 
-    protected Dictionary<string, string> _tagDict = new()
+    protected Dictionary<string, string> TagDict { get; set; } = new()
     {
         {"@t", "Timestamp"},
         {"@l", "Level"},
@@ -83,7 +83,7 @@ public class JsonCompactColumnizer : JsonColumnizer, IColumnizerPriority
         {"@mt", "Message Template"},
     };
 
-    protected override IColumnizedLogLine SplitJsonLine(ILogLine line, JObject json)
+    protected override IColumnizedLogLine SplitJsonLine (ILogLine line, JObject json)
     {
         List<IColumn> returnColumns = [];
         var cLogLine = new ColumnizedLogLine { LogLine = line };
@@ -94,11 +94,11 @@ public class JsonCompactColumnizer : JsonColumnizer, IColumnizerPriority
         // Always rearrage the order of all json fields within a line to follow the sequence of columnNameList.
         // This will make sure the log line displayed correct even the order of json fields changed.
         //
-        foreach (var column in _tagDict.Keys)
+        foreach (var column in TagDict.Keys)
         {
             if (column.StartsWith('@'))
             {
-                var existingColumn = columns.Find(x => x.ColumnName == column);
+                ColumnWithName existingColumn = columns.Find(x => x.ColumnName == column);
 
                 if (existingColumn != null)
                 {

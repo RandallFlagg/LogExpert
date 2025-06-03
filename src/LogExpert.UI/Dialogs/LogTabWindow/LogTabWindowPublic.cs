@@ -2,8 +2,8 @@ using System.Runtime.Versioning;
 using System.Text;
 using System.Text.RegularExpressions;
 
-using LogExpert.Classes.Filter;
 using LogExpert.Core.Classes.Columnizer;
+using LogExpert.Core.Classes.Filter;
 using LogExpert.Core.Config;
 using LogExpert.Core.Entities;
 using LogExpert.Core.Interface;
@@ -243,13 +243,13 @@ public partial class LogTabWindow
     {
         foreach (ColumnizerMaskEntry entry in ConfigManager.Settings.Preferences.columnizerMaskList)
         {
-            if (entry.mask != null)
+            if (entry.Mask != null)
             {
                 try
                 {
-                    if (Regex.IsMatch(fileName, entry.mask))
+                    if (Regex.IsMatch(fileName, entry.Mask))
                     {
-                        ILogLineColumnizer columnizer = ColumnizerPicker.FindColumnizerByName(entry.columnizerName, PluginRegistry.PluginRegistry.Instance.RegisteredColumnizers);
+                        ILogLineColumnizer columnizer = ColumnizerPicker.FindColumnizerByName(entry.ColumnizerName, PluginRegistry.PluginRegistry.Instance.RegisteredColumnizers);
                         return columnizer;
                     }
                 }
@@ -268,13 +268,13 @@ public partial class LogTabWindow
     {
         foreach (HighlightMaskEntry entry in ConfigManager.Settings.Preferences.highlightMaskList)
         {
-            if (entry.mask != null)
+            if (entry.Mask != null)
             {
                 try
                 {
-                    if (Regex.IsMatch(fileName, entry.mask))
+                    if (Regex.IsMatch(fileName, entry.Mask))
                     {
-                        HighlightGroup group = FindHighlightGroup(entry.highlightGroupName);
+                        HighlightGroup group = FindHighlightGroup(entry.HighlightGroupName);
                         return group;
                     }
                 }

@@ -272,24 +272,24 @@ public partial class LogTabWindow
                 return fileName;
             }
 
-            if (!string.IsNullOrEmpty(persistenceData.fileName))
+            if (!string.IsNullOrEmpty(persistenceData.FileName))
             {
-                IFileSystemPlugin fs = PluginRegistry.PluginRegistry.Instance.FindFileSystemForUri(persistenceData.fileName);
+                IFileSystemPlugin fs = PluginRegistry.PluginRegistry.Instance.FindFileSystemForUri(persistenceData.FileName);
                 if (fs != null && !fs.GetType().Equals(typeof(LocalFileSystem)))
                 {
-                    return persistenceData.fileName;
+                    return persistenceData.FileName;
                 }
 
                 // On relative paths the URI check (and therefore the file system plugin check) will fail.
                 // So fs == null and fs == LocalFileSystem are handled here like normal files.
-                if (Path.IsPathRooted(persistenceData.fileName))
+                if (Path.IsPathRooted(persistenceData.FileName))
                 {
-                    return persistenceData.fileName;
+                    return persistenceData.FileName;
                 }
 
                 // handle relative paths in .lxp files
                 var dir = Path.GetDirectoryName(fileName);
-                return Path.Combine(dir, persistenceData.fileName);
+                return Path.Combine(dir, persistenceData.FileName);
             }
         }
 
@@ -1027,7 +1027,7 @@ public partial class LogTabWindow
     [SupportedOSPlatform("windows")]
     private void SetToolIcon (ToolEntry entry, ToolStripItem item)
     {
-        Icon icon = Win32.LoadIconFromExe(entry.iconFile, entry.iconIndex);
+        Icon icon = Win32.LoadIconFromExe(entry.IconFile, entry.IconIndex);
         if (icon != null)
         {
             item.Image = icon.ToBitmap();
@@ -1044,15 +1044,15 @@ public partial class LogTabWindow
             icon.Dispose();
         }
 
-        if (!string.IsNullOrEmpty(entry.cmd))
+        if (!string.IsNullOrEmpty(entry.Cmd))
         {
-            item.ToolTipText = entry.name;
+            item.ToolTipText = entry.Name;
         }
     }
 
     private void ToolButtonClick (ToolEntry toolEntry)
     {
-        if (string.IsNullOrEmpty(toolEntry.cmd))
+        if (string.IsNullOrEmpty(toolEntry.Cmd))
         {
             //TODO TabIndex => To Enum
             OpenSettings(2);
@@ -1065,12 +1065,12 @@ public partial class LogTabWindow
             ILogFileInfo info = CurrentLogWindow.GetCurrentFileInfo();
             if (line != null && info != null)
             {
-                ArgParser parser = new(toolEntry.args);
+                ArgParser parser = new(toolEntry.Args);
                 var argLine = parser.BuildArgs(line, CurrentLogWindow.GetRealLineNum() + 1, info, this);
                 if (argLine != null)
                 {
-                    StartTool(toolEntry.cmd, argLine, toolEntry.sysout, toolEntry.columnizerName,
-                        toolEntry.workingDir);
+                    StartTool(toolEntry.Cmd, argLine, toolEntry.Sysout, toolEntry.ColumnizerName,
+                        toolEntry.WorkingDir);
                 }
             }
         }
@@ -1245,7 +1245,7 @@ public partial class LogTabWindow
         externalToolsToolStrip.SuspendLayout();
         foreach (ToolEntry tool in Preferences.toolEntries)
         {
-            if (tool.isFavourite)
+            if (tool.IsFavourite)
             {
                 ToolStripButton button = new("" + labels[num % 26])
                 {
@@ -1258,7 +1258,7 @@ public partial class LogTabWindow
             }
 
             num++;
-            ToolStripMenuItem menuItem = new(tool.name)
+            ToolStripMenuItem menuItem = new(tool.Name)
             {
                 Tag = tool
             };
@@ -1335,7 +1335,7 @@ public partial class LogTabWindow
 
         if (persistString.StartsWith(WindowTypes.LogWindow.ToString()))
         {
-            var fileName = persistString.Substring(WindowTypes.LogWindow.ToString().Length + 1);
+            var fileName = persistString[(WindowTypes.LogWindow.ToString().Length + 1)..];
             LogWindow.LogWindow win = FindWindowForFile(fileName);
             if (win != null)
             {

@@ -2,6 +2,8 @@
 using System.Drawing;
 using System.Windows.Forms;
 
+using LogExpert.UI.Dialogs.Eminus;
+
 namespace LogExpert;
 
 internal partial class EminusConfigDlg : Form
@@ -24,9 +26,9 @@ internal partial class EminusConfigDlg : Form
         TopLevel = false;
         Config = config;
 
-        hostTextBox.Text = config.host;
-        portTextBox.Text = string.Empty + config.port;
-        passwordTextBox.Text = config.password;
+        hostTextBox.Text = config.Host;
+        portTextBox.Text = string.Empty + config.Port;
+        passwordTextBox.Text = config.Password;
 
         ResumeLayout();
     }
@@ -43,16 +45,16 @@ internal partial class EminusConfigDlg : Form
 
     public void ApplyChanges()
     {
-        Config.host = hostTextBox.Text;
+        Config.Host = hostTextBox.Text;
         try
         {
-            Config.port = short.Parse(portTextBox.Text);
+            Config.Port = short.Parse(portTextBox.Text);
         }
         catch (FormatException)
         {
-            Config.port = 0;
+            Config.Port = 0;
         }
-        Config.password = passwordTextBox.Text;
+        Config.Password = passwordTextBox.Text;
     }
 
     #endregion

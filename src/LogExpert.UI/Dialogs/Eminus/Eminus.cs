@@ -1,4 +1,7 @@
-﻿using Newtonsoft.Json;
+﻿using LogExpert.UI.Dialogs.Eminus;
+
+using Newtonsoft.Json;
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -133,7 +136,7 @@ internal class Eminus : IContextMenuEntry, ILogExpertPluginConfigurator
         xmlDoc.CreateXmlDeclaration("1.0", "UTF-8", "yes");
         XmlElement rootElement = xmlDoc.CreateElement("eminus");
         xmlDoc.AppendChild(rootElement);
-        rootElement.SetAttribute("authKey", _config.password);
+        rootElement.SetAttribute("authKey", _config.Password);
 
         XmlElement loadElement = xmlDoc.CreateElement("loadclass");
         loadElement.SetAttribute("mode", "dialog");
@@ -192,7 +195,7 @@ internal class Eminus : IContextMenuEntry, ILogExpertPluginConfigurator
         {
             try
             {
-                TcpClient client = new(_config.host, _config.port);
+                TcpClient client = new(_config.Host, _config.Port);
                 NetworkStream stream = client.GetStream();
                 StreamWriter writer = new(stream);
                 doc.Save(writer);

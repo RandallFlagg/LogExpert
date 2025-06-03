@@ -101,11 +101,11 @@ partial class LogWindow
                 return false;
             }
 
-            IsMultiFile = persistenceData.multiFile;
+            IsMultiFile = persistenceData.MultiFile;
             _multiFileOptions = new MultiFileOptions
             {
-                FormatPattern = persistenceData.multiFilePattern,
-                MaxDayTry = persistenceData.multiFileMaxDays
+                FormatPattern = persistenceData.MultiFilePattern,
+                MaxDayTry = persistenceData.MultiFileMaxDays
             };
 
             if (string.IsNullOrEmpty(_multiFileOptions.FormatPattern))
@@ -113,30 +113,30 @@ partial class LogWindow
                 _multiFileOptions = ObjectClone.Clone(Preferences.multiFileOptions);
             }
 
-            splitContainerLogWindow.SplitterDistance = persistenceData.filterPosition;
-            splitContainerLogWindow.Panel2Collapsed = !persistenceData.filterVisible;
-            ToggleHighlightPanel(persistenceData.filterSaveListVisible);
-            ShowAdvancedFilterPanel(persistenceData.filterAdvanced);
+            splitContainerLogWindow.SplitterDistance = persistenceData.FilterPosition;
+            splitContainerLogWindow.Panel2Collapsed = !persistenceData.FilterVisible;
+            ToggleHighlightPanel(persistenceData.FilterSaveListVisible);
+            ShowAdvancedFilterPanel(persistenceData.FilterAdvanced);
 
             if (_reloadMemento == null)
             {
                 PreselectColumnizer(persistenceData.ColumnizerName);
             }
 
-            FollowTailChanged(persistenceData.followTail, false);
-            if (persistenceData.tabName != null)
+            FollowTailChanged(persistenceData.FollowTail, false);
+            if (persistenceData.TabName != null)
             {
-                Text = persistenceData.tabName;
+                Text = persistenceData.TabName;
             }
 
             AdjustHighlightSplitterWidth();
-            SetCurrentHighlightGroup(persistenceData.highlightGroupName);
+            SetCurrentHighlightGroup(persistenceData.HighlightGroupName);
 
-            if (persistenceData.multiFileNames.Count > 0)
+            if (persistenceData.MultiFileNames.Count > 0)
             {
                 _logger.Info("Detected MultiFile name list in persistence options");
-                _fileNames = new string[persistenceData.multiFileNames.Count];
-                persistenceData.multiFileNames.CopyTo(_fileNames);
+                _fileNames = new string[persistenceData.MultiFileNames.Count];
+                persistenceData.MultiFileNames.CopyTo(_fileNames);
             }
             else
             {
@@ -144,7 +144,7 @@ partial class LogWindow
             }
 
             //this.bookmarkWindow.ShowBookmarkCommentColumn = persistenceData.showBookmarkCommentColumn;
-            SetExplicitEncoding(persistenceData.encoding);
+            SetExplicitEncoding(persistenceData.Encoding);
             return true;
         }
         catch (Exception ex)
@@ -197,7 +197,7 @@ partial class LogWindow
                 persistenceData = Persister.LoadPersistenceDataFromFixedFile(ForcedPersistenceFileName);
             }
 
-            if (persistenceData.lineCount > _logFileReader.LineCount)
+            if (persistenceData.LineCount > _logFileReader.LineCount)
             {
                 // outdated persistence data (logfile rollover)
                 // MessageBox.Show(this, "Persistence data for " + this.FileName + " is outdated. It was discarded.", "Log Expert");
@@ -207,7 +207,7 @@ partial class LogWindow
             }
 
             _bookmarkProvider.SetBookmarks(persistenceData.BookmarkList);
-            _rowHeightList = persistenceData.rowHeightList;
+            _rowHeightList = persistenceData.RowHeightList;
             try
             {
                 if (persistenceData.CurrentLine >= 0 && persistenceData.CurrentLine < dataGridView.RowCount)
@@ -223,15 +223,15 @@ partial class LogWindow
                     }
                 }
 
-                if (persistenceData.firstDisplayedLine >= 0 &&
-                    persistenceData.firstDisplayedLine < dataGridView.RowCount)
+                if (persistenceData.FirstDisplayedLine >= 0 &&
+                    persistenceData.FirstDisplayedLine < dataGridView.RowCount)
                 {
-                    dataGridView.FirstDisplayedScrollingRowIndex = persistenceData.firstDisplayedLine;
+                    dataGridView.FirstDisplayedScrollingRowIndex = persistenceData.FirstDisplayedLine;
                 }
 
-                if (persistenceData.followTail)
+                if (persistenceData.FollowTail)
                 {
-                    FollowTailChanged(persistenceData.followTail, false);
+                    FollowTailChanged(persistenceData.FollowTail, false);
                 }
             }
             catch (ArgumentOutOfRangeException)
@@ -253,9 +253,9 @@ partial class LogWindow
 
     private void RestoreFilters (PersistenceData persistenceData)
     {
-        if (persistenceData.filterParamsList.Count > 0)
+        if (persistenceData.FilterParamsList.Count > 0)
         {
-            _filterParams = persistenceData.filterParamsList[0];
+            _filterParams = persistenceData.FilterParamsList[0];
             ReInitFilterParams(_filterParams);
         }
 
@@ -263,15 +263,15 @@ partial class LogWindow
         BeginInvoke(new MethodInvoker(FilterSearch));
         try
         {
-            splitContainerLogWindow.SplitterDistance = persistenceData.filterPosition;
-            splitContainerLogWindow.Panel2Collapsed = !persistenceData.filterVisible;
+            splitContainerLogWindow.SplitterDistance = persistenceData.FilterPosition;
+            splitContainerLogWindow.Panel2Collapsed = !persistenceData.FilterVisible;
         }
         catch (InvalidOperationException e)
         {
             _logger.Error(e, "Error setting splitter distance: ");
         }
 
-        ShowAdvancedFilterPanel(persistenceData.filterAdvanced);
+        ShowAdvancedFilterPanel(persistenceData.FilterAdvanced);
         if (_filterPipeList.Count == 0) // don't restore if it's only a reload
         {
             RestoreFilterTabs(persistenceData);
@@ -280,7 +280,7 @@ partial class LogWindow
 
     private void RestoreFilterTabs (PersistenceData persistenceData)
     {
-        foreach (FilterTabData data in persistenceData.filterTabDataList)
+        foreach (FilterTabData data in persistenceData.FilterTabDataList)
         {
             FilterParams persistFilterParams = data.FilterParams;
             ReInitFilterParams(persistFilterParams);
@@ -289,7 +289,7 @@ partial class LogWindow
             List<int> filterHitList = [];
             Filter(persistFilterParams, filterResultList, _lastFilterLinesList, filterHitList);
             FilterPipe pipe = new(persistFilterParams.Clone(), this);
-            WritePipeToTab(pipe, filterResultList, data.PersistenceData.tabName, data.PersistenceData);
+            WritePipeToTab(pipe, filterResultList, data.PersistenceData.TabName, data.PersistenceData);
         }
     }
 

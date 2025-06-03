@@ -1,6 +1,5 @@
 using System.Runtime.Versioning;
 
-using LogExpert.Classes.Filter;
 using LogExpert.Core.Callback;
 using LogExpert.Core.Classes.Bookmark;
 using LogExpert.Core.Classes.Filter;

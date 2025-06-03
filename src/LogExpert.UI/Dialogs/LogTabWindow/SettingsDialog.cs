@@ -269,7 +269,7 @@ internal partial class SettingsDialog : Form
     {
         if (_selectedTool != null)
         {
-            FillColumnizerForToolsList(comboBoxColumnizer, _selectedTool.columnizerName);
+            FillColumnizerForToolsList(comboBoxColumnizer, _selectedTool.ColumnizerName);
         }
     }
 
@@ -324,8 +324,8 @@ internal partial class SettingsDialog : Form
             }
 
             row.Cells.Add(cell);
-            row.Cells[0].Value = maskEntry.mask;
-            ILogLineColumnizer columnizer = ColumnizerPicker.DecideColumnizerByName(maskEntry.columnizerName,
+            row.Cells[0].Value = maskEntry.Mask;
+            ILogLineColumnizer columnizer = ColumnizerPicker.DecideColumnizerByName(maskEntry.ColumnizerName,
                 PluginRegistry.PluginRegistry.Instance.RegisteredColumnizers);
 
             row.Cells[1].Value = columnizer.GetName();
@@ -368,9 +368,9 @@ internal partial class SettingsDialog : Form
             }
 
             row.Cells.Add(cell);
-            row.Cells[0].Value = maskEntry.mask;
+            row.Cells[0].Value = maskEntry.Mask;
 
-            HighlightGroup currentGroup = _logTabWin.FindHighlightGroup(maskEntry.highlightGroupName);
+            HighlightGroup currentGroup = _logTabWin.FindHighlightGroup(maskEntry.HighlightGroupName);
             var highlightGroupList = _logTabWin.HighlightGroupList;
             currentGroup ??= highlightGroupList.Count > 0 ? highlightGroupList[0] : new HighlightGroup();
 
@@ -397,8 +397,8 @@ internal partial class SettingsDialog : Form
             if (!row.IsNewRow)
             {
                 ColumnizerMaskEntry entry = new();
-                entry.mask = (string)row.Cells[0].Value;
-                entry.columnizerName = (string)row.Cells[1].Value;
+                entry.Mask = (string)row.Cells[0].Value;
+                entry.ColumnizerName = (string)row.Cells[1].Value;
                 Preferences.columnizerMaskList.Add(entry);
             }
         }
@@ -413,8 +413,8 @@ internal partial class SettingsDialog : Form
             if (!row.IsNewRow)
             {
                 HighlightMaskEntry entry = new();
-                entry.mask = (string)row.Cells[0].Value;
-                entry.highlightGroupName = (string)row.Cells[1].Value;
+                entry.Mask = (string)row.Cells[0].Value;
+                entry.HighlightGroupName = (string)row.Cells[1].Value;
                 Preferences.highlightMaskList.Add(entry);
             }
         }
@@ -481,7 +481,7 @@ internal partial class SettingsDialog : Form
 
         foreach (ToolEntry tool in Preferences.toolEntries)
         {
-            listBoxTools.Items.Add(tool.Clone(), tool.isFavourite);
+            listBoxTools.Items.Add(tool.Clone(), tool.IsFavourite);
         }
 
         if (listBoxTools.Items.Count > 0)
@@ -523,7 +523,7 @@ internal partial class SettingsDialog : Form
         for (var i = 0; i < listBoxTools.Items.Count; ++i)
         {
             Preferences.toolEntries.Add(listBoxTools.Items[i] as ToolEntry);
-            (listBoxTools.Items[i] as ToolEntry).isFavourite = listBoxTools.GetItemChecked(i);
+            (listBoxTools.Items[i] as ToolEntry).IsFavourite = listBoxTools.GetItemChecked(i);
         }
     }
 
@@ -531,12 +531,12 @@ internal partial class SettingsDialog : Form
     {
         if (_selectedTool != null)
         {
-            _selectedTool.name = Util.IsNullOrSpaces(textBoxToolName.Text) ? textBoxTool.Text : textBoxToolName.Text;
-            _selectedTool.cmd = textBoxTool.Text;
-            _selectedTool.args = textBoxArguments.Text;
-            _selectedTool.columnizerName = comboBoxColumnizer.Text;
-            _selectedTool.sysout = checkBoxSysout.Checked;
-            _selectedTool.workingDir = textBoxWorkingDir.Text;
+            _selectedTool.Name = Util.IsNullOrSpaces(textBoxToolName.Text) ? textBoxTool.Text : textBoxToolName.Text;
+            _selectedTool.Cmd = textBoxTool.Text;
+            _selectedTool.Args = textBoxArguments.Text;
+            _selectedTool.ColumnizerName = comboBoxColumnizer.Text;
+            _selectedTool.Sysout = checkBoxSysout.Checked;
+            _selectedTool.WorkingDir = textBoxWorkingDir.Text;
         }
     }
 
@@ -544,13 +544,13 @@ internal partial class SettingsDialog : Form
     {
         if (_selectedTool != null)
         {
-            textBoxToolName.Text = _selectedTool.name;
-            textBoxTool.Text = _selectedTool.cmd;
-            textBoxArguments.Text = _selectedTool.args;
-            comboBoxColumnizer.Text = _selectedTool.columnizerName;
-            checkBoxSysout.Checked = _selectedTool.sysout;
-            comboBoxColumnizer.Enabled = _selectedTool.sysout;
-            textBoxWorkingDir.Text = _selectedTool.workingDir;
+            textBoxToolName.Text = _selectedTool.Name;
+            textBoxTool.Text = _selectedTool.Cmd;
+            textBoxArguments.Text = _selectedTool.Args;
+            comboBoxColumnizer.Text = _selectedTool.ColumnizerName;
+            checkBoxSysout.Checked = _selectedTool.Sysout;
+            comboBoxColumnizer.Enabled = _selectedTool.Sysout;
+            textBoxWorkingDir.Text = _selectedTool.WorkingDir;
         }
     }
 
@@ -558,7 +558,7 @@ internal partial class SettingsDialog : Form
     {
         if (_selectedTool != null)
         {
-            Icon icon = Win32.LoadIconFromExe(_selectedTool.iconFile, _selectedTool.iconIndex);
+            Icon icon = Win32.LoadIconFromExe(_selectedTool.IconFile, _selectedTool.IconIndex);
             if (icon != null)
             {
                 Image image = icon.ToBitmap();
@@ -949,7 +949,7 @@ internal partial class SettingsDialog : Form
     {
         if (_selectedTool != null)
         {
-            var iconFile = _selectedTool.iconFile;
+            var iconFile = _selectedTool.IconFile;
 
             if (Util.IsNullOrSpaces(iconFile))
             {
@@ -960,8 +960,8 @@ internal partial class SettingsDialog : Form
 
             if (dlg.ShowDialog() == DialogResult.OK)
             {
-                _selectedTool.iconFile = dlg.FileName;
-                _selectedTool.iconIndex = dlg.IconIndex;
+                _selectedTool.IconFile = dlg.FileName;
+                _selectedTool.IconIndex = dlg.IconIndex;
                 DisplayCurrentIcon();
             }
         }

@@ -1,7 +1,6 @@
 using System.ComponentModel;
 using System.Runtime.Versioning;
 
-using LogExpert.Classes.Filter;
 using LogExpert.Core.Classes;
 using LogExpert.Core.Classes.Filter;
 using LogExpert.Core.Classes.Highlight;

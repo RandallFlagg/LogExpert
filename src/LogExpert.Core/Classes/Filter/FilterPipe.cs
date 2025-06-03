@@ -1,42 +1,40 @@
-using LogExpert.Core.Classes.Filter;
-using LogExpert.Core.Interface;
-using NLog;
-
-using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Text;
 
-namespace LogExpert.Classes.Filter;
+using LogExpert.Core.Interface;
+
+using NLog;
+
+namespace LogExpert.Core.Classes.Filter;
 
 public class FilterPipe
 {
     #region Fields
 
-    private static readonly ILogger _logger = LogManager.GetCurrentClassLogger();
+    private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
-    private IList<int> _lineMappingList = new List<int>();
+    private IList<int> _lineMappingList = [];
     private StreamWriter _writer;
+    private readonly object _fileNameLock = new();
 
     #endregion
 
     #region cTor
 
-    public FilterPipe(FilterParams filterParams, ILogWindow logWindow)
+    public FilterPipe (FilterParams filterParams, ILogWindow logWindow)
     {
         FilterParams = filterParams;
         LogWindow = logWindow;
         IsStopped = false;
         FileName = Path.GetTempFileName();
 
-        _logger.Info("Created temp file: {0}", FileName);
+        _logger.Info($"Created temp file: {FileName}");
     }
 
     #endregion
 
     #region Delegates
 
-    public delegate void ClosedEventHandler(object sender, EventArgs e);
+    public delegate void ClosedEventHandler (object sender, EventArgs e);
 
     #endregion
 
@@ -54,7 +52,7 @@ public class FilterPipe
 
     public FilterParams FilterParams { get; }
 
-    public IList<int> LastLinesHistoryList { get; } = new List<int>();
+    public IList<int> LastLinesHistoryList { get; } = [];
 
     public ILogWindow LogWindow { get; }
 
@@ -64,13 +62,13 @@ public class FilterPipe
 
     #region Public methods
 
-    public void OpenFile()
+    public void OpenFile ()
     {
         FileStream fStream = new(FileName, FileMode.Append, FileAccess.Write, FileShare.Read);
         _writer = new StreamWriter(fStream, new UnicodeEncoding(false, false));
     }
 
-    public void CloseFile()
+    public void CloseFile ()
     {
         if (_writer != null)
         {
@@ -79,11 +77,11 @@ public class FilterPipe
         }
     }
 
-    public bool WriteToPipe(ILogLine textLine, int orgLineNum)
+    public bool WriteToPipe (ILogLine textLine, int orgLineNum)
     {
         try
         {
-            lock (FileName)
+            lock (_fileNameLock)
             {
                 lock (_lineMappingList)
                 {
@@ -108,22 +106,19 @@ public class FilterPipe
         }
     }
 
-    public int GetOriginalLineNum(int lineNum)
+    public int GetOriginalLineNum (int lineNum)
     {
         lock (_lineMappingList)
         {
-            if (_lineMappingList.Count > lineNum)
-            {
-                return _lineMappingList[lineNum];
-            }
-
-            return -1;
+            return _lineMappingList.Count > lineNum
+                ? _lineMappingList[lineNum]
+                : -1;
         }
     }
 
-    public void ShiftLineNums(int offset)
+    public void ShiftLineNums (int offset)
     {
-        _logger.Debug("FilterPipe.ShiftLineNums() offset={0}", offset);
+        _logger.Debug($"FilterPipe.ShiftLineNums() offset={offset}");
         List<int> newList = [];
         lock (_lineMappingList)
         {
@@ -139,11 +134,12 @@ public class FilterPipe
                     newList.Add(-1);
                 }
             }
+
             _lineMappingList = newList;
         }
     }
 
-    public void ClearLineNums()
+    public void ClearLineNums ()
     {
         _logger.Debug("FilterPipe.ClearLineNums()");
         lock (_lineMappingList)
@@ -155,7 +151,7 @@ public class FilterPipe
         }
     }
 
-    public void ClearLineList()
+    public void ClearLineList ()
     {
         lock (_lineMappingList)
         {
@@ -163,13 +159,14 @@ public class FilterPipe
         }
     }
 
-    public void RecreateTempFile()
+    public void RecreateTempFile ()
     {
         lock (_lineMappingList)
         {
-            _lineMappingList = new List<int>();
+            _lineMappingList = [];
         }
-        lock (FileName)
+
+        lock (_fileNameLock)
         {
             CloseFile();
             // trunc file
@@ -179,7 +176,7 @@ public class FilterPipe
         }
     }
 
-    public void CloseAndDisconnect()
+    public void CloseAndDisconnect ()
     {
         ClearLineList();
         OnClosed();
@@ -189,7 +186,7 @@ public class FilterPipe
 
     #region Private Methods
 
-    private void OnClosed()
+    private void OnClosed ()
     {
         Closed?.Invoke(this, EventArgs.Empty);
     }

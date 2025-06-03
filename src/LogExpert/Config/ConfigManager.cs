@@ -26,6 +26,7 @@ public class ConfigManager : IConfigManager
     private static readonly object _monitor = new();
     private static ConfigManager _instance;
     private readonly object _loadSaveLock = new();
+    private readonly object _saveSaveLock = new();
     private Settings _settings;
 
     #endregion
@@ -269,18 +270,15 @@ public class ConfigManager : IConfigManager
         lock (_loadSaveLock)
         {
             _logger.Info("Saving settings");
-            lock (this)
+            var dir = Settings.Preferences.PortableMode ? Application.StartupPath : ConfigDir;
+
+            if (!Directory.Exists(dir))
             {
-                var dir = Settings.Preferences.PortableMode ? Application.StartupPath : ConfigDir;
-
-                if (!Directory.Exists(dir))
-                {
-                    Directory.CreateDirectory(dir);
-                }
-
-                FileInfo fileInfo = new(dir + Path.DirectorySeparatorChar + "settings.json");
-                Save(fileInfo, settings);
+                Directory.CreateDirectory(dir);
             }
+
+            FileInfo fileInfo = new(dir + Path.DirectorySeparatorChar + "settings.json");
+            Save(fileInfo, settings);
 
             OnConfigChanged(flags);
         }
