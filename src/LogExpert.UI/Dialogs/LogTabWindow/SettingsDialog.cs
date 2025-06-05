@@ -558,12 +558,12 @@ internal partial class SettingsDialog : Form
     {
         if (_selectedTool != null)
         {
-            Icon icon = Win32.LoadIconFromExe(_selectedTool.IconFile, _selectedTool.IconIndex);
+            Icon icon = NativeMethods.LoadIconFromExe(_selectedTool.IconFile, _selectedTool.IconIndex);
             if (icon != null)
             {
                 Image image = icon.ToBitmap();
                 buttonIcon.Image = image;
-                Win32.DestroyIcon(icon.Handle);
+                NativeMethods.DestroyIcon(icon.Handle);
                 icon.Dispose();
             }
             else

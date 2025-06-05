@@ -847,7 +847,11 @@ public partial class LogTabWindow
         explorer.Start();
     }
 
-    [SupportedOSPlatform("windows")]
+    private void TruncateFileToolStripMenuItem_Click (object sender, EventArgs e)
+    {
+        CurrentLogWindow?.TryToTruncate();
+    }
+
     private void OnExportBookmarksToolStripMenuItemClick (object sender, EventArgs e)
     {
         CurrentLogWindow?.ExportBookmarkList();

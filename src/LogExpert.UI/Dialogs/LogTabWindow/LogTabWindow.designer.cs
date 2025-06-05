@@ -155,6 +155,7 @@ namespace LogExpert.UI.Controls.LogTabWindow
             tabRenameToolStripMenuItem = new ToolStripMenuItem();
             copyPathToClipboardToolStripMenuItem = new ToolStripMenuItem();
             findInExplorerToolStripMenuItem = new ToolStripMenuItem();
+            truncateFileToolStripMenuItem = new ToolStripMenuItem();
             dragControlDateTime = new DateTimeDragControl();
             statusStrip.SuspendLayout();
             mainMenuStrip.SuspendLayout();
@@ -1053,7 +1054,7 @@ namespace LogExpert.UI.Controls.LogTabWindow
             // 
             tabContextMenuStrip.ForeColor = System.Drawing.SystemColors.ControlText;
             tabContextMenuStrip.ImageScalingSize = new System.Drawing.Size(24, 24);
-            tabContextMenuStrip.Items.AddRange(new ToolStripItem[] { closeThisTabToolStripMenuItem, closeOtherTabsToolStripMenuItem, closeAllTabsToolStripMenuItem, tabColorToolStripMenuItem, tabRenameToolStripMenuItem, copyPathToClipboardToolStripMenuItem, findInExplorerToolStripMenuItem });
+            tabContextMenuStrip.Items.AddRange(new ToolStripItem[] { closeThisTabToolStripMenuItem, closeOtherTabsToolStripMenuItem, closeAllTabsToolStripMenuItem, tabColorToolStripMenuItem, tabRenameToolStripMenuItem, copyPathToClipboardToolStripMenuItem, findInExplorerToolStripMenuItem, truncateFileToolStripMenuItem });
             tabContextMenuStrip.Name = "tabContextMenuStrip";
             tabContextMenuStrip.Size = new System.Drawing.Size(197, 158);
             // 
@@ -1113,6 +1114,14 @@ namespace LogExpert.UI.Controls.LogTabWindow
             findInExplorerToolStripMenuItem.Text = "Find in Explorer";
             findInExplorerToolStripMenuItem.ToolTipText = "Opens an Explorer window and selects the log file";
             findInExplorerToolStripMenuItem.Click += OnFindInExplorerToolStripMenuItemClick;
+            // 
+            // truncateFileToolStripMenuItem
+            // 
+            this.truncateFileToolStripMenuItem.Name = "truncateFileToolStripMenuItem";
+            this.truncateFileToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
+            this.truncateFileToolStripMenuItem.Text = "Truncate File";
+            this.truncateFileToolStripMenuItem.ToolTipText = "Try to truncate the file opened in tab";
+            this.truncateFileToolStripMenuItem.Click += new System.EventHandler(this.TruncateFileToolStripMenuItem_Click);
             // 
             // dragControlDateTime
             // 
@@ -1236,6 +1245,7 @@ namespace LogExpert.UI.Controls.LogTabWindow
         private ToolStripButton toolStripButtonBubbles;
         private ToolStripMenuItem copyPathToClipboardToolStripMenuItem;
         private ToolStripMenuItem findInExplorerToolStripMenuItem;
+        private ToolStripMenuItem truncateFileToolStripMenuItem;
         private ToolStripMenuItem exportBookmarksToolStripMenuItem;
         private ToolStripComboBox groupsComboBoxHighlightGroups;
         private ToolStripMenuItem debugToolStripMenuItem;

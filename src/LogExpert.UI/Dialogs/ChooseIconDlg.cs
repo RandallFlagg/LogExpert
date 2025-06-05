@@ -1,4 +1,4 @@
-﻿using LogExpert.UI.Extensions;
+using LogExpert.UI.Extensions;
 using System.Runtime.Versioning;
 
 namespace LogExpert.UI.Dialogs;
@@ -38,7 +38,7 @@ public partial class ChooseIconDlg : Form
     {
         iconListView.Items.Clear();
 
-        Icon[,] icons = Win32.ExtractIcons(FileName);
+        Icon[,] icons = NativeMethods.ExtractIcons(FileName);
 
         if (icons == null)
         {

@@ -170,7 +170,7 @@ public partial class LogTabWindow : Form, ILogTabWindow
     public void ChangeTheme (Control.ControlCollection container)
     {
         ColorMode.LoadColorMode(ConfigManager.Settings.Preferences.DarkMode);
-        Win32.UseImmersiveDarkMode(Handle, ColorMode.DarkModeEnabled);
+        NativeMethods.UseImmersiveDarkMode(Handle, ColorMode.DarkModeEnabled);
 
         #region ApplyColorToAllControls
         foreach (Control component in container)

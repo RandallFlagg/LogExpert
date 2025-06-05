@@ -17,7 +17,7 @@ internal partial class TimeSpreadingControl : UserControl
 
     private Bitmap _bitmap = new(1, 1);
     private int _displayHeight = 1;
-    private readonly int _edgeOffset = (int)Win32.GetSystemMetricsForDpi(Win32.SM_CYVSCROLL);
+    private readonly int _edgeOffset = (int)NativeMethods.GetSystemMetricsForDpi(NativeMethods.SM_CYVSCROLL);
     private int _lastMouseY;
     private readonly object _monitor = new();
     private int _rectHeight = 1;

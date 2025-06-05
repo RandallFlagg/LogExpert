@@ -774,7 +774,7 @@ public partial class LogTabWindow
         // a managed copy of icon. then the unmanaged win32 handle is destroyed
         var iconHandle = bmp.GetHicon();
         var icon = Icon.FromHandle(iconHandle).Clone() as Icon;
-        Win32.DestroyIcon(iconHandle);
+        NativeMethods.DestroyIcon(iconHandle);
 
         gfx.Dispose();
         bmp.Dispose();
@@ -1033,7 +1033,7 @@ public partial class LogTabWindow
     [SupportedOSPlatform("windows")]
     private void SetToolIcon (ToolEntry entry, ToolStripItem item)
     {
-        Icon icon = Win32.LoadIconFromExe(entry.IconFile, entry.IconIndex);
+        Icon icon = NativeMethods.LoadIconFromExe(entry.IconFile, entry.IconIndex);
         if (icon != null)
         {
             item.Image = icon.ToBitmap();
@@ -1046,7 +1046,7 @@ public partial class LogTabWindow
                 item.DisplayStyle = ToolStripItemDisplayStyle.Image;
             }
 
-            Win32.DestroyIcon(icon.Handle);
+            NativeMethods.DestroyIcon(icon.Handle);
             icon.Dispose();
         }
 
