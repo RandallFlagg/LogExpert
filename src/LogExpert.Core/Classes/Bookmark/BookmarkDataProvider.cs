@@ -27,21 +27,11 @@ public class BookmarkDataProvider : IBookmarkData
 
     #endregion
 
-    #region Delegates
-
-    public delegate void AllBookmarksRemovedEventHandler (object sender, EventArgs e);
-
-    public delegate void BookmarkAddedEventHandler (object sender, EventArgs e);
-
-    public delegate void BookmarkRemovedEventHandler (object sender, EventArgs e);
-
-    #endregion
-
     #region Events
 
-    public event BookmarkAddedEventHandler BookmarkAdded;
-    public event BookmarkRemovedEventHandler BookmarkRemoved;
-    public event AllBookmarksRemovedEventHandler AllBookmarksRemoved;
+    public event EventHandler<EventArgs> BookmarkAdded;
+    public event EventHandler<EventArgs> BookmarkRemoved;
+    public event EventHandler<EventArgs> AllBookmarksRemoved;
 
     #endregion
 
@@ -141,8 +131,10 @@ public class BookmarkDataProvider : IBookmarkData
         OnBookmarkRemoved();
     }
 
-    public void RemoveBookmarksForLines (List<int> lineNumList)
+    public void RemoveBookmarksForLines (IEnumerable<int> lineNumList)
     {
+        ArgumentNullException.ThrowIfNull(lineNumList);
+
         foreach (var lineNum in lineNumList)
         {
             _ = BookmarkList.Remove(lineNum);
@@ -155,6 +147,8 @@ public class BookmarkDataProvider : IBookmarkData
 
     public void AddBookmark (Entities.Bookmark bookmark)
     {
+        ArgumentNullException.ThrowIfNull(bookmark);
+
         BookmarkList.Add(bookmark.LineNum, bookmark);
         OnBookmarkAdded();
     }

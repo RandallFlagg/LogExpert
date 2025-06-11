@@ -13,6 +13,7 @@ public static class BookmarkExporter
     public static void ExportBookmarkList (SortedList<int, Entities.Bookmark> bookmarkList, string logfileName,
         string fileName)
     {
+        ArgumentNullException.ThrowIfNull(bookmarkList);
         FileStream fs = new(fileName, FileMode.Create, FileAccess.Write);
         StreamWriter writer = new(fs);
         writer.WriteLine("Log file name;Line number;Comment");

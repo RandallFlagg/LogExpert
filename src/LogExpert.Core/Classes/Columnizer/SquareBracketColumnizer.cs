@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text.RegularExpressions;
 
 using static LogExpert.Core.Classes.Columnizer.TimeFormatDeterminer;
@@ -142,13 +143,13 @@ public class SquareBracketColumnizer : ILogLineColumnizer, IColumnizerPriority
         var i = 1;
         while (columnNames.Count < GetColumnCount())
         {
-            columnNames.Insert(columnNames.Count - 1, "Source" + i++.ToString());
+            columnNames.Insert(columnNames.Count - 1, $"Source{i++.ToString(CultureInfo.InvariantCulture)}");
         }
 
         return columnNames.ToArray();
     }
 
-    public IColumnizedLogLine SplitLine (LogExpert.ILogLineColumnizerCallback callback, ILogLine line)
+    public IColumnizedLogLine SplitLine (ILogLineColumnizerCallback callback, ILogLine line)
     {
         // 0         1         2         3         4         5         6         7         8         9         10        11        12        13        14        15        16
         // 012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789

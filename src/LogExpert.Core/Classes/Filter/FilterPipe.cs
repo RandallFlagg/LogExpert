@@ -1,31 +1,31 @@
 using System.Text;
-
 using LogExpert.Core.Interface;
-
 using NLog;
 
 namespace LogExpert.Core.Classes.Filter;
 
-public class FilterPipe
+public class FilterPipe : IDisposable
 {
     #region Fields
 
     private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
-    private IList<int> _lineMappingList = [];
+    private List<int> _lineMappingList = [];
     private StreamWriter _writer;
     private readonly object _fileNameLock = new();
+    private bool _disposed;
 
     #endregion
 
     #region cTor
 
-    public FilterPipe (FilterParams filterParams, ILogWindow logWindow)
+    public FilterPipe(FilterParams filterParams, ILogWindow logWindow)
     {
         FilterParams = filterParams;
         LogWindow = logWindow;
         IsStopped = false;
         FileName = Path.GetTempFileName();
+        _disposed = false;
 
         _logger.Info($"Created temp file: {FileName}");
     }
@@ -190,6 +190,30 @@ public class FilterPipe
     {
         Closed?.Invoke(this, EventArgs.Empty);
     }
+
+    public void Dispose ()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose (bool disposing)
+    {
+        if (!_disposed)
+        {
+            if (disposing)
+            {
+                _writer?.Dispose();
+            }
+            _disposed = true;
+        }
+    }
+
+    ~FilterPipe ()
+    {
+        Dispose(false);
+    }
+
 
     #endregion
 }

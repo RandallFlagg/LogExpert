@@ -93,12 +93,14 @@ public class ColumnizerPicker
     /// <param name="fileName"></param>
     /// <param name="logFileReader"></param>
     /// <returns></returns>
-    public static ILogLineColumnizer FindColumnizer (string fileName, IAutoLogLineColumnizerCallback logFileReader, IList<ILogLineColumnizer> list)
+    public static ILogLineColumnizer FindColumnizer (string fileName, IAutoLogLineColumnizerCallback logFileReader, IList<ILogLineColumnizer> registeredColumnizer)
     {
         if (string.IsNullOrEmpty(fileName))
         {
             return new DefaultLogfileColumnizer();
         }
+
+        ArgumentNullException.ThrowIfNull(registeredColumnizer);
 
         List<ILogLine> loglines = [];
 
@@ -119,8 +121,6 @@ public class ColumnizerPicker
                 logFileReader.GetLogLine(400)
             ];
         }
-
-        var registeredColumnizer = list;
 
         List<Tuple<Priority, ILogLineColumnizer>> priorityListOfColumnizers = [];
 
