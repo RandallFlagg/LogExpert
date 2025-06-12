@@ -60,6 +60,21 @@ partial class LogWindow
         dataGridViewCellStyleMainGrid.ForeColor = SystemColors.ControlText;
         dataGridViewCellStyleMainGrid.SelectionBackColor = SystemColors.Highlight;
         dataGridViewCellStyleMainGrid.SelectionForeColor = SystemColors.HighlightText;
+
+        Color highlightColor = SystemColors.Highlight;
+        //Color is smaller than 128, means its darker
+        var isDark = (highlightColor.R * 0.2126) + (highlightColor.G * 0.7152) + (highlightColor.B * 0.0722) < 255 / 2;
+
+        if (isDark)
+        {
+            dataGridViewCellStyleMainGrid.SelectionForeColor = Color.White;
+        }
+        else
+        {
+            dataGridViewCellStyleMainGrid.SelectionForeColor = Color.Black;
+
+        }
+
         dataGridViewCellStyleMainGrid.WrapMode = DataGridViewTriState.False;
         dataGridView.DefaultCellStyle = dataGridViewCellStyleMainGrid;
 
@@ -69,6 +84,16 @@ partial class LogWindow
         dataGridViewCellStyleFilterGrid.ForeColor = SystemColors.ControlText;
         dataGridViewCellStyleFilterGrid.SelectionBackColor = SystemColors.Highlight;
         dataGridViewCellStyleFilterGrid.SelectionForeColor = SystemColors.HighlightText;
+
+        if (isDark)
+        {
+            dataGridViewCellStyleFilterGrid.SelectionForeColor = Color.White;
+        }
+        else
+        {
+            dataGridViewCellStyleFilterGrid.SelectionForeColor = Color.Black;
+        }
+
         dataGridViewCellStyleFilterGrid.WrapMode = DataGridViewTriState.False;
         filterGridView.DefaultCellStyle = dataGridViewCellStyleFilterGrid;
     }
@@ -1194,11 +1219,6 @@ partial class LogWindow
                 {
                     e.Graphics.FillRectangle(bgBrush, wordRect);
                 }
-            }
-
-            if (foreColor == Color.Black)
-            {
-                foreColor = ColorMode.ForeColor;
             }
 
             TextRenderer.DrawText(e.Graphics, matchWord, font, wordRect, foreColor, flags);

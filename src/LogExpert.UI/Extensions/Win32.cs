@@ -1,4 +1,3 @@
-﻿using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 
@@ -21,19 +20,19 @@ internal static partial class Win32 //NativeMethods
     #region Library Imports
     [LibraryImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
-    public static partial bool DestroyIcon(nint hIcon);
+    public static partial bool DestroyIcon (nint hIcon);
 
     [LibraryImport("User32.dll")]
-    public static partial int SetForegroundWindow(nint hWnd);
+    public static partial int SetForegroundWindow (nint hWnd);
 
     [LibraryImport("user32.dll")]
-    public static partial long GetSystemMetricsForDpi(long index);
+    public static partial long GetSystemMetricsForDpi (long index);
 
     [LibraryImport("user32.dll")]
-    public static partial long GetSystemMetrics(long index);
+    public static partial long GetSystemMetrics (long index);
 
     [LibraryImport("user32.dll")]
-    public static partial short GetKeyState(int vKey);
+    public static partial short GetKeyState (int vKey);
 
     /*
     UINT ExtractIconEx(
@@ -45,7 +44,7 @@ internal static partial class Win32 //NativeMethods
     );
     * */
     [LibraryImport("shell32.dll", StringMarshalling = StringMarshalling.Utf16)]
-    public static partial uint ExtractIconEx(
+    public static partial uint ExtractIconEx (
         string fileName,
         int iconIndex,
         ref nint iconsLarge,
@@ -55,13 +54,13 @@ internal static partial class Win32 //NativeMethods
 
     #region TitleBarDarkMode
     [LibraryImport("dwmapi.dll")]
-    public static partial int DwmSetWindowAttribute(nint hwnd, int attr, ref int attrValue, int attrSize);
+    public static partial int DwmSetWindowAttribute (nint hwnd, int attr, ref int attrValue, int attrSize);
     #endregion
     #endregion
 
     #region Public methods
 
-    public static Icon LoadIconFromExe(string fileName, int index)
+    public static Icon LoadIconFromExe (string fileName, int index)
     {
         //IntPtr[] smallIcons = new IntPtr[1];
         //IntPtr[] largeIcons = new IntPtr[1];
@@ -83,7 +82,7 @@ internal static partial class Win32 //NativeMethods
         return null;
     }
 
-    public static Icon[,] ExtractIcons(string fileName)
+    public static Icon[,] ExtractIcons (string fileName)
     {
         var smallIcon = nint.Zero;
         var largeIcon = nint.Zero;
@@ -126,7 +125,7 @@ internal static partial class Win32 //NativeMethods
 
     #region Private Methods
 
-    public static bool UseImmersiveDarkMode(nint handle, bool enabled)
+    public static bool UseImmersiveDarkMode (nint handle, bool enabled)
     {
 
         var attribute = DWMWA_USE_IMMERSIVE_DARK_MODE_BEFORE_20H1;
@@ -140,7 +139,7 @@ internal static partial class Win32 //NativeMethods
 
     }
 
-    private static bool IsWindows10OrGreater(int build = -1)
+    private static bool IsWindows10OrGreater (int build = -1)
     {
         return Environment.OSVersion.Version.Major >= 10 && Environment.OSVersion.Version.Build >= build;
     }

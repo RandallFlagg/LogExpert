@@ -50,6 +50,7 @@ public partial class BookmarkWindow : DockContent, ISharedToolWindow, IBookmarkV
     public void ChangeTheme (Control.ControlCollection container)
     {
         #region ApplyColorToAllControls
+
         foreach (Control component in container)
         {
             if (component.Controls != null && component.Controls.Count > 0)
@@ -65,6 +66,7 @@ public partial class BookmarkWindow : DockContent, ISharedToolWindow, IBookmarkV
             }
 
         }
+
         #endregion
 
         #region DataGridView
