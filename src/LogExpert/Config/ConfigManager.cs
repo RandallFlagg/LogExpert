@@ -48,6 +48,7 @@ public class ConfigManager : IConfigManager
 
     #region Properties
 
+    //TODO: Change to init
     public static ConfigManager Instance
     {
         get
@@ -120,8 +121,8 @@ public class ConfigManager : IConfigManager
         _logger.Info("Loading settings");
 
         string dir;
-
-        if (File.Exists(PortableModeDir + Path.DirectorySeparatorChar + PortableModeSettingsFileName) == false)
+        
+        if (!File.Exists(Path.Combine(PortableModeDir, PortableModeSettingsFileName)))
         {
             _logger.Info("Load settings standard mode");
             dir = ConfigDir;
@@ -137,7 +138,7 @@ public class ConfigManager : IConfigManager
             Directory.CreateDirectory(dir);
         }
 
-        if (!File.Exists(dir + Path.DirectorySeparatorChar + "settings.json"))
+        if (!File.Exists(Path.Combine(dir, "settings.json")))
         {
             return LoadOrCreateNew(null);
         }

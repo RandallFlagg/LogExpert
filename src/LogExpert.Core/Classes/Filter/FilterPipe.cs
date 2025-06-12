@@ -205,15 +205,10 @@ public class FilterPipe : IDisposable
             {
                 _writer?.Dispose();
             }
+
             _disposed = true;
         }
     }
-
-    ~FilterPipe ()
-    {
-        Dispose(false);
-    }
-
 
     #endregion
 }

@@ -86,6 +86,7 @@ public class ColumnizerPicker
         return newColumnizer;
     }
 
+    //TOOD: check if the callers are checking for null before calling
     /// <summary>
     /// This method will search all registered columnizer and return one according to the priority that returned
     /// by the each columnizer.
@@ -122,7 +123,7 @@ public class ColumnizerPicker
             ];
         }
 
-        List<Tuple<Priority, ILogLineColumnizer>> priorityListOfColumnizers = [];
+        List<(Priority priority, ILogLineColumnizer columnizer)> priorityListOfColumnizers = [];
 
         foreach (ILogLineColumnizer logLineColumnizer in registeredColumnizer)
         {
@@ -132,10 +133,10 @@ public class ColumnizerPicker
                 priority = columnizerPriority.GetPriority(fileName, loglines);
             }
 
-            priorityListOfColumnizers.Add(new Tuple<Priority, ILogLineColumnizer>(priority, logLineColumnizer));
+            priorityListOfColumnizers.Add((priority, logLineColumnizer));
         }
 
-        ILogLineColumnizer lineColumnizer = priorityListOfColumnizers.OrderByDescending(a => a.Item1).Select(a => a.Item2).First();
+        ILogLineColumnizer lineColumnizer = priorityListOfColumnizers.OrderByDescending(item => item.priority).Select(item => item.columnizer).First();
 
         return lineColumnizer;
     }

@@ -1,4 +1,4 @@
-﻿using LogExpert.Config;
+using LogExpert.Config;
 using LogExpert.Core.Interface;
 using LogExpert.UI.Controls.LogWindow;
 
@@ -48,14 +48,11 @@ internal class LogExpertProxy : ILogExpertProxy
     //  }
     //}
 
-
-    public delegate void LastWindowClosedEventHandler(object sender, EventArgs e);
-
     #endregion
 
     #region Events
 
-    public event LastWindowClosedEventHandler LastWindowClosed;
+    public event EventHandler<EventArgs> LastWindowClosed;
 
     #endregion
 

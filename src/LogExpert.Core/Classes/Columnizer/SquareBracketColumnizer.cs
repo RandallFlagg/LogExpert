@@ -143,7 +143,7 @@ public class SquareBracketColumnizer : ILogLineColumnizer, IColumnizerPriority
         var i = 1;
         while (columnNames.Count < GetColumnCount())
         {
-            columnNames.Insert(columnNames.Count - 1, $"Source{i++.ToString(CultureInfo.InvariantCulture)}");
+            columnNames.Insert(columnNames.Count - 1, $"Source{i++}");
         }
 
         return columnNames.ToArray();

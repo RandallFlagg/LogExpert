@@ -1,5 +1,3 @@
-#pragma warning disable IDE0040
-
 namespace LogExpert;
 
 ///<summary>

@@ -10,8 +10,8 @@ public static class BookmarkExporter
 
     #region Public methods
 
-    public static void ExportBookmarkList (SortedList<int, Entities.Bookmark> bookmarkList, string logfileName,
-        string fileName)
+    //TOOD: check if the callers are checking for null before calling
+    public static void ExportBookmarkList (SortedList<int, Entities.Bookmark> bookmarkList, string logfileName, string fileName)
     {
         ArgumentNullException.ThrowIfNull(bookmarkList);
         FileStream fs = new(fileName, FileMode.Create, FileAccess.Write);

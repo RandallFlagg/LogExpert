@@ -2,7 +2,6 @@ using LogExpert.Core.Entities;
 
 namespace LogExpert.Core.Interface;
 
-#pragma warning disable IDE0040
 public interface IBookmarkData
 {
     #region Properties
