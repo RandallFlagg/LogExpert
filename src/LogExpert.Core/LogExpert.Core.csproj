@@ -9,6 +9,7 @@
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\Solution Items\Key.snk</AssemblyOriginatorKeyFile>
     <PublishAot>false</PublishAot>
+    <LangVersion>preview</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
