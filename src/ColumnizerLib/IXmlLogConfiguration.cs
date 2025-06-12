@@ -30,7 +30,7 @@ public interface IXmlLogConfiguration
     /// Example: {"log4j", "http://jakarta.apache.org/log4j"}
     ///
     /// </summary>
-    string[] Namespace { get; }
+    string[] GetNamespaceDeclaration ();
 
     #endregion
 }
