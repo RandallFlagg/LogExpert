@@ -415,7 +415,7 @@ dotnet_diagnostic.IDE0053.severity = suggestion
 dotnet_diagnostic.IDE0054.severity = warning
 
 # IDE0055: Fix formatting
-dotnet_diagnostic.IDE0055.severity = warning
+dotnet_diagnostic.IDE0055.severity = none
 
 # IDE0056: Use index operator
 dotnet_diagnostic.IDE0056.severity = warning
@@ -571,7 +571,7 @@ dotnet_code_quality.CA1001.excluded_type_names_with_derived_types =
 
 # CA1002: Do not expose generic lists
 dotnet_diagnostic.CA1002.severity = suggestion
-dotnet_code_quality.CA1002.api_surface = all
+dotnet_code_quality.CA1002.api_surface = public, internal
 
 # CA1003: Use generic event handler instances
 dotnet_diagnostic.CA1003.severity = warning
