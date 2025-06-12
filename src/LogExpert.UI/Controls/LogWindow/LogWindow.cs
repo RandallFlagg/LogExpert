@@ -32,14 +32,14 @@ public partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, ILog
     private const int SPREAD_MAX = 99;
     private const int PROGRESS_BAR_MODULO = 1000;
     private const int FILTER_ADVANCED_SPLITTER_DISTANCE = 150;
-    private static readonly ILogger _logger = LogManager.GetCurrentClassLogger();
+    private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
     private readonly Image _advancedButtonImage;
 
     private readonly object _bookmarkLock = new();
     private readonly BookmarkDataProvider _bookmarkProvider = new();
 
-    private readonly IList<IBackgroundProcessCancelHandler> _cancelHandlerList = new List<IBackgroundProcessCancelHandler>();
+    private readonly IList<IBackgroundProcessCancelHandler> _cancelHandlerList = [];
 
     private readonly object _currentColumnizerLock = new();
 
@@ -47,7 +47,7 @@ public partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, ILog
 
     private readonly EventWaitHandle _externaLoadingFinishedEvent = new ManualResetEvent(false);
 
-    private readonly IList<FilterPipe> _filterPipeList = new List<FilterPipe>();
+    private readonly IList<FilterPipe> _filterPipeList = [];
     private readonly Dictionary<Control, bool> _freezeStateMap = [];
     private readonly GuiStateArgs _guiStateArgs = new();
 
@@ -141,10 +141,11 @@ public partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, ILog
     {
         SuspendLayout();
 
+        //HighDPI Functionality must be called before all UI Elements are initialized, to make sure they work as intended
         AutoScaleDimensions = new SizeF(96F, 96F);
         AutoScaleMode = AutoScaleMode.Dpi;
 
-        InitializeComponent(); //TODO: Move this to be the first line of the constructor?
+        InitializeComponent();
 
         CreateDefaultViewStyle();
 
@@ -210,15 +211,9 @@ public partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, ILog
 
         _timeShiftSyncTask = new Task(SyncTimestampDisplayWorker, cts.Token);
         _timeShiftSyncTask.Start();
-        //_timeShiftSyncThread = new Thread(SyncTimestampDisplayWorker);
-        //_timeShiftSyncThread.IsBackground = true;
-        //_timeShiftSyncThread.Start();
 
         _logEventHandlerTask = new Task(LogEventWorker, cts.Token);
         _logEventHandlerTask.Start();
-        //_logEventHandlerThread = new Thread(LogEventWorker);
-        //_logEventHandlerThread.IsBackground = true;
-        //_logEventHandlerThread.Start();
 
         //this.filterUpdateThread = new Thread(new ThreadStart(this.FilterUpdateWorker));
         //this.filterUpdateThread.Start();
@@ -355,7 +350,7 @@ public partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, ILog
 
         for (var y = 0; y < filterContextMenuStrip.Items.Count; y++)
         {
-            var item = filterContextMenuStrip.Items[y];
+            ToolStripItem item = filterContextMenuStrip.Items[y];
             item.ForeColor = ColorMode.ForeColor;
             item.BackColor = ColorMode.MenuBackgroundColor;
         }
@@ -482,18 +477,9 @@ public partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, ILog
 
     internal FilterPipe FilterPipe { get; set; }
 
-    public string Title
-    {
-        get
-        {
-            if (IsTempFile)
-            {
-                return TempTitleName;
-            }
-
-            return FileName;
-        }
-    }
+    public string Title => IsTempFile
+                ? TempTitleName
+                : FileName;
 
     public ColumnizerCallback ColumnizerCallbackObject { get; }
 
@@ -501,7 +487,7 @@ public partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, ILog
 
     public string ForcedPersistenceFileName { get; set; }
 
-    public Preferences Preferences => ConfigManager.Settings.Preferences;
+    public Preferences Preferences => _parentLogTabWin.Preferences;
 
     public string GivenFileName { get; set; }
 
@@ -601,11 +587,13 @@ public partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, ILog
     internal void ToggleColumnFinder (bool show, bool setFocus)
     {
         _guiStateArgs.ColumnFinderVisible = show;
+
         if (show)
         {
             columnComboBox.AutoCompleteMode = AutoCompleteMode.Suggest;
             columnComboBox.AutoCompleteSource = AutoCompleteSource.CustomSource;
             columnComboBox.AutoCompleteCustomSource = [.. CurrentColumnizer.GetColumnNames()];
+
             if (setFocus)
             {
                 columnComboBox.Focus();

@@ -28,7 +28,7 @@ public interface ILogPaintContextUI : ILogPaintContext
 
     HighlightEntry FindHighlightEntry(ITextValue line, bool noWordMatches);
 
-    IList<HilightMatchEntry> FindHighlightMatches(ITextValue line);
+    IList<HighlightMatchEntry> FindHighlightMatches(ITextValue line);
 
     #endregion
 }

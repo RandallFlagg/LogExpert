@@ -523,6 +523,7 @@ partial class LogWindow
                 {
                     continue;
                 }
+
                 if (CheckHighlightEntryMatch(entry, line))
                 {
                     return entry;
@@ -547,9 +548,10 @@ partial class LogWindow
         }
     }
 
-    public IList<HilightMatchEntry> FindHighlightMatches (ITextValue column)
+    public IList<HighlightMatchEntry> FindHighlightMatches (ITextValue column)
     {
-        IList<HilightMatchEntry> resultList = new List<HilightMatchEntry>();
+        IList<HighlightMatchEntry> resultList = [];
+
         if (column != null)
         {
             lock (_currentHighlightGroupLock)
@@ -681,6 +683,7 @@ partial class LogWindow
                     dataGridView.FirstDisplayedScrollingRowIndex += 1;
                 }
             }
+
             dataGridView.CurrentCell = dataGridView.Rows[line].Cells[0];
         }
         catch (Exception e)
@@ -817,6 +820,7 @@ partial class LogWindow
                     break;
                 }
             }
+
             if (_bookmarkProvider.IsBookmarkAtLine(i))
             {
                 Bookmark bookmark = _bookmarkProvider.GetBookmarkForLine(i);
@@ -844,6 +848,7 @@ partial class LogWindow
                                 //heightSum += rr.Height;
                                 heightSum += GetRowHeight(rn);
                             }
+
                             r.Offset(0, r.Height + heightSum);
                         }
                         else
@@ -854,14 +859,17 @@ partial class LogWindow
                                 //heightSum += rr.Height;
                                 heightSum += GetRowHeight(rn);
                             }
+
                             r.Offset(0, -(r.Height + heightSum));
                         }
                         //r.Offset(0, this.dataGridView.DisplayRectangle.Height);
                     }
+
                     if (_logger.IsDebugEnabled)
                     {
-                        _logger.Debug("AddBookmarkOverlay() r.Location={0}, width={1}, scroll_offset={2}", r.Location.X, r.Width, dataGridView.HorizontalScrollingOffset);
+                        _logger.Debug($"AddBookmarkOverlay() r.Location={r.Location.X}, width={r.Width}, scroll_offset={dataGridView.HorizontalScrollingOffset}");
                     }
+
                     overlay.Position = r.Location - new Size(dataGridView.HorizontalScrollingOffset, 0);
                     overlay.Position += new Size(10, r.Height / 2);
                     dataGridView.AddOverlay(overlay);
@@ -1137,11 +1145,13 @@ partial class LogWindow
         {
             OnTailFollowed(EventArgs.Empty);
         }
+
         if (Preferences.TimestampControl)
         {
             SetTimestampLimits();
             SyncTimestampDisplay();
         }
+
         dataGridView.Focus();
 
         SendGuiStateUpdate();
@@ -1260,11 +1270,11 @@ partial class LogWindow
         //}
     }
 
-    public void PreferencesChanged (Preferences newPreferences, bool isLoadTime, SettingsFlags flags)
+    public void PreferencesChanged (string fontName, float fontSize, bool setLastColumnWidth, int lastColumnWidth, bool isLoadTime, SettingsFlags flags)
     {
         if ((flags & SettingsFlags.GuiOrColors) == SettingsFlags.GuiOrColors)
         {
-            NormalFont = new Font(new FontFamily(newPreferences.FontName), newPreferences.FontSize);
+            NormalFont = new Font(new FontFamily(fontName), fontSize);
             BoldFont = new Font(NormalFont, FontStyle.Bold);
             MonospacedFont = new Font("Courier New", Preferences.FontSize, FontStyle.Bold);
 
@@ -1278,14 +1288,15 @@ partial class LogWindow
 
             ShowBookmarkBubbles = Preferences.ShowBubbles;
 
-            ApplyDataGridViewPrefs(dataGridView, newPreferences);
-            ApplyDataGridViewPrefs(filterGridView, newPreferences);
+            ApplyDataGridViewPrefs(dataGridView, setLastColumnWidth, lastColumnWidth);
+            ApplyDataGridViewPrefs(filterGridView, setLastColumnWidth, lastColumnWidth);
 
             if (Preferences.TimestampControl)
             {
                 SetTimestampLimits();
                 SyncTimestampDisplay();
             }
+
             if (isLoadTime)
             {
                 filterTailCheckBox.Checked = Preferences.FilterTail;
@@ -1296,11 +1307,13 @@ partial class LogWindow
             _timeSpreadCalc.TimeMode = Preferences.TimeSpreadTimeMode;
             timeSpreadingControl.ForeColor = Preferences.TimeSpreadColor;
             timeSpreadingControl.ReverseAlpha = Preferences.ReverseAlpha;
+
             if (CurrentColumnizer.IsTimeshiftImplemented())
             {
                 timeSpreadingControl.Invoke(new MethodInvoker(timeSpreadingControl.Refresh));
                 ShowTimeSpread(Preferences.ShowTimeSpread);
             }
+
             ToggleColumnFinder(Preferences.ShowColumnFinder, false);
         }
 
