@@ -4,7 +4,7 @@ using LogExpert.Core.Entities;
 
 namespace LogExpert.Core.Classes.Columnizer;
 
-public class ColumnizerPicker
+public static class ColumnizerPicker
 {
     public static ILogLineColumnizer FindColumnizerByName (string name, IList<ILogLineColumnizer> list)
     {

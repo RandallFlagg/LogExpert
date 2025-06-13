@@ -9,6 +9,7 @@ public interface IBookmarkView
 {
     #region Properties
 
+    //TODO: After all refactoring is done, take care of this warning.
     bool LineColumnVisible { set; }
 
     #endregion
