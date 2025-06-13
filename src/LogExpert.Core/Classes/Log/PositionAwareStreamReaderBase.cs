@@ -94,7 +94,7 @@ public abstract class PositionAwareStreamReaderBase : LogStreamReaderBase
     //TODO This is unsafe and should be refactored
     public override unsafe int ReadChar ()
     {
-        ObjectDisposedException.ThrowIf(IsDisposed, GetType().ToString());
+        ObjectDisposedException.ThrowIf(IsDisposed, GetType());
 
         try
         {
@@ -126,7 +126,7 @@ public abstract class PositionAwareStreamReaderBase : LogStreamReaderBase
 
     protected StreamReader GetStreamReader ()
     {
-        ObjectDisposedException.ThrowIf(IsDisposed, GetType().ToString());
+        ObjectDisposedException.ThrowIf(IsDisposed, GetType());
         return _reader;
     }
 

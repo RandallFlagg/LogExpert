@@ -846,7 +846,7 @@ public class LogfileReader : IAutoLogLineColumnizerCallback, IDisposable
     {
         _logger.Debug("ReplaceBufferInfos() " + oldLogFileInfo.FullName + " -> " + newLogFileInfo.FullName);
         AcquireBufferListReaderLock();
-        foreach (LogBuffer buffer in _bufferList)
+        foreach (var buffer in _bufferList)
         {
             if (buffer.FileInfo == oldLogFileInfo)
             {
