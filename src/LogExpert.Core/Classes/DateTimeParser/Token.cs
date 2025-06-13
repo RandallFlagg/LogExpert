@@ -7,7 +7,7 @@ public static class Token
     //TOOD: check if the callers are checking for null before calling
     public static bool IsDatePart(string token)
     {
-        ArgumentNullException.ThrowIfNull(token);
+        ArgumentNullException.ThrowIfNull(token, nameof(token));
         return
             token.StartsWith("y", StringComparison.OrdinalIgnoreCase) ||
             token.StartsWith("m", StringComparison.OrdinalIgnoreCase) ||

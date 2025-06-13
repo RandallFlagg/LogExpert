@@ -101,7 +101,7 @@ public static class ColumnizerPicker
             return new DefaultLogfileColumnizer();
         }
 
-        ArgumentNullException.ThrowIfNull(registeredColumnizer);
+        ArgumentNullException.ThrowIfNull(registeredColumnizer, nameof(registeredColumnizer));
 
         List<ILogLine> loglines = [];
 

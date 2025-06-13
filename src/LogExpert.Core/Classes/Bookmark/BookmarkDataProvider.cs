@@ -134,7 +134,7 @@ public class BookmarkDataProvider : IBookmarkData
     //TOOD: check if the callers are checking for null before calling
     public void RemoveBookmarksForLines (IEnumerable<int> lineNumList)
     {
-        ArgumentNullException.ThrowIfNull(lineNumList);
+        ArgumentNullException.ThrowIfNull(lineNumList, nameof(lineNumList));
 
         foreach (var lineNum in lineNumList)
         {
@@ -148,7 +148,7 @@ public class BookmarkDataProvider : IBookmarkData
     //TOOD: check if the callers are checking for null before calling
     public void AddBookmark (Entities.Bookmark bookmark)
     {
-        ArgumentNullException.ThrowIfNull(bookmark);
+        ArgumentNullException.ThrowIfNull(bookmark, nameof(bookmark));
 
         BookmarkList.Add(bookmark.LineNum, bookmark);
         OnBookmarkAdded();

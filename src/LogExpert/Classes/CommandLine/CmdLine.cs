@@ -17,7 +17,7 @@ public class CmdLineString (string name, bool required, string helpMessage) : Cm
 
     public static implicit operator string (CmdLineString s)
     {
-        ArgumentNullException.ThrowIfNull(s);
+        ArgumentNullException.ThrowIfNull(s, nameof(s));
         return s.Value;
     }
 
