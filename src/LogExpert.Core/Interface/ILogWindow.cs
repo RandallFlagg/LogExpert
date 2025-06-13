@@ -1,7 +1,6 @@
-
 using LogExpert.Core.Classes.Log;
 using LogExpert.Core.Classes.Persister;
-using LogExpert.Core.EventHandlers;
+using LogExpert.Core.Entities;
 
 namespace LogExpert.Core.Interface;
 
@@ -36,7 +35,7 @@ public interface ILogWindow
 
     string FileName { get; }
 
-    event FileSizeChangedEventHandler FileSizeChanged; //TODO: All handlers should be moved to Core
+    event EventHandler<LogEventArgs> FileSizeChanged; //TODO: All handlers should be moved to Core
 
     event EventHandler TailFollowed;
     //LogExpert.UI.Controls.LogTabWindow.LogTabWindow.LogWindowData Tag { get; }

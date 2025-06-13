@@ -3,7 +3,6 @@ using System.Text;
 using LogExpert.Core.Classes.xml;
 using LogExpert.Core.Entities;
 using LogExpert.Core.EventArguments;
-using LogExpert.Core.EventHandlers;
 using LogExpert.Core.Interface;
 
 using NLog;
@@ -129,23 +128,18 @@ public class LogfileReader : IAutoLogLineColumnizerCallback, IDisposable
 
     #region Delegates
 
-    public delegate void BlockLoadedEventHandler (object sender, LoadFileEventArgs e);
-    public delegate void FileNotFoundEventHandler (object sender, EventArgs e);
-    public delegate void FileRespawnedEventHandler (object sender, EventArgs e);
-    public delegate void FinishedLoadingEventHandler (object sender, EventArgs e);
     private delegate Task<ILogLine> GetLogLineFx (int lineNum);
-    public delegate void LoadingStartedEventHandler (object sender, LoadFileEventArgs e);
 
     #endregion
 
     #region Events
 
-    public event FileSizeChangedEventHandler FileSizeChanged;
-    public event BlockLoadedEventHandler LoadFile;
-    public event LoadingStartedEventHandler LoadingStarted;
-    public event FinishedLoadingEventHandler LoadingFinished;
-    public event FileNotFoundEventHandler FileNotFound;
-    public event FileRespawnedEventHandler Respawned;
+    public event EventHandler<LogEventArgs> FileSizeChanged;
+    public event EventHandler<LoadFileEventArgs> LoadFile;
+    public event EventHandler<LoadFileEventArgs> LoadingStarted;
+    public event EventHandler<EventArgs> LoadingFinished;
+    public event EventHandler<EventArgs> FileNotFound;
+    public event EventHandler<EventArgs> Respawned;
 
     #endregion
 
