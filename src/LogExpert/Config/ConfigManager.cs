@@ -25,7 +25,6 @@ public class ConfigManager : IConfigManager
     private static readonly object _monitor = new();
     private static ConfigManager _instance;
     private readonly object _loadSaveLock = new();
-    private readonly object _saveSaveLock = new();
     private Settings _settings;
 
     #endregion

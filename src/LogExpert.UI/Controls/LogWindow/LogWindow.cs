@@ -97,8 +97,6 @@ public partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, ILog
     private int _filterPipeNameCounter;
     private List<int> _filterResultList = [];
 
-    private EventWaitHandle _filterUpdateEvent = new ManualResetEvent(false);
-
     private ILogLineColumnizer _forcedColumnizer;
     private ILogLineColumnizer _forcedColumnizerForLoading;
     private bool _isDeadFile;
