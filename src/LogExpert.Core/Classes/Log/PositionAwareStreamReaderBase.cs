@@ -88,7 +88,8 @@ public abstract class PositionAwareStreamReaderBase : LogStreamReaderBase
         {
             _stream.Dispose();
             _reader.Dispose();
-        }
+            IsDisposed = true;
+}
     }
 
     //TODO This is unsafe and should be refactored

@@ -24,6 +24,8 @@ public class XmlBlockSplitter : LogStreamReaderBase
     private string _stylesheet;
     private XslCompiledTransform _xslt;
 
+    public override bool IsDisposed { get; protected set; }
+
     #endregion
 
     #region cTor
@@ -136,6 +138,7 @@ public class XmlBlockSplitter : LogStreamReaderBase
         if (disposing)
         {
             _reader.Dispose();
+            IsDisposed = true;
         }
     }
 
