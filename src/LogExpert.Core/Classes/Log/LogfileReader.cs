@@ -10,7 +10,7 @@ using NLog;
 
 namespace LogExpert.Core.Classes.Log;
 
-public class LogfileReader : IAutoLogLineColumnizerCallback
+public class LogfileReader : IAutoLogLineColumnizerCallback, IDisposable
 {
     #region Fields
 
@@ -27,7 +27,6 @@ public class LogfileReader : IAutoLogLineColumnizerCallback
     private readonly IPluginRegistry _pluginRegistry;
     private IList<LogBuffer> _bufferList;
     private ReaderWriterLock _bufferListLock;
-    private IList<LogBuffer> _bufferLru;
     private bool _contentDeleted;
     private int _currLineCount;
     private ReaderWriterLock _disposeLock;
@@ -36,7 +35,7 @@ public class LogfileReader : IAutoLogLineColumnizerCallback
 
     private Task _garbageCollectorTask;
     private Task _monitorTask;
-    private readonly CancellationTokenSource cts = new();
+    private readonly CancellationTokenSource _cts = new();
 
     private bool _isDeleted;
     private bool _isFailModeCheckCallPending;
@@ -48,6 +47,7 @@ public class LogfileReader : IAutoLogLineColumnizerCallback
     private ReaderWriterLock _lruCacheDictLock;
 
     private bool _shouldStop;
+    private bool _disposed;
     private ILogFileInfo _watchedILogFileInfo;
 
     #endregion
@@ -69,13 +69,15 @@ public class LogfileReader : IAutoLogLineColumnizerCallback
         _multiFileOptions = multiFileOptions;
         _pluginRegistry = pluginRegistry;
         _logLineFx = GetLogLineInternal;
+        _disposed = false;
+
         InitLruBuffers();
 
         if (multiFile)
         {
-            ILogFileInfo info = GetLogFileInfo(fileName);
+            var info = GetLogFileInfo(fileName);
             RolloverFilenameHandler rolloverHandler = new(info, _multiFileOptions);
-            LinkedList<string> nameList = rolloverHandler.GetNameList(_pluginRegistry);
+            var nameList = rolloverHandler.GetNameList(_pluginRegistry);
 
             ILogFileInfo fileInfo = null;
             foreach (var name in nameList)
@@ -107,6 +109,7 @@ public class LogfileReader : IAutoLogLineColumnizerCallback
         _multiFileOptions = multiFileOptions;
         _pluginRegistry = pluginRegistry;
         _logLineFx = GetLogLineInternal;
+        _disposed = false;
 
         InitLruBuffers();
 
@@ -564,7 +567,7 @@ public class LogfileReader : IAutoLogLineColumnizerCallback
     public void StartMonitoring ()
     {
         _logger.Info("startMonitoring()");
-        _monitorTask = Task.Run(MonitorThreadProc, cts.Token);
+        _monitorTask = Task.Run(MonitorThreadProc, _cts.Token);
         _shouldStop = false;
     }
 
@@ -579,7 +582,7 @@ public class LogfileReader : IAutoLogLineColumnizerCallback
         {
             if (_monitorTask.Status == TaskStatus.Running) // if thread has not finished, abort it
             {
-                cts.Cancel();
+                _cts.Cancel();
             }
         }
 
@@ -587,7 +590,7 @@ public class LogfileReader : IAutoLogLineColumnizerCallback
         {
             if (_garbageCollectorTask.Status == TaskStatus.Running) // if thread has not finished, abort it
             {
-                cts.Cancel();
+                _cts.Cancel();
             }
         }
 
@@ -799,7 +802,7 @@ public class LogfileReader : IAutoLogLineColumnizerCallback
     private void InitLruBuffers ()
     {
         _bufferList = [];
-        _bufferLru = new List<LogBuffer>(_max_buffers + 1);
+        //_bufferLru = new List<LogBuffer>(_max_buffers + 1);
         //this.lruDict = new Dictionary<int, int>(this.MAX_BUFFERS + 1);  // key=startline, value = index in bufferLru
         _lruCacheDict = new Dictionary<int, LogBufferCacheEntry>(_max_buffers + 1);
         _lruCacheDictLock = new ReaderWriterLock();
@@ -809,7 +812,7 @@ public class LogfileReader : IAutoLogLineColumnizerCallback
 
     private void StartGCThread ()
     {
-        _garbageCollectorTask = Task.Run(GarbageCollectorThreadProc, cts.Token);
+        _garbageCollectorTask = Task.Run(GarbageCollectorThreadProc, _cts.Token);
         //_garbageCollectorThread = new Thread(new ThreadStart(GarbageCollectorThreadProc));
         //_garbageCollectorThread.IsBackground = true;
         //_garbageCollectorThread.Start();
@@ -911,13 +914,13 @@ public class LogfileReader : IAutoLogLineColumnizerCallback
     }
 
     /// <summary>
-    /// The caller must have writer locks for lruCache and buffer list!
+    /// The caller must have _writer locks for lruCache and buffer list!
     /// </summary>
     /// <param name="buffer"></param>
     private void RemoveFromBufferList (LogBuffer buffer)
     {
-        Util.AssertTrue(_lruCacheDictLock.IsWriterLockHeld, "No writer lock for lru cache");
-        Util.AssertTrue(_bufferListLock.IsWriterLockHeld, "No writer lock for buffer list");
+        Util.AssertTrue(_lruCacheDictLock.IsWriterLockHeld, "No _writer lock for lru cache");
+        Util.AssertTrue(_bufferListLock.IsWriterLockHeld, "No _writer lock for buffer list");
         _lruCacheDict.Remove(buffer.StartLine);
         _bufferList.Remove(buffer);
     }
@@ -1068,7 +1071,7 @@ public class LogfileReader : IAutoLogLineColumnizerCallback
         {
             LockCookie cookie = _lruCacheDictLock.UpgradeToWriterLock(Timeout.Infinite);
             if (!_lruCacheDict.TryGetValue(logBuffer.StartLine, out cacheEntry)
-            ) // #536: re-test, because multiple threads may have been waiting for writer lock
+            ) // #536: re-test, because multiple threads may have been waiting for _writer lock
             {
                 cacheEntry = new LogBufferCacheEntry();
                 cacheEntry.LogBuffer = logBuffer;
@@ -1112,7 +1115,7 @@ public class LogfileReader : IAutoLogLineColumnizerCallback
     /// <param name="newLineNum"></param>
     private void SetNewStartLineForBuffer (LogBuffer logBuffer, int newLineNum)
     {
-        Util.AssertTrue(_lruCacheDictLock.IsWriterLockHeld, "No writer lock for lru cache");
+        Util.AssertTrue(_lruCacheDictLock.IsWriterLockHeld, "No _writer lock for lru cache");
         if (_lruCacheDict.ContainsKey(logBuffer.StartLine))
         {
             _lruCacheDict.Remove(logBuffer.StartLine);
@@ -1787,9 +1790,30 @@ public class LogfileReader : IAutoLogLineColumnizerCallback
 
     #endregion
 
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this); // Suppress finalization (not needed but best practice)
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposed)
+        {
+            if (disposing)
+            {
+                DeleteAllContent();
+                _cts.Dispose(); // Dispose managed resources
+            }
+
+            _disposed = true;
+        }
+    }
+
+    //TODO: Seems that this can be deleted. Need to verify.
     ~LogfileReader ()
     {
-        DeleteAllContent();
+        Dispose (false);
     }
 
     protected virtual void OnFileSizeChanged (LogEventArgs e)

@@ -32,15 +32,9 @@ public class FilterPipe : IDisposable
 
     #endregion
 
-    #region Delegates
-
-    public delegate void ClosedEventHandler (object sender, EventArgs e);
-
-    #endregion
-
     #region Events
 
-    public event ClosedEventHandler Closed;
+    public event EventHandler<EventArgs> Closed;
 
     #endregion
 
