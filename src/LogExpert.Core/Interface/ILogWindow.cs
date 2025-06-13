@@ -35,8 +35,8 @@ public interface ILogWindow
 
     string FileName { get; }
 
-    event EventHandler<LogEventArgs> FileSizeChanged; //TODO: All handlers should be moved to Core
+    //event EventHandler<LogEventArgs> FileSizeChanged; //TODO: All handlers should be moved to Core
 
-    event EventHandler TailFollowed;
+    //event EventHandler TailFollowed;
     //LogExpert.UI.Controls.LogTabWindow.LogTabWindow.LogWindowData Tag { get; }
 }

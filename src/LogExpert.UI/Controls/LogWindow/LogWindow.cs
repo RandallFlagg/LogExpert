@@ -9,7 +9,6 @@ using LogExpert.Core.Classes.Persister;
 using LogExpert.Core.Config;
 using LogExpert.Core.Entities;
 using LogExpert.Core.EventArguments;
-using LogExpert.Core.EventHandlers;
 using LogExpert.Core.Interface;
 using LogExpert.Dialogs;
 using LogExpert.UI.Dialogs;
@@ -406,7 +405,7 @@ public partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, ILog
 
     #region Events
 
-    public event FileSizeChangedEventHandler FileSizeChanged;
+    public event EventHandler<LogEventArgs> FileSizeChanged;
 
     public event ProgressBarEventHandler ProgressBarUpdate;
 
@@ -521,17 +520,17 @@ public partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, ILog
 
     LogfileReader ILogWindow.LogFileReader => _logFileReader;
 
-    event FileSizeChangedEventHandler ILogWindow.FileSizeChanged
-    {
-        add => FileSizeChanged += new FileSizeChangedEventHandler(value);
-        remove => FileSizeChanged -= new FileSizeChangedEventHandler(value);
-    }
+    //public event EventHandler<EventArgs> ILogWindow.FileSizeChanged
+    //{
+    //    add => FileSizeChanged += new EventHandler<LogEventArgs>(value);
+    //    remove => FileSizeChanged -= new EventHandler<LogEventArgs>(value);
+    //}
 
-    event EventHandler ILogWindow.TailFollowed
-    {
-        add => TailFollowed += new TailFollowedEventHandler(value);
-        remove => TailFollowed -= new TailFollowedEventHandler(value);
-    }
+    //event EventHandler ILogWindow.TailFollowed
+    //{
+    //    add => TailFollowed += new TailFollowedEventHandler(value);
+    //    remove => TailFollowed -= new TailFollowedEventHandler(value);
+    //}
 
     #endregion
 

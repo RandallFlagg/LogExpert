@@ -8,7 +8,6 @@ using LogExpert.Core.Classes.Filter;
 using LogExpert.Core.Config;
 using LogExpert.Core.Entities;
 using LogExpert.Core.EventArguments;
-using LogExpert.Core.EventHandlers;
 using LogExpert.Core.Interface;
 
 using Newtonsoft.Json;
@@ -42,7 +41,7 @@ public class ConfigManager : IConfigManager
 
     #region Events
 
-    public event ConfigChangedEventHandler ConfigChanged;
+    public event EventHandler<ConfigChangedEventArgs> ConfigChanged;
 
     #endregion
 
