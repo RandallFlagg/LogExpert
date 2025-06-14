@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
 namespace LogExpert;
@@ -17,6 +18,7 @@ public interface ILogExpertLogger
     /// </summary>
     /// <param name="msg">A message to be logged.</param>
     void Info(string msg);
+    void Info (IFormatProvider formatProvider, string msg);
 
     /// <summary>
     /// Logs a message on DEBUG level to LogExpert#s log file. The logfile is only active in debug builds.
