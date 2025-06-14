@@ -1,3 +1,5 @@
+using System.Globalization;
+
 using LogExpert.Core.Callback;
 using LogExpert.Core.Classes.Filter;
 
@@ -122,8 +124,8 @@ public class FilterStarter
         _shouldStop = true;
         lock (_filterWorkerList)
         {
-            _logger.Info("Filter cancel requested. Stopping all {0} threads.", _filterWorkerList.Count);
-            foreach (Filter filter in _filterWorkerList)
+            _logger.Info(CultureInfo.InvariantCulture, "Filter cancel requested. Stopping all {0} threads.", _filterWorkerList.Count);
+            foreach (var filter in _filterWorkerList)
             {
                 filter.ShouldCancel = true;
             }
