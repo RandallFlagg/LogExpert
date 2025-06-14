@@ -17,11 +17,12 @@ public static class BookmarkExporter
         FileStream fs = new(fileName, FileMode.Create, FileAccess.Write);
         StreamWriter writer = new(fs);
         writer.WriteLine("Log file name;Line number;Comment");
-        foreach (Entities.Bookmark bookmark in bookmarkList.Values)
+        foreach (var bookmark in bookmarkList.Values)
         {
             var line = $"{logfileName};{bookmark.LineNum};{bookmark.Text.Replace(replacementForNewLine, @"\" + replacementForNewLine, StringComparison.OrdinalIgnoreCase).Replace("\r\n", replacementForNewLine, StringComparison.OrdinalIgnoreCase)}";
             writer.WriteLine(line);
         }
+
         writer.Close();
         fs.Close();
     }
