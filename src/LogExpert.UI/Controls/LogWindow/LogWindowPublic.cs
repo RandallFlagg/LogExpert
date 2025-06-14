@@ -1,7 +1,6 @@
 using System.Text;
 
 using LogExpert.Core.Classes;
-using LogExpert.Core.Classes.Bookmark;
 using LogExpert.Core.Classes.Columnizer;
 using LogExpert.Core.Classes.Filter;
 using LogExpert.Core.Classes.Highlight;
