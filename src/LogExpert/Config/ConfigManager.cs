@@ -144,14 +144,23 @@ public class ConfigManager : IConfigManager
 
         try
         {
-            FileInfo fileInfo = new(dir + Path.DirectorySeparatorChar + "settings.json");
+            FileInfo fileInfo = new(Path.Combine(dir, "settings.json"));
             return LoadOrCreateNew(fileInfo);
         }
-        catch (Exception e)
+        catch (IOException ex)
         {
-            _logger.Error($"Error loading settings: {e}");
-            return LoadOrCreateNew(null);
+            _logger.Error($"File system error: {ex.Message}");
         }
+        catch (UnauthorizedAccessException ex)
+        {
+            _logger.Error($"Access denied: {ex.Message}");
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            _logger.Error($"Unexpected error: {ex.Message}");
+        }
+
+        return LoadOrCreateNew(null);
 
     }
 
@@ -359,8 +368,8 @@ public class ConfigManager : IConfigManager
     /// <param name="flags">Flags to indicate which parts shall be imported</param>
     private Settings Import (Settings currentSettings, FileInfo fileInfo, ExportImportFlags flags)
     {
-        Settings importSettings = LoadOrCreateNew(fileInfo);
-        Settings ownSettings = ObjectClone.Clone(currentSettings);
+        var importSettings = LoadOrCreateNew(fileInfo);
+        var ownSettings = ObjectClone.Clone(currentSettings);
         Settings newSettings;
 
         // at first check for 'Other' as this are the most options.
