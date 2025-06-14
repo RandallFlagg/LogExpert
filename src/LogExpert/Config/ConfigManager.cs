@@ -1,4 +1,5 @@
 using System.Drawing;
+using System.Globalization;
 using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
@@ -116,13 +117,13 @@ public class ConfigManager : IConfigManager
 
     private Settings Load ()
     {
-        _logger.Info("Loading settings");
+        _logger.Info(CultureInfo.InvariantCulture, "Loading settings");
 
         string dir;
         
         if (!File.Exists(Path.Combine(PortableModeDir, PortableModeSettingsFileName)))
         {
-            _logger.Info("Load settings standard mode");
+            _logger.Info(CultureInfo.InvariantCulture, "Load settings standard mode");
             dir = ConfigDir;
         }
         else
@@ -133,7 +134,7 @@ public class ConfigManager : IConfigManager
 
         if (!Directory.Exists(dir))
         {
-            Directory.CreateDirectory(dir);
+            _ = Directory.CreateDirectory(dir);
         }
 
         if (!File.Exists(Path.Combine(dir, "settings.json")))
@@ -268,7 +269,7 @@ public class ConfigManager : IConfigManager
     {
         lock (_loadSaveLock)
         {
-            _logger.Info("Saving settings");
+            _logger.Info(CultureInfo.InvariantCulture, "Saving settings");
             var dir = Settings.Preferences.PortableMode ? Application.StartupPath : ConfigDir;
 
             if (!Directory.Exists(dir))

@@ -1,4 +1,4 @@
-﻿using LogExpert.Classes;
+using LogExpert.Classes;
 using LogExpert.Classes.CommandLine;
 using LogExpert.Config;
 using LogExpert.Core.Classes.IPC;
@@ -14,6 +14,7 @@ using Newtonsoft.Json.Linq;
 using NLog;
 
 using System.Diagnostics;
+using System.Globalization;
 using System.IO.Pipes;
 using System.Reflection;
 using System.Security;
@@ -49,7 +50,7 @@ internal static class Program
         Application.EnableVisualStyles();
         Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
 
-        _logger.Info("\r\n============================================================================\r\nLogExpert {0} started.\r\n============================================================================", Assembly.GetExecutingAssembly().GetName().Version.ToString(3));
+        _logger.Info(CultureInfo.InvariantCulture, "\r\n============================================================================\r\nLogExpert {0} started.\r\n============================================================================", Assembly.GetExecutingAssembly().GetName().Version.ToString(3));
 
         CancellationTokenSource cts = new();
         try

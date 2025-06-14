@@ -99,7 +99,7 @@ public class FilterStarter
                     break;
                 }
             }
-            _logger.Info("FilterStarter starts worker for line {0}, lineCount {1}", workStartLine, interval);
+            _logger.Info(CultureInfo.InvariantCulture, "FilterStarter starts worker for line {0}, lineCount {1}", workStartLine, interval);
 
             await Task.Run(() => DoWork(filterParams, workStartLine, interval, ThreadProgressCallback)).ContinueWith(FilterDoneCallback);
             workStartLine += interval;
@@ -144,7 +144,7 @@ public class FilterStarter
 
     private Filter DoWork (FilterParams filterParams, int startLine, int maxCount, ProgressCallback progressCallback)
     {
-        _logger.Info("Started Filter worker [{0}] for line {1}", Environment.CurrentManagedThreadId, startLine);
+        _logger.Info(CultureInfo.InvariantCulture, "Started Filter worker [{0}] for line {1}", Environment.CurrentManagedThreadId, startLine);
 
         // Give every thread own copies of ColumnizerCallback and FilterParams, because the state of the objects changes while filtering
         FilterParams threadFilterParams = filterParams.CloneWithCurrentColumnizer();
@@ -162,7 +162,7 @@ public class FilterStarter
         }
 
         _ = filter.DoFilter(threadFilterParams, startLine, maxCount, progressCallback);
-        _logger.Info("Filter worker [{0}] for line {1} has completed.", Environment.CurrentManagedThreadId, startLine);
+        _logger.Info(CultureInfo.InvariantCulture, "Filter worker [{0}] for line {1} has completed.", Environment.CurrentManagedThreadId, startLine);
 
         lock (_filterReadyList)
         {
@@ -187,7 +187,7 @@ public class FilterStarter
 
     private void MergeResults ()
     {
-        _logger.Info("Merging filter results.");
+        _logger.Info(CultureInfo.InvariantCulture, "Merging filter results.");
         foreach (Filter filter in _filterReadyList)
         {
             foreach (var lineNum in filter.FilterHitList)
@@ -215,7 +215,7 @@ public class FilterStarter
         FilterHitList.AddRange(_filterHitDict.Keys);
         FilterResultLines.AddRange(_filterResultDict.Keys);
         LastFilterLinesList.AddRange(_lastFilterLinesDict.Keys);
-        _logger.Info("Merging done.");
+        _logger.Info(CultureInfo.InvariantCulture, "Merging done.");
     }
 
     #endregion

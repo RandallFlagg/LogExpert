@@ -1,3 +1,5 @@
+using System.Globalization;
+
 using LogExpert.Core.Entities;
 using LogExpert.Core.Interface;
 
@@ -156,7 +158,7 @@ public class BookmarkDataProvider : IBookmarkData
 
     public void ClearAllBookmarks ()
     {
-        _logger.Debug("Removing all bookmarks");
+        _logger.Debug(CultureInfo.InvariantCulture, "Removing all bookmarks");
         BookmarkList.Clear();
         OnAllBookmarksRemoved();
     }

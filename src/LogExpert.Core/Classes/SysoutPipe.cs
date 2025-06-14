@@ -1,6 +1,7 @@
-﻿using NLog;
+using NLog;
 
 using System.Diagnostics;
+using System.Globalization;
 using System.Text;
 
 namespace LogExpert.Core.Classes;
@@ -24,7 +25,7 @@ public class SysoutPipe : IDisposable
         _disposed = false;
         this._sysout = sysout;
         FileName = Path.GetTempFileName();
-        _logger.Info("sysoutPipe created temp file: {0}", FileName);
+        _logger.Info(CultureInfo.InvariantCulture, "sysoutPipe created temp file: {0}", FileName);
 
         FileStream fStream = new(FileName, FileMode.Append, FileAccess.Write, FileShare.Read);
         _writer = new StreamWriter(fStream, Encoding.Unicode);

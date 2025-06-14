@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text;
 
 using LogExpert.Core.Classes;
@@ -136,13 +137,13 @@ partial class LogWindow
 
     public void LoadFilesAsMulti (string[] fileNames, EncodingOptions encodingOptions)
     {
-        _logger.Info("Loading given files as MultiFile:");
+        _logger.Info(CultureInfo.InvariantCulture, "Loading given files as MultiFile:");
 
         EnterLoadFileStatus();
 
         foreach (var name in fileNames)
         {
-            _logger.Info("File: {0}", name);
+            _logger.Info(CultureInfo.InvariantCulture, "File: {0}", name);
         }
 
         if (_logFileReader != null)
@@ -292,7 +293,7 @@ partial class LogWindow
 
         if (IsTempFile)
         {
-            _logger.Info("Deleting temp file {0}", FileName);
+            _logger.Info(CultureInfo.InvariantCulture, "Deleting temp file {0}", FileName);
 
             try
             {
@@ -883,7 +884,7 @@ partial class LogWindow
                     }
                     if (_logger.IsDebugEnabled)
                     {
-                        _logger.Debug("AddBookmarkOverlay() r.Location={0}, width={1}, scroll_offset={2}", r.Location.X, r.Width, dataGridView.HorizontalScrollingOffset);
+                        _logger.Debug(CultureInfo.InvariantCulture, "AddBookmarkOverlay() r.Location={0}, width={1}, scroll_offset={2}", r.Location.X, r.Width, dataGridView.HorizontalScrollingOffset);
                     }
                     overlay.Position = r.Location - new Size(dataGridView.HorizontalScrollingOffset, 0);
                     overlay.Position += new Size(10, r.Height / 2);
@@ -1406,7 +1407,7 @@ partial class LogWindow
     public int FindTimestampLine_Internal (int lineNum, int rangeStart, int rangeEnd, DateTime timestamp,
         bool roundToSeconds)
     {
-        _logger.Debug("FindTimestampLine_Internal(): timestamp={0}, lineNum={1}, rangeStart={2}, rangeEnd={3}", timestamp, lineNum, rangeStart, rangeEnd);
+        _logger.Debug(CultureInfo.InvariantCulture, "FindTimestampLine_Internal(): timestamp={0}, lineNum={1}, rangeStart={2}, rangeEnd={3}", timestamp, lineNum, rangeStart, rangeEnd);
         var refLine = lineNum;
         DateTime currentTimestamp = GetTimestampForLine(ref refLine, roundToSeconds);
         if (currentTimestamp.CompareTo(timestamp) == 0)
@@ -1463,7 +1464,7 @@ partial class LogWindow
             {
                 return DateTime.MinValue;
             }
-            _logger.Debug("GetTimestampForLine({0}) enter", lineNum);
+            _logger.Debug(CultureInfo.InvariantCulture, "GetTimestampForLine({0}) enter", lineNum);
             DateTime timeStamp = DateTime.MinValue;
             var lookBack = false;
             if (lineNum >= 0 && lineNum < dataGridView.RowCount)
@@ -1493,7 +1494,7 @@ partial class LogWindow
             {
                 lineNum++;
             }
-            _logger.Debug("GetTimestampForLine() leave with lineNum={0}", lineNum);
+            _logger.Debug(CultureInfo.InvariantCulture, "GetTimestampForLine() leave with lineNum={0}", lineNum);
             return timeStamp;
         }
     }
@@ -1825,7 +1826,7 @@ partial class LogWindow
 
     public void AddToTimeSync (LogWindow master)
     {
-        _logger.Info("Syncing window for {0} to {1}", Util.GetNameFromPath(FileName), Util.GetNameFromPath(master.FileName));
+        _logger.Info(CultureInfo.InvariantCulture, "Syncing window for {0} to {1}", Util.GetNameFromPath(FileName), Util.GetNameFromPath(master.FileName));
         lock (_timeSyncListLock)
         {
             if (IsTimeSynced && master.TimeSyncList != TimeSyncList)
@@ -1846,7 +1847,7 @@ partial class LogWindow
         {
             if (TimeSyncList != null)
             {
-                _logger.Info("De-Syncing window for {0}", Util.GetNameFromPath(FileName));
+                _logger.Info(CultureInfo.InvariantCulture, "De-Syncing window for {0}", Util.GetNameFromPath(FileName));
                 TimeSyncList.WindowRemoved -= OnTimeSyncListWindowRemoved;
                 TimeSyncList.RemoveWindow(this);
                 TimeSyncList = null;

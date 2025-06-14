@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text;
 using LogExpert.Core.Interface;
 using NLog;
@@ -135,7 +136,7 @@ public class FilterPipe : IDisposable
 
     public void ClearLineNums ()
     {
-        _logger.Debug("FilterPipe.ClearLineNums()");
+        _logger.Debug(CultureInfo.InvariantCulture, "FilterPipe.ClearLineNums()");
         lock (_lineMappingList)
         {
             for (var i = 0; i < _lineMappingList.Count; ++i)

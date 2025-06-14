@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.Runtime.Versioning;
 using System.Text;
 
@@ -516,7 +517,7 @@ public partial class LogTabWindow
         }
         else
         {
-            _logger.Warn("Received SyncModeChanged event while disposing. Event ignored.");
+            _logger.Warn(CultureInfo.InvariantCulture, "Received SyncModeChanged event while disposing. Event ignored.");
         }
     }
 

@@ -1,4 +1,5 @@
 using System.Drawing.Drawing2D;
+using System.Globalization;
 using System.Runtime.Versioning;
 
 using LogExpert.Core.Entities;
@@ -264,7 +265,7 @@ public partial class BufferedDataGridView : DataGridView
 
                 if (_logger.IsDebugEnabled)
                 {
-                    _logger.Debug("ClipRgn: {0},{1},{2},{3}", myBuffer.Graphics.ClipBounds.Left, myBuffer.Graphics.ClipBounds.Top, myBuffer.Graphics.ClipBounds.Width, myBuffer.Graphics.ClipBounds.Height);
+                    _logger.Debug(CultureInfo.InvariantCulture, "ClipRgn: {0},{1},{2},{3}", myBuffer.Graphics.ClipBounds.Left, myBuffer.Graphics.ClipBounds.Top, myBuffer.Graphics.ClipBounds.Width, myBuffer.Graphics.ClipBounds.Height);
                 }
             }
         }
@@ -325,7 +326,7 @@ public partial class BufferedDataGridView : DataGridView
                 }
                 else
                 {
-                    _logger.Warn("Edit control was null, to be checked");
+                    _logger.Warn(CultureInfo.InvariantCulture, "Edit control was null, to be checked");
                 }
             }
         }
