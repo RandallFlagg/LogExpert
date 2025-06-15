@@ -21,7 +21,7 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace LogExpert.UI.Controls.LogTabWindow;
 
-public partial class LogTabWindow
+internal partial class LogTabWindow
 {
     #region Private Methods
 

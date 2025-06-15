@@ -1,6 +1,8 @@
-namespace LogExpert.Core.Classes.Bookmark;
+using LogExpert.Core.Entities;
 
-public static class BookmarkExporter
+namespace LogExpert.UI.Extensions;
+
+internal static class BookmarkExporter
 {
     #region Fields
 
@@ -10,13 +12,13 @@ public static class BookmarkExporter
 
     #region Public methods
 
-    public static void ExportBookmarkList (SortedList<int, Entities.Bookmark> bookmarkList, string logfileName,
+    public static void ExportBookmarkList (SortedList<int, Bookmark> bookmarkList, string logfileName,
         string fileName)
     {
         FileStream fs = new(fileName, FileMode.Create, FileAccess.Write);
         StreamWriter writer = new(fs);
         writer.WriteLine("Log file name;Line number;Comment");
-        foreach (Entities.Bookmark bookmark in bookmarkList.Values)
+        foreach (var bookmark in bookmarkList.Values)
         {
             var line = $"{logfileName};{bookmark.LineNum};{bookmark.Text.Replace(replacementForNewLine, @"\" + replacementForNewLine, StringComparison.OrdinalIgnoreCase).Replace("\r\n", replacementForNewLine, StringComparison.OrdinalIgnoreCase)}";
             writer.WriteLine(line);
@@ -25,7 +27,7 @@ public static class BookmarkExporter
         fs.Close();
     }
 
-    public static void ImportBookmarkList (string logfileName, string fileName, SortedList<int, Entities.Bookmark> bookmarkList)
+    public static void ImportBookmarkList (string logfileName, string fileName, SortedList<int, Bookmark> bookmarkList)
     {
         using FileStream fs = new(fileName, FileMode.Open, FileAccess.Read);
         using StreamReader reader = new(fs);
@@ -51,7 +53,7 @@ public static class BookmarkExporter
 
                 if (int.TryParse(lineStr, out var lineNum))
                 {
-                    Entities.Bookmark bookmark = new(lineNum, comment);
+                    Bookmark bookmark = new(lineNum, comment);
                     bookmarkList.Add(lineNum, bookmark);
                 }
                 else

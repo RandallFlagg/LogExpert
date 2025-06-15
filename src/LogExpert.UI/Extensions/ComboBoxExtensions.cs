@@ -1,9 +1,9 @@
-﻿using System.Runtime.Versioning;
+using System.Runtime.Versioning;
 
 namespace LogExpert.UI.Extensions;
 
 [SupportedOSPlatform("windows")]
-public static class ComboBoxExtensions
+internal static class ComboBoxExtensions
 {
     /// <seealso href="https://stackoverflow.com/a/4842576/1987788"/>
     public static int GetMaxTextWidth(this ComboBox comboBox)

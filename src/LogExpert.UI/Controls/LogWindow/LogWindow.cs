@@ -25,7 +25,7 @@ namespace LogExpert.UI.Controls.LogWindow;
 
 //TODO: Implemented 4 interfaces explicitly. Find them by searching: ILogWindow.<method name>
 [SupportedOSPlatform("windows")]
-public partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, ILogWindow
+internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, ILogWindow
 {
     #region Fields
 

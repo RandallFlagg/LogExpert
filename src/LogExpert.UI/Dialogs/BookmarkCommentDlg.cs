@@ -1,9 +1,9 @@
-﻿using System.Runtime.Versioning;
+using System.Runtime.Versioning;
 
 namespace LogExpert.Dialogs;
 
 [SupportedOSPlatform("windows")]
-public partial class BookmarkCommentDlg : Form
+internal partial class BookmarkCommentDlg : Form
 {
     #region cTor
 

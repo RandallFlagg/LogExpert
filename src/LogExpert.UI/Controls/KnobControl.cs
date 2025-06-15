@@ -5,7 +5,7 @@ using System.Runtime.Versioning;
 namespace LogExpert.UI.Controls;
 
 [SupportedOSPlatform("windows")]
-public partial class KnobControl : UserControl
+internal partial class KnobControl : UserControl
 {
     #region Fields
 

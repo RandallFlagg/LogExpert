@@ -1,11 +1,11 @@
-﻿using LogExpert.Core.Config;
+using LogExpert.Core.Config;
 
 using System.Runtime.Versioning;
 
 namespace LogExpert.UI.Dialogs;
 
 [SupportedOSPlatform("windows")]
-public partial class ImportSettingsDialog : Form
+internal partial class ImportSettingsDialog : Form
 {
     #region cTor
 

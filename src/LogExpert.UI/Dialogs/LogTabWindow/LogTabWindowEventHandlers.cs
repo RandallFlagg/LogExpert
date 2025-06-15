@@ -9,14 +9,14 @@ using LogExpert.Core.Config;
 using LogExpert.Core.Entities;
 using LogExpert.Core.EventArguments;
 using LogExpert.Dialogs;
-using LogExpert.UI.Controls.LogWindow;
 using LogExpert.UI.Dialogs;
+using LogExpert.UI.Extensions.LogWindow;
 
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace LogExpert.UI.Controls.LogTabWindow;
 
-public partial class LogTabWindow
+internal partial class LogTabWindow
 {
     #region Events handler
 

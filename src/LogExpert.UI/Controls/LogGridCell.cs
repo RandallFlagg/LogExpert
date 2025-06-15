@@ -3,7 +3,7 @@ using System.Windows.Forms;
 
 namespace LogExpert.UI.Controls;
 
-public class LogGridCell : DataGridViewTextBoxCell
+internal class LogGridCell : DataGridViewTextBoxCell
 {
     #region Properties
 

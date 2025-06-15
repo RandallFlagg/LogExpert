@@ -16,7 +16,7 @@ namespace LogExpert.Dialogs;
 
 //TODO can be moved to Logexpert.UI if the PaintHelper has been refactored
 [SupportedOSPlatform("windows")]
-public partial class BookmarkWindow : DockContent, ISharedToolWindow, IBookmarkView
+internal partial class BookmarkWindow : DockContent, ISharedToolWindow, IBookmarkView
 {
     #region Fields
 

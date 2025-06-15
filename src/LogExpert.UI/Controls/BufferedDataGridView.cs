@@ -10,7 +10,7 @@ using NLog;
 namespace LogExpert.Dialogs;
 
 [SupportedOSPlatform("windows")]
-public partial class BufferedDataGridView : DataGridView
+internal partial class BufferedDataGridView : DataGridView
 {
     #region Fields
 
