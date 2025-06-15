@@ -2,6 +2,7 @@ using System.Runtime.Versioning;
 
 namespace LogExpert.UI.Extensions;
 
+//TODO: Not in use. Delete?
 [SupportedOSPlatform("windows")]
 internal static class ComboBoxExtensions
 {
