@@ -15,7 +15,7 @@ namespace LogExpert.Dialogs;
 /// The control raises events (ValueChanged, ValueDragged) when the date/time changes so that owner can react accordingly.
 /// </summary>
 [SupportedOSPlatform("windows")]
-public partial class DateTimeDragControl : UserControl
+internal partial class DateTimeDragControl : UserControl
 {
     #region Fields
 

@@ -1,4 +1,4 @@
-﻿using LogExpert.Core.Classes;
+using LogExpert.Core.Classes;
 
 using Newtonsoft.Json;
 
@@ -9,7 +9,7 @@ using System.Runtime.Versioning;
 namespace LogExpert.UI.Dialogs;
 
 [SupportedOSPlatform("windows")]
-public partial class AboutBox : Form
+internal partial class AboutBox : Form
 {
     #region Fields
 

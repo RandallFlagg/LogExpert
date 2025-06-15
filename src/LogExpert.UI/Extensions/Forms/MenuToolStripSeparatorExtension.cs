@@ -1,11 +1,11 @@
-﻿using LogExpert.Core.Config;
+using LogExpert.Core.Config;
 
 using System.Runtime.Versioning;
 
 namespace LogExpert.UI.Extensions.Forms;
 
 [SupportedOSPlatform("windows")]
-public class MenuToolStripSeparatorExtension : ToolStripSeparator
+internal class MenuToolStripSeparatorExtension : ToolStripSeparator
 {
     public MenuToolStripSeparatorExtension()
     {

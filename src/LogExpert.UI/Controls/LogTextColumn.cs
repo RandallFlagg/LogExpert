@@ -2,7 +2,7 @@ using System.Runtime.Versioning;
 
 namespace LogExpert.UI.Controls;
 
-public class LogTextColumn : DataGridViewColumn
+internal class LogTextColumn : DataGridViewColumn
 {
     #region cTor
 

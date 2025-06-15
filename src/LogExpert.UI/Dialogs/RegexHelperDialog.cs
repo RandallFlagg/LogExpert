@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 namespace LogExpert.UI.Dialogs;
 
 [SupportedOSPlatform("windows")]
-public partial class RegexHelperDialog : Form
+internal partial class RegexHelperDialog : Form
 {
     #region Fields
 

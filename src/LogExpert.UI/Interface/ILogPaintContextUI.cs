@@ -1,4 +1,4 @@
-﻿using LogExpert.Core.Classes.Highlight;
+using LogExpert.Core.Classes.Highlight;
 using LogExpert.Core.Entities;
 using LogExpert.Core.Interface;
 
@@ -7,7 +7,7 @@ namespace LogExpert.UI.Interface;
 /// <summary>
 /// Declares methods that are needed for drawing log lines. Used by PaintHelper.
 /// </summary>
-public interface ILogPaintContextUI : ILogPaintContext
+internal interface ILogPaintContextUI : ILogPaintContext
 {
     #region Properties
 

@@ -5,7 +5,7 @@ namespace LogExpert.UI.Controls.LogWindow;
 /// <summary>
 /// Holds all windows which are in sync via timestamp
 /// </summary>
-public class TimeSyncList
+internal class TimeSyncList
 {
     #region Fields
 

@@ -1,12 +1,10 @@
-﻿using LogExpert.Config;
+using System.Windows.Forms;
+
+using LogExpert.Config;
 using LogExpert.Core.Interface;
-using LogExpert.UI.Controls.LogWindow;
+using LogExpert.UI.Extensions.LogWindow;
 
 using NLog;
-
-using System;
-using System.Collections.Generic;
-using System.Windows.Forms;
 
 namespace LogExpert.Classes;
 
