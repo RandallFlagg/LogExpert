@@ -276,11 +276,11 @@ partial class LogWindow
             return;
         }
 
-        ILogLine line = _logFileReader.GetLogLine(e.RowIndex);
+        var line = _logFileReader.GetLogLine(e.RowIndex);
         var offset = CurrentColumnizer.GetTimeOffset();
         CurrentColumnizer.SetTimeOffset(0);
         ColumnizerCallbackObject.SetLineNum(e.RowIndex);
-        IColumnizedLogLine cols = CurrentColumnizer.SplitLine(ColumnizerCallbackObject, line);
+        var cols = CurrentColumnizer.SplitLine(ColumnizerCallbackObject, line);
         CurrentColumnizer.SetTimeOffset(offset);
         if (cols.ColumnValues.Length <= e.ColumnIndex - 2)
         {
@@ -392,11 +392,11 @@ partial class LogWindow
         }
 
         var lineNum = _filterResultList[e.RowIndex];
-        ILogLine line = _logFileReader.GetLogLineWithWait(lineNum).Result;
+        var line = _logFileReader.GetLogLineWithWait(lineNum).Result;
 
         if (line != null)
         {
-            HighlightEntry entry = FindFirstNoWordMatchHilightEntry(line);
+            var entry = FindFirstNoWordMatchHilightEntry(line);
             e.Graphics.SetClip(e.CellBounds);
             if ((e.State & DataGridViewElementStates.Selected) == DataGridViewElementStates.Selected)
             {
@@ -407,8 +407,7 @@ partial class LogWindow
                 }
                 else
                 {
-                    var color = Color.FromArgb(255, 170, 170, 170);
-                    brush = new SolidBrush(color);
+                    brush = new SolidBrush(Color.FromArgb(255, 170, 170, 170)); //gray
                 }
 
                 e.Graphics.FillRectangle(brush, e.CellBounds);
@@ -416,7 +415,7 @@ partial class LogWindow
             }
             else
             {
-                Color bgColor = Color.White;
+                var bgColor = Color.White;
                 // paint direct filter hits with different bg color
                 //if (this.filterParams.SpreadEnabled && this.filterHitList.Contains(lineNum))
                 //{
@@ -461,7 +460,7 @@ partial class LogWindow
                     e.Graphics.FillRectangle(brush, r);
                     brush.Dispose();
 
-                    Bookmark bookmark = _bookmarkProvider.GetBookmarkForLine(lineNum);
+                    var bookmark = _bookmarkProvider.GetBookmarkForLine(lineNum);
 
                     if (bookmark.Text.Length > 0)
                     {
@@ -845,8 +844,8 @@ partial class LogWindow
         var isAdded = false;
         if (PluginRegistry.PluginRegistry.Instance.RegisteredContextMenuPlugins.Count > 0)
         {
-            IList<int> lines = GetSelectedContent();
-            foreach (IContextMenuEntry entry in PluginRegistry.PluginRegistry.Instance.RegisteredContextMenuPlugins)
+            var lines = GetSelectedContent();
+            foreach (var entry in PluginRegistry.PluginRegistry.Instance.RegisteredContextMenuPlugins)
             {
                 LogExpertCallback callback = new(this);
                 var menuText = entry.GetMenuText(lines.Count, CurrentColumnizer, callback.GetLogLine(lines[0]));
@@ -859,7 +858,7 @@ partial class LogWindow
                         menuText = menuText[1..];
                     }
 
-                    ToolStripItem item = dataGridContextMenuStrip.Items.Add(menuText, null, OnHandlePluginContextMenu);
+                    var item = dataGridContextMenuStrip.Items.Add(menuText, null, OnHandlePluginContextMenu);
                     item.Tag = new ContextMenuPluginEventArgs(entry, lines, CurrentColumnizer, callback);
                     item.Enabled = !disabled;
                     isAdded = true;
@@ -876,13 +875,13 @@ partial class LogWindow
 
         if (CurrentColumnizer.IsTimeshiftImplemented())
         {
-            IList<WindowFileEntry> list = _parentLogTabWin.GetListOfOpenFiles();
+            var list = _parentLogTabWin.GetListOfOpenFiles();
             syncTimestampsToToolStripMenuItem.Enabled = true;
             syncTimestampsToToolStripMenuItem.DropDownItems.Clear();
             EventHandler ev = OnHandleSyncContextMenu;
             Font italicFont = new(syncTimestampsToToolStripMenuItem.Font.FontFamily, syncTimestampsToToolStripMenuItem.Font.Size, FontStyle.Italic);
 
-            foreach (WindowFileEntry fileEntry in list)
+            foreach (var fileEntry in list)
             {
                 if (fileEntry.LogWindow != this)
                 {
@@ -914,7 +913,7 @@ partial class LogWindow
         if (sender is ToolStripItem item)
         {
             var menuArgs = item.Tag as ContextMenuPluginEventArgs;
-            IList<int> logLines = menuArgs.LogLines;
+            var logLines = menuArgs.LogLines;
             menuArgs.Entry.MenuSelected(logLines.Count, menuArgs.Columnizer, menuArgs.Callback.GetLogLine(logLines[0]));
         }
     }
@@ -958,7 +957,7 @@ partial class LogWindow
             if (currentLine > 0 && currentLine < dataGridView.RowCount)
             {
                 var lineNum = currentLine;
-                DateTime timeStamp = GetTimestampForLine(ref lineNum, false);
+                var timeStamp = GetTimestampForLine(ref lineNum, false);
                 if (timeStamp.Equals(DateTime.MinValue)) // means: invalid
                 {
                     return;
@@ -1083,7 +1082,7 @@ partial class LogWindow
     [SupportedOSPlatform("windows")]
     private void OnColumnContextMenuStripOpening (object sender, CancelEventArgs e)
     {
-        Control ctl = columnContextMenuStrip.SourceControl;
+        var ctl = columnContextMenuStrip.SourceControl;
         var gridView = ctl as BufferedDataGridView;
         var frozen = false;
         if (_freezeStateMap.TryGetValue(ctl, out var value))
@@ -1106,26 +1105,26 @@ partial class LogWindow
         }
 
 
-        DataGridViewColumn col = gridView.Columns[_selectedCol];
+        var col = gridView.Columns[_selectedCol];
         moveLeftToolStripMenuItem.Enabled = col != null && col.DisplayIndex > 0;
         moveRightToolStripMenuItem.Enabled = col != null && col.DisplayIndex < gridView.Columns.Count - 1;
 
         if (gridView.Columns.Count - 1 > _selectedCol)
         {
             //        DataGridViewColumn colRight = gridView.Columns[this.selectedCol + 1];
-            DataGridViewColumn colRight = gridView.Columns.GetNextColumn(col, DataGridViewElementStates.None, DataGridViewElementStates.None);
+            var colRight = gridView.Columns.GetNextColumn(col, DataGridViewElementStates.None, DataGridViewElementStates.None);
             moveRightToolStripMenuItem.Enabled = colRight != null && colRight.Frozen == col.Frozen;
         }
 
         if (_selectedCol > 0)
         {
             //DataGridViewColumn colLeft = gridView.Columns[this.selectedCol - 1];
-            DataGridViewColumn colLeft = gridView.Columns.GetPreviousColumn(col, DataGridViewElementStates.None, DataGridViewElementStates.None);
+            var colLeft = gridView.Columns.GetPreviousColumn(col, DataGridViewElementStates.None, DataGridViewElementStates.None);
 
             moveLeftToolStripMenuItem.Enabled = colLeft != null && colLeft.Frozen == col.Frozen;
         }
 
-        DataGridViewColumn colLast = gridView.Columns[gridView.Columns.Count - 1];
+        var colLast = gridView.Columns[gridView.Columns.Count - 1];
         moveToLastColumnToolStripMenuItem.Enabled = colLast != null && colLast.Frozen == col.Frozen;
 
         // Fill context menu with column names
@@ -1157,7 +1156,7 @@ partial class LogWindow
     [SupportedOSPlatform("windows")]
     private void OnFreezeLeftColumnsUntilHereToolStripMenuItemClick (object sender, EventArgs e)
     {
-        Control ctl = columnContextMenuStrip.SourceControl;
+        var ctl = columnContextMenuStrip.SourceControl;
         var frozen = false;
 
         if (_freezeStateMap.TryGetValue(ctl, out var value))
@@ -1178,7 +1177,7 @@ partial class LogWindow
     private void OnMoveToLastColumnToolStripMenuItemClick (object sender, EventArgs e)
     {
         var gridView = columnContextMenuStrip.SourceControl as BufferedDataGridView;
-        DataGridViewColumn col = gridView.Columns[_selectedCol];
+        var col = gridView.Columns[_selectedCol];
         if (col != null)
         {
             col.DisplayIndex = gridView.Columns.Count - 1;
@@ -1189,7 +1188,7 @@ partial class LogWindow
     private void OnMoveLeftToolStripMenuItemClick (object sender, EventArgs e)
     {
         var gridView = columnContextMenuStrip.SourceControl as BufferedDataGridView;
-        DataGridViewColumn col = gridView.Columns[_selectedCol];
+        var col = gridView.Columns[_selectedCol];
         if (col != null && col.DisplayIndex > 0)
         {
             col.DisplayIndex -= 1;
@@ -1200,7 +1199,7 @@ partial class LogWindow
     private void OnMoveRightToolStripMenuItemClick (object sender, EventArgs e)
     {
         var gridView = columnContextMenuStrip.SourceControl as BufferedDataGridView;
-        DataGridViewColumn col = gridView.Columns[_selectedCol];
+        var col = gridView.Columns[_selectedCol];
         if (col != null && col.DisplayIndex < gridView.Columns.Count - 1)
         {
             col.DisplayIndex = col.DisplayIndex + 1;
@@ -1211,7 +1210,7 @@ partial class LogWindow
     private void OnHideColumnToolStripMenuItemClick (object sender, EventArgs e)
     {
         var gridView = columnContextMenuStrip.SourceControl as BufferedDataGridView;
-        DataGridViewColumn col = gridView.Columns[_selectedCol];
+        var col = gridView.Columns[_selectedCol];
         col.Visible = false;
     }
 
@@ -1415,7 +1414,7 @@ partial class LogWindow
 
     private void OnSaveFilterButtonClick (object sender, EventArgs e)
     {
-        FilterParams newParams = _filterParams.Clone();
+        var newParams = _filterParams.Clone();
         newParams.Color = Color.FromKnownColor(KnownColor.Black);
         ConfigManager.Settings.FilterList.Add(newParams);
         OnFilterListChanged(this);
@@ -1478,7 +1477,7 @@ partial class LogWindow
         if (filterListBox.SelectedIndex >= 0)
         {
             var filterParams = (FilterParams)filterListBox.Items[filterListBox.SelectedIndex];
-            FilterParams newParams = filterParams.Clone();
+            var newParams = filterParams.Clone();
             //newParams.historyList = ConfigManager.Settings.filterHistoryList;
             _filterParams = newParams;
             ReInitFilterParams(_filterParams);

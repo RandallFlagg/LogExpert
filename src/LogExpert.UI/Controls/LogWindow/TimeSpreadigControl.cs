@@ -65,8 +65,8 @@ internal partial class TimeSpreadingControl : UserControl
         {
             //timeSpreadCalc.CalcDone -= timeSpreadCalc_CalcDone;
             _timeSpreadCalc = value;
-            _timeSpreadCalc.CalcDone += TimeSpreadCalc_CalcDone;
-            _timeSpreadCalc.StartCalc += TimeSpreadCalc_StartCalc;
+            _timeSpreadCalc.CalcDone += OnTimeSpreadCalcCalcDone;
+            _timeSpreadCalc.StartCalc += OnTimeSpreadCalcStartCalc;
         }
     }
 
@@ -82,7 +82,7 @@ internal partial class TimeSpreadingControl : UserControl
             if (DesignMode)
             {
                 Brush bgBrush = new SolidBrush(Color.FromKnownColor(KnownColor.LightSkyBlue));
-                Rectangle rect = ClientRectangle;
+                var rect = ClientRectangle;
                 rect.Inflate(0, -_edgeOffset);
                 e.Graphics.FillRectangle(bgBrush, rect);
                 bgBrush.Dispose();
@@ -100,7 +100,7 @@ internal partial class TimeSpreadingControl : UserControl
 
     private SpreadEntry GetEntryForMouse (MouseEventArgs e)
     {
-        List<SpreadEntry> list = TimeSpreadCalc.DiffList;
+        var list = TimeSpreadCalc.DiffList;
         var y = e.Y - _edgeOffset;
         if (y < 0)
         {
@@ -144,14 +144,14 @@ internal partial class TimeSpreadingControl : UserControl
 
     #region Events handler
 
-    private void TimeSpreadCalc_CalcDone (object sender, EventArgs e)
+    private void OnTimeSpreadCalcCalcDone (object sender, EventArgs e)
     {
         _logger.Debug("timeSpreadCalc_CalcDone()");
 
         lock (_monitor)
         {
             Invalidate();
-            Rectangle rect = ClientRectangle;
+            var rect = ClientRectangle;
             rect.Size = new Size(rect.Width, rect.Height - _edgeOffset * 3);
 
             if (rect.Height < 1)
@@ -165,7 +165,7 @@ internal partial class TimeSpreadingControl : UserControl
             gfx.FillRectangle(bgBrush, rect);
             bgBrush.Dispose();
 
-            List<SpreadEntry> list = TimeSpreadCalc.DiffList;
+            var list = TimeSpreadCalc.DiffList;
             int step;
 
             if (list.Count >= _displayHeight)
@@ -185,7 +185,7 @@ internal partial class TimeSpreadingControl : UserControl
             {
                 for (var i = 0; i < list.Count; i += step)
                 {
-                    SpreadEntry entry = list[i];
+                    var entry = list[i];
                     var color = ReverseAlpha ? entry.Value : 255 - entry.Value;
 
                     if (color > 255)
@@ -210,12 +210,12 @@ internal partial class TimeSpreadingControl : UserControl
         BeginInvoke(new MethodInvoker(Refresh));
     }
 
-    private void TimeSpreadCalc_StartCalc (object sender, EventArgs e)
+    private void OnTimeSpreadCalcStartCalc (object sender, EventArgs e)
     {
         lock (_monitor)
         {
             Invalidate();
-            Rectangle rect = ClientRectangle;
+            var rect = ClientRectangle;
             rect.Size = new Size(rect.Width, rect.Height - _edgeOffset * 3);
 
             if (rect.Height < 1)
@@ -230,9 +230,11 @@ internal partial class TimeSpreadingControl : UserControl
             Brush fgBrush = new SolidBrush(ForeColor);
             //gfx.FillRectangle(bgBrush, rect);
 
-            StringFormat format = new(StringFormatFlags.DirectionVertical | StringFormatFlags.NoWrap);
-            format.LineAlignment = StringAlignment.Center;
-            format.Alignment = StringAlignment.Center;
+            StringFormat format = new(StringFormatFlags.DirectionVertical | StringFormatFlags.NoWrap)
+            {
+                LineAlignment = StringAlignment.Center,
+                Alignment = StringAlignment.Center
+            };
 
             RectangleF rectf = new(rect.Left, rect.Top, rect.Width, rect.Height);
 
@@ -245,7 +247,7 @@ internal partial class TimeSpreadingControl : UserControl
         BeginInvoke(new MethodInvoker(Refresh));
     }
 
-    private void TimeSpreadingControl_SizeChanged (object sender, EventArgs e)
+    private void OnTimeSpreadingControlSizeChanged (object sender, EventArgs e)
     {
         if (TimeSpreadCalc != null)
         {
@@ -254,15 +256,15 @@ internal partial class TimeSpreadingControl : UserControl
         }
     }
 
-    private void TimeSpreadingControl_MouseDown (object sender, MouseEventArgs e)
+    private void OnTimeSpreadingControlMouseDown (object sender, MouseEventArgs e)
     {
     }
 
-    private void TimeSpreadingControl_MouseUp (object sender, MouseEventArgs e)
+    private void OnTimeSpreadingControlMouseUp (object sender, MouseEventArgs e)
     {
         if (e.Button == MouseButtons.Left)
         {
-            SpreadEntry entry = GetEntryForMouse(e);
+            var entry = GetEntryForMouse(e);
             if (entry == null)
             {
                 return;
@@ -272,17 +274,17 @@ internal partial class TimeSpreadingControl : UserControl
         }
     }
 
-    private void TimeSpreadingControl_MouseEnter (object sender, EventArgs e)
+    private void OnTimeSpreadingControlMouseEnter (object sender, EventArgs e)
     {
         _toolTip.Active = true;
     }
 
-    private void TimeSpreadingControl_MouseLeave (object sender, EventArgs e)
+    private void OnTimeSpreadingControlMouseLeave (object sender, EventArgs e)
     {
         _toolTip.Active = false;
     }
 
-    private void TimeSpreadingControl_MouseMove (object sender, MouseEventArgs e)
+    private void OnTimeSpreadingControlMouseMove (object sender, MouseEventArgs e)
     {
         if (e.Y == _lastMouseY)
         {
@@ -295,7 +297,7 @@ internal partial class TimeSpreadingControl : UserControl
             return;
         }
 
-        SpreadEntry entry = GetEntryForMouse(e);
+        var entry = GetEntryForMouse(e);
 
         if (entry == null)
         {
@@ -303,7 +305,7 @@ internal partial class TimeSpreadingControl : UserControl
         }
 
         _lastMouseY = e.Y;
-        var dts = entry.Timestamp.ToString("dd.MM.yyyy HH:mm:ss");
+        var dts = $"{entry.Timestamp:dd.MM.yyyy HH:mm:ss}";
         _toolTip.SetToolTip(this, "Line " + (entry.LineNum + 1) + "\n" + dts);
     }
 

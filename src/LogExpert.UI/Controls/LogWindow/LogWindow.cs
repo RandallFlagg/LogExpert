@@ -160,7 +160,7 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
         ForcePersistenceLoading = forcePersistenceLoading;
 
         dataGridView.CellValueNeeded += OnDataGridViewCellValueNeeded;
-        dataGridView.CellPainting += OnDataGridView_CellPainting;
+        dataGridView.CellPainting += OnDataGridViewCellPainting;
 
         filterGridView.CellValueNeeded += OnFilterGridViewCellValueNeeded;
         filterGridView.CellPainting += OnFilterGridViewCellPainting;

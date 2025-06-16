@@ -7,21 +7,11 @@ using System.Drawing;
 namespace LogExpert.Core.Config;
 
 [Serializable]
-public class ColorEntry
+public class ColorEntry (string fileName, Color color)
 {
-    #region cTor
+    public Color Color { get; } = color;
 
-    public ColorEntry(string fileName, Color color)
-    {
-        FileName = fileName;
-        Color = color;
-    }
-
-    #endregion
-
-    public Color Color { get; }
-
-    public string FileName { get; }
+    public string FileName { get; } = fileName;
 
     #region Fields
 

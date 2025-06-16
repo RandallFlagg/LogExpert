@@ -499,7 +499,7 @@ partial class LogWindow
         }
     }
 
-    public void OnDataGridView_CellPainting (object sender, DataGridViewCellPaintingEventArgs e)
+    public void OnDataGridViewCellPainting (object sender, DataGridViewCellPaintingEventArgs e)
     {
         var gridView = (BufferedDataGridView)sender;
         CellPainting(gridView, e.RowIndex, e);

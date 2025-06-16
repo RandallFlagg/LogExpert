@@ -44,7 +44,7 @@ internal partial class LogTabWindow
             }
 
             var title = "Clipboard";
-            LogWindow.LogWindow logWindow = AddTempFileTab(fileName, title);
+            var logWindow = AddTempFileTab(fileName, title);
             if (logWindow.Tag is LogWindowData data)
             {
                 SetTooltipText(logWindow, "Pasted on " + DateTime.Now);
@@ -252,7 +252,7 @@ internal partial class LogTabWindow
     {
         lock (_logWindowList)
         {
-            foreach (LogWindow.LogWindow logWindow in _logWindowList)
+            foreach (var logWindow in _logWindowList)
             {
                 if (logWindow.FileName.ToUpperInvariant().Equals(fileName.ToUpperInvariant(), StringComparison.Ordinal))
                 {
@@ -274,7 +274,7 @@ internal partial class LogTabWindow
     {
         if (fileName.EndsWith(".lxp"))
         {
-            PersistenceData persistenceData = Persister.LoadOptionsOnly(fileName);
+            var persistenceData = Persister.LoadOptionsOnly(fileName);
             if (persistenceData == null)
             {
                 return fileName;
@@ -282,7 +282,7 @@ internal partial class LogTabWindow
 
             if (!string.IsNullOrEmpty(persistenceData.FileName))
             {
-                IFileSystemPlugin fs = PluginRegistry.PluginRegistry.Instance.FindFileSystemForUri(persistenceData.FileName);
+                var fs = PluginRegistry.PluginRegistry.Instance.FindFileSystemForUri(persistenceData.FileName);
                 if (fs != null && !fs.GetType().Equals(typeof(LocalFileSystem)))
                 {
                     return persistenceData.FileName;
@@ -359,7 +359,7 @@ internal partial class LogTabWindow
             PreSelectedGroupName = groupsComboBoxHighlightGroups.Text
         };
 
-        DialogResult res = dlg.ShowDialog();
+        var res = dlg.ShowDialog();
 
         if (res == DialogResult.OK)
         {
@@ -376,7 +376,7 @@ internal partial class LogTabWindow
     {
         var currentGroupName = groupsComboBoxHighlightGroups.Text;
         groupsComboBoxHighlightGroups.Items.Clear();
-        foreach (HighlightGroup group in HighlightGroupList)
+        foreach (var group in HighlightGroupList)
         {
             groupsComboBoxHighlightGroups.Items.Add(group.GroupName);
             if (group.GroupName.Equals(currentGroupName, StringComparison.Ordinal))
@@ -451,11 +451,11 @@ internal partial class LogTabWindow
             return;
         }
 
-        MultiFileOption option = ConfigManager.Settings.Preferences.MultiFileOption;
+        var option = ConfigManager.Settings.Preferences.MultiFileOption;
         if (option == MultiFileOption.Ask)
         {
             MultiLoadRequestDialog dlg = new();
-            DialogResult res = dlg.ShowDialog();
+            var res = dlg.ShowDialog();
 
             if (res == DialogResult.Yes)
             {
@@ -492,7 +492,7 @@ internal partial class LogTabWindow
 
     private void SetColumnizerHistoryEntry (string fileName, ILogLineColumnizer columnizer)
     {
-        ColumnizerHistoryEntry entry = FindColumnizerHistoryEntry(fileName);
+        var entry = FindColumnizerHistoryEntry(fileName);
         if (entry != null)
         {
             _ = ConfigManager.Settings.ColumnizerHistoryList.Remove(entry);
@@ -509,7 +509,7 @@ internal partial class LogTabWindow
 
     private ColumnizerHistoryEntry FindColumnizerHistoryEntry (string fileName)
     {
-        foreach (ColumnizerHistoryEntry entry in ConfigManager.Settings.ColumnizerHistoryList)
+        foreach (var entry in ConfigManager.Settings.ColumnizerHistoryList)
         {
             if (entry.FileName.Equals(fileName, StringComparison.Ordinal))
             {
@@ -539,7 +539,7 @@ internal partial class LogTabWindow
             return; // do nothing if wishing to set the same window
         }
 
-        LogWindow.LogWindow oldLogWindow = _currentLogWindow;
+        var oldLogWindow = _currentLogWindow;
         _currentLogWindow = newLogWindow;
         var titleName = _showInstanceNumbers ? "LogExpert #" + _instanceNumber : "LogExpert";
 
@@ -714,7 +714,7 @@ internal partial class LogTabWindow
     [SupportedOSPlatform("windows")]
     private Icon CreateLedIcon (int level, bool dirty, int tailState, int syncMode)
     {
-        Rectangle iconRect = _leds[0];
+        var iconRect = _leds[0];
         iconRect.Height = 16; // (DockPanel's damn hardcoded height) // this.leds[this.leds.Length - 1].Bottom;
         iconRect.Width = iconRect.Right + 6;
         Bitmap bmp = new(iconRect.Width, iconRect.Height);
@@ -724,7 +724,7 @@ internal partial class LogTabWindow
 
         for (var i = 0; i < _leds.Length; ++i)
         {
-            Rectangle ledRect = _leds[i];
+            var ledRect = _leds[i];
             ledRect.Offset(0, offsetFromTop);
 
             if (level >= _leds.Length - i)
@@ -739,7 +739,7 @@ internal partial class LogTabWindow
 
         var ledSize = 3;
         var ledGap = 1;
-        Rectangle lastLed = _leds[^1];
+        var lastLed = _leds[^1];
         Rectangle dirtyLed = new(lastLed.Right + 2, lastLed.Bottom - ledSize, ledSize, ledSize);
         Rectangle tailLed = new(dirtyLed.Location, dirtyLed.Size);
         tailLed.Offset(0, -(ledSize + ledGap));
@@ -818,7 +818,7 @@ internal partial class LogTabWindow
     private void FileRespawned (LogWindow.LogWindow logWin)
     {
         var data = logWin.Tag as LogWindowData;
-        Icon icon = GetIcon(0, data);
+        var icon = GetIcon(0, data);
         BeginInvoke(new SetTabIconDelegate(SetTabIcon), logWin, icon);
     }
 
@@ -831,7 +831,7 @@ internal partial class LogTabWindow
             data.DiffSum = DIFF_MAX;
         }
 
-        Icon icon = GetIcon(data.DiffSum, data);
+        var icon = GetIcon(data.DiffSum, data);
         BeginInvoke(new SetTabIconDelegate(SetTabIcon), logWin, icon);
     }
 
@@ -872,7 +872,7 @@ internal partial class LogTabWindow
 
             lock (_logWindowList)
             {
-                foreach (LogWindow.LogWindow logWindow in _logWindowList)
+                foreach (var logWindow in _logWindowList)
                 {
                     var data = logWindow.Tag as LogWindowData;
                     if (data.DiffSum > 0)
@@ -883,7 +883,7 @@ internal partial class LogTabWindow
                             data.DiffSum = 0;
                         }
 
-                        Icon icon = GetIcon(data.DiffSum, data);
+                        var icon = GetIcon(data.DiffSum, data);
                         BeginInvoke(new SetTabIconDelegate(SetTabIcon), logWindow, icon);
                     }
                 }
@@ -903,7 +903,7 @@ internal partial class LogTabWindow
 
     private Icon GetIcon (int diff, LogWindowData data)
     {
-        Icon icon =
+        var icon =
             _ledIcons[
                 GetLevelFromDiff(diff), data.Dirty ? 1 : 0, Preferences.ShowTailState ? data.TailState : 3,
                 data.SyncMode
@@ -978,7 +978,7 @@ internal partial class LogTabWindow
 
         lock (_logWindowList)
         {
-            foreach (LogWindow.LogWindow logWindow in _logWindowList)
+            foreach (var logWindow in _logWindowList)
             {
                 logWindow.PreferencesChanged(fontName, fontSize, setLastColumnWidth, lastColumnWidth, false, flags);
             }
@@ -1031,10 +1031,10 @@ internal partial class LogTabWindow
         CreateIcons();
         lock (_logWindowList)
         {
-            foreach (LogWindow.LogWindow logWindow in _logWindowList)
+            foreach (var logWindow in _logWindowList)
             {
                 var data = logWindow.Tag as LogWindowData;
-                Icon icon = GetIcon(data.DiffSum, data);
+                var icon = GetIcon(data.DiffSum, data);
                 BeginInvoke(new SetTabIconDelegate(SetTabIcon), logWindow, icon);
             }
         }
@@ -1043,18 +1043,15 @@ internal partial class LogTabWindow
     [SupportedOSPlatform("windows")]
     private void SetToolIcon (ToolEntry entry, ToolStripItem item)
     {
-        Icon icon = NativeMethods.LoadIconFromExe(entry.IconFile, entry.IconIndex);
+        var icon = NativeMethods.LoadIconFromExe(entry.IconFile, entry.IconIndex);
+
         if (icon != null)
         {
             item.Image = icon.ToBitmap();
-            if (item is ToolStripMenuItem)
-            {
-                item.DisplayStyle = ToolStripItemDisplayStyle.ImageAndText;
-            }
-            else
-            {
-                item.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            }
+
+            item.DisplayStyle = item is ToolStripMenuItem
+                ? ToolStripItemDisplayStyle.ImageAndText
+                : ToolStripItemDisplayStyle.Image;
 
             NativeMethods.DestroyIcon(icon.Handle);
             icon.Dispose();
@@ -1078,8 +1075,8 @@ internal partial class LogTabWindow
 
         if (CurrentLogWindow != null)
         {
-            ILogLine line = CurrentLogWindow.GetCurrentLine();
-            ILogFileInfo info = CurrentLogWindow.GetCurrentFileInfo();
+            var line = CurrentLogWindow.GetCurrentLine();
+            var info = CurrentLogWindow.GetCurrentFileInfo();
             if (line != null && info != null)
             {
                 ArgParser parser = new(toolEntry.Args);
@@ -1112,7 +1109,7 @@ internal partial class LogTabWindow
 
         if (sysoutPipe)
         {
-            ILogLineColumnizer columnizer = ColumnizerPicker.DecideColumnizerByName(columnizerName, PluginRegistry.PluginRegistry.Instance.RegisteredColumnizers);
+            var columnizer = ColumnizerPicker.DecideColumnizerByName(columnizerName, PluginRegistry.PluginRegistry.Instance.RegisteredColumnizers);
 
             _logger.Info("Starting external tool with sysout redirection: {0} {1}", cmd, args);
             startInfo.UseShellExecute = false;
@@ -1131,7 +1128,7 @@ internal partial class LogTabWindow
 
             SysoutPipe pipe = new(process.StandardOutput);
 
-            LogWindow.LogWindow logWin = AddTempFileTab(pipe.FileName,
+            var logWin = AddTempFileTab(pipe.FileName,
                 CurrentLogWindow.IsTempFile
                     ? CurrentLogWindow.TempTitleName
                     : Util.GetNameFromPath(CurrentLogWindow.FileName) + "->E");
@@ -1163,7 +1160,7 @@ internal partial class LogTabWindow
         IList<Form> closeList = [];
         lock (_logWindowList)
         {
-            foreach (DockContent content in dockPanel.Contents)
+            foreach (var content in dockPanel.Contents.Cast<DockContent>())
             {
                 if (content is LogWindow.LogWindow window)
                 {
@@ -1172,12 +1169,13 @@ internal partial class LogTabWindow
             }
         }
 
-        foreach (Form form in closeList)
+        foreach (var form in closeList)
         {
             form.Close();
         }
     }
 
+    //TODO Reimplement
     private void SetTabColor (LogWindow.LogWindow logWindow, Color color)
     {
         //tabPage.BackLowColor = color;
@@ -1191,7 +1189,7 @@ internal partial class LogTabWindow
     [SupportedOSPlatform("windows")]
     private void LoadProject (string projectFileName, bool restoreLayout)
     {
-        ProjectData projectData = ProjectPersister.LoadProjectData(projectFileName);
+        var projectData = ProjectPersister.LoadProjectData(projectFileName);
         var hasLayoutData = projectData.TabLayoutXml != null;
 
         if (hasLayoutData && restoreLayout && _logWindowList.Count > 0)
@@ -1259,7 +1257,7 @@ internal partial class LogTabWindow
         externalToolsToolStrip.Items.Clear();
         var num = 0;
         externalToolsToolStrip.SuspendLayout();
-        foreach (ToolEntry tool in Preferences.ToolEntries)
+        foreach (var tool in Preferences.ToolEntries)
         {
             if (tool.IsFavourite)
             {
@@ -1354,7 +1352,7 @@ internal partial class LogTabWindow
         if (persistString.StartsWith(WindowTypes.LogWindow.ToString()))
         {
             var fileName = persistString[(WindowTypes.LogWindow.ToString().Length + 1)..];
-            LogWindow.LogWindow win = FindWindowForFile(fileName);
+            var win = FindWindowForFile(fileName);
             if (win != null)
             {
                 return win;

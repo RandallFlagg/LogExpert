@@ -61,7 +61,7 @@ partial class LogWindow
         dataGridViewCellStyleMainGrid.SelectionBackColor = SystemColors.Highlight;
         dataGridViewCellStyleMainGrid.SelectionForeColor = SystemColors.HighlightText;
 
-        Color highlightColor = SystemColors.Highlight;
+        var highlightColor = SystemColors.Highlight;
         //Color is smaller than 128, means its darker
         var isDark = (highlightColor.R * 0.2126) + (highlightColor.G * 0.7152) + (highlightColor.B * 0.0722) < 255 / 2;
 
@@ -113,7 +113,7 @@ partial class LogWindow
 
         try
         {
-            PersistenceData persistenceData = ForcedPersistenceFileName == null
+            var persistenceData = ForcedPersistenceFileName == null
                 ? Persister.LoadPersistenceDataOptionsOnly(FileName, Preferences)
                 : Persister.LoadPersistenceDataOptionsOnlyFromFixedFile(ForcedPersistenceFileName);
 
@@ -210,7 +210,7 @@ partial class LogWindow
 
         try
         {
-            PersistenceData persistenceData = ForcedPersistenceFileName == null
+            var persistenceData = ForcedPersistenceFileName == null
                 ? Persister.LoadPersistenceData(FileName, Preferences)
                 : Persister.LoadPersistenceDataFromFixedFile(ForcedPersistenceFileName);
 
@@ -298,9 +298,9 @@ partial class LogWindow
 
     private void RestoreFilterTabs (PersistenceData persistenceData)
     {
-        foreach (FilterTabData data in persistenceData.FilterTabDataList)
+        foreach (var data in persistenceData.FilterTabDataList)
         {
-            FilterParams persistFilterParams = data.FilterParams;
+            var persistFilterParams = data.FilterParams;
             ReInitFilterParams(persistFilterParams);
             List<int> filterResultList = [];
             //List<int> lastFilterResultList = new List<int>();
@@ -479,7 +479,7 @@ partial class LogWindow
                 SyncTimestampDisplay();
             }
 
-            Settings settings = ConfigManager.Settings;
+            var settings = ConfigManager.Settings;
             ShowLineColumn(!settings.HideLineColumn);
         }
 
@@ -489,7 +489,7 @@ partial class LogWindow
 
     private ILogLineColumnizer FindColumnizer ()
     {
-        ILogLineColumnizer columnizer = Preferences.MaskPrio
+        var columnizer = Preferences.MaskPrio
             ? _parentLogTabWin.FindColumnizerByFileMask(Util.GetNameFromPath(FileName)) ?? _parentLogTabWin.GetColumnizerHistoryEntry(FileName)
             : _parentLogTabWin.GetColumnizerHistoryEntry(FileName) ?? _parentLogTabWin.FindColumnizerByFileMask(Util.GetNameFromPath(FileName));
 
@@ -800,7 +800,7 @@ partial class LogWindow
             var filterLineAdded = false;
             for (var i = filterStart; i < e.LineCount; ++i)
             {
-                ILogLine line = _logFileReader.GetLogLine(i);
+                var line = _logFileReader.GetLogLine(i);
                 if (line == null)
                 {
                     return;
@@ -823,7 +823,7 @@ partial class LogWindow
                 //pipeFx.BeginInvoke(i, null, null);
                 ProcessFilterPipes(i);
 
-                IList<HighlightEntry> matchingList = FindMatchingHilightEntries(line);
+                var matchingList = FindMatchingHilightEntries(line);
                 LaunchHighlightPlugins(matchingList, i);
                 GetHilightActions(matchingList, out suppressLed, out stopTail, out setBookmark, out bookmarkComment);
                 if (setBookmark)
@@ -868,10 +868,10 @@ partial class LogWindow
 
             for (var i = startLine; i < e.LineCount; ++i)
             {
-                ILogLine line = _logFileReader.GetLogLine(i);
+                var line = _logFileReader.GetLogLine(i);
                 if (line != null)
                 {
-                    IList<HighlightEntry> matchingList = FindMatchingHilightEntries(line);
+                    var matchingList = FindMatchingHilightEntries(line);
                     LaunchHighlightPlugins(matchingList, i);
                     GetHilightActions(matchingList, out suppressLed, out stopTail, out setBookmark,
                         out bookmarkComment);
@@ -913,11 +913,11 @@ partial class LogWindow
             LineNum = lineNum
         };
 
-        foreach (HighlightEntry entry in matchingList)
+        foreach (var entry in matchingList)
         {
             if (entry.IsActionEntry && entry.ActionEntry.PluginName != null)
             {
-                IKeywordAction plugin = PluginRegistry.PluginRegistry.Instance.FindKeywordActionPluginByName(entry.ActionEntry.PluginName);
+                var plugin = PluginRegistry.PluginRegistry.Instance.FindKeywordActionPluginByName(entry.ActionEntry.PluginName);
                 if (plugin != null)
                 {
                     ActionPluginExecuteFx fx = plugin.Execute;
@@ -956,7 +956,7 @@ partial class LogWindow
     {
         _logger.Info("SetColumnizerInternal(): {0}", columnizer.GetName());
 
-        ILogLineColumnizer oldColumnizer = CurrentColumnizer;
+        var oldColumnizer = CurrentColumnizer;
         var oldColumnizerIsXmlType = CurrentColumnizer is ILogLineXmlColumnizer;
         var oldColumnizerIsPreProcess = CurrentColumnizer is IPreProcessColumnizer;
         var mustReload = false;
@@ -990,8 +990,8 @@ partial class LogWindow
             }
         }
 
-        Type oldColType = _filterParams.CurrentColumnizer?.GetType();
-        Type newColType = columnizer?.GetType();
+        var oldColType = _filterParams.CurrentColumnizer?.GetType();
+        var newColType = columnizer?.GetType();
 
         if (oldColType != newColType && _filterParams.ColumnRestrict && _filterParams.IsFilterTail)
         {
@@ -1076,7 +1076,7 @@ partial class LogWindow
                 SyncTimestampDisplay();
             }
 
-            Settings settings = ConfigManager.Settings;
+            var settings = ConfigManager.Settings;
             ShowLineColumn(!settings.HideLineColumn);
             ShowTimeSpread(Preferences.ShowTimeSpread && columnizer.IsTimeshiftImplemented());
         }
@@ -1133,7 +1133,7 @@ partial class LogWindow
 
         column ??= Column.EmptyColumn;
 
-        IList<HighlightMatchEntry> matchList = FindHighlightMatches(column);
+        var matchList = FindHighlightMatches(column);
         // too many entries per line seem to cause problems with the GDI
         while (matchList.Count > 50)
         {
@@ -1165,8 +1165,8 @@ partial class LogWindow
         //var leftPad = e.CellStyle.Padding.Left;
         //RectangleF rect = new(e.CellBounds.Left + leftPad, e.CellBounds.Top, e.CellBounds.Width, e.CellBounds.Height);
 
-        Rectangle borderWidths = PaintHelper.BorderWidths(e.AdvancedBorderStyle);
-        Rectangle valBounds = e.CellBounds;
+        var borderWidths = PaintHelper.BorderWidths(e.AdvancedBorderStyle);
+        var valBounds = e.CellBounds;
         valBounds.Offset(borderWidths.X, borderWidths.Y);
         valBounds.Width -= borderWidths.Right;
         valBounds.Height -= borderWidths.Bottom;
@@ -1177,7 +1177,7 @@ partial class LogWindow
             valBounds.Height -= e.CellStyle.Padding.Vertical;
         }
 
-        TextFormatFlags flags =
+        var flags =
                 TextFormatFlags.Left
                 | TextFormatFlags.SingleLine
                 | TextFormatFlags.NoPrefix
@@ -1193,26 +1193,26 @@ partial class LogWindow
 
         //TextRenderer.DrawText(e.Graphics, e.Value as String, e.CellStyle.Font, valBounds, Color.FromKnownColor(KnownColor.Black), flags);
 
-        Point wordPos = valBounds.Location;
+        var wordPos = valBounds.Location;
         Size proposedSize = new(valBounds.Width, valBounds.Height);
 
-        Rectangle r = gridView.GetCellDisplayRectangle(e.ColumnIndex, e.RowIndex, true);
+        var r = gridView.GetCellDisplayRectangle(e.ColumnIndex, e.RowIndex, true);
         e.Graphics.SetClip(e.CellBounds);
 
-        foreach (HighlightMatchEntry matchEntry in matchList)
+        foreach (var matchEntry in matchList)
         {
-            Font font = matchEntry != null && matchEntry.HighlightEntry.IsBold ? BoldFont : NormalFont;
+            var font = matchEntry != null && matchEntry.HighlightEntry.IsBold ? BoldFont : NormalFont;
 
             Brush bgBrush = matchEntry.HighlightEntry.BackgroundColor != Color.Empty
                 ? new SolidBrush(matchEntry.HighlightEntry.BackgroundColor)
                 : null;
 
             var matchWord = column.DisplayValue.Substring(matchEntry.StartPos, matchEntry.Length);
-            Size wordSize = TextRenderer.MeasureText(e.Graphics, matchWord, font, proposedSize, flags);
+            var wordSize = TextRenderer.MeasureText(e.Graphics, matchWord, font, proposedSize, flags);
             wordSize.Height = e.CellBounds.Height;
             Rectangle wordRect = new(wordPos, wordSize);
 
-            Color foreColor = matchEntry.HighlightEntry.ForegroundColor;
+            var foreColor = matchEntry.HighlightEntry.ForegroundColor;
             if ((e.State & DataGridViewElementStates.Selected) != DataGridViewElementStates.Selected)
             {
                 if (!noBackgroundFill && bgBrush != null && !matchEntry.HighlightEntry.NoBackground)
@@ -1236,7 +1236,7 @@ partial class LogWindow
     /// </summary>
     /// <param name="matchList">List of all highlight matches for the current cell</param>
     /// <param name="groundEntry">The entry that is used as the default.</param>
-    /// <returns>List of HilightMatchEntry objects. The list spans over the whole cell and contains color infos for every substring.</returns>
+    /// <returns>List of HighlightMatchEntry objects. The list spans over the whole cell and contains color infos for every substring.</returns>
     private IList<HighlightMatchEntry> MergeHighlightMatchEntries (IList<HighlightMatchEntry> matchList, HighlightMatchEntry groundEntry)
     {
         // Fill an area with lenth of whole text with a default hilight entry
@@ -1248,7 +1248,7 @@ partial class LogWindow
 
         // "overpaint" with all matching word match enries
         // Non-word-mode matches will not overpaint because they use the groundEntry
-        foreach (HighlightMatchEntry me in matchList)
+        foreach (var me in matchList)
         {
             var endPos = me.StartPos + me.Length;
             for (var i = me.StartPos; i < endPos; ++i)
@@ -1269,7 +1269,7 @@ partial class LogWindow
 
         if (entryArray.Length > 0)
         {
-            HighlightEntry currentEntry = entryArray[0];
+            var currentEntry = entryArray[0];
             var lastStartPos = 0;
             var pos = 0;
 
@@ -1357,7 +1357,7 @@ partial class LogWindow
         {
             lock (_currentHighlightGroupLock)
             {
-                foreach (HighlightEntry entry in _currentHighlightGroup.HighlightEntryList)
+                foreach (var entry in _currentHighlightGroup.HighlightEntryList)
                 {
                     if (CheckHighlightEntryMatch(entry, line))
                     {
@@ -1372,11 +1372,11 @@ partial class LogWindow
 
     private void GetHighlightEntryMatches (ITextValue line, IList<HighlightEntry> hilightEntryList, IList<HighlightMatchEntry> resultList)
     {
-        foreach (HighlightEntry entry in hilightEntryList)
+        foreach (var entry in hilightEntryList)
         {
             if (entry.IsWordMatch)
             {
-                MatchCollection matches = entry.Regex.Matches(line.Text);
+                var matches = entry.Regex.Matches(line.Text);
                 foreach (Match match in matches)
                 {
                     HighlightMatchEntry me = new()
@@ -1411,7 +1411,7 @@ partial class LogWindow
         noLed = stopTail = setBookmark = false;
         bookmarkComment = string.Empty;
 
-        foreach (HighlightEntry entry in matchingList)
+        foreach (var entry in matchingList)
         {
             if (entry.IsLedSwitch)
             {
@@ -1503,7 +1503,7 @@ partial class LogWindow
             if (lineNum >= 0 && lineNum < dataGridView.RowCount)
             {
                 var refLine = lineNum;
-                DateTime timeStamp = GetTimestampForLine(ref refLine, true);
+                var timeStamp = GetTimestampForLine(ref refLine, true);
                 if (!timeStamp.Equals(DateTime.MinValue) && !_shouldTimestampDisplaySyncingCancel)
                 {
                     _guiStateArgs.Timestamp = timeStamp;
@@ -1511,7 +1511,7 @@ partial class LogWindow
                     if (_shouldCallTimeSync)
                     {
                         refLine = lineNum;
-                        DateTime exactTimeStamp = GetTimestampForLine(ref refLine, false);
+                        var exactTimeStamp = GetTimestampForLine(ref refLine, false);
                         SyncOtherWindows(exactTimeStamp);
                         _shouldCallTimeSync = false;
                     }
@@ -1529,9 +1529,9 @@ partial class LogWindow
                 }
 
                 var refLine = row1;
-                DateTime timeStamp1 = GetTimestampForLine(ref refLine, false);
+                var timeStamp1 = GetTimestampForLine(ref refLine, false);
                 refLine = row2;
-                DateTime timeStamp2 = GetTimestampForLine(ref refLine, false);
+                var timeStamp2 = GetTimestampForLine(ref refLine, false);
                 //TimeSpan span = TimeSpan.FromTicks(timeStamp2.Ticks - timeStamp1.Ticks);
                 DateTime diff;
                 if (timeStamp1.Ticks > timeStamp2.Ticks)
@@ -1645,7 +1645,7 @@ partial class LogWindow
                 }
             }
 
-            ILogLine line = _logFileReader.GetLogLine(lineNum);
+            var line = _logFileReader.GetLogLine(lineNum);
             if (line == null)
             {
                 return -1;
@@ -1808,10 +1808,10 @@ partial class LogWindow
         while (lineNum > 0)
         {
             lineNum--;
-            ILogLine line = _logFileReader.GetLogLine(lineNum);
+            var line = _logFileReader.GetLogLine(lineNum);
             if (line != null)
             {
-                HighlightEntry entry = FindHilightEntry(line);
+                var entry = FindHilightEntry(line);
                 if (entry != null)
                 {
                     SelectLine(lineNum, false, true);
@@ -1828,10 +1828,10 @@ partial class LogWindow
         while (lineNum < _logFileReader.LineCount)
         {
             lineNum++;
-            ILogLine line = _logFileReader.GetLogLine(lineNum);
+            var line = _logFileReader.GetLogLine(lineNum);
             if (line != null)
             {
-                HighlightEntry entry = FindHilightEntry(line);
+                var entry = FindHilightEntry(line);
                 if (entry != null)
                 {
                     SelectLine(lineNum, false, true);
@@ -1884,7 +1884,7 @@ partial class LogWindow
     private void ShiftRowHeightList (int offset)
     {
         SortedList<int, RowHeightEntry> newList = [];
-        foreach (RowHeightEntry entry in _rowHeightList.Values)
+        foreach (var entry in _rowHeightList.Values)
         {
             var line = entry.LineNum - offset;
             if (line >= 0)
@@ -1901,7 +1901,7 @@ partial class LogWindow
     {
         lock (_filterPipeList)
         {
-            foreach (FilterPipe pipe in _filterPipeList)
+            foreach (var pipe in _filterPipeList)
             {
                 pipe.ShiftLineNums(offset);
             }
@@ -1913,7 +1913,7 @@ partial class LogWindow
     {
         lock (_filterPipeList)
         {
-            foreach (FilterPipe pipe in _filterPipeList)
+            foreach (var pipe in _filterPipeList)
             {
                 pipe.RecreateTempFile();
             }
@@ -1932,7 +1932,7 @@ partial class LogWindow
     {
         lock (_filterPipeList)
         {
-            foreach (FilterPipe pipe in _filterPipeList)
+            foreach (var pipe in _filterPipeList)
             {
                 pipe.ClearLineList();
             }
@@ -2070,7 +2070,7 @@ partial class LogWindow
         _progressEventArgs.Visible = true;
         SendProgressBarUpdate();
 
-        Settings settings = ConfigManager.Settings;
+        var settings = ConfigManager.Settings;
 
         //FilterFx fx = settings.preferences.multiThreadFilter ? MultiThreadedFilter : new FilterFx(Filter);
         FilterFxAction = settings.Preferences.MultiThreadFilter ? MultiThreadedFilter : Filter;
@@ -2127,7 +2127,7 @@ partial class LogWindow
             ColumnizerCallback callback = new(this);
             while (true)
             {
-                ILogLine line = _logFileReader.GetLogLine(lineNum);
+                var line = _logFileReader.GetLogLine(lineNum);
                 if (line == null)
                 {
                     break;
@@ -2227,7 +2227,7 @@ partial class LogWindow
         lock (_filterResultList)
         {
             filterHitList.Add(lineNum);
-            IList<int> filterResult = GetAdditionalFilterResults(filterParams, lineNum, lastFilterLinesList);
+            var filterResult = GetAdditionalFilterResults(filterParams, lineNum, lastFilterLinesList);
             filterResultLines.AddRange(filterResult);
             count = filterResultLines.Count;
             lastFilterLinesList.AddRange(filterResult);
@@ -2753,7 +2753,7 @@ partial class LogWindow
                 break;
             }
 
-            ILogLine line = _logFileReader.GetLogLine(i);
+            var line = _logFileReader.GetLogLine(i);
             if (CurrentColumnizer is ILogLineXmlColumnizer)
             {
                 callback.LineNum = i;
@@ -2786,7 +2786,7 @@ partial class LogWindow
                 preProcessColumnizer = CurrentColumnizer;
             }
 
-            LogWindow newWin = _parentLogTabWin.AddFilterTab(pipe, title, preProcessColumnizer);
+            var newWin = _parentLogTabWin.AddFilterTab(pipe, title, preProcessColumnizer);
             newWin.FilterPipe = pipe;
             pipe.OwnLogWindow = newWin;
             if (persistenceData != null)
@@ -2818,7 +2818,7 @@ partial class LogWindow
         };
         pipe.Closed += OnPipeDisconnected;
         pipe.OpenFile();
-        foreach (LineEntry entry in lineEntryList)
+        foreach (var entry in lineEntryList)
         {
             pipe.WriteToPipe(entry.LogLine, entry.LineNum);
         }
@@ -2831,7 +2831,7 @@ partial class LogWindow
     private void FilterRestore (LogWindow newWin, PersistenceData persistenceData)
     {
         newWin.WaitForLoadingFinished();
-        ILogLineColumnizer columnizer = ColumnizerPicker.FindColumnizerByName(persistenceData.ColumnizerName,
+        var columnizer = ColumnizerPicker.FindColumnizerByName(persistenceData.ColumnizerName,
             PluginRegistry.PluginRegistry.Instance.RegisteredColumnizers);
         if (columnizer != null)
         {
@@ -2849,7 +2849,7 @@ partial class LogWindow
     [SupportedOSPlatform("windows")]
     private void ProcessFilterPipes (int lineNum)
     {
-        ILogLine searchLine = _logFileReader.GetLogLine(lineNum);
+        var searchLine = _logFileReader.GetLogLine(lineNum);
         if (searchLine == null)
         {
             return;
@@ -2862,7 +2862,7 @@ partial class LogWindow
         IList<FilterPipe> deleteList = [];
         lock (_filterPipeList)
         {
-            foreach (FilterPipe pipe in _filterPipeList)
+            foreach (var pipe in _filterPipeList)
             {
                 if (pipe.IsStopped)
                 {
@@ -2872,7 +2872,7 @@ partial class LogWindow
                 //long startTime = Environment.TickCount;
                 if (Util.TestFilterCondition(pipe.FilterParams, searchLine, callback))
                 {
-                    IList<int> filterResult =
+                    var filterResult =
                         GetAdditionalFilterResults(pipe.FilterParams, lineNum, pipe.LastLinesHistoryList);
                     pipe.OpenFile();
                     foreach (var line in filterResult)
@@ -2883,7 +2883,7 @@ partial class LogWindow
                             pipe.LastLinesHistoryList.RemoveAt(0);
                         }
 
-                        ILogLine textLine = _logFileReader.GetLogLine(line);
+                        var textLine = _logFileReader.GetLogLine(line);
                         var fileOk = pipe.WriteToPipe(textLine, line);
                         if (!fileOk)
                         {
@@ -2899,7 +2899,7 @@ partial class LogWindow
             }
         }
 
-        foreach (FilterPipe pipe in deleteList)
+        foreach (var pipe in deleteList)
         {
             _filterPipeList.Remove(pipe);
         }
@@ -2910,7 +2910,7 @@ partial class LogWindow
     {
         if (_guiStateArgs.CellSelectMode)
         {
-            DataObject data = dataGridView.GetClipboardContent();
+            var data = dataGridView.GetClipboardContent();
             Clipboard.SetDataObject(data);
         }
         else
@@ -2932,7 +2932,7 @@ partial class LogWindow
 
             foreach (var lineNum in lineNumList)
             {
-                ILogLine line = _logFileReader.GetLogLine(lineNum);
+                var line = _logFileReader.GetLogLine(lineNum);
                 if (xmlColumnizer != null)
                 {
                     callback.LineNum = lineNum;
@@ -3087,7 +3087,7 @@ partial class LogWindow
             dict.Add(col.DisplayIndex, col);
         }
 
-        foreach (DataGridViewColumn col in dict.Values)
+        foreach (var col in dict.Values)
         {
             col.Frozen = _freezeStateMap.ContainsKey(gridView) && _freezeStateMap[gridView];
             var sel = col.HeaderCell.Selected;
@@ -3238,7 +3238,7 @@ partial class LogWindow
     //Well keep this for the moment because there is some other commented code which calls this one
     private PatternBlock FindExistingBlock (PatternBlock block, List<PatternBlock> blockList)
     {
-        foreach (PatternBlock searchBlock in blockList)
+        foreach (var searchBlock in blockList)
         {
             if (((block.StartLine > searchBlock.StartLine && block.StartLine < searchBlock.EndLine) ||
                  (block.EndLine > searchBlock.StartLine && block.EndLine < searchBlock.EndLine)) &&
@@ -3431,7 +3431,7 @@ partial class LogWindow
         Regex regex = null;
         Regex regex2 = null;
         string msgToFind = null;
-        CultureInfo culture = CultureInfo.CurrentCulture;
+        var culture = CultureInfo.CurrentCulture;
 
         var num = _logFileReader.LineCount;
         for (var i = startLine; i < num; ++i)
@@ -3489,10 +3489,10 @@ partial class LogWindow
 
     private string GetMsgForLine (int i)
     {
-        ILogLine line = _logFileReader.GetLogLine(i);
-        ILogLineColumnizer columnizer = CurrentColumnizer;
+        var line = _logFileReader.GetLogLine(i);
+        var columnizer = CurrentColumnizer;
         ColumnizerCallback callback = new(this);
-        IColumnizedLogLine cols = columnizer.SplitLine(callback, line);
+        var cols = columnizer.SplitLine(callback, line);
         return cols.ColumnValues.Last().FullValue;
     }
 
@@ -3507,7 +3507,7 @@ partial class LogWindow
 
         if (decrease)
         {
-            if (!_rowHeightList.TryGetValue(rowNum, out RowHeightEntry? entry))
+            if (!_rowHeightList.TryGetValue(rowNum, out var entry))
             {
                 return;
             }
@@ -3523,7 +3523,7 @@ partial class LogWindow
         else
         {
             RowHeightEntry entry;
-            if (!_rowHeightList.TryGetValue(rowNum, out RowHeightEntry? value))
+            if (!_rowHeightList.TryGetValue(rowNum, out var value))
             {
                 entry = new RowHeightEntry
                 {
@@ -3552,7 +3552,7 @@ partial class LogWindow
 
     private int GetRowHeight (int rowNum)
     {
-        return _rowHeightList.TryGetValue(rowNum, out RowHeightEntry? value)
+        return _rowHeightList.TryGetValue(rowNum, out var value)
             ? value.Height
             : _lineHeight;
     }
@@ -3603,7 +3603,7 @@ partial class LogWindow
         _filterParams.RangeSearchText = filterRangeComboBox.Text;
         ColumnizerCallback callback = new(this);
         RangeFinder rangeFinder = new(_filterParams, callback);
-        Core.Entities.Range range = rangeFinder.FindRange(dataGridView.CurrentCellAddress.Y);
+        var range = rangeFinder.FindRange(dataGridView.CurrentCellAddress.Y);
         if (range != null)
         {
             SetCellSelectionMode(false);
@@ -3657,7 +3657,7 @@ partial class LogWindow
 
     private void SetDefaultHighlightGroup ()
     {
-        HighlightGroup group = _parentLogTabWin.FindHighlightGroupByFileMask(FileName);
+        var group = _parentLogTabWin.FindHighlightGroupByFileMask(FileName);
         if (group != null)
         {
             SetCurrentHighlightGroup(group.GroupName);
@@ -3680,7 +3680,7 @@ partial class LogWindow
     {
         lock (_cancelHandlerList)
         {
-            foreach (Core.Interface.IBackgroundProcessCancelHandler handler in _cancelHandlerList)
+            foreach (var handler in _cancelHandlerList)
             {
                 handler.EscapePressed();
             }
@@ -3714,7 +3714,7 @@ partial class LogWindow
 
                 var currentLineNum = dataGridView.CurrentCellAddress.Y;
                 var refLine = currentLineNum;
-                DateTime timeStamp = GetTimestampForLine(ref refLine, true);
+                var timeStamp = GetTimestampForLine(ref refLine, true);
                 if (!timeStamp.Equals(DateTime.MinValue) && !_shouldTimestampDisplaySyncingCancel)
                 {
                     TimeSyncList.CurrentTimestamp = timeStamp;
@@ -3771,7 +3771,7 @@ partial class LogWindow
         lock (_tempHighlightEntryListLock)
         {
             List<HighlightEntry> newList = [];
-            foreach (HighlightEntry he in _tempHighlightEntryList)
+            foreach (var he in _tempHighlightEntryList)
             {
                 if (!he.IsSearchHit)
                 {
@@ -3803,7 +3803,7 @@ partial class LogWindow
     private void SelectColumn ()
     {
         var colName = columnComboBox.SelectedItem as string;
-        DataGridViewColumn col = GetColumnByName(dataGridView, colName);
+        var col = GetColumnByName(dataGridView, colName);
         if (col != null && !col.Frozen)
         {
             dataGridView.FirstDisplayedScrollingColumnIndex = col.Index;

@@ -34,12 +34,12 @@
       // 
       this.Name = "TimeSpreadingControl";
       this.Size = new System.Drawing.Size(26, 324);
-      this.MouseLeave += new System.EventHandler(this.TimeSpreadingControl_MouseLeave);
-      this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.TimeSpreadingControl_MouseMove);
-      this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TimeSpreadingControl_MouseDown);
-      this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.TimeSpreadingControl_MouseUp);
-      this.SizeChanged += new System.EventHandler(this.TimeSpreadingControl_SizeChanged);
-      this.MouseEnter += new System.EventHandler(this.TimeSpreadingControl_MouseEnter);
+      this.MouseLeave += new System.EventHandler(this.OnTimeSpreadingControlMouseLeave);
+      this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.OnTimeSpreadingControlMouseMove);
+      this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.OnTimeSpreadingControlMouseDown);
+      this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.OnTimeSpreadingControlMouseUp);
+      this.SizeChanged += new System.EventHandler(this.OnTimeSpreadingControlSizeChanged);
+      this.MouseEnter += new System.EventHandler(this.OnTimeSpreadingControlMouseEnter);
       this.ResumeLayout(false);
 
     }

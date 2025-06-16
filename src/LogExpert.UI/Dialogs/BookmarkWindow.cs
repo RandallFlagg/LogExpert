@@ -19,7 +19,7 @@ internal partial class BookmarkWindow : DockContent, ISharedToolWindow, IBookmar
 {
     #region Fields
 
-    private static readonly ILogger _logger = LogManager.GetCurrentClassLogger();
+    private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
     private readonly object paintLock = new();
 
     private IBookmarkData bookmarkData;
@@ -379,7 +379,7 @@ internal partial class BookmarkWindow : DockContent, ISharedToolWindow, IBookmar
     }
 
 
-    private void boomarkDataGridView_MouseDoubleClick (object sender, MouseEventArgs e)
+    private void OnBoomarkDataGridViewMouseDoubleClick (object sender, MouseEventArgs e)
     {
         // if (this.bookmarkDataGridView.CurrentRow != null)
         // {
@@ -388,14 +388,14 @@ internal partial class BookmarkWindow : DockContent, ISharedToolWindow, IBookmar
         // }
     }
 
-    private void boomarkDataGridView_ColumnDividerDoubleClick (object sender,
+    private void OnBoomarkDataGridViewColumnDividerDoubleClick (object sender,
         DataGridViewColumnDividerDoubleClickEventArgs e)
     {
         e.Handled = true;
         ResizeColumns();
     }
 
-    private void bookmarkGridView_KeyDown (object sender, KeyEventArgs e)
+    private void OnBookmarkGridViewKeyDown (object sender, KeyEventArgs e)
     {
         if (e.KeyCode == Keys.Enter)
         {
@@ -424,22 +424,22 @@ internal partial class BookmarkWindow : DockContent, ISharedToolWindow, IBookmar
         }
     }
 
-    private void bookmarkGridView_Enter (object sender, EventArgs e)
+    private void OnBookmarkGridViewEnter (object sender, EventArgs e)
     {
         InvalidateCurrentRow(bookmarkDataGridView);
     }
 
-    private void bookmarkGridView_Leave (object sender, EventArgs e)
+    private void OnBookmarkGridViewLeave (object sender, EventArgs e)
     {
         InvalidateCurrentRow(bookmarkDataGridView);
     }
 
-    private void deleteBookmarksToolStripMenuItem_Click (object sender, EventArgs e)
+    private void OnDeleteBookmarksToolStripMenuItemClick (object sender, EventArgs e)
     {
         DeleteSelectedBookmarks();
     }
 
-    private void bookmarkTextBox_TextChanged (object sender, EventArgs e)
+    private void OnBookmarkTextBoxTextChanged (object sender, EventArgs e)
     {
         if (!bookmarkTextBox.Enabled)
         {
@@ -462,7 +462,7 @@ internal partial class BookmarkWindow : DockContent, ISharedToolWindow, IBookmar
         logView?.RefreshLogView();
     }
 
-    private void bookmarkDataGridView_SelectionChanged (object sender, EventArgs e)
+    private void OnBookmarkDataGridViewSelectionChanged (object sender, EventArgs e)
     {
         if (bookmarkDataGridView.SelectedRows.Count != 1
             || bookmarkDataGridView.SelectedRows[0].Index >= bookmarkData.Bookmarks.Count)
@@ -475,7 +475,7 @@ internal partial class BookmarkWindow : DockContent, ISharedToolWindow, IBookmar
         }
     }
 
-    private void bookmarkDataGridView_PreviewKeyDown (object sender, PreviewKeyDownEventArgs e)
+    private void OnBookmarkDataGridViewPreviewKeyDown (object sender, PreviewKeyDownEventArgs e)
     {
         if (e.KeyCode == Keys.Tab)
         {
@@ -483,7 +483,7 @@ internal partial class BookmarkWindow : DockContent, ISharedToolWindow, IBookmar
         }
     }
 
-    private void bookmarkDataGridView_CellToolTipTextNeeded (object sender,
+    private void OnBookmarkDataGridViewCellToolTipTextNeeded (object sender,
         DataGridViewCellToolTipTextNeededEventArgs e)
     {
         if (e.ColumnIndex != 0 || e.RowIndex <= -1 || e.RowIndex >= bookmarkData.Bookmarks.Count)
@@ -499,7 +499,7 @@ internal partial class BookmarkWindow : DockContent, ISharedToolWindow, IBookmar
         }
     }
 
-    private void bookmarkDataGridView_CellDoubleClick (object sender, DataGridViewCellEventArgs e)
+    private void OnBookmarkDataGridViewCellDoubleClick (object sender, DataGridViewCellEventArgs e)
     {
         // Toggle bookmark when double-clicking on the first column
         if (e.ColumnIndex == 0 && e.RowIndex >= 0 && bookmarkDataGridView.CurrentRow != null)
@@ -551,7 +551,7 @@ internal partial class BookmarkWindow : DockContent, ISharedToolWindow, IBookmar
         }
     }
 
-    private void removeCommentsToolStripMenuItem_Click (object sender, EventArgs e)
+    private void OnRemoveCommentsToolStripMenuItemClick (object sender, EventArgs e)
     {
         if (
             MessageBox.Show("Really remove bookmark comments for selected lines?", "LogExpert",
@@ -573,7 +573,7 @@ internal partial class BookmarkWindow : DockContent, ISharedToolWindow, IBookmar
         }
     }
 
-    private void commentColumnCheckBox_CheckedChanged (object sender, EventArgs e)
+    private void OnCommentColumnCheckBoxCheckedChanged (object sender, EventArgs e)
     {
         ShowCommentColumn(commentColumnCheckBox.Checked);
     }
@@ -607,17 +607,17 @@ internal partial class BookmarkWindow : DockContent, ISharedToolWindow, IBookmar
         }
     }
 
-    private void bookmarkDataGridView_RowsAdded (object sender, DataGridViewRowsAddedEventArgs e)
+    private void OnBookmarkDataGridViewRowsAdded (object sender, DataGridViewRowsAddedEventArgs e)
     {
         HideIfNeeded();
     }
 
-    private void bookmarkDataGridView_RowsRemoved (object sender, DataGridViewRowsRemovedEventArgs e)
+    private void OnBookmarkDataGridViewRowsRemoved (object sender, DataGridViewRowsRemovedEventArgs e)
     {
         HideIfNeeded();
     }
 
-    private void BookmarkWindow_SizeChanged (object sender, EventArgs e)
+    private void OnBookmarkWindowSizeChanged (object sender, EventArgs e)
     {
         // if (!this.splitContainer1.Visible)
         // {

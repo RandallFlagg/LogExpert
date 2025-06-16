@@ -204,7 +204,7 @@
       this.setRangeButton.TabIndex = 12;
       this.setRangeButton.Text = "Set range";
       this.setRangeButton.UseVisualStyleBackColor = true;
-      this.setRangeButton.Click += new System.EventHandler(this.setRangeButton_Click);
+      this.setRangeButton.Click += new System.EventHandler(this.OnSetRangeButtonClick);
       // 
       // label7
       // 
@@ -224,7 +224,7 @@
       this.recalcButton.TabIndex = 6;
       this.recalcButton.Text = "Recalc";
       this.recalcButton.UseVisualStyleBackColor = true;
-      this.recalcButton.Click += new System.EventHandler(this.recalcButton_Click);
+      this.recalcButton.Click += new System.EventHandler(this.OnRecalcButtonClick);
       // 
       // label6
       // 
@@ -337,11 +337,11 @@
       this.patternHitsDataGridView.Size = new System.Drawing.Size(289, 83);
       this.patternHitsDataGridView.TabIndex = 1;
       this.patternHitsDataGridView.VirtualMode = true;
-      this.patternHitsDataGridView.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.patternHitsDataGridView_MouseDoubleClick);
-      this.patternHitsDataGridView.CellValueNeeded += new System.Windows.Forms.DataGridViewCellValueEventHandler(this.patternHitsDataGridView_CellValueNeeded);
-      this.patternHitsDataGridView.ColumnDividerDoubleClick += new System.Windows.Forms.DataGridViewColumnDividerDoubleClickEventHandler(this.patternHitsDataGridView_ColumnDividerDoubleClick);
-      this.patternHitsDataGridView.CellPainting += new System.Windows.Forms.DataGridViewCellPaintingEventHandler(this.patternHitsDataGridView_CellPainting);
-      this.patternHitsDataGridView.CurrentCellChanged += new System.EventHandler(this.patternHitsDataGridView_CurrentCellChanged);
+      this.patternHitsDataGridView.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.OnPatternHitsDataGridViewMouseDoubleClick);
+      this.patternHitsDataGridView.CellValueNeeded += new System.Windows.Forms.DataGridViewCellValueEventHandler(this.OnPatternHitsDataGridViewCellValueNeeded);
+      this.patternHitsDataGridView.ColumnDividerDoubleClick += new System.Windows.Forms.DataGridViewColumnDividerDoubleClickEventHandler(this.OnPatternHitsDataGridViewColumnDividerDoubleClick);
+      this.patternHitsDataGridView.CellPainting += new System.Windows.Forms.DataGridViewCellPaintingEventHandler(this.OnPatternHitsDataGridViewCellPainting);
+      this.patternHitsDataGridView.CurrentCellChanged += new System.EventHandler(this.OnPatternHitsDataGridViewCurrentCellChanged);
       // 
       // contentDataGridView
       // 
@@ -365,10 +365,10 @@
       this.contentDataGridView.Size = new System.Drawing.Size(491, 83);
       this.contentDataGridView.TabIndex = 0;
       this.contentDataGridView.VirtualMode = true;
-      this.contentDataGridView.CellValueNeeded += new System.Windows.Forms.DataGridViewCellValueEventHandler(this.contentDataGridView_CellValueNeeded);
-      this.contentDataGridView.ColumnDividerDoubleClick += new System.Windows.Forms.DataGridViewColumnDividerDoubleClickEventHandler(this.contentDataGridView_ColumnDividerDoubleClick);
-      this.contentDataGridView.CellPainting += new System.Windows.Forms.DataGridViewCellPaintingEventHandler(this.contentDataGridView_CellPainting);
-      this.contentDataGridView.CellMouseDoubleClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.contentDataGridView_CellMouseDoubleClick);
+      this.contentDataGridView.CellValueNeeded += new System.Windows.Forms.DataGridViewCellValueEventHandler(this.OnContentDataGridViewCellValueNeeded);
+      this.contentDataGridView.ColumnDividerDoubleClick += new System.Windows.Forms.DataGridViewColumnDividerDoubleClickEventHandler(this.OnContentDataGridViewColumnDividerDoubleClick);
+      this.contentDataGridView.CellPainting += new System.Windows.Forms.DataGridViewCellPaintingEventHandler(this.OnContentDataGridViewCellPainting);
+      this.contentDataGridView.CellMouseDoubleClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.OnContentDataGridViewCellMouseDoubleClick);
       // 
       // PatternWindow
       // 

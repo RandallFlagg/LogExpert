@@ -29,7 +29,7 @@ internal partial class PatternWindow : Form //TODO: Can this be changed to UserC
 
     public PatternWindow (LogWindow logWindow)
     {
-        this._logWindow = logWindow;
+        _logWindow = logWindow;
         InitializeComponent();
         recalcButton.Enabled = false;
     }
@@ -68,13 +68,13 @@ internal partial class PatternWindow : Form //TODO: Can this be changed to UserC
 
     public void SetBlockList (List<PatternBlock> flatBlockList, PatternArgs patternArgs)
     {
-        this._patternArgs = patternArgs;
+        _patternArgs = patternArgs;
         _blockList.Clear();
         List<PatternBlock> singeList = [];
         //int blockId = -1;
         for (var i = 0; i < flatBlockList.Count; ++i)
         {
-            PatternBlock block = flatBlockList[i];
+            var block = flatBlockList[i];
             singeList.Add(block);
             //if (block.blockId != blockId)
             //{
@@ -105,21 +105,25 @@ internal partial class PatternWindow : Form //TODO: Can this be changed to UserC
         patternHitsDataGridView.Columns[0].Width = 20;
         contentDataGridView.Columns[0].Width = 20;
 
-        DataGridViewTextBoxColumn blockInfoColumn = new();
-        blockInfoColumn.HeaderText = "Weight";
-        blockInfoColumn.AutoSizeMode = DataGridViewAutoSizeColumnMode.NotSet;
-        blockInfoColumn.Resizable = DataGridViewTriState.False;
-        blockInfoColumn.DividerWidth = 1;
-        blockInfoColumn.ReadOnly = true;
-        blockInfoColumn.Width = 50;
+        DataGridViewTextBoxColumn blockInfoColumn = new()
+        {
+            HeaderText = "Weight",
+            AutoSizeMode = DataGridViewAutoSizeColumnMode.NotSet,
+            Resizable = DataGridViewTriState.False,
+            DividerWidth = 1,
+            ReadOnly = true,
+            Width = 50
+        };
 
-        DataGridViewTextBoxColumn contentInfoColumn = new();
-        contentInfoColumn.HeaderText = "Diff";
-        contentInfoColumn.AutoSizeMode = DataGridViewAutoSizeColumnMode.NotSet;
-        contentInfoColumn.Resizable = DataGridViewTriState.False;
-        contentInfoColumn.DividerWidth = 1;
-        contentInfoColumn.ReadOnly = true;
-        contentInfoColumn.Width = 50;
+        DataGridViewTextBoxColumn contentInfoColumn = new()
+        {
+            HeaderText = "Diff",
+            AutoSizeMode = DataGridViewAutoSizeColumnMode.NotSet,
+            Resizable = DataGridViewTriState.False,
+            DividerWidth = 1,
+            ReadOnly = true,
+            Width = 50
+        };
 
         patternHitsDataGridView.Columns.Insert(1, blockInfoColumn);
         contentDataGridView.Columns.Insert(1, contentInfoColumn);
@@ -128,8 +132,8 @@ internal partial class PatternWindow : Form //TODO: Can this be changed to UserC
     public void SetFont (string fontName, float fontSize)
     {
         Font font = new(new FontFamily(fontName), fontSize);
-        var lineSpacing = font.FontFamily.GetLineSpacing(FontStyle.Regular);
-        var lineSpacingPixel = font.Size * lineSpacing / font.FontFamily.GetEmHeight(FontStyle.Regular);
+        //var lineSpacing = font.FontFamily.GetLineSpacing(FontStyle.Regular);
+        //var lineSpacingPixel = font.Size * lineSpacing / font.FontFamily.GetEmHeight(FontStyle.Regular);
 
         patternHitsDataGridView.DefaultCellStyle.Font = font;
         contentDataGridView.DefaultCellStyle.Font = font;
@@ -183,14 +187,16 @@ internal partial class PatternWindow : Form //TODO: Can this be changed to UserC
 
     #region Events handler
 
-    private void patternHitsDataGridView_CellValueNeeded (object sender, DataGridViewCellValueEventArgs e)
+    private void OnPatternHitsDataGridViewCellValueNeeded (object sender, DataGridViewCellValueEventArgs e)
     {
         if (_currentList == null || e.RowIndex < 0)
         {
             return;
         }
+
         var rowIndex = GetLineForHitGrid(e.RowIndex);
         var colIndex = e.ColumnIndex;
+
         if (colIndex == 1)
         {
             e.Value = _currentList[e.RowIndex].Weigth;
@@ -206,7 +212,7 @@ internal partial class PatternWindow : Form //TODO: Can this be changed to UserC
         }
     }
 
-    private void patternHitsDataGridView_CellPainting (object sender, DataGridViewCellPaintingEventArgs e)
+    private void OnPatternHitsDataGridViewCellPainting (object sender, DataGridViewCellPaintingEventArgs e)
     {
         if (_currentList == null || e.RowIndex < 0)
         {
@@ -217,18 +223,20 @@ internal partial class PatternWindow : Form //TODO: Can this be changed to UserC
         {
             e.PaintBackground(e.CellBounds, false);
             var selCount = _patternArgs.EndLine - _patternArgs.StartLine;
-            var maxWeight = _patternArgs.MaxDiffInBlock * selCount + selCount;
+            var maxWeight = (_patternArgs.MaxDiffInBlock * selCount) + selCount;
+
             if (maxWeight > 0)
             {
                 var width = (int)((int)e.Value / (double)maxWeight * e.CellBounds.Width);
                 Rectangle rect = new(e.CellBounds.X, e.CellBounds.Y, width, e.CellBounds.Height);
                 var alpha = 90 + (int)((int)e.Value / (double)maxWeight * 165);
-                var color = Color.FromArgb(alpha, 170, 180, 150);
-                Brush brush = new SolidBrush(color);
+
+                Brush brush = new SolidBrush(Color.FromArgb(alpha, 170, 180, 150));//gray green
                 rect.Inflate(-2, -1);
                 e.Graphics.FillRectangle(brush, rect);
                 brush.Dispose();
             }
+
             e.PaintContent(e.CellBounds);
             e.Handled = true;
         }
@@ -240,7 +248,7 @@ internal partial class PatternWindow : Form //TODO: Can this be changed to UserC
         }
     }
 
-    private void patternHitsDataGridView_MouseDoubleClick (object sender, MouseEventArgs e)
+    private void OnPatternHitsDataGridViewMouseDoubleClick (object sender, MouseEventArgs e)
     {
         //if (this.currentList == null || patternHitsDataGridView.CurrentRow == null)
         //  return;
@@ -249,7 +257,7 @@ internal partial class PatternWindow : Form //TODO: Can this be changed to UserC
         //this.logWindow.SelectLogLine(rowIndex);
     }
 
-    private void patternHitsDataGridView_CurrentCellChanged (object sender, EventArgs e)
+    private void OnPatternHitsDataGridViewCurrentCellChanged (object sender, EventArgs e)
     {
         if (_currentList == null || patternHitsDataGridView.CurrentRow == null)
         {
@@ -269,25 +277,21 @@ internal partial class PatternWindow : Form //TODO: Can this be changed to UserC
         blockLinesLabel.Text = "" + contentDataGridView.RowCount;
     }
 
-    private void contentDataGridView_CellValueNeeded (object sender, DataGridViewCellValueEventArgs e)
+    private void OnContentDataGridViewCellValueNeeded (object sender, DataGridViewCellValueEventArgs e)
     {
         if (_currentBlock == null || e.RowIndex < 0)
         {
             return;
         }
+
         var rowIndex = GetLineForContentGrid(e.RowIndex);
         var colIndex = e.ColumnIndex;
+
         if (colIndex == 1)
         {
-            QualityInfo qi;
-            if (_currentBlock.QualityInfoList.TryGetValue(rowIndex, out qi))
-            {
-                e.Value = qi.Quality;
-            }
-            else
-            {
-                e.Value = "";
-            }
+            e.Value = _currentBlock.QualityInfoList.TryGetValue(rowIndex, out var qi)
+                ? qi.Quality
+                : string.Empty;
         }
         else
         {
@@ -295,33 +299,36 @@ internal partial class PatternWindow : Form //TODO: Can this be changed to UserC
             {
                 colIndex--; // adjust the inserted column
             }
+
             e.Value = _logWindow.GetCellValue(rowIndex, colIndex);
         }
     }
 
-    private void contentDataGridView_CellPainting (object sender, DataGridViewCellPaintingEventArgs e)
+    private void OnContentDataGridViewCellPainting (object sender, DataGridViewCellPaintingEventArgs e)
     {
         if (_currentBlock == null || e.RowIndex < 0)
         {
             return;
         }
+
         var gridView = (BufferedDataGridView)sender;
         var rowIndex = GetLineForContentGrid(e.RowIndex);
         _logWindow.CellPainting(gridView, rowIndex, e);
     }
 
-    private void contentDataGridView_CellMouseDoubleClick (object sender, DataGridViewCellMouseEventArgs e)
+    private void OnContentDataGridViewCellMouseDoubleClick (object sender, DataGridViewCellMouseEventArgs e)
     {
         if (_currentBlock == null || contentDataGridView.CurrentRow == null)
         {
             return;
         }
+
         var rowIndex = GetLineForContentGrid(contentDataGridView.CurrentRow.Index);
 
         _logWindow.SelectLogLine(rowIndex);
     }
 
-    private void recalcButton_Click (object sender, EventArgs e)
+    private void OnRecalcButtonClick (object sender, EventArgs e)
     {
         _patternArgs.Fuzzy = fuzzyKnobControl.Value;
         _patternArgs.MaxDiffInBlock = maxDiffKnobControl.Value;
@@ -332,26 +339,24 @@ internal partial class PatternWindow : Form //TODO: Can this be changed to UserC
         setRangeButton.Enabled = false;
     }
 
-    private void closeButton_Click (object sender, EventArgs e)
+    private void OnCloseButtonClick (object sender, EventArgs e)
     {
         Close();
     }
 
-    private void contentDataGridView_ColumnDividerDoubleClick (object sender,
-        DataGridViewColumnDividerDoubleClickEventArgs e)
+    private void OnContentDataGridViewColumnDividerDoubleClick (object sender, DataGridViewColumnDividerDoubleClickEventArgs e)
     {
         e.Handled = true;
         contentDataGridView.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.DisplayedCells);
     }
 
-    private void patternHitsDataGridView_ColumnDividerDoubleClick (object sender,
-        DataGridViewColumnDividerDoubleClickEventArgs e)
+    private void OnPatternHitsDataGridViewColumnDividerDoubleClick (object sender, DataGridViewColumnDividerDoubleClickEventArgs e)
     {
         e.Handled = true;
         patternHitsDataGridView.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.DisplayedCells);
     }
 
-    private void setRangeButton_Click (object sender, EventArgs e)
+    private void OnSetRangeButtonClick (object sender, EventArgs e)
     {
         _logWindow.PatternStatisticSelectRange(_patternArgs);
         recalcButton.Enabled = true;
