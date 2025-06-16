@@ -3,7 +3,7 @@
 namespace LogExpert.UI.Controls;
 
 [SupportedOSPlatform("windows")]
-public class LogCellEditingControl : DataGridViewTextBoxEditingControl
+internal class LogCellEditingControl : DataGridViewTextBoxEditingControl
 {
     #region Public methods
 

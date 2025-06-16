@@ -1,6 +1,7 @@
 using LogExpert.Config;
 using LogExpert.Core.Interface;
 using LogExpert.UI.Controls.LogWindow;
+using LogExpert.UI.Extensions.LogWindow;
 
 using NLog;
 

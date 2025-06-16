@@ -7,7 +7,7 @@ using LogExpert.UI.Dialogs;
 namespace LogExpert.Dialogs;
 
 [SupportedOSPlatform("windows")]
-public partial class SearchDialog : Form
+internal partial class SearchDialog : Form
 {
     #region Fields
 

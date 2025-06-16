@@ -1,4 +1,4 @@
-﻿using LogExpert.Core.Config;
+using LogExpert.Core.Config;
 
 namespace LogExpert.Core.Interface;
 
@@ -15,16 +15,16 @@ public interface ISharedToolWindow
     /// Called when a file becomes the active file (e.g. when user selects a tab).
     /// </summary>
     /// <param name="ctx"></param>
-    void SetCurrentFile(IFileViewContext ctx);
+    void SetCurrentFile (IFileViewContext ctx);
 
     /// <summary>
     /// Called whenever the current file has been changed.
     /// </summary>
-    void FileChanged();
+    void FileChanged ();
 
-    void SetColumnizer(ILogLineColumnizer columnizer);
+    void SetColumnizer (ILogLineColumnizer columnizer);
 
-    void PreferencesChanged(Preferences newPreferences, bool isLoadTime, SettingsFlags flags);
+    void PreferencesChanged (string fontName, float fontSize, bool setLastColumnWidth, int lastColumnWidth, SettingsFlags flags);
 
     #endregion
 }

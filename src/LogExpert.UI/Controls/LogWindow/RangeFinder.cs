@@ -14,7 +14,7 @@ namespace LogExpert.UI.Controls.LogWindow;
 /// <summary>
 /// Delivers the range (from..to) that matches the current range filter settings starting from a given line.
 /// </summary>
-public class RangeFinder(FilterParams filterParams, ColumnizerCallback callback)
+internal class RangeFinder(FilterParams filterParams, ColumnizerCallback callback)
 {
     #region Fields
 

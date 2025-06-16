@@ -219,7 +219,13 @@ dotnet_naming_rule.non_field_members_should_be_pascal_case.severity = warning
 dotnet_naming_rule.non_field_members_should_be_pascal_case.symbols = non_field_members
 dotnet_naming_rule.non_field_members_should_be_pascal_case.style = pascal_case
 
+dotnet_naming_rule.no_single_letter_names.severity = error
+dotnet_naming_rule.no_single_letter_names.symbols = parameters_and_variables
+dotnet_naming_rule.no_single_letter_names.style = descriptive_names
+
 # Symbol specifications
+
+dotnet_naming_symbols.parameters_and_variables.applicable_kinds = parameter, local
 
 dotnet_naming_symbols.interface.applicable_kinds = interface
 dotnet_naming_symbols.interface.applicable_accessibilities = public, internal, private, protected, protected_internal, private_protected
@@ -234,6 +240,9 @@ dotnet_naming_symbols.non_field_members.applicable_accessibilities = public, int
 dotnet_naming_symbols.non_field_members.required_modifiers = 
 
 # Naming styles
+
+dotnet_naming_style.descriptive_names.capitalization = camel_case
+dotnet_naming_style.descriptive_names.minimum_word_length = 2
 
 dotnet_naming_style.pascal_case.required_prefix = 
 dotnet_naming_style.pascal_case.required_suffix = 
@@ -388,7 +397,7 @@ dotnet_diagnostic.IDE0044.severity = warning
 dotnet_diagnostic.IDE0045.severity = warning
 
 # IDE0046: Use conditional expression for return
-dotnet_diagnostic.IDE0046.severity = warning
+dotnet_diagnostic.IDE0046.severity = suggestion
 
 # IDE0047: Remove unnecessary parentheses
 dotnet_diagnostic.IDE0047.severity = warning
@@ -4865,3 +4874,4 @@ dotnet_diagnostic.xUnit3000.severity = warning
 
 # xUnit3001: Classes that implement Xunit.Abstractions.IXunitSerializable must have a public parameterless constructor
 dotnet_diagnostic.xUnit3001.severity = warning
+

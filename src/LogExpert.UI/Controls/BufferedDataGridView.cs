@@ -11,14 +11,14 @@ using NLog;
 namespace LogExpert.Dialogs;
 
 [SupportedOSPlatform("windows")]
-public partial class BufferedDataGridView : DataGridView
+internal partial class BufferedDataGridView : DataGridView
 {
     #region Fields
 
-    private static readonly ILogger _logger = LogManager.GetCurrentClassLogger();
+    private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
     private readonly Brush _brush;
 
-    private readonly Color _bubbleColor = Color.FromArgb(160, 250, 250, 00);
+    private readonly Color _bubbleColor = Color.FromArgb(160, 250, 250, 0);
     private readonly Font _font = new("Arial", 10);
 
     private readonly SortedList<int, BookmarkOverlay> _overlayList = [];
@@ -231,9 +231,11 @@ public partial class BufferedDataGridView : DataGridView
 
         base.OnPaint(args);
 
-        StringFormat format = new();
-        format.LineAlignment = StringAlignment.Center;
-        format.Alignment = StringAlignment.Near;
+        StringFormat format = new()
+        {
+            LineAlignment = StringAlignment.Center,
+            Alignment = StringAlignment.Near
+        };
 
         myBuffer.Graphics.SetClip(DisplayRectangle, CombineMode.Intersect);
 
@@ -248,8 +250,7 @@ public partial class BufferedDataGridView : DataGridView
             foreach (BookmarkOverlay overlay in _overlayList.Values)
             {
                 SizeF textSize = myBuffer.Graphics.MeasureString(overlay.Bookmark.Text, _font, 300);
-                Rectangle rectBubble = new(overlay.Position,
-                    new Size((int)textSize.Width, (int)textSize.Height));
+                Rectangle rectBubble = new(overlay.Position, new Size((int)textSize.Width, (int)textSize.Height));
                 rectBubble.Offset(60, -(rectBubble.Height + 40));
                 rectBubble.Inflate(3, 3);
                 rectBubble.Location += overlay.Bookmark.OverlayOffset;
@@ -265,7 +266,7 @@ public partial class BufferedDataGridView : DataGridView
 
                 if (_logger.IsDebugEnabled)
                 {
-                    _logger.Debug(CultureInfo.InvariantCulture, "ClipRgn: {0},{1},{2},{3}", myBuffer.Graphics.ClipBounds.Left, myBuffer.Graphics.ClipBounds.Top, myBuffer.Graphics.ClipBounds.Width, myBuffer.Graphics.ClipBounds.Height);
+                    _logger.Debug(CultureInfo.InvariantCulture, $"ClipRgn: {myBuffer.Graphics.ClipBounds.Left},{myBuffer.Graphics.ClipBounds.Top},{myBuffer.Graphics.ClipBounds.Width},{myBuffer.Graphics.ClipBounds.Height}");
                 }
             }
         }

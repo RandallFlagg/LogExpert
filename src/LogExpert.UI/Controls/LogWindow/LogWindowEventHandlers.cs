@@ -105,7 +105,12 @@ partial class LogWindow
     [SupportedOSPlatform("windows")]
     private void OnLogWindowLoad (object sender, EventArgs e)
     {
-        PreferencesChanged(_parentLogTabWin.Preferences, true, SettingsFlags.GuiOrColors);
+        var setLastColumnWidth = _parentLogTabWin.Preferences.SetLastColumnWidth;
+        var lastColumnWidth = _parentLogTabWin.Preferences.LastColumnWidth;
+        var fontName = _parentLogTabWin.Preferences.FontName;
+        var fontSize = _parentLogTabWin.Preferences.FontSize;
+
+        PreferencesChanged(fontName, fontSize, setLastColumnWidth, lastColumnWidth, true, SettingsFlags.GuiOrColors);
     }
 
     [SupportedOSPlatform("windows")]

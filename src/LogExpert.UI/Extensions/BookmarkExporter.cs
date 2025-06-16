@@ -1,6 +1,8 @@
-namespace LogExpert.Core.Classes.Bookmark;
+using LogExpert.Core.Entities;
 
-public static class BookmarkExporter
+namespace LogExpert.UI.Extensions;
+
+internal static class BookmarkExporter
 {
     #region Fields
 
@@ -11,7 +13,7 @@ public static class BookmarkExporter
     #region Public methods
 
     //TOOD: check if the callers are checking for null before calling
-    public static void ExportBookmarkList (SortedList<int, Entities.Bookmark> bookmarkList, string logfileName, string fileName)
+    public static void ExportBookmarkList (SortedList<int, Bookmark> bookmarkList, string logfileName, string fileName)
     {
         ArgumentNullException.ThrowIfNull(bookmarkList, nameof(bookmarkList));
         FileStream fs = new(fileName, FileMode.Create, FileAccess.Write);
@@ -22,12 +24,11 @@ public static class BookmarkExporter
             var line = $"{logfileName};{bookmark.LineNum};{bookmark.Text.Replace(replacementForNewLine, @"\" + replacementForNewLine, StringComparison.OrdinalIgnoreCase).Replace("\r\n", replacementForNewLine, StringComparison.OrdinalIgnoreCase)}";
             writer.WriteLine(line);
         }
-
         writer.Close();
         fs.Close();
     }
 
-    public static void ImportBookmarkList (string logfileName, string fileName, SortedList<int, Entities.Bookmark> bookmarkList)
+    public static void ImportBookmarkList (string logfileName, string fileName, SortedList<int, Bookmark> bookmarkList)
     {
         using FileStream fs = new(fileName, FileMode.Open, FileAccess.Read);
         using StreamReader reader = new(fs);
@@ -53,7 +54,7 @@ public static class BookmarkExporter
 
                 if (int.TryParse(lineStr, out var lineNum))
                 {
-                    Entities.Bookmark bookmark = new(lineNum, comment);
+                    Bookmark bookmark = new(lineNum, comment);
                     bookmarkList.Add(lineNum, bookmark);
                 }
                 else

@@ -1,11 +1,11 @@
-﻿using LogExpert.Core.Enums;
+using LogExpert.Core.Enums;
 
 using System.Runtime.Versioning;
 
 namespace LogExpert.Dialogs;
 
 [SupportedOSPlatform("windows")]
-public partial class ProjectLoadDlg : Form
+internal partial class ProjectLoadDlg : Form
 {
     #region Fields
 

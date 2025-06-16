@@ -1,11 +1,11 @@
-﻿using LogExpert.Core.Classes.Highlight;
+using LogExpert.Core.Classes.Highlight;
 
 using System.Runtime.Versioning;
 
 namespace LogExpert.UI.Dialogs;
 
 [SupportedOSPlatform("windows")]
-public partial class KeywordActionDlg : Form
+internal partial class KeywordActionDlg : Form
 {
     #region Fields
 

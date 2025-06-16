@@ -7,6 +7,7 @@ using LogExpert.Core.Interface;
 using LogExpert.Dialogs;
 using LogExpert.UI.Controls.LogWindow;
 using LogExpert.UI.Dialogs;
+using LogExpert.UI.Extensions.LogWindow;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -50,7 +51,7 @@ internal static class Program
         Application.EnableVisualStyles();
         Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
 
-        _logger.Info(CultureInfo.InvariantCulture, "\r\n============================================================================\r\nLogExpert {0} started.\r\n============================================================================", Assembly.GetExecutingAssembly().GetName().Version.ToString(3));
+        _logger.Info(CultureInfo.InvariantCulture, $"\r\n============================================================================\r\nLogExpert {Assembly.GetExecutingAssembly().GetName().Version.ToString(3)} started.\r\n============================================================================");
 
         CancellationTokenSource cts = new();
         try
@@ -71,6 +72,7 @@ internal static class Program
                     MessageBox.Show(@"Config file not found", @"LogExpert");
                 }
             }
+
             PluginRegistry.PluginRegistry.Instance.Create(ConfigManager.Instance.ConfigDir, ConfigManager.Instance.Settings.Preferences.PollingInterval);
 
             var pId = Process.GetCurrentProcess().SessionId;
@@ -127,6 +129,7 @@ internal static class Program
                         MessageBox.Show($"Cannot open connection to first instance ({errMsg})", "LogExpert");
                     }
 
+                    //TODO: Remove this from here? Why is it called from the Main project and not from the main window?
                     if (settings.Preferences.AllowOnlyOneInstance && settings.Preferences.ShowErrorMessageAllowOnlyOneInstances)
                     {
                         AllowOnlyOneInstanceErrorDialog a = new();
@@ -191,6 +194,7 @@ internal static class Program
 
     private static void SendMessageToProxy(IpcMessage message, LogExpertProxy proxy)
     {
+        //TODO: REFACTOR
         switch (message.Type)
         {
             case IpcMessageType.Load:
