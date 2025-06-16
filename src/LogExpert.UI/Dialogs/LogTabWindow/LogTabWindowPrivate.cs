@@ -73,7 +73,12 @@ internal partial class LogTabWindow
             ShowHint = DockState.DockBottom
         };
 
-        _bookmarkWindow.PreferencesChanged(ConfigManager.Settings.Preferences, false, SettingsFlags.All, ConfigManager.Instance);
+        var setLastColumnWidth = ConfigManager.Settings.Preferences.SetLastColumnWidth;
+        var lastColumnWidth = ConfigManager.Settings.Preferences.LastColumnWidth;
+        var fontName = ConfigManager.Settings.Preferences.FontName;
+        var fontSize = ConfigManager.Settings.Preferences.FontSize;
+
+        _bookmarkWindow.PreferencesChanged(fontName, fontSize, setLastColumnWidth, lastColumnWidth, SettingsFlags.All);
         _bookmarkWindow.VisibleChanged += OnBookmarkWindowVisibleChanged;
         _firstBookmarkWindowShow = true;
     }
@@ -966,15 +971,20 @@ internal partial class LogTabWindow
         _logger.Info("The preferences have changed");
         ApplySettings(ConfigManager.Settings, flags);
 
+        var setLastColumnWidth = ConfigManager.Settings.Preferences.SetLastColumnWidth;
+        var lastColumnWidth = ConfigManager.Settings.Preferences.LastColumnWidth;
+        var fontName = ConfigManager.Settings.Preferences.FontName;
+        var fontSize = ConfigManager.Settings.Preferences.FontSize;
+
         lock (_logWindowList)
         {
             foreach (LogWindow.LogWindow logWindow in _logWindowList)
             {
-                logWindow.PreferencesChanged(ConfigManager.Settings.Preferences, false, flags);
+                logWindow.PreferencesChanged(fontName, fontSize, setLastColumnWidth, lastColumnWidth, false, flags);
             }
         }
 
-        _bookmarkWindow.PreferencesChanged(ConfigManager.Settings.Preferences, false, flags);
+        _bookmarkWindow.PreferencesChanged(fontName, fontSize, setLastColumnWidth, lastColumnWidth, flags);
 
         HighlightGroupList = ConfigManager.Settings.Preferences.HighlightGroupList;
         if ((flags & SettingsFlags.HighlightSettings) == SettingsFlags.HighlightSettings)

@@ -1,5 +1,4 @@
-﻿using System.Drawing;
-using System.Runtime.InteropServices;
+using System.Drawing;
 
 namespace LogExpert.Core.Config;
 
@@ -10,8 +9,8 @@ public static class ColorMode
     private static readonly Color BrightBookmarkDefaultSystemColor = SystemColors.Control; // Important: only supports SystemColors
     private static readonly Color LessBrightBackgroundColor = Color.FromArgb(208, 205, 206);
     private static readonly Color BrightBackgroundColor = Color.FromArgb(221, 221, 221);
-    private static readonly Color BrighterBackgroundColor = Color.FromArgb(253, 253, 253);
-    private static readonly Color BrightForeColor = Color.FromArgb(0, 0, 0);
+    private static readonly Color BrighterBackgroundColor = Color.White;
+    private static readonly Color BrightForeColor = Color.Black;
 
     // Dark Theme
     // https://paletton.com/#uid=15-0u0k005U0670008J003Y003Y
@@ -20,7 +19,7 @@ public static class ColorMode
     private static readonly Color LessDarkBackgroundColor = Color.FromArgb(67, 67, 67);
     private static readonly Color DarkBackgroundColor = Color.FromArgb(45, 45, 45);
     private static readonly Color DarkerBackgroundColor = Color.FromArgb(30, 30, 30);
-    private static readonly Color DarkForeColor = Color.FromArgb(255, 255, 255);
+    private static readonly Color DarkForeColor = Color.White;
 
     // Default
     public static Color BackgroundColor = BrightBackgroundColor;
@@ -35,7 +34,7 @@ public static class ColorMode
 
     public static bool DarkModeEnabled;
 
-    public static void LoadColorMode(bool darkMode)
+    public static void LoadColorMode (bool darkMode)
     {
         if (darkMode)
         {
@@ -47,7 +46,7 @@ public static class ColorMode
         }
     }
 
-    private static void SetDarkMode()
+    private static void SetDarkMode ()
     {
         BackgroundColor = DarkBackgroundColor;
         ForeColor = DarkForeColor;
@@ -61,7 +60,7 @@ public static class ColorMode
         DarkModeEnabled = true;
     }
 
-    private static void SetBrightMode()
+    private static void SetBrightMode ()
     {
         BackgroundColor = BrightBackgroundColor;
         ForeColor = BrightForeColor;
