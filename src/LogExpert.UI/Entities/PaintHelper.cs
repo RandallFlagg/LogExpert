@@ -1,7 +1,6 @@
 using System.Runtime.Versioning;
 
 using LogExpert.Core.Classes.Highlight;
-using LogExpert.Core.Config;
 using LogExpert.Core.Entities;
 using LogExpert.Dialogs;
 using LogExpert.UI.Controls;
@@ -35,16 +34,16 @@ internal static class PaintHelper
             return;
         }
 
-        ILogLine line = logPaintCtx.GetLogLine(rowIndex);
+        var line = logPaintCtx.GetLogLine(rowIndex);
 
         if (line != null)
         {
-            HighlightEntry entry = logPaintCtx.FindHighlightEntry(line, true);
+            var entry = logPaintCtx.FindHighlightEntry(line, true);
             e.Graphics.SetClip(e.CellBounds);
 
             if ((e.State & DataGridViewElementStates.Selected) == DataGridViewElementStates.Selected)
             {
-                Color backColor = e.CellStyle.SelectionBackColor;
+                var backColor = e.CellStyle.SelectionBackColor;
                 Brush brush;
 
                 if (gridView.Focused)
@@ -53,8 +52,7 @@ internal static class PaintHelper
                 }
                 else
                 {
-                    var color = Color.FromArgb(255, 170, 170, 170);
-                    brush = new SolidBrush(color);
+                    brush = new SolidBrush(Color.FromArgb(255, 170, 170, 170)); //gray
                 }
 
                 e.Graphics.FillRectangle(brush, e.CellBounds);
@@ -62,7 +60,8 @@ internal static class PaintHelper
             }
             else
             {
-                Color bgColor = ColorMode.DockBackgroundColor;
+                var bgColor = Color.White;
+
                 if (!DebugOptions.DisableWordHighlight)
                 {
                     if (entry != null)
@@ -93,7 +92,7 @@ internal static class PaintHelper
 
             if (e.ColumnIndex == 0)
             {
-                Bookmark bookmark = logPaintCtx.GetBookmarkForLine(rowIndex);
+                var bookmark = logPaintCtx.GetBookmarkForLine(rowIndex);
                 if (bookmark != null)
                 {
                     Rectangle r; // = new Rectangle(e.CellBounds.Left + 2, e.CellBounds.Top + 2, 6, 6);
@@ -111,7 +110,7 @@ internal static class PaintHelper
                         };
 
                         Brush brush2 = new SolidBrush(Color.FromArgb(255, 190, 100, 0));
-                        Font font = logPaintCtx.MonospacedFont;
+                        var font = logPaintCtx.MonospacedFont;
                         e.Graphics.DrawString("i", font, brush2, new RectangleF(r.Left, r.Top, r.Width, r.Height), format);
                         brush2.Dispose();
                     }
@@ -317,7 +316,7 @@ internal static class PaintHelper
     {
         var value = e.Value ?? string.Empty;
 
-        IList<HighlightMatchEntry> matchList = logPaintCtx.FindHighlightMatches(value as ILogLine);
+        var matchList = logPaintCtx.FindHighlightMatches(value as ILogLine);
         // too many entries per line seem to cause problems with the GDI
         while (matchList.Count > 50)
         {
@@ -356,8 +355,8 @@ internal static class PaintHelper
 
         var leftPad = e.CellStyle.Padding.Left;
         RectangleF rect = new(e.CellBounds.Left + leftPad, e.CellBounds.Top, e.CellBounds.Width, e.CellBounds.Height);
-        Rectangle borderWidths = BorderWidths(e.AdvancedBorderStyle);
-        Rectangle valBounds = e.CellBounds;
+        var borderWidths = BorderWidths(e.AdvancedBorderStyle);
+        var valBounds = e.CellBounds;
         valBounds.Offset(borderWidths.X, borderWidths.Y);
         valBounds.Width -= borderWidths.Right;
         valBounds.Height -= borderWidths.Bottom;
@@ -369,7 +368,7 @@ internal static class PaintHelper
         }
 
 
-        TextFormatFlags flags =
+        var flags =
                 TextFormatFlags.Left
                 | TextFormatFlags.SingleLine
                 | TextFormatFlags.NoPrefix
@@ -383,15 +382,15 @@ internal static class PaintHelper
         //          TextFormatFlags.SingleLine
         //TextRenderer.DrawText(e.Graphics, e.Value as String, e.CellStyle.Font, valBounds, Color.FromKnownColor(KnownColor.Black), flags);
 
-        Point wordPos = valBounds.Location;
+        var wordPos = valBounds.Location;
         Size proposedSize = new(valBounds.Width, valBounds.Height);
 
-        Rectangle r = gridView.GetCellDisplayRectangle(e.ColumnIndex, e.RowIndex, true);
+        var r = gridView.GetCellDisplayRectangle(e.ColumnIndex, e.RowIndex, true);
         e.Graphics.SetClip(e.CellBounds);
 
-        foreach (HighlightMatchEntry matchEntry in matchList)
+        foreach (var matchEntry in matchList)
         {
-            Font font = matchEntry != null && matchEntry.HighlightEntry.IsBold
+            var font = matchEntry != null && matchEntry.HighlightEntry.IsBold
                 ? logPaintCtx.BoldFont
                 : logPaintCtx.NormalFont;
 
@@ -408,11 +407,11 @@ internal static class PaintHelper
                 }
             }
 
-            Size wordSize = TextRenderer.MeasureText(e.Graphics, matchWord, font, proposedSize, flags);
+            var wordSize = TextRenderer.MeasureText(e.Graphics, matchWord, font, proposedSize, flags);
             wordSize.Height = e.CellBounds.Height;
             Rectangle wordRect = new(wordPos, wordSize);
 
-            Color foreColor = matchEntry.HighlightEntry.ForegroundColor;
+            var foreColor = matchEntry.HighlightEntry.ForegroundColor;
             if ((e.State & DataGridViewElementStates.Selected) != DataGridViewElementStates.Selected)
             {
                 if (!noBackgroundFill && bgBrush != null && !matchEntry.HighlightEntry.NoBackground)
@@ -456,7 +455,7 @@ internal static class PaintHelper
 
         // "overpaint" with all matching word match enries
         // Non-word-mode matches will not overpaint because they use the groundEntry
-        foreach (HighlightMatchEntry me in matchList)
+        foreach (var me in matchList)
         {
             var endPos = me.StartPos + me.Length;
             for (var i = me.StartPos; i < endPos; ++i)
@@ -476,7 +475,7 @@ internal static class PaintHelper
         IList<HighlightMatchEntry> mergedList = [];
         if (entryArray.Length > 0)
         {
-            HighlightEntry currentEntry = entryArray[0];
+            var currentEntry = entryArray[0];
             var lastStartPos = 0;
             var pos = 0;
             for (; pos < entryArray.Length; ++pos)

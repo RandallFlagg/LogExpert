@@ -47,7 +47,7 @@ partial class LogWindow
             {
                 if (!IsTempFile)
                 {
-                    ILogLineColumnizer columnizer = FindColumnizer();
+                    var columnizer = FindColumnizer();
                     if (columnizer != null)
                     {
                         if (_reloadMemento == null)
@@ -120,7 +120,7 @@ partial class LogWindow
             {
                 if (Preferences.AutoPick)
                 {
-                    ILogLineColumnizer newColumnizer = ColumnizerPicker.FindBetterColumnizer(FileName, _logFileReader, CurrentColumnizer, PluginRegistry.PluginRegistry.Instance.RegisteredColumnizers);
+                    var newColumnizer = ColumnizerPicker.FindBetterColumnizer(FileName, _logFileReader, CurrentColumnizer, PluginRegistry.PluginRegistry.Instance.RegisteredColumnizers);
 
                     if (newColumnizer != null)
                     {
@@ -186,7 +186,7 @@ partial class LogWindow
 
         try
         {
-            PersistenceData persistenceData = GetPersistenceData();
+            var persistenceData = GetPersistenceData();
 
             if (ForcedPersistenceFileName == null)
             {
@@ -236,7 +236,7 @@ partial class LogWindow
             List<FilterParams> filterList = [_filterParams];
             persistenceData.FilterParamsList = filterList;
 
-            foreach (FilterPipe filterPipe in _filterPipeList)
+            foreach (var filterPipe in _filterPipeList)
             {
                 FilterTabData data = new()
                 {
@@ -334,7 +334,7 @@ partial class LogWindow
         //TODO this needs to be refactored
         var directory = ConfigManager.Settings.Preferences.PortableMode ? ConfigManager.PortableModeDir : ConfigManager.ConfigDir;
 
-        ILogLineColumnizer columnizer = ColumnizerPicker.FindColumnizerByName(columnizerName, PluginRegistry.PluginRegistry.Instance.RegisteredColumnizers);
+        var columnizer = ColumnizerPicker.FindColumnizerByName(columnizerName, PluginRegistry.PluginRegistry.Instance.RegisteredColumnizers);
         PreSelectColumnizer(ColumnizerPicker.CloneColumnizer(columnizer, directory));
     }
 
@@ -369,12 +369,12 @@ partial class LogWindow
 
         try
         {
-            IColumnizedLogLine cols = GetColumnsForLine(rowIndex);
+            var cols = GetColumnsForLine(rowIndex);
             if (cols != null && cols.ColumnValues != null)
             {
                 if (columnIndex <= cols.ColumnValues.Length + 1)
                 {
-                    IColumn value = cols.ColumnValues[columnIndex - 2];
+                    var value = cols.ColumnValues[columnIndex - 2];
 
                     if (value != null && value.DisplayValue != null)
                     {
@@ -407,27 +407,26 @@ partial class LogWindow
             return;
         }
 
-        ILogLine line = _logFileReader.GetLogLineWithWait(rowIndex).Result;
+        var line = _logFileReader.GetLogLineWithWait(rowIndex).Result;
 
         if (line != null)
         {
-            HighlightEntry entry = FindFirstNoWordMatchHilightEntry(line);
+            var entry = FindFirstNoWordMatchHilightEntry(line);
             e.Graphics.SetClip(e.CellBounds);
 
             if ((e.State & DataGridViewElementStates.Selected) == DataGridViewElementStates.Selected)
             {
-                Color backColor = ColorMode.BackgroundColor;
+                var backColor = e.CellStyle.SelectionBackColor;
 
                 Brush brush;
 
                 if (gridView.Focused)
                 {
-                    brush = new SolidBrush(e.CellStyle.SelectionBackColor);
+                    brush = new SolidBrush(backColor);
                 }
                 else
                 {
-                    Color color = backColor;
-                    brush = new SolidBrush(color);
+                    brush = new SolidBrush(Color.FromArgb(255, 170, 170, 170)); //gray
                 }
 
                 e.Graphics.FillRectangle(brush, e.CellBounds);
@@ -435,7 +434,7 @@ partial class LogWindow
             }
             else
             {
-                Color bgColor = ColorMode.DockBackgroundColor;
+                var bgColor = Color.White;
 
                 if (!DebugOptions.DisableWordHighlight)
                 {
@@ -476,7 +475,7 @@ partial class LogWindow
                     Brush brush = new SolidBrush(BookmarkColor);
                     e.Graphics.FillRectangle(brush, r);
                     brush.Dispose();
-                    Bookmark bookmark = _bookmarkProvider.GetBookmarkForLine(rowIndex);
+                    var bookmark = _bookmarkProvider.GetBookmarkForLine(rowIndex);
 
                     if (bookmark.Text.Length > 0)
                     {
@@ -485,7 +484,7 @@ partial class LogWindow
                             LineAlignment = StringAlignment.Center,
                             Alignment = StringAlignment.Center
                         };
-                        Brush brush2 = new SolidBrush(Color.FromArgb(255, 190, 100, 0));
+                        Brush brush2 = new SolidBrush(Color.FromArgb(255, 190, 100, 0)); //dark orange
                         Font font = new("Courier New", Preferences.FontSize, FontStyle.Bold);
                         e.Graphics.DrawString("i", font, brush2, new RectangleF(r.Left, r.Top, r.Width, r.Height),
                             format);
@@ -517,7 +516,7 @@ partial class LogWindow
         // first check the temp entries
         lock (_tempHighlightEntryListLock)
         {
-            foreach (HighlightEntry entry in _tempHighlightEntryList)
+            foreach (var entry in _tempHighlightEntryList)
             {
                 if (noWordMatches && entry.IsWordMatch)
                 {
@@ -533,7 +532,7 @@ partial class LogWindow
 
         lock (_currentHighlightGroupLock)
         {
-            foreach (HighlightEntry entry in _currentHighlightGroup.HighlightEntryList)
+            foreach (var entry in _currentHighlightGroup.HighlightEntryList)
             {
                 if (noWordMatches && entry.IsWordMatch)
                 {
@@ -627,7 +626,7 @@ partial class LogWindow
     {
         _guiStateArgs.MenuEnabled = false;
         GuiStateUpdate(this, _guiStateArgs);
-        SearchParams searchParams = _parentLogTabWin.SearchParams;
+        var searchParams = _parentLogTabWin.SearchParams;
 
         if ((searchParams.IsForward || searchParams.IsFindNext) && !searchParams.IsShiftF3Pressed)
         {
@@ -847,11 +846,11 @@ partial class LogWindow
 
             if (_bookmarkProvider.IsBookmarkAtLine(i))
             {
-                Bookmark bookmark = _bookmarkProvider.GetBookmarkForLine(i);
+                var bookmark = _bookmarkProvider.GetBookmarkForLine(i);
                 if (bookmark.Text.Length > 0)
                 {
                     //BookmarkOverlay overlay = new BookmarkOverlay();
-                    BookmarkOverlay overlay = bookmark.Overlay;
+                    var overlay = bookmark.Overlay;
                     overlay.Bookmark = bookmark;
 
                     Rectangle r;
@@ -934,7 +933,7 @@ partial class LogWindow
     {
         if (_bookmarkProvider.IsBookmarkAtLine(lineNum))
         {
-            Bookmark bookmark = _bookmarkProvider.GetBookmarkForLine(lineNum);
+            var bookmark = _bookmarkProvider.GetBookmarkForLine(lineNum);
 
             if (string.IsNullOrEmpty(bookmark.Text) == false)
             {
@@ -958,7 +957,7 @@ partial class LogWindow
     {
         lock (_bookmarkLock)
         {
-            ILogLine line = _logFileReader.GetLogLine(lineNum);
+            var line = _logFileReader.GetLogLine(lineNum);
             if (line == null)
             {
                 return;
@@ -1233,7 +1232,7 @@ partial class LogWindow
             var fStream = new FileStream(fileName, FileMode.Append, FileAccess.Write, FileShare.Read);
             var writer = new StreamWriter(fStream, Encoding.Unicode);
 
-            DataObject data = dataGridView.GetClipboardContent();
+            var data = dataGridView.GetClipboardContent();
             var text = data.GetText(TextDataFormat.Text);
             writer.Write(text);
 
@@ -1400,7 +1399,7 @@ partial class LogWindow
         if (foundLine >= 0)
         {
             // go backwards to the first occurence of the hit
-            DateTime foundTimestamp = GetTimestampForLine(ref foundLine, roundToSeconds);
+            var foundTimestamp = GetTimestampForLine(ref foundLine, roundToSeconds);
             while (foundTimestamp.CompareTo(timestamp) == 0 && foundLine >= 0)
             {
                 foundLine--;
@@ -1424,7 +1423,7 @@ partial class LogWindow
     {
         _logger.Debug("FindTimestampLine_Internal(): timestamp={0}, lineNum={1}, rangeStart={2}, rangeEnd={3}", timestamp, lineNum, rangeStart, rangeEnd);
         var refLine = lineNum;
-        DateTime currentTimestamp = GetTimestampForLine(ref refLine, roundToSeconds);
+        var currentTimestamp = GetTimestampForLine(ref refLine, roundToSeconds);
         if (currentTimestamp.CompareTo(timestamp) == 0)
         {
             return lineNum;
@@ -1481,7 +1480,7 @@ partial class LogWindow
             }
 
             _logger.Debug($"GetTimestampForLine({lineNum}) enter");
-            DateTime timeStamp = DateTime.MinValue;
+            var timeStamp = DateTime.MinValue;
             var lookBack = false;
             if (lineNum >= 0 && lineNum < dataGridView.RowCount)
             {
@@ -1493,7 +1492,7 @@ partial class LogWindow
                     }
 
                     lookBack = true;
-                    ILogLine logLine = _logFileReader.GetLogLine(lineNum);
+                    var logLine = _logFileReader.GetLogLine(lineNum);
                     if (logLine == null)
                     {
                         return DateTime.MinValue;
@@ -1534,14 +1533,14 @@ partial class LogWindow
                 return DateTime.MinValue;
             }
 
-            DateTime timeStamp = DateTime.MinValue;
+            var timeStamp = DateTime.MinValue;
             var lookFwd = false;
             if (lineNum >= 0 && lineNum < dataGridView.RowCount)
             {
                 while (timeStamp.CompareTo(DateTime.MinValue) == 0 && lineNum < dataGridView.RowCount)
                 {
                     lookFwd = true;
-                    ILogLine logLine = _logFileReader.GetLogLine(lineNum);
+                    var logLine = _logFileReader.GetLogLine(lineNum);
                     if (logLine == null)
                     {
                         timeStamp = DateTime.MinValue;
@@ -1731,7 +1730,7 @@ partial class LogWindow
 
                 // Add (or replace) to existing bookmark list
                 var bookmarkAdded = false;
-                foreach (Bookmark b in newBookmarks.Values)
+                foreach (var b in newBookmarks.Values)
                 {
                     if (!_bookmarkProvider.BookmarkList.ContainsKey(b.LineNum))
                     {
@@ -1740,7 +1739,7 @@ partial class LogWindow
                     }
                     else
                     {
-                        Bookmark existingBookmark = _bookmarkProvider.BookmarkList[b.LineNum];
+                        var existingBookmark = _bookmarkProvider.BookmarkList[b.LineNum];
                         existingBookmark.Text =
                             b.Text; // replace existing bookmark for that line, preserving the overlay
                         OnBookmarkTextChanged(b);
@@ -1782,7 +1781,7 @@ partial class LogWindow
     {
         var index = filterListBox.SelectedIndex;
         filterListBox.Items.Clear();
-        foreach (FilterParams filterParam in ConfigManager.Settings.FilterList)
+        foreach (var filterParam in ConfigManager.Settings.FilterList)
         {
             filterListBox.Items.Add(filterParam);
         }

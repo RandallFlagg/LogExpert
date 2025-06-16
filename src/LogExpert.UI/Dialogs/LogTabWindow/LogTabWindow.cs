@@ -6,8 +6,6 @@ using LogExpert.Core.Config;
 using LogExpert.Core.Entities;
 using LogExpert.Core.Interface;
 using LogExpert.Dialogs;
-using LogExpert.UI.Extensions;
-using LogExpert.UI.Extensions.Forms;
 
 using NLog;
 
@@ -162,107 +160,6 @@ internal partial class LogTabWindow : Form, ILogTabWindow
         InitToolWindows();
     }
 
-    #endregion
-
-    #region ColorTheme
-
-    [SupportedOSPlatform("windows")]
-    public void ChangeTheme (Control.ControlCollection container)
-    {
-        ColorMode.LoadColorMode(ConfigManager.Settings.Preferences.DarkMode);
-        NativeMethods.UseImmersiveDarkMode(Handle, ColorMode.DarkModeEnabled);
-
-        #region ApplyColorToAllControls
-        foreach (Control component in container)
-        {
-            if (component.Controls != null && component.Controls.Count > 0)
-            {
-                ChangeTheme(component.Controls);
-                component.BackColor = ColorMode.BackgroundColor;
-                component.ForeColor = ColorMode.ForeColor;
-            }
-            else
-            {
-                component.BackColor = ColorMode.BackgroundColor;
-                component.ForeColor = ColorMode.ForeColor;
-            }
-
-            if (component is MenuStrip menu)
-            {
-                foreach (ToolStripMenuItem item in menu.Items)
-                {
-                    item.ForeColor = ColorMode.ForeColor;
-                    item.BackColor = ColorMode.BackgroundColor;
-
-                    try
-                    {
-                        for (var x = 0; x < item.DropDownItems.Count; x++)
-                        {
-                            var children = item.DropDownItems[x];
-                            children.ForeColor = ColorMode.ForeColor;
-                            children.BackColor = ColorMode.MenuBackgroundColor;
-
-                            if (children is ToolStripDropDownItem toolstripDropDownItem)
-                            {
-                                for (var y = 0; y < toolstripDropDownItem.DropDownItems.Count; y++)
-                                {
-                                    var subChildren = toolstripDropDownItem.DropDownItems[y];
-                                    subChildren.ForeColor = ColorMode.ForeColor;
-                                    subChildren.BackColor = ColorMode.MenuBackgroundColor;
-                                }
-                            }
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.Error(ex, "An error occured while applying style dynamically to all Controls under LogTabWindow:");
-                    }
-                }
-            }
-        }
-        #endregion
-
-        // Colors for selected menus
-        mainMenuStrip.Renderer = new ExtendedMenuStripRenderer();
-
-        // Dock special color
-        dockPanel.DockBackColor = ColorMode.DockBackgroundColor;
-
-        // Remove toolstrip bottom border
-        buttonToolStrip.Renderer = new ToolStripRendererExtension();
-
-        #region Tabs
-        tabContextMenuStrip.Renderer = new ExtendedMenuStripRenderer();
-
-        // Tabs menu
-        for (var y = 0; y < tabContextMenuStrip.Items.Count; y++)
-        {
-            var item = tabContextMenuStrip.Items[y];
-            item.ForeColor = ColorMode.ForeColor;
-            item.BackColor = ColorMode.MenuBackgroundColor;
-        }
-
-        // Tabs line
-        dockPanel.Theme.Skin.DockPaneStripSkin.ToolWindowGradient.DockStripGradient.StartColor = ColorMode.TabsBackgroundStripColor;
-        dockPanel.Theme.Skin.DockPaneStripSkin.ToolWindowGradient.DockStripGradient.EndColor = ColorMode.TabsBackgroundStripColor;
-
-        dockPanel.Theme.Skin.DockPaneStripSkin.DocumentGradient.DockStripGradient.StartColor = ColorMode.TabsBackgroundStripColor;
-        dockPanel.Theme.Skin.DockPaneStripSkin.DocumentGradient.DockStripGradient.EndColor = ColorMode.TabsBackgroundStripColor;
-
-        // Tabs
-        dockPanel.Theme.Skin.DockPaneStripSkin.ToolWindowGradient.ActiveTabGradient.StartColor = ColorMode.ActiveTabColor;
-        dockPanel.Theme.Skin.DockPaneStripSkin.ToolWindowGradient.ActiveTabGradient.EndColor = ColorMode.ActiveTabColor;
-        dockPanel.Theme.Skin.DockPaneStripSkin.ToolWindowGradient.ActiveTabGradient.TextColor = ColorMode.ForeColor;
-
-        dockPanel.Theme.Skin.DockPaneStripSkin.DocumentGradient.ActiveTabGradient.StartColor = ColorMode.ActiveTabColor;
-        dockPanel.Theme.Skin.DockPaneStripSkin.DocumentGradient.ActiveTabGradient.EndColor = ColorMode.ActiveTabColor;
-        dockPanel.Theme.Skin.DockPaneStripSkin.DocumentGradient.ActiveTabGradient.TextColor = ColorMode.ForeColor;
-
-        dockPanel.Theme.Skin.DockPaneStripSkin.DocumentGradient.InactiveTabGradient.StartColor = ColorMode.InactiveTabColor;
-        dockPanel.Theme.Skin.DockPaneStripSkin.DocumentGradient.InactiveTabGradient.EndColor = ColorMode.InactiveTabColor;
-        dockPanel.Theme.Skin.DockPaneStripSkin.DocumentGradient.InactiveTabGradient.TextColor = ColorMode.ForeColor;
-        #endregion Tabs
-    }
     #endregion
 
     #region Delegates

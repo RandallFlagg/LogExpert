@@ -5,7 +5,6 @@ using LogExpert.Core.Entities;
 using LogExpert.Core.Enums;
 using LogExpert.Core.Interface;
 using LogExpert.UI.Entities;
-using LogExpert.UI.Extensions.Forms;
 using LogExpert.UI.Interface;
 
 using NLog;
@@ -39,57 +38,6 @@ internal partial class BookmarkWindow : DockContent, ISharedToolWindow, IBookmar
 
         bookmarkDataGridView.CellValueNeeded += OnBoomarkDataGridViewCellValueNeeded;
         bookmarkDataGridView.CellPainting += OnBoomarkDataGridViewCellPainting;
-
-        ChangeTheme(Controls);
-    }
-
-    #endregion
-
-    #region ColorTheme
-
-    public void ChangeTheme (Control.ControlCollection container)
-    {
-        #region ApplyColorToAllControls
-
-        foreach (Control component in container)
-        {
-            if (component.Controls != null && component.Controls.Count > 0)
-            {
-                ChangeTheme(component.Controls);
-                component.BackColor = ColorMode.BackgroundColor;
-                component.ForeColor = ColorMode.ForeColor;
-            }
-            else
-            {
-                component.BackColor = ColorMode.BackgroundColor;
-                component.ForeColor = ColorMode.ForeColor;
-            }
-
-        }
-
-        #endregion
-
-        #region DataGridView
-
-        BackColor = ColorMode.DockBackgroundColor;
-
-        // Main DataGridView
-        bookmarkDataGridView.BackgroundColor = ColorMode.DockBackgroundColor;
-        bookmarkDataGridView.ColumnHeadersDefaultCellStyle.BackColor = ColorMode.BackgroundColor;
-        bookmarkDataGridView.ColumnHeadersDefaultCellStyle.ForeColor = ColorMode.ForeColor;
-        bookmarkDataGridView.EnableHeadersVisualStyles = false;
-
-        // Colors for menu
-        contextMenuStrip1.Renderer = new ExtendedMenuStripRenderer();
-
-        for (var y = 0; y < contextMenuStrip1.Items.Count; y++)
-        {
-            var item = contextMenuStrip1.Items[y];
-            item.ForeColor = ColorMode.ForeColor;
-            item.BackColor = ColorMode.MenuBackgroundColor;
-        }
-
-        #endregion DataGridView
     }
 
     #endregion
