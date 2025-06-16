@@ -18,27 +18,30 @@ internal class ColorComboBox : ComboBox
     {
         DrawMode = DrawMode.OwnerDrawFixed;
         DrawItem += OnColorComboBoxDrawItem;
-        // add color presets
         if (!DesignMode)
         {
-            _ = Items.Add(_customColor);
-            _ = Items.Add(Color.Black);
-            _ = Items.Add(Color.White);
-            _ = Items.Add(Color.Gray);
-            _ = Items.Add(Color.DarkGray);
-            _ = Items.Add(Color.Blue);
-            _ = Items.Add(Color.LightBlue);
-            _ = Items.Add(Color.DarkBlue);
-            _ = Items.Add(Color.Green);
-            _ = Items.Add(Color.LightGreen);
-            _ = Items.Add(Color.DarkGreen);
-            _ = Items.Add(Color.Olive);
-            _ = Items.Add(Color.Red);
-            _ = Items.Add(Color.Pink);
-            _ = Items.Add(Color.Purple);
-            _ = Items.Add(Color.IndianRed);
-            _ = Items.Add(Color.DarkCyan);
-            _ = Items.Add(Color.Yellow);
+            Items.AddRange(
+                [
+                    _customColor,
+                    Color.Black,
+                    Color.White,
+                    Color.Gray,
+                    Color.DarkGray,
+                    Color.Blue,
+                    Color.LightBlue,
+                    Color.DarkBlue,
+                    Color.Green,
+                    Color.LightGreen,
+                    Color.DarkGreen,
+                    Color.Olive,
+                    Color.Red,
+                    Color.Pink,
+                    Color.Purple,
+                    Color.IndianRed,
+                    Color.DarkCyan,
+                    Color.Yellow
+                ]
+            );
         }
     }
 

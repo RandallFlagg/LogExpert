@@ -27,7 +27,6 @@
   <ItemGroup>
     <EmbeddedResource Remove="Dialogs\LogTabWindow\LogTabWindowEventHandlers.resx" />
     <EmbeddedResource Remove="Controls\LogWindow\LogWindowEventHandlers.resx" />
-    <EmbeddedResource Remove="Controls\LogWindow\LogWindowPublic.resx" />
   </ItemGroup>
 
   <ItemGroup>

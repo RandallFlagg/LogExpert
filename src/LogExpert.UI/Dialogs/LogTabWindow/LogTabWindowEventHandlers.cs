@@ -756,6 +756,7 @@ internal partial class LogTabWindow
             data.Color = dlg.Color;
             SetTabColor(logWindow, data.Color);
         }
+
         List<ColorEntry> delList = [];
 
         foreach (var entry in ConfigManager.Settings.FileColors)
@@ -768,7 +769,7 @@ internal partial class LogTabWindow
 
         foreach (var entry in delList)
         {
-            ConfigManager.Settings.FileColors.Remove(entry);
+            _ = ConfigManager.Settings.FileColors.Remove(entry);
         }
 
         ConfigManager.Settings.FileColors.Add(new ColorEntry(logWindow.FileName, dlg.Color));
@@ -804,7 +805,7 @@ internal partial class LogTabWindow
 
             lock (_logWindowList)
             {
-                foreach (DockContent content in dockPanel.Contents)
+                foreach (DockContent content in dockPanel.Contents.Cast<DockContent>())
                 {
                     var logWindow = content as LogWindow.LogWindow;
                     var persistenceFileName = logWindow?.SavePersistenceData(true);
