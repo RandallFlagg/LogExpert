@@ -72,14 +72,17 @@ internal partial class BookmarkWindow : DockContent, ISharedToolWindow, IBookmar
             bookmarkDataGridView.Columns[0].Width = 20;
         }
 
-        DataGridViewTextBoxColumn commentColumn = new();
-        commentColumn.HeaderText = "Bookmark Comment";
-        commentColumn.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
-        commentColumn.Resizable = DataGridViewTriState.NotSet;
-        commentColumn.DividerWidth = 1;
-        commentColumn.ReadOnly = true;
-        commentColumn.Width = 250;
-        commentColumn.MinimumWidth = 130;
+        DataGridViewTextBoxColumn commentColumn = new()
+        {
+            HeaderText = "Bookmark Comment",
+            AutoSizeMode = DataGridViewAutoSizeColumnMode.None,
+            Resizable = DataGridViewTriState.NotSet,
+            DividerWidth = 1,
+            ReadOnly = true,
+            Width = 250,
+            MinimumWidth = 130
+        };
+
         bookmarkDataGridView.Columns.Insert(1, commentColumn);
         ShowCommentColumn(commentColumnCheckBox.Checked);
         ResizeColumns();
@@ -111,6 +114,7 @@ internal partial class BookmarkWindow : DockContent, ISharedToolWindow, IBookmar
     public void BookmarkTextChanged (Bookmark bookmark)
     {
         var rowIndex = bookmarkDataGridView.CurrentCellAddress.Y;
+
         if (rowIndex == -1)
         {
             return;
@@ -201,7 +205,7 @@ internal partial class BookmarkWindow : DockContent, ISharedToolWindow, IBookmar
         if (!splitContainer1.Visible)
         {
             var r = ClientRectangle;
-            e.Graphics.FillRectangle(SystemBrushes.FromSystemColor(ColorMode.BookmarksDefaultBackgroundColor), r);
+            e.Graphics.FillRectangle(SystemBrushes.ControlLight, r);
 
             StringFormat sf = new()
             {
