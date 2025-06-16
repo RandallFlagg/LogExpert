@@ -30,7 +30,7 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
 
     private const int SPREAD_MAX = 99;
     private const int PROGRESS_BAR_MODULO = 1000;
-    private const int FILTER_ADVANCED_SPLITTER_DISTANCE = 150;
+    private const int FILTER_ADVANCED_SPLITTER_DISTANCE = 110;
     private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
     private readonly Image _advancedButtonImage;
