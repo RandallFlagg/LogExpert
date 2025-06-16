@@ -4,7 +4,7 @@ using System.Runtime.Versioning;
 namespace LogExpert.UI.Controls;
 
 [SupportedOSPlatform("windows")]
-public class ColorComboBox : ComboBox
+internal class ColorComboBox : ComboBox
 {
     #region Fields
 

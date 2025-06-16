@@ -1,6 +1,6 @@
 using LogExpert.Core.Interface;
 
-namespace LogExpert.UI.Dialogs.LogTabWindow;
+namespace LogExpert.UI.Extensions.LogWindow;
 
 public class StaticLogTabWindowData
 {

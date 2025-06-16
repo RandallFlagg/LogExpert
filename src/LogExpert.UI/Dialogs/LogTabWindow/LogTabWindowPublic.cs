@@ -15,7 +15,7 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace LogExpert.UI.Controls.LogTabWindow;
 
-public partial class LogTabWindow
+internal partial class LogTabWindow
 {
     #region Public methods
 
@@ -298,7 +298,7 @@ public partial class LogTabWindow
     [SupportedOSPlatform("windows")]
     public void SetForeground ()
     {
-        Win32.SetForegroundWindow(Handle);
+        NativeMethods.SetForegroundWindow(Handle);
         if (WindowState == FormWindowState.Minimized)
         {
             if (_wasMaximized)

@@ -1,9 +1,9 @@
-﻿using System.Runtime.Versioning;
+using System.Runtime.Versioning;
 
 namespace LogExpert.UI.Extensions.Forms;
 
 [SupportedOSPlatform("windows")]
-public class ToolStripRendererExtension : ToolStripSystemRenderer
+internal class ToolStripRendererExtension : ToolStripSystemRenderer
 {
     public ToolStripRendererExtension() { }
 

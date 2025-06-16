@@ -16,7 +16,7 @@ namespace LogExpert.UI.Controls.LogTabWindow;
 // Data shared over all LogTabWindow instances
 //TODO: Can we get rid of this class?
 [SupportedOSPlatform("windows")]
-public partial class LogTabWindow : Form, ILogTabWindow
+internal partial class LogTabWindow : Form, ILogTabWindow
 {
     #region Fields
 
@@ -170,7 +170,7 @@ public partial class LogTabWindow : Form, ILogTabWindow
     public void ChangeTheme (Control.ControlCollection container)
     {
         ColorMode.LoadColorMode(ConfigManager.Settings.Preferences.DarkMode);
-        Win32.UseImmersiveDarkMode(Handle, ColorMode.DarkModeEnabled);
+        NativeMethods.UseImmersiveDarkMode(Handle, ColorMode.DarkModeEnabled);
 
         #region ApplyColorToAllControls
         foreach (Control component in container)
@@ -198,7 +198,7 @@ public partial class LogTabWindow : Form, ILogTabWindow
                     {
                         for (var x = 0; x < item.DropDownItems.Count; x++)
                         {
-                            ToolStripItem children = item.DropDownItems[x];
+                            var children = item.DropDownItems[x];
                             children.ForeColor = ColorMode.ForeColor;
                             children.BackColor = ColorMode.MenuBackgroundColor;
 
@@ -206,7 +206,7 @@ public partial class LogTabWindow : Form, ILogTabWindow
                             {
                                 for (var y = 0; y < toolstripDropDownItem.DropDownItems.Count; y++)
                                 {
-                                    ToolStripItem subChildren = toolstripDropDownItem.DropDownItems[y];
+                                    var subChildren = toolstripDropDownItem.DropDownItems[y];
                                     subChildren.ForeColor = ColorMode.ForeColor;
                                     subChildren.BackColor = ColorMode.MenuBackgroundColor;
                                 }
@@ -237,7 +237,7 @@ public partial class LogTabWindow : Form, ILogTabWindow
         // Tabs menu
         for (var y = 0; y < tabContextMenuStrip.Items.Count; y++)
         {
-            ToolStripItem item = tabContextMenuStrip.Items[y];
+            var item = tabContextMenuStrip.Items[y];
             item.ForeColor = ColorMode.ForeColor;
             item.BackColor = ColorMode.MenuBackgroundColor;
         }

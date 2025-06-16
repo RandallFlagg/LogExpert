@@ -1,11 +1,11 @@
-﻿using LogExpert.Core.Classes.Filter;
+using LogExpert.Core.Classes.Filter;
 
 using System.Runtime.Versioning;
 
 namespace LogExpert.UI.Dialogs;
 
 [SupportedOSPlatform("windows")]
-public partial class FilterColumnChooser : Form
+internal partial class FilterColumnChooser : Form
 {
     #region Fields
 

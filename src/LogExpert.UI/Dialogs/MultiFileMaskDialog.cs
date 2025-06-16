@@ -1,9 +1,9 @@
-﻿using System.Runtime.Versioning;
+using System.Runtime.Versioning;
 
 namespace LogExpert.UI.Dialogs;
 
 [SupportedOSPlatform("windows")]
-public partial class MultiFileMaskDialog : Form
+internal partial class MultiFileMaskDialog : Form
 {
     #region Fields
 

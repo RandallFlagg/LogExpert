@@ -1,13 +1,13 @@
-using System.Runtime.Versioning;
+﻿using System.Runtime.Versioning;
 
 using LogExpert.Core.Config;
 
 namespace LogExpert.UI.Extensions.Forms;
 
 [SupportedOSPlatform("windows")]
-public class LineToolStripSeparatorExtension : ToolStripSeparator
+internal class LineToolStripSeparatorExtension : ToolStripSeparator
 {
-    public LineToolStripSeparatorExtension ()
+    public LineToolStripSeparatorExtension()
     {
         Paint += OnExtendedToolStripSeparatorPaint;
     }

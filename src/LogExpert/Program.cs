@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO.Pipes;
 using System.Reflection;
 using System.Security;
@@ -13,8 +13,8 @@ using LogExpert.Core.Classes.IPC;
 using LogExpert.Core.Config;
 using LogExpert.Core.Interface;
 using LogExpert.Dialogs;
-using LogExpert.UI.Controls.LogWindow;
 using LogExpert.UI.Dialogs;
+using LogExpert.UI.Extensions.LogWindow;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -127,6 +127,7 @@ internal static class Program
                         MessageBox.Show($"Cannot open connection to first instance ({errMsg})", "LogExpert");
                     }
 
+                    //TODO: Remove this from here? Why is it called from the Main project and not from the main window?
                     if (settings.Preferences.AllowOnlyOneInstance && settings.Preferences.ShowErrorMessageAllowOnlyOneInstances)
                     {
                         AllowOnlyOneInstanceErrorDialog a = new();
