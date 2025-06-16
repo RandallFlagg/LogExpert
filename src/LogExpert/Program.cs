@@ -88,7 +88,7 @@ internal static class Program
                     // first application instance
                     Application.EnableVisualStyles();
                     Application.SetCompatibleTextRenderingDefault(false);
-                    ILogTabWindow logWin = AbstractLogTabWindow.Create(absoluteFilePaths.Length > 0 ? absoluteFilePaths : null, 1, false, ConfigManager.Instance);
+                    var logWin = AbstractLogTabWindow.Create(absoluteFilePaths.Length > 0 ? absoluteFilePaths : null, 1, false, ConfigManager.Instance);
 
                     // first instance
                     var wi = WindowsIdentity.GetCurrent();
@@ -194,48 +194,33 @@ internal static class Program
 
     private static void SendMessageToProxy(IpcMessage message, LogExpertProxy proxy)
     {
-        //TODO: REFACTOR
-        switch (message.Type)
-        {
-            case IpcMessageType.Load:
-                {
-                    var payLoad = message.Payload.ToObject<LoadPayload>();
+        var payLoad = message.Payload.ToObject<LoadPayload>();
 
-                    if (CheckPayload(payLoad))
-                    {
-                        proxy.LoadFiles([.. payLoad.Files]);
-                    }
-                }
-                break;
-            case IpcMessageType.NewWindow:
-                {
-                    var payLoad = message.Payload.ToObject<LoadPayload>();
-                    if (CheckPayload(payLoad))
-                    {
-                        proxy.NewWindow([.. payLoad.Files]);
-                    }
-                }
-                break;
-            case IpcMessageType.NewWindowOrLockedWindow:
-                {
-                    var payLoad = message.Payload.ToObject<LoadPayload>();
-                    if (CheckPayload(payLoad))
-                    {
-                        proxy.NewWindowOrLockedWindow([.. payLoad.Files]);
-                    }
-                }
-                break;
-            default:
-                _logger.Error($"Unknown IPC Message Type {message.Type}");
-                break;
+        if (CheckPayload(payLoad))
+        {
+            switch (message.Type)
+            {
+                case IpcMessageType.Load:
+                    proxy.LoadFiles([.. payLoad.Files]);
+                    break;
+                case IpcMessageType.NewWindow:
+                    proxy.NewWindow([.. payLoad.Files]);
+                    break;
+                case IpcMessageType.NewWindowOrLockedWindow:
+                    proxy.NewWindowOrLockedWindow([.. payLoad.Files]);
+                    break;
+                default:
+                    _logger.Error($"Unknown IPC Message Type: {message.Type}; with payload: {payLoad}");
+                    break;
+            }
         }
     }
 
-    private static bool CheckPayload(LoadPayload payLoad)
+    private static bool CheckPayload (LoadPayload payLoad)
     {
         if (payLoad == null)
         {
-            _logger.Error("Invalid payload for NewWindow command");
+            _logger.Error("Invalid payload command: null");
             return false;
         }
 
