@@ -59,13 +59,13 @@ partial class LogWindow
         dataGridViewCellStyleMainGrid.Font = new Font("Courier New", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
         dataGridViewCellStyleMainGrid.ForeColor = SystemColors.ControlText;
         dataGridViewCellStyleMainGrid.SelectionBackColor = SystemColors.Highlight;
-        dataGridViewCellStyleMainGrid.SelectionForeColor = SystemColors.HighlightText;
+        //dataGridViewCellStyleMainGrid.SelectionForeColor = SystemColors.HighlightText;
 
         var highlightColor = SystemColors.Highlight;
         //Color is smaller than 128, means its darker
-        var isDark = (highlightColor.R * 0.2126) + (highlightColor.G * 0.7152) + (highlightColor.B * 0.0722) < 255 / 2;
+        var isSelectionBackColorDark = (highlightColor.R * 0.2126) + (highlightColor.G * 0.7152) + (highlightColor.B * 0.0722) < 255 / 2;
 
-        if (isDark)
+        if (isSelectionBackColorDark)
         {
             dataGridViewCellStyleMainGrid.SelectionForeColor = Color.White;
         }
@@ -83,9 +83,9 @@ partial class LogWindow
         dataGridViewCellStyleFilterGrid.Font = new Font("Courier New", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
         dataGridViewCellStyleFilterGrid.ForeColor = SystemColors.ControlText;
         dataGridViewCellStyleFilterGrid.SelectionBackColor = SystemColors.Highlight;
-        dataGridViewCellStyleFilterGrid.SelectionForeColor = SystemColors.HighlightText;
+        //dataGridViewCellStyleFilterGrid.SelectionForeColor = SystemColors.HighlightText;
 
-        if (isDark)
+        if (isSelectionBackColorDark)
         {
             dataGridViewCellStyleFilterGrid.SelectionForeColor = Color.White;
         }

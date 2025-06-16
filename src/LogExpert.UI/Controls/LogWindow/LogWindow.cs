@@ -263,36 +263,12 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
 
     #region Delegates
 
-    public delegate void BookmarkAddedEventHandler (object sender, EventArgs e);
-
-    public delegate void BookmarkRemovedEventHandler (object sender, EventArgs e);
-
-    public delegate void BookmarkTextChangedEventHandler (object sender, BookmarkEventArgs e);
-
-    public delegate void ColumnizerChangedEventHandler (object sender, ColumnizerEventArgs e);
-
-    public delegate void CurrentHighlightGroupChangedEventHandler (object sender, CurrentHighlightGroupChangedEventArgs e);
-
-    public delegate void FileNotFoundEventHandler (object sender, EventArgs e);
-
-    public delegate void FileRespawnedEventHandler (object sender, EventArgs e);
-
-    public delegate void FilterListChangedEventHandler (object sender, FilterListChangedEventArgs e);
-
     // used for filterTab restore
     public delegate void FilterRestoreFx (LogWindow newWin, PersistenceData persistenceData);
-
-    public delegate void GuiStateEventHandler (object sender, GuiStateArgs e);
-
-    public delegate void ProgressBarEventHandler (object sender, ProgressEventArgs e);
 
     public delegate void RestoreFiltersFx (PersistenceData persistenceData);
 
     public delegate bool ScrollToTimestampFx (DateTime timestamp, bool roundToSeconds, bool triggerSyncCall);
-
-    public delegate void StatusLineEventHandler (object sender, StatusLineEventArgs e);
-
-    public delegate void SyncModeChangedEventHandler (object sender, SyncModeEventArgs e);
 
     public delegate void TailFollowedEventHandler (object sender, EventArgs e);
 
@@ -302,31 +278,31 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
 
     public event FileSizeChangedEventHandler FileSizeChanged;
 
-    public event ProgressBarEventHandler ProgressBarUpdate;
+    public event EventHandler<ProgressEventArgs> ProgressBarUpdate;
 
-    public event StatusLineEventHandler StatusLineEvent;
+    public event EventHandler<StatusLineEventArgs> StatusLineEvent;
 
-    public event GuiStateEventHandler GuiStateUpdate;
+    public event EventHandler<GuiStateArgs> GuiStateUpdate;
 
     public event TailFollowedEventHandler TailFollowed;
 
-    public event FileNotFoundEventHandler FileNotFound;
+    public event EventHandler<EventArgs> FileNotFound;
 
-    public event FileRespawnedEventHandler FileRespawned;
+    public event EventHandler<EventArgs> FileRespawned;
 
-    public event FilterListChangedEventHandler FilterListChanged;
+    public event EventHandler<FilterListChangedEventArgs> FilterListChanged;
 
-    public event CurrentHighlightGroupChangedEventHandler CurrentHighlightGroupChanged;
+    public event EventHandler<CurrentHighlightGroupChangedEventArgs> CurrentHighlightGroupChanged;
 
-    public event BookmarkAddedEventHandler BookmarkAdded;
+    public event EventHandler<BookmarkEventArgs> BookmarkAdded;
 
-    public event BookmarkRemovedEventHandler BookmarkRemoved;
+    public event EventHandler<BookmarkEventArgs> BookmarkRemoved;
 
-    public event BookmarkTextChangedEventHandler BookmarkTextChanged;
+    public event EventHandler<BookmarkEventArgs> BookmarkTextChanged;
 
-    public event ColumnizerChangedEventHandler ColumnizerChanged;
+    public event EventHandler<ColumnizerEventArgs> ColumnizerChanged;
 
-    public event SyncModeChangedEventHandler SyncModeChanged;
+    public event EventHandler<SyncModeEventArgs> SyncModeChanged;
 
     #endregion
 

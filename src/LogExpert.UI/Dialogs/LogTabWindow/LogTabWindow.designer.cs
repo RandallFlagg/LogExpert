@@ -173,7 +173,7 @@ namespace LogExpert.UI.Controls.LogTabWindow
             statusStrip.Location = new System.Drawing.Point(0, 954);
             statusStrip.Name = "statusStrip";
             statusStrip.Padding = new Padding(3, 0, 23, 0);
-            statusStrip.Size = new System.Drawing.Size(1603, 63);
+            statusStrip.Size = new System.Drawing.Size(1603, 35);
             statusStrip.SizingGrip = false;
             statusStrip.TabIndex = 5;
             statusStrip.Text = "statusStrip1";
@@ -184,7 +184,7 @@ namespace LogExpert.UI.Controls.LogTabWindow
             labelLines.BorderSides = ToolStripStatusLabelBorderSides.Left | ToolStripStatusLabelBorderSides.Top | ToolStripStatusLabelBorderSides.Right | ToolStripStatusLabelBorderSides.Bottom;
             labelLines.BorderStyle = Border3DStyle.SunkenOuter;
             labelLines.Name = "labelLines";
-            labelLines.Size = new System.Drawing.Size(26, 58);
+            labelLines.Size = new System.Drawing.Size(26, 35);
             labelLines.Text = "0";
             // 
             // labelSize
@@ -193,7 +193,7 @@ namespace LogExpert.UI.Controls.LogTabWindow
             labelSize.BorderSides = ToolStripStatusLabelBorderSides.Left | ToolStripStatusLabelBorderSides.Top | ToolStripStatusLabelBorderSides.Right | ToolStripStatusLabelBorderSides.Bottom;
             labelSize.BorderStyle = Border3DStyle.SunkenOuter;
             labelSize.Name = "labelSize";
-            labelSize.Size = new System.Drawing.Size(26, 58);
+            labelSize.Size = new System.Drawing.Size(26, 35);
             labelSize.Text = "0";
             // 
             // labelCurrentLine
@@ -202,18 +202,18 @@ namespace LogExpert.UI.Controls.LogTabWindow
             labelCurrentLine.BorderSides = ToolStripStatusLabelBorderSides.Left | ToolStripStatusLabelBorderSides.Top | ToolStripStatusLabelBorderSides.Right | ToolStripStatusLabelBorderSides.Bottom;
             labelCurrentLine.BorderStyle = Border3DStyle.SunkenOuter;
             labelCurrentLine.Name = "labelCurrentLine";
-            labelCurrentLine.Size = new System.Drawing.Size(28, 58);
+            labelCurrentLine.Size = new System.Drawing.Size(28, 35);
             labelCurrentLine.Text = "L:";
             // 
             // loadProgessBar
             // 
             loadProgessBar.Name = "loadProgessBar";
-            loadProgessBar.Size = new System.Drawing.Size(83, 57);
+            loadProgessBar.Size = new System.Drawing.Size(83, 35);
             // 
             // labelStatus
             // 
             labelStatus.Name = "labelStatus";
-            labelStatus.Size = new System.Drawing.Size(39, 58);
+            labelStatus.Size = new System.Drawing.Size(39, 35);
             labelStatus.Text = "Ready";
             // 
             // mainMenuStrip
@@ -833,7 +833,6 @@ namespace LogExpert.UI.Controls.LogTabWindow
             dockPanel.Dock = DockStyle.Fill;
             dockPanel.DockBackColor = System.Drawing.SystemColors.Control;
             dockPanel.DocumentStyle = DocumentStyle.DockingWindow;
-            dockPanel.ForeColor = System.Drawing.SystemColors.Control;
             dockPanel.Location = new System.Drawing.Point(0, 0);
             dockPanel.Margin = new Padding(0);
             dockPanel.Name = "dockPanel";

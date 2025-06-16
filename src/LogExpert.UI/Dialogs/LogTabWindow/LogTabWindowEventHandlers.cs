@@ -44,7 +44,7 @@ internal partial class LogTabWindow
 
         if (ConfigManager.Settings.Preferences.OpenLastFiles && _startupFileNames == null)
         {
-            List<string> tmpList = ObjectClone.Clone(ConfigManager.Settings.LastOpenFilesList);
+            var tmpList = ObjectClone.Clone(ConfigManager.Settings.LastOpenFilesList);
 
             foreach (var name in tmpList)
             {
@@ -54,12 +54,16 @@ internal partial class LogTabWindow
                 }
             }
         }
+
         if (_startupFileNames != null)
         {
             LoadFiles(_startupFileNames, false);
         }
-        _ledThread = new Thread(LedThreadProc);
-        _ledThread.IsBackground = true;
+
+        _ledThread = new Thread(LedThreadProc)
+        {
+            IsBackground = true
+        };
         _ledThread.Start();
 
         FillHighlightComboBox();
@@ -78,16 +82,16 @@ internal partial class LogTabWindow
             _statusLineEventWakeupHandle.Set();
             _ledThread.Join();
 
-            IList<LogWindow.LogWindow> deleteLogWindowList = new List<LogWindow.LogWindow>();
+            IList<LogWindow.LogWindow> deleteLogWindowList = [];
             ConfigManager.Settings.AlwaysOnTop = TopMost && ConfigManager.Settings.Preferences.AllowOnlyOneInstance;
             SaveLastOpenFilesList();
 
-            foreach (LogWindow.LogWindow logWindow in _logWindowList)
+            foreach (var logWindow in _logWindowList)
             {
                 deleteLogWindowList.Add(logWindow);
             }
 
-            foreach (LogWindow.LogWindow logWindow in deleteLogWindowList)
+            foreach (var logWindow in deleteLogWindowList)
             {
                 RemoveAndDisposeLogWindow(logWindow, true);
             }
@@ -153,10 +157,12 @@ internal partial class LogTabWindow
         }
 
         CurrentLogWindow.ColumnizerCallbackObject.LineNum = CurrentLogWindow.GetCurrentLineNum();
-        FilterSelectorForm form = new(PluginRegistry.PluginRegistry.Instance.RegisteredColumnizers, CurrentLogWindow.CurrentColumnizer, CurrentLogWindow.ColumnizerCallbackObject, ConfigManager);
-        form.Owner = this;
-        form.TopMost = TopMost;
-        DialogResult res = form.ShowDialog();
+        FilterSelectorForm form = new(PluginRegistry.PluginRegistry.Instance.RegisteredColumnizers, CurrentLogWindow.CurrentColumnizer, CurrentLogWindow.ColumnizerCallbackObject, ConfigManager)
+        {
+            Owner = this,
+            TopMost = TopMost
+        };
+        var res = form.ShowDialog();
 
         if (res == DialogResult.OK)
         {
@@ -164,7 +170,7 @@ internal partial class LogTabWindow
             {
                 lock (_logWindowList)
                 {
-                    foreach (LogWindow.LogWindow logWindow in _logWindowList)
+                    foreach (var logWindow in _logWindowList)
                     {
                         if (logWindow.CurrentColumnizer.GetType() != form.SelectedColumnizer.GetType())
                         {
@@ -196,7 +202,7 @@ internal partial class LogTabWindow
                 {
                     lock (_logWindowList)
                     {
-                        foreach (LogWindow.LogWindow logWindow in _logWindowList)
+                        foreach (var logWindow in _logWindowList)
                         {
                             if (logWindow.CurrentColumnizer.GetType() == form.SelectedColumnizer.GetType())
                             {
@@ -217,7 +223,7 @@ internal partial class LogTabWindow
         }
 
         GotoLineDialog dlg = new(this);
-        DialogResult res = dlg.ShowDialog();
+        var res = dlg.ShowDialog();
         if (res == DialogResult.OK)
         {
             var line = dlg.Line - 1;
@@ -253,7 +259,8 @@ internal partial class LogTabWindow
             s += format;
             s += " , ";
         }
-        s = s.Substring(0, s.Length - 3);
+
+        s = s[..^3];
         _logger.Info(s);
 #endif
     }
@@ -280,6 +287,7 @@ internal partial class LogTabWindow
             s += format;
             s += " , ";
         }
+
         s = s[..^3];
         _logger.Debug(s);
 #endif
@@ -310,8 +318,11 @@ internal partial class LogTabWindow
     [SupportedOSPlatform("windows")]
     private void OnAboutToolStripMenuItemClick (object sender, EventArgs e)
     {
-        AboutBox aboutBox = new();
-        aboutBox.TopMost = TopMost;
+        AboutBox aboutBox = new()
+        {
+            TopMost = TopMost
+        };
+
         aboutBox.ShowDialog();
     }
 
@@ -338,7 +349,7 @@ internal partial class LogTabWindow
         _bookmarkWindow?.SetColumnizer(e.Columnizer);
     }
 
-    private void OnBookmarkAdded (object sender, EventArgs e)
+    private void OnBookmarkAdded (object sender, BookmarkEventArgs e)
     {
         _bookmarkWindow.UpdateView();
     }
@@ -348,7 +359,7 @@ internal partial class LogTabWindow
         _bookmarkWindow.BookmarkTextChanged(e.Bookmark);
     }
 
-    private void OnBookmarkRemoved (object sender, EventArgs e)
+    private void OnBookmarkRemoved (object sender, BookmarkEventArgs e)
     {
         _bookmarkWindow.UpdateView();
     }
@@ -448,7 +459,7 @@ internal partial class LogTabWindow
                 {
                     data.Dirty = true;
                 }
-                Icon icon = GetIcon(diff, data);
+                var icon = GetIcon(diff, data);
                 BeginInvoke(new SetTabIconDelegate(SetTabIcon), (LogWindow.LogWindow)sender, icon);
             }
         }
@@ -468,7 +479,7 @@ internal partial class LogTabWindow
     {
         lock (_logWindowList)
         {
-            foreach (LogWindow.LogWindow logWindow in _logWindowList)
+            foreach (var logWindow in _logWindowList)
             {
                 if (logWindow != e.LogWindow)
                 {
@@ -498,7 +509,7 @@ internal partial class LogTabWindow
             {
                 var data = ((LogWindow.LogWindow)sender).Tag as LogWindowData;
                 data.Dirty = false;
-                Icon icon = GetIcon(data.DiffSum, data);
+                var icon = GetIcon(data.DiffSum, data);
                 BeginInvoke(new SetTabIconDelegate(SetTabIcon), (LogWindow.LogWindow)sender, icon);
             }
         }
@@ -511,7 +522,7 @@ internal partial class LogTabWindow
         {
             var data = ((LogWindow.LogWindow)sender).Tag as LogWindowData;
             data.SyncMode = e.IsTimeSynced ? 1 : 0;
-            Icon icon = GetIcon(data.DiffSum, data);
+            var icon = GetIcon(data.DiffSum, data);
             BeginInvoke(new SetTabIconDelegate(SetTabIcon), (LogWindow.LogWindow)sender, icon);
         }
         else
@@ -574,7 +585,7 @@ internal partial class LogTabWindow
         if (CurrentLogWindow != null)
         {
             var data = CurrentLogWindow.Tag as LogWindowData;
-            Icon icon = GetIcon(0, data);
+            var icon = GetIcon(0, data);
             BeginInvoke(new SetTabIconDelegate(SetTabIcon), CurrentLogWindow, icon);
             CurrentLogWindow.Reload();
         }
@@ -680,7 +691,7 @@ internal partial class LogTabWindow
         ConfigManager.Settings.HideLineColumn = hideLineColumnToolStripMenuItem.Checked;
         lock (_logWindowList)
         {
-            foreach (LogWindow.LogWindow logWin in _logWindowList)
+            foreach (var logWin in _logWindowList)
             {
                 logWin.ShowLineColumn(!ConfigManager.Settings.HideLineColumn);
             }
@@ -708,11 +719,12 @@ internal partial class LogTabWindow
             {
                 if (content != dockPanel.ActiveContent && content is LogWindow.LogWindow)
                 {
-                    closeList.Add(content as Form);
+                    closeList.Add(content);
                 }
             }
         }
-        foreach (Form form in closeList)
+
+        foreach (var form in closeList)
         {
             form.Close();
         }
@@ -729,15 +741,16 @@ internal partial class LogTabWindow
     {
         var logWindow = dockPanel.ActiveContent as LogWindow.LogWindow;
 
-        var data = logWindow.Tag as LogWindowData;
-
-        if (data == null)
+        if (logWindow.Tag is not LogWindowData data)
         {
             return;
         }
 
-        ColorDialog dlg = new();
-        dlg.Color = data.Color;
+        ColorDialog dlg = new()
+        {
+            Color = data.Color
+        };
+
         if (dlg.ShowDialog() == DialogResult.OK)
         {
             data.Color = dlg.Color;
@@ -745,7 +758,7 @@ internal partial class LogTabWindow
         }
         List<ColorEntry> delList = [];
 
-        foreach (ColorEntry entry in ConfigManager.Settings.FileColors)
+        foreach (var entry in ConfigManager.Settings.FileColors)
         {
             if (entry.FileName.Equals(logWindow.FileName, StringComparison.Ordinal))
             {
@@ -753,10 +766,11 @@ internal partial class LogTabWindow
             }
         }
 
-        foreach (ColorEntry entry in delList)
+        foreach (var entry in delList)
         {
             ConfigManager.Settings.FileColors.Remove(entry);
         }
+
         ConfigManager.Settings.FileColors.Add(new ColorEntry(logWindow.FileName, dlg.Color));
 
         while (ConfigManager.Settings.FileColors.Count > MAX_COLOR_HISTORY)
@@ -777,9 +791,11 @@ internal partial class LogTabWindow
     [SupportedOSPlatform("windows")]
     private void OnSaveProjectToolStripMenuItemClick (object sender, EventArgs e)
     {
-        SaveFileDialog dlg = new();
-        dlg.DefaultExt = "lxj";
-        dlg.Filter = @"LogExpert session (*.lxj)|*.lxj";
+        SaveFileDialog dlg = new()
+        {
+            DefaultExt = "lxj",
+            Filter = @"LogExpert session (*.lxj)|*.lxj"
+        };
 
         if (dlg.ShowDialog() == DialogResult.OK)
         {
@@ -799,9 +815,11 @@ internal partial class LogTabWindow
                 }
             }
 
-            ProjectData projectData = new();
-            projectData.MemberList = fileNames;
-            projectData.TabLayoutXml = SaveLayout();
+            ProjectData projectData = new()
+            {
+                MemberList = fileNames,
+                TabLayoutXml = SaveLayout()
+            };
             ProjectPersister.SaveProjectData(fileName, projectData);
         }
     }
@@ -809,9 +827,11 @@ internal partial class LogTabWindow
     [SupportedOSPlatform("windows")]
     private void OnLoadProjectToolStripMenuItemClick (object sender, EventArgs e)
     {
-        OpenFileDialog dlg = new();
-        dlg.DefaultExt = "lxj";
-        dlg.Filter = @"LogExpert sessions (*.lxj)|*.lxj";
+        OpenFileDialog dlg = new()
+        {
+            DefaultExt = "lxj",
+            Filter = @"LogExpert sessions (*.lxj)|*.lxj"
+        };
 
         if (dlg.ShowDialog() == DialogResult.OK)
         {
@@ -1073,10 +1093,12 @@ internal partial class LogTabWindow
             {
                 TabName = CurrentLogWindow.Text
             };
+
             if (DialogResult.OK == dlg.ShowDialog())
             {
                 CurrentLogWindow.Text = dlg.TabName;
             }
+
             dlg.Dispose();
         }
     }

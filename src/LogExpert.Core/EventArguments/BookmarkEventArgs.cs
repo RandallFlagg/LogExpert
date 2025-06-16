@@ -1,8 +1,8 @@
-﻿using LogExpert.Core.Entities;
+using LogExpert.Core.Entities;
 
 namespace LogExpert.Core.EventArguments;
 
-public class BookmarkEventArgs(Bookmark bookmark) : System.EventArgs
+public class BookmarkEventArgs (Bookmark bookmark) : EventArgs
 {
     #region Properties
 

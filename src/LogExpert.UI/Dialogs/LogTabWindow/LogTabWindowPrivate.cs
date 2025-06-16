@@ -685,6 +685,7 @@ internal partial class LogTabWindow
     }
 
     [SupportedOSPlatform("windows")]
+    //TODO Crossthread Exception when a log file has been filtered to a new tab!
     private void StatusLineEventWorker (StatusLineEventArgs e)
     {
         if (e != null)
@@ -1160,7 +1161,7 @@ internal partial class LogTabWindow
         IList<Form> closeList = [];
         lock (_logWindowList)
         {
-            foreach (var content in dockPanel.Contents.Cast<DockContent>())
+            foreach (DockContent content in dockPanel.Contents)
             {
                 if (content is LogWindow.LogWindow window)
                 {

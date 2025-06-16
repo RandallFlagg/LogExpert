@@ -28,7 +28,7 @@ internal partial class LogTabWindow
     [SupportedOSPlatform("windows")]
     public LogWindow.LogWindow AddFilterTab (FilterPipe pipe, string title, ILogLineColumnizer preProcessColumnizer)
     {
-        LogWindow.LogWindow logWin = AddFileTab(pipe.FileName, true, title, false, preProcessColumnizer);
+        var logWin = AddFileTab(pipe.FileName, true, title, false, preProcessColumnizer);
         if (pipe.FilterParams.SearchText.Length > 0)
         {
             ToolTip tip = new(components);
@@ -58,7 +58,7 @@ internal partial class LogTabWindow
     public LogWindow.LogWindow AddFileTab (string givenFileName, bool isTempFile, string title, bool forcePersistenceLoading, ILogLineColumnizer preProcessColumnizer, bool doNotAddToDockPanel = false)
     {
         var logFileName = FindFilenameForSettings(givenFileName);
-        LogWindow.LogWindow win = FindWindowForFile(logFileName);
+        var win = FindWindowForFile(logFileName);
         if (win != null)
         {
             if (!isTempFile)
@@ -100,7 +100,7 @@ internal partial class LogTabWindow
         //data.tabPage.BorderColor = this.defaultTabBorderColor;
         if (!isTempFile)
         {
-            foreach (ColorEntry colorEntry in ConfigManager.Settings.FileColors)
+            foreach (var colorEntry in ConfigManager.Settings.FileColors)
             {
                 if (colorEntry.FileName.ToUpperInvariant().Equals(logFileName.ToUpperInvariant(), StringComparison.Ordinal))
                 {
@@ -164,7 +164,7 @@ internal partial class LogTabWindow
         dlg.TopMost = TopMost;
         SearchParams.HistoryList = ConfigManager.Settings.SearchHistoryList;
         dlg.SearchParams = SearchParams;
-        DialogResult res = dlg.ShowDialog();
+        var res = dlg.ShowDialog();
         if (res == DialogResult.OK && dlg.SearchParams != null && !string.IsNullOrWhiteSpace(dlg.SearchParams.SearchText))
         {
             SearchParams = dlg.SearchParams;
@@ -175,10 +175,10 @@ internal partial class LogTabWindow
 
     public ILogLineColumnizer GetColumnizerHistoryEntry (string fileName)
     {
-        ColumnizerHistoryEntry entry = FindColumnizerHistoryEntry(fileName);
+        var entry = FindColumnizerHistoryEntry(fileName);
         if (entry != null)
         {
-            foreach (ILogLineColumnizer columnizer in PluginRegistry.PluginRegistry.Instance.RegisteredColumnizers)
+            foreach (var columnizer in PluginRegistry.PluginRegistry.Instance.RegisteredColumnizers)
             {
                 if (columnizer.GetName().Equals(entry.ColumnizerName, StringComparison.Ordinal))
                 {
@@ -227,7 +227,7 @@ internal partial class LogTabWindow
     {
         lock (_logWindowList)
         {
-            foreach (LogWindow.LogWindow logWindow in _logWindowList)
+            foreach (var logWindow in _logWindowList)
             {
                 if (logWindow != senderWindow)
                 {
@@ -242,7 +242,7 @@ internal partial class LogTabWindow
 
     public ILogLineColumnizer FindColumnizerByFileMask (string fileName)
     {
-        foreach (ColumnizerMaskEntry entry in ConfigManager.Settings.Preferences.ColumnizerMaskList)
+        foreach (var entry in ConfigManager.Settings.Preferences.ColumnizerMaskList)
         {
             if (entry.Mask != null)
             {
@@ -250,7 +250,7 @@ internal partial class LogTabWindow
                 {
                     if (Regex.IsMatch(fileName, entry.Mask))
                     {
-                        ILogLineColumnizer columnizer = ColumnizerPicker.FindColumnizerByName(entry.ColumnizerName, PluginRegistry.PluginRegistry.Instance.RegisteredColumnizers);
+                        var columnizer = ColumnizerPicker.FindColumnizerByName(entry.ColumnizerName, PluginRegistry.PluginRegistry.Instance.RegisteredColumnizers);
                         return columnizer;
                     }
                 }
@@ -267,7 +267,7 @@ internal partial class LogTabWindow
 
     public HighlightGroup FindHighlightGroupByFileMask (string fileName)
     {
-        foreach (HighlightMaskEntry entry in ConfigManager.Settings.Preferences.HighlightMaskList)
+        foreach (var entry in ConfigManager.Settings.Preferences.HighlightMaskList)
         {
             if (entry.Mask != null)
             {
@@ -275,7 +275,7 @@ internal partial class LogTabWindow
                 {
                     if (Regex.IsMatch(fileName, entry.Mask))
                     {
-                        HighlightGroup group = FindHighlightGroup(entry.HighlightGroupName);
+                        var group = FindHighlightGroup(entry.HighlightGroupName);
                         return group;
                     }
                 }
@@ -332,7 +332,7 @@ internal partial class LogTabWindow
 
         if (Preferences.ShowTailState)
         {
-            Icon icon = GetIcon(data.DiffSum, data);
+            var icon = GetIcon(data.DiffSum, data);
             BeginInvoke(new SetTabIconDelegate(SetTabIcon), logWindow, icon);
         }
     }
@@ -351,7 +351,7 @@ internal partial class LogTabWindow
         IList<WindowFileEntry> list = [];
         lock (_logWindowList)
         {
-            foreach (LogWindow.LogWindow logWindow in _logWindowList)
+            foreach (var logWindow in _logWindowList)
             {
                 list.Add(new WindowFileEntry(logWindow));
             }
