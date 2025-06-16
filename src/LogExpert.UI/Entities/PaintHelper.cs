@@ -336,7 +336,8 @@ internal static class PaintHelper
                 var he = new HighlightEntry
                 {
                     SearchText = column.FullValue,
-                    ForegroundColor = groundEntry?.ForegroundColor ?? ColorMode.ForeColor,
+                    //TODO change to white if the background color is darker
+                    ForegroundColor = groundEntry?.ForegroundColor ?? Color.FromKnownColor(KnownColor.Black),
                     BackgroundColor = groundEntry?.BackgroundColor ?? Color.Empty,
                     IsRegEx = false,
                     IsCaseSensitive = false,

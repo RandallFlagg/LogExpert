@@ -200,7 +200,7 @@ internal partial class BookmarkWindow : DockContent, ISharedToolWindow, IBookmar
     {
         if (!splitContainer1.Visible)
         {
-            Rectangle r = ClientRectangle;
+            var r = ClientRectangle;
             e.Graphics.FillRectangle(SystemBrushes.FromSystemColor(ColorMode.BookmarksDefaultBackgroundColor), r);
 
             StringFormat sf = new()
@@ -229,9 +229,9 @@ internal partial class BookmarkWindow : DockContent, ISharedToolWindow, IBookmar
         bookmarkDataGridView.Refresh();
     }
 
-    private void CommentPainting (BufferedDataGridView gridView, int rowIndex, DataGridViewCellPaintingEventArgs e)
+    private void CommentPainting (BufferedDataGridView gridView, DataGridViewCellPaintingEventArgs e)
     {
-        Color backColor = ColorMode.DockBackgroundColor;
+        var backColor = e.CellStyle.SelectionBackColor;
 
         if ((e.State & DataGridViewElementStates.Selected) == DataGridViewElementStates.Selected)
         {
@@ -244,8 +244,7 @@ internal partial class BookmarkWindow : DockContent, ISharedToolWindow, IBookmar
             else
             {
                 // _logger.logDebug("CellPaint No Focus");
-                var color = Color.FromArgb(255, 170, 170, 170);
-                brush = new SolidBrush(color);
+                brush = new SolidBrush(Color.FromArgb(255, 170, 170, 170)); //gray
             }
 
             e.Graphics.FillRectangle(brush, e.CellBounds);
@@ -253,7 +252,7 @@ internal partial class BookmarkWindow : DockContent, ISharedToolWindow, IBookmar
         }
         else
         {
-            e.CellStyle.BackColor = backColor;
+            e.CellStyle.BackColor = Color.White;
             e.PaintBackground(e.CellBounds, false);
         }
 
@@ -294,7 +293,7 @@ internal partial class BookmarkWindow : DockContent, ISharedToolWindow, IBookmar
         }
         else
         {
-            Bookmark bookmark = bookmarkData.Bookmarks[rowIndex];
+            var bookmark = bookmarkData.Bookmarks[rowIndex];
             bookmarkTextBox.Text = bookmark.Text;
             bookmarkTextBox.Enabled = true;
         }
@@ -362,7 +361,7 @@ internal partial class BookmarkWindow : DockContent, ISharedToolWindow, IBookmar
             return;
         }
 
-        Bookmark bookmarkForLine = bookmarkData.Bookmarks[e.RowIndex];
+        var bookmarkForLine = bookmarkData.Bookmarks[e.RowIndex];
         var lineNum = bookmarkForLine.LineNum;
         if (e.ColumnIndex == 1)
         {
@@ -454,7 +453,7 @@ internal partial class BookmarkWindow : DockContent, ISharedToolWindow, IBookmar
             return;
         }
 
-        Bookmark bookmark = bookmarkData.Bookmarks[rowIndex];
+        var bookmark = bookmarkData.Bookmarks[rowIndex];
         bookmark.Text = bookmarkTextBox.Text;
         logView?.RefreshLogView();
     }
@@ -488,7 +487,7 @@ internal partial class BookmarkWindow : DockContent, ISharedToolWindow, IBookmar
             return;
         }
 
-        Bookmark bookmark = bookmarkData.Bookmarks[e.RowIndex];
+        var bookmark = bookmarkData.Bookmarks[e.RowIndex];
         if (!string.IsNullOrEmpty(bookmark.Text))
         {
             e.ToolTipText = bookmark.Text;

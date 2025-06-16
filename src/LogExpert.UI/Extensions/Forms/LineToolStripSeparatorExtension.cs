@@ -1,13 +1,11 @@
-﻿using System.Runtime.Versioning;
-
-using LogExpert.Core.Config;
+using System.Runtime.Versioning;
 
 namespace LogExpert.UI.Extensions.Forms;
 
 [SupportedOSPlatform("windows")]
 internal class LineToolStripSeparatorExtension : ToolStripSeparator
 {
-    public LineToolStripSeparatorExtension()
+    public LineToolStripSeparatorExtension ()
     {
         Paint += OnExtendedToolStripSeparatorPaint;
     }
@@ -21,7 +19,8 @@ internal class LineToolStripSeparatorExtension : ToolStripSeparator
 
         // Choose the colors for drawing.
         // I've used Color.White as the foreColor.
-        Color foreColor = ColorMode.ForeColor;
+        //TODO change to white if the background color is darker;
+        Color foreColor = Color.FromKnownColor(KnownColor.Black);
         // Color.Teal as the backColor.
         Color backColor = ColorMode.BackgroundColor;
 
