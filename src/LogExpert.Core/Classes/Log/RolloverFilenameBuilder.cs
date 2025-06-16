@@ -1,3 +1,4 @@
+using System;
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -147,7 +148,7 @@ public class RolloverFilenameBuilder
             if (endPos != -1)
             {
                 _dateTimeFormat = formatString.Substring(datePos + 3, endPos - datePos - 3)
-                                              .ToUpper(CultureInfo.InvariantCulture)
+                                              .ToUpperInvariant()
                                               .Replace('D', 'd')
                                               .Replace('Y', 'y');
 
