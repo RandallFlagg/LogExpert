@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.Runtime.Versioning;
 using System.Security;
 using System.Text;
@@ -140,7 +141,7 @@ internal partial class LogTabWindow
             }
             catch (ArgumentException)
             {
-                _logger.Warn("Encoding " + ConfigManager.Settings.Preferences.DefaultEncoding + " is not a valid encoding");
+                _logger.Warn(CultureInfo.InvariantCulture, "Encoding " + ConfigManager.Settings.Preferences.DefaultEncoding + " is not a valid encoding");
                 encodingOptions.DefaultEncoding = null;
             }
         }
@@ -969,7 +970,7 @@ internal partial class LogTabWindow
     [SupportedOSPlatform("windows")]
     private void NotifyWindowsForChangedPrefs (SettingsFlags flags)
     {
-        _logger.Info("The preferences have changed");
+        _logger.Info(CultureInfo.InvariantCulture, "The preferences have changed");
         ApplySettings(ConfigManager.Settings, flags);
 
         var setLastColumnWidth = ConfigManager.Settings.Preferences.SetLastColumnWidth;
@@ -1112,7 +1113,7 @@ internal partial class LogTabWindow
         {
             var columnizer = ColumnizerPicker.DecideColumnizerByName(columnizerName, PluginRegistry.PluginRegistry.Instance.RegisteredColumnizers);
 
-            _logger.Info("Starting external tool with sysout redirection: {0} {1}", cmd, args);
+            _logger.Info(CultureInfo.InvariantCulture, "Starting external tool with sysout redirection: {0} {1}", cmd, args);
             startInfo.UseShellExecute = false;
             startInfo.RedirectStandardOutput = true;
             //process.OutputDataReceived += pipe.DataReceivedEventHandler;
@@ -1140,7 +1141,7 @@ internal partial class LogTabWindow
         }
         else
         {
-            _logger.Info("Starting external tool: {0} {1}", cmd, args);
+            _logger.Info(CultureInfo.InvariantCulture, "Starting external tool: {0} {1}", cmd, args);
 
             try
             {
@@ -1302,7 +1303,7 @@ internal partial class LogTabWindow
             _logger.Info($"Generation {i} collect count: {GC.CollectionCount(i)}");
         }
 
-        _logger.Info("----------------------------");
+        _logger.Info(CultureInfo.InvariantCulture, "----------------------------");
     }
 
     private void ThrowExceptionFx ()

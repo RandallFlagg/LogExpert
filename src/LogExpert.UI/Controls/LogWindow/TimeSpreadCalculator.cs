@@ -1,4 +1,4 @@
-﻿using LogExpert.Core.Callback;
+using LogExpert.Core.Callback;
 using LogExpert.Core.Classes;
 using LogExpert.Core.Interface;
 
@@ -6,6 +6,7 @@ using NLog;
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -186,11 +187,11 @@ internal class TimeSpreadCalculator
             while (!_shouldStop)
             {
                 // wait for unbusy moments
-                _logger.Debug("TimeSpreadCalculator: wait for unbusy moments");
+                _logger.Debug(CultureInfo.InvariantCulture, "TimeSpreadCalculator: wait for unbusy moments");
                 var signaled = _calcEvent.WaitOne(INACTIVITY_TIME, false);
                 if (signaled == false)
                 {
-                    _logger.Debug("TimeSpreadCalculator: unbusy. starting calc.");
+                    _logger.Debug(CultureInfo.InvariantCulture, "TimeSpreadCalculator: unbusy. starting calc.");
                     if (TimeMode)
                     {
                         DoCalc_via_Time();
@@ -202,7 +203,7 @@ internal class TimeSpreadCalculator
                     break;
                 }
 
-                _logger.Debug("TimeSpreadCalculator: signalled. no calc.");
+                _logger.Debug(CultureInfo.InvariantCulture, "TimeSpreadCalculator: signalled. no calc.");
                 _calcEvent.Reset();
             }
             _lineCountEvent.Reset();
@@ -212,12 +213,12 @@ internal class TimeSpreadCalculator
     private void DoCalc()
     {
         OnStartCalc(EventArgs.Empty);
-        _logger.Debug("TimeSpreadCalculator.DoCalc() begin");
+        _logger.Debug(CultureInfo.InvariantCulture, "TimeSpreadCalculator.DoCalc() begin");
 
         if (_callback.GetLineCount() < 1)
         {
             OnCalcDone(EventArgs.Empty);
-            _logger.Debug("TimeSpreadCalculator.DoCalc() end because of line count < 1");
+            _logger.Debug(CultureInfo.InvariantCulture, "TimeSpreadCalculator.DoCalc() end because of line count < 1");
             return;
         }
 
@@ -245,7 +246,7 @@ internal class TimeSpreadCalculator
                 step = 1;
             }
 
-            _logger.Debug("TimeSpreadCalculator.DoCalc() collecting data for {0} lines with step size {1}", lastLineNum, step);
+            _logger.Debug(CultureInfo.InvariantCulture, "TimeSpreadCalculator.DoCalc() collecting data for {0} lines with step size {1}", lastLineNum, step);
 
             List<SpreadEntry> newDiffList = [];
             List<TimeSpan> maxList = [];
@@ -262,7 +263,7 @@ internal class TimeSpreadCalculator
                     timePerLineSum += (int)(span.Ticks / TimeSpan.TicksPerMillisecond);
                     newDiffList.Add(new SpreadEntry(i, 0, time));
                     oldTime = time;
-                    _logger.Debug("TimeSpreadCalculator.DoCalc() time diff {0}", span);
+                    _logger.Debug(CultureInfo.InvariantCulture, "TimeSpreadCalculator.DoCalc() time diff {0}", span);
                 }
             }
 
@@ -278,7 +279,7 @@ internal class TimeSpreadCalculator
                 _timePerLine = (int)Math.Round(timePerLineSum / ((double)(lastLineNum + 1) / step));
                 CalcValuesViaLines(_timePerLine, _maxSpan);
                 OnCalcDone(EventArgs.Empty);
-                _logger.Debug("TimeSpreadCalculator.DoCalc() end");
+                _logger.Debug(CultureInfo.InvariantCulture, "TimeSpreadCalculator.DoCalc() end");
             }
         }
     }
@@ -287,12 +288,12 @@ internal class TimeSpreadCalculator
     private void DoCalc_via_Time()
     {
         OnStartCalc(EventArgs.Empty);
-        _logger.Debug("TimeSpreadCalculator.DoCalc_via_Time() begin");
+        _logger.Debug(CultureInfo.InvariantCulture, "TimeSpreadCalculator.DoCalc_via_Time() begin");
 
         if (_callback.GetLineCount() < 1)
         {
             OnCalcDone(EventArgs.Empty);
-            _logger.Debug("TimeSpreadCalculator.DoCalc() end because of line count < 1");
+            _logger.Debug(CultureInfo.InvariantCulture, "TimeSpreadCalculator.DoCalc() end because of line count < 1");
             return;
         }
 
@@ -318,7 +319,7 @@ internal class TimeSpreadCalculator
                 step = 1;
             }
 
-            _logger.Debug("TimeSpreadCalculator.DoCalc_via_Time() time range is {0} ms", overallSpanMillis);
+            _logger.Debug(CultureInfo.InvariantCulture, "TimeSpreadCalculator.DoCalc_via_Time() time range is {0} ms", overallSpanMillis);
 
             lineNum = 0;
             DateTime searchTimeStamp = _startTimestamp;
@@ -339,7 +340,7 @@ internal class TimeSpreadCalculator
                 }
                 var lineDiff = lineNum - oldLineNum;
 
-                _logger.Debug("TimeSpreadCalculator.DoCalc_via_Time() test time {0:HH:mm:ss.fff} line diff={1}", searchTimeStamp, lineDiff);
+                _logger.Debug(CultureInfo.InvariantCulture, "TimeSpreadCalculator.DoCalc_via_Time() test time {0:HH:mm:ss.fff} line diff={1}", searchTimeStamp, lineDiff);
 
                 if (lineDiff >= 0)
                 {
@@ -372,7 +373,7 @@ internal class TimeSpreadCalculator
 
             _average = lineDiffSum / (double)loopCount;
             //double average = maxList[maxList.Count / 2];
-            _logger.Debug("Average diff={0} minDiff={1} maxDiff={2}", _average, minDiff, _maxDiff);
+            _logger.Debug(CultureInfo.InvariantCulture, "Average diff={0} minDiff={1} maxDiff={2}", _average, minDiff, _maxDiff);
 
             lock (_diffListLock)
             {
@@ -389,7 +390,7 @@ internal class TimeSpreadCalculator
                 DiffList = newDiffList;
                 CalcValuesViaTime(_maxDiff, _average);
                 OnCalcDone(EventArgs.Empty);
-                _logger.Debug("TimeSpreadCalculator.DoCalc_via_Time() end");
+                _logger.Debug(CultureInfo.InvariantCulture, "TimeSpreadCalculator.DoCalc_via_Time() end");
             }
         }
     }
@@ -435,7 +436,7 @@ internal class TimeSpreadCalculator
             var value = (int)(diffFromAverage / maxDiff * _contrast);
             entry.Value = 255 - value;
 
-            _logger.Debug("TimeSpreadCalculator.DoCalc() test time {0:HH:mm:ss.fff} line diff={1} value={2}", entry.Timestamp, lineDiff, value);
+            _logger.Debug(CultureInfo.InvariantCulture, "TimeSpreadCalculator.DoCalc() test time {0:HH:mm:ss.fff} line diff={1} value={2}", entry.Timestamp, lineDiff, value);
         }
     }
 

@@ -9,7 +9,6 @@ using LogExpert.Core.Classes.Persister;
 using LogExpert.Core.Config;
 using LogExpert.Core.Entities;
 using LogExpert.Core.EventArguments;
-using LogExpert.Core.EventHandlers;
 using LogExpert.Core.Interface;
 using LogExpert.Dialogs;
 using LogExpert.UI.Dialogs;
@@ -96,8 +95,6 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
     private FilterParams _filterParams = new();
     private int _filterPipeNameCounter;
     private List<int> _filterResultList = [];
-
-    private EventWaitHandle _filterUpdateEvent = new ManualResetEvent(false);
 
     private ILogLineColumnizer _forcedColumnizer;
     private ILogLineColumnizer _forcedColumnizerForLoading;
@@ -276,7 +273,7 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
 
     #region Events
 
-    public event FileSizeChangedEventHandler FileSizeChanged;
+    public event EventHandler<LogEventArgs> FileSizeChanged;
 
     public event EventHandler<ProgressEventArgs> ProgressBarUpdate;
 
@@ -382,17 +379,17 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
 
     LogfileReader ILogWindow.LogFileReader => _logFileReader;
 
-    event FileSizeChangedEventHandler ILogWindow.FileSizeChanged
-    {
-        add => FileSizeChanged += new FileSizeChangedEventHandler(value);
-        remove => FileSizeChanged -= new FileSizeChangedEventHandler(value);
-    }
+    //public event EventHandler<EventArgs> ILogWindow.FileSizeChanged
+    //{
+    //    add => FileSizeChanged += new EventHandler<LogEventArgs>(value);
+    //    remove => FileSizeChanged -= new EventHandler<LogEventArgs>(value);
+    //}
 
-    event EventHandler ILogWindow.TailFollowed
-    {
-        add => TailFollowed += new TailFollowedEventHandler(value);
-        remove => TailFollowed -= new TailFollowedEventHandler(value);
-    }
+    //event EventHandler ILogWindow.TailFollowed
+    //{
+    //    add => TailFollowed += new TailFollowedEventHandler(value);
+    //    remove => TailFollowed -= new TailFollowedEventHandler(value);
+    //}
 
     #endregion
 

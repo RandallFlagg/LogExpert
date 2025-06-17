@@ -10,6 +10,7 @@ public class XmlLogReader : LogStreamReaderBase
     #region Fields
 
     private readonly ILogStreamReader reader;
+    public override bool IsDisposed { get; protected set; }
 
     #endregion
 
@@ -47,6 +48,7 @@ public class XmlLogReader : LogStreamReaderBase
         if (disposing)
         {
             reader.Dispose();
+            IsDisposed = true;
         }
     }
 

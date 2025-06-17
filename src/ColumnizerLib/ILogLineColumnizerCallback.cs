@@ -17,18 +17,12 @@ public interface ILogLineColumnizerCallback
     #region Public methods
 
     /// <summary>
-    /// This function returns the current line number. That is the line number of the log line
+    /// This property returns the current line number. That is the line number of the log line
     /// a ILogLineColumnizer function is called for (e.g. the line that has to be painted).
     /// </summary>
     /// <returns>The current line number starting at 0</returns>
-    int GetLineNum ();
+    int LineNum { get; }
 
-    /// <summary>
-    /// This function sets the current line number. That is the line number of the log line
-    /// a ILogLineColumnizer function is called for (e.g. the line that has to be painted).
-    /// </summary>
-    /// <param name="lineNum">line number to be set</param>
-    void SetLineNum (int lineNum);
     /// <summary>
     /// Returns the full file name (path + name) of the current log file.
     /// </summary>

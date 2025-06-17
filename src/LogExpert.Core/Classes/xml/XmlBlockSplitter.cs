@@ -24,6 +24,8 @@ public class XmlBlockSplitter : LogStreamReaderBase
     private string _stylesheet;
     private XslCompiledTransform _xslt;
 
+    public override bool IsDisposed { get; protected set; }
+
     #endregion
 
     #region cTor
@@ -39,9 +41,10 @@ public class XmlBlockSplitter : LogStreamReaderBase
         // Create the XmlNamespaceManager.
         NameTable nt = new();
         XmlNamespaceManager nsmgr = new(nt);
-        if (xmlLogConfig.Namespace != null)
+        var namespaceDeclaration = xmlLogConfig.GetNamespaceDeclaration();
+        if (namespaceDeclaration != null)
         {
-            nsmgr.AddNamespace(xmlLogConfig.Namespace[0], xmlLogConfig.Namespace[1]);
+            nsmgr.AddNamespace(namespaceDeclaration[0], namespaceDeclaration[1]);
         }
         // Create the XmlParserContext.
         _context = new XmlParserContext(nt, nsmgr, null, XmlSpace.None);
@@ -135,6 +138,7 @@ public class XmlBlockSplitter : LogStreamReaderBase
         if (disposing)
         {
             _reader.Dispose();
+            IsDisposed = true;
         }
     }
 

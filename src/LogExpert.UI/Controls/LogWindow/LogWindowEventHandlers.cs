@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Globalization;
 using System.Runtime.Versioning;
 
 using LogExpert.Core.Classes;
@@ -132,7 +133,7 @@ partial class LogWindow
     private void OnLogFileReaderFinishedLoading (object sender, EventArgs e)
     {
         //Thread.CurrentThread.Name = "FinishedLoading event thread";
-        _logger.Info("Finished loading.");
+        _logger.Info(CultureInfo.InvariantCulture, "Finished loading.");
         _isLoading = false;
         _isDeadFile = false;
         if (!_waitingForClose)
@@ -151,7 +152,7 @@ partial class LogWindow
 
             if (filterTailCheckBox.Checked)
             {
-                _logger.Info("Refreshing filter view because of reload.");
+                _logger.Info(CultureInfo.InvariantCulture, "Refreshing filter view because of reload.");
                 Invoke(new MethodInvoker(FilterSearch)); // call on proper thread
             }
 
@@ -166,7 +167,7 @@ partial class LogWindow
     {
         if (!IsDisposed && !Disposing)
         {
-            _logger.Info("Handling file not found event.");
+            _logger.Info(CultureInfo.InvariantCulture, "Handling file not found event.");
             _isDeadFile = true;
             BeginInvoke(new MethodInvoker(LogfileDead));
         }
@@ -209,7 +210,7 @@ partial class LogWindow
     {
         if (e.NewFile)
         {
-            _logger.Info("File created anew.");
+            _logger.Info(CultureInfo.InvariantCulture, "File created anew.");
 
             // File was new created (e.g. rollover)
             _isDeadFile = false;
@@ -219,7 +220,7 @@ partial class LogWindow
             BeginInvoke(invoker);
             //Thread loadThread = new Thread(new ThreadStart(ReloadNewFile));
             //loadThread.Start();
-            _logger.Debug("Reloading invoked.");
+            _logger.Debug(CultureInfo.InvariantCulture, "Reloading invoked.");
         }
         else if (_isLoading)
         {
@@ -230,7 +231,7 @@ partial class LogWindow
     private void OnFileSizeChanged (object sender, LogEventArgs e)
     {
         //OnFileSizeChanged(e);  // now done in UpdateGrid()
-        _logger.Info("Got FileSizeChanged event. prevLines:{0}, curr lines: {1}", e.PrevLineCount, e.LineCount);
+        _logger.Info(CultureInfo.InvariantCulture, "Got FileSizeChanged event. prevLines:{0}, curr lines: {1}", e.PrevLineCount, e.LineCount);
 
         // - now done in the thread that works on the event args list
         //if (e.IsRollover)
@@ -689,7 +690,7 @@ partial class LogWindow
         var selCount = 0;
         try
         {
-            _logger.Debug("Selection changed trigger");
+            _logger.Debug(CultureInfo.InvariantCulture, "Selection changed trigger");
             selCount = dataGridView.SelectedRows.Count;
             if (selCount > 1)
             {

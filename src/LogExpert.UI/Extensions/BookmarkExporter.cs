@@ -12,9 +12,10 @@ internal static class BookmarkExporter
 
     #region Public methods
 
-    public static void ExportBookmarkList (SortedList<int, Bookmark> bookmarkList, string logfileName,
-        string fileName)
+    //TOOD: check if the callers are checking for null before calling
+    public static void ExportBookmarkList (SortedList<int, Bookmark> bookmarkList, string logfileName, string fileName)
     {
+        ArgumentNullException.ThrowIfNull(bookmarkList, nameof(bookmarkList));
         FileStream fs = new(fileName, FileMode.Create, FileAccess.Write);
         StreamWriter writer = new(fs);
         writer.WriteLine("Log file name;Line number;Comment");

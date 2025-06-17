@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Reflection;
 
 using LogExpert.Core.Classes;
@@ -87,7 +88,7 @@ public class PluginRegistry : IPluginRegistry
 
     internal void LoadPlugins ()
     {
-        _logger.Info("Loading plugins...");
+        _logger.Info(CultureInfo.InvariantCulture, "Loading plugins...");
 
         RegisteredColumnizers =
         [
@@ -143,7 +144,7 @@ public class PluginRegistry : IPluginRegistry
             }
         }
 
-        _logger.Info("Plugin loading complete.");
+        _logger.Info(CultureInfo.InvariantCulture, "Plugin loading complete.");
     }
 
     private void LoadPluginAssembly (string dllName, string interfaceName)
@@ -215,21 +216,21 @@ public class PluginRegistry : IPluginRegistry
     {
         if (_logger.IsDebugEnabled)
         {
-            _logger.Debug("Trying to find file system plugin for uri {0}", uriString);
+            _logger.Debug(CultureInfo.InvariantCulture, "Trying to find file system plugin for uri {0}", uriString);
         }
 
         foreach (IFileSystemPlugin fs in RegisteredFileSystemPlugins)
         {
             if (_logger.IsDebugEnabled)
             {
-                _logger.Debug("Checking {0}", fs.Text);
+                _logger.Debug(CultureInfo.InvariantCulture, "Checking {0}", fs.Text);
             }
 
             if (fs.CanHandleUri(uriString))
             {
                 if (_logger.IsDebugEnabled)
                 {
-                    _logger.Debug("Found match {0}", fs.Text);
+                    _logger.Debug(CultureInfo.InvariantCulture, "Found match {0}", fs.Text);
                 }
 
                 return fs;
@@ -262,7 +263,7 @@ public class PluginRegistry : IPluginRegistry
                 plugin.PluginLoaded();
             }
 
-            _logger.Info("Added context menu plugin {0}", type);
+            _logger.Info(CultureInfo.InvariantCulture, "Added context menu plugin {0}", type);
             return true;
         }
 
@@ -288,7 +289,7 @@ public class PluginRegistry : IPluginRegistry
                 plugin.PluginLoaded();
             }
 
-            _logger.Info("Added keyword plugin {0}", type);
+            _logger.Info(CultureInfo.InvariantCulture, "Added keyword plugin {0}", type);
             return true;
         }
 
@@ -317,7 +318,7 @@ public class PluginRegistry : IPluginRegistry
                 plugin.PluginLoaded();
             }
 
-            _logger.Info("Added file system plugin {0}", type);
+            _logger.Info(CultureInfo.InvariantCulture, "Added file system plugin {0}", type);
             return true;
         }
 

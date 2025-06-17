@@ -11,14 +11,12 @@ using NLog;
 namespace LogExpert.UI.Entities;
 
 //TOOD: This whole class should be refactored and rethought
+//TODO: This class should not knoow ConfigManager?
 internal static class PaintHelper
 {
     #region Fields
 
     private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
-
-    //TODO Make configurable
-    private static Color _bookmarkColor = Color.FromArgb(165, 200, 225);
 
     #endregion
 

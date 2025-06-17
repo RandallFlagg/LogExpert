@@ -1,4 +1,6 @@
-﻿using NLog;
+using System.Globalization;
+
+using NLog;
 
 namespace LogExpert.Core.Classes;
 
@@ -26,6 +28,11 @@ public class FileSystemCallback : IFileSystemCallback
         public void Info(string msg)
         {
             _logger.Info(msg);
+        }
+
+        public void Info (IFormatProvider formatProvider, string msg)
+        {
+            _logger.Info(formatProvider, msg);
         }
 
         public void Debug(string msg)

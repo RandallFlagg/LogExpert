@@ -17,6 +17,8 @@ public class PositionAwareStreamReaderSystem : PositionAwareStreamReaderBase
 
     private int _newLineSequenceLength;
 
+    public override bool IsDisposed { get; protected set; }
+
     #endregion
 
     #region cTor
