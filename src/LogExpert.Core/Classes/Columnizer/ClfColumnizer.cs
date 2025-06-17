@@ -44,7 +44,7 @@ public class ClfColumnizer : ILogLineColumnizer
 
     public DateTime GetTimestamp (ILogLineColumnizerCallback callback, ILogLine line)
     {
-        IColumnizedLogLine cols = SplitLine(callback, line);
+        var cols = SplitLine(callback, line);
         if (cols == null || cols.ColumnValues.Length < 8)
         {
             return DateTime.MinValue;
@@ -60,7 +60,7 @@ public class ClfColumnizer : ILogLineColumnizer
             var dateTime = DateTime.ParseExact(cols.ColumnValues[2].FullValue, DateTimeFormat, _cultureInfo);
             return dateTime;
         }
-        catch (Exception)
+        catch (Exception ex) when (ex is FormatException)
         {
             return DateTime.MinValue;
         }
@@ -80,8 +80,9 @@ public class ClfColumnizer : ILogLineColumnizer
                 var mSecsNew = newDateTime.Ticks / TimeSpan.TicksPerMillisecond;
                 _timeOffset = (int)(mSecsNew - mSecsOld);
             }
-            catch (FormatException)
+            catch (Exception ex) when (ex is FormatException)
             {
+                //TODO: Should this be empty? no need to give a default value to _timeOffset?
             }
         }
     }
@@ -106,8 +107,11 @@ public class ClfColumnizer : ILogLineColumnizer
         return ["IP", "User", "Date/Time", "Request", "Status", "Bytes", "Referrer", "User agent"];
     }
 
+    //TOOD: check if the callers are checking for null before calling
     public IColumnizedLogLine SplitLine (ILogLineColumnizerCallback callback, ILogLine line)
     {
+        ArgumentNullException.ThrowIfNull(line);
+
         ColumnizedLogLine cLogLine = new()
         {
             LogLine = line
@@ -127,21 +131,21 @@ public class ClfColumnizer : ILogLineColumnizer
 
         cLogLine.ColumnValues = columns.Select(a => a as IColumn).ToArray();
 
-        var temp = line.FullLine;
-        if (temp.Length > 1024)
+        var fullLine = line.FullLine;
+        if (fullLine.Length > 1024)
         {
             // spam
-            temp = temp[..1024];
-            columns[3].FullValue = temp;
+            fullLine = fullLine[..1024];
+            columns[3].FullValue = fullLine;
             return cLogLine;
         }
         // 0         1         2         3         4         5         6         7         8         9         10        11        12        13        14        15        16
         // anon-212-34-174-126.suchen.de - - [08/Mar/2008:00:41:10 +0100] "GET /wiki/index.php?title=Bild:Poster_small.jpg&printable=yes&printable=yes HTTP/1.1" 304 0 "http://www.captain-kloppi.de/wiki/index.php?title=Bild:Poster_small.jpg&printable=yes" "gonzo1[P] +http://www.suchen.de/faq.html"
 
-        if (_lineRegex.IsMatch(temp))
+        if (_lineRegex.IsMatch(fullLine))
         {
-            Match match = _lineRegex.Match(temp);
-            GroupCollection groups = match.Groups;
+            var match = _lineRegex.Match(fullLine);
+            var groups = match.Groups;
             if (groups.Count == 10)
             {
                 columns[0].FullValue = groups[1].Value;
@@ -166,7 +170,7 @@ public class ClfColumnizer : ILogLineColumnizer
                             var newDate = dateTime.ToString(DateTimeFormat, _cultureInfo);
                             columns[2].FullValue = newDate;
                         }
-                        catch (Exception)
+                        catch (Exception ex) when (ex is FormatException)
                         {
                             columns[2].FullValue = "n/a";
                         }
@@ -184,7 +188,7 @@ public class ClfColumnizer : ILogLineColumnizer
         }
         else
         {
-            columns[3].FullValue = temp;
+            columns[3].FullValue = fullLine;
         }
 
         return cLogLine;
