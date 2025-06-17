@@ -63,6 +63,9 @@ public class Util
 
     public static bool TestFilterCondition (FilterParams filterParams, ILogLine line, ILogLineColumnizerCallback columnizerCallback)
     {
+        ArgumentNullException.ThrowIfNull(filterParams, nameof(filterParams));
+        ArgumentNullException.ThrowIfNull(line, nameof(line));
+
         if (filterParams.LastLine.Equals(line.FullLine, StringComparison.OrdinalIgnoreCase))
         {
             return filterParams.LastResult;
@@ -464,24 +467,24 @@ public class Util
 
     private static bool TestFilterMatch (FilterParams filterParams, ILogLine line, ILogLineColumnizerCallback columnizerCallback)
     {
-        string lowerSearchText;
+        string normalizedSearchText;
         string searchText;
         Regex rex;
 
         if (filterParams.IsInRange)
         {
-            lowerSearchText = filterParams.LowerRangeSearchText;
+            normalizedSearchText = filterParams.NormalizedRangeSearchText;
             searchText = filterParams.RangeSearchText;
             rex = filterParams.RangeRex;
         }
         else
         {
-            lowerSearchText = filterParams.LowerSearchText;
+            normalizedSearchText = filterParams.NormalizedSearchText;
             searchText = filterParams.SearchText;
             rex = filterParams.Rex;
         }
 
-        if (searchText == null || lowerSearchText == null || searchText.Length == 0)
+        if (string.IsNullOrEmpty(searchText))
         {
             return false;
         }
@@ -502,7 +505,7 @@ public class Util
                             var prevValue = (string)filterParams.LastNonEmptyCols[colIndex];
                             if (prevValue != null)
                             {
-                                if (TestMatchSub(filterParams, prevValue, lowerSearchText, searchText, rex,
+                                if (TestMatchSub(filterParams, prevValue, normalizedSearchText, searchText, rex,
                                     filterParams.ExactColumnMatch))
                                 {
                                     found = true;
@@ -517,7 +520,7 @@ public class Util
                     else
                     {
                         filterParams.LastNonEmptyCols[colIndex] = columns.ColumnValues[colIndex].FullValue;
-                        if (TestMatchSub(filterParams, columns.ColumnValues[colIndex].FullValue, lowerSearchText,
+                        if (TestMatchSub(filterParams, columns.ColumnValues[colIndex].FullValue, normalizedSearchText,
                             searchText, rex,
                             filterParams.ExactColumnMatch))
                         {
@@ -531,7 +534,7 @@ public class Util
         }
         else
         {
-            return TestMatchSub(filterParams, line.FullLine, lowerSearchText, searchText, rex, false);
+            return TestMatchSub(filterParams, line.FullLine, normalizedSearchText, searchText, rex, false);
         }
     }
 
@@ -550,7 +553,7 @@ public class Util
             {
                 if (exactMatch)
                 {
-                    if (line.ToLowerInvariant().Trim().Equals(lowerSearchText, StringComparison.Ordinal))
+                    if (line.ToUpperInvariant().Trim().Equals(lowerSearchText, StringComparison.Ordinal))
                     {
                         return true;
                     }

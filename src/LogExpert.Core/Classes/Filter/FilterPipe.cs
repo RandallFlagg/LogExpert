@@ -74,6 +74,8 @@ public class FilterPipe : IDisposable
 
     public bool WriteToPipe (ILogLine textLine, int orgLineNum)
     {
+        ArgumentNullException.ThrowIfNull(textLine, nameof(textLine));
+
         try
         {
             lock (_fileNameLock)
