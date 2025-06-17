@@ -17,7 +17,7 @@ internal class ColumnCache
 
     internal IColumnizedLogLine GetColumnsForLine (LogfileReader logFileReader, int lineNumber, ILogLineColumnizer columnizer, ColumnizerCallback columnizerCallback)
     {
-        if (_lastColumnizer != columnizer || (_lastLineNumber != lineNumber && _cachedColumns != null) || columnizerCallback.GetLineNum() != lineNumber)
+        if (_lastColumnizer != columnizer || (_lastLineNumber != lineNumber && _cachedColumns != null) || columnizerCallback.LineNum != lineNumber)
         {
             _lastColumnizer = columnizer;
             _lastLineNumber = lineNumber;

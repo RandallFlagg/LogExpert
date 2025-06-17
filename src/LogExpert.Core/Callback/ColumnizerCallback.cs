@@ -2,20 +2,10 @@ using LogExpert.Core.Interface;
 
 namespace LogExpert.Core.Callback;
 
-public class ColumnizerCallback : ILogLineColumnizerCallback, IAutoLogLineColumnizerCallback
+public class ColumnizerCallback(ILogWindow logWindow) : ILogLineColumnizerCallback, IAutoLogLineColumnizerCallback, ICloneable
 {
-    #region cTor
-
-    public ColumnizerCallback (ILogWindow logWindow)
-    {
-        LogWindow = logWindow;
-    }
-
-    private ColumnizerCallback (ColumnizerCallback original)
-    {
-        LogWindow = original.LogWindow;
-        LineNum = original.GetLineNum();
-    }
+    #region Fields
+    private readonly ILogWindow _logWindow = logWindow;
 
     #endregion
 
@@ -23,45 +13,40 @@ public class ColumnizerCallback : ILogLineColumnizerCallback, IAutoLogLineColumn
 
     public int LineNum { get; set; }
 
-    protected ILogWindow LogWindow { get; set; }
+    #endregion
 
-    protected IPluginRegistry PluginRegistry { get; set; }
+    #region cTor
+
+    private ColumnizerCallback(ColumnizerCallback original) : this(original._logWindow)
+    {
+        LineNum = original.LineNum;
+    }
 
     #endregion
 
     #region Public methods
 
-    public ColumnizerCallback CreateCopy ()
+    public object Clone()
     {
         return new ColumnizerCallback(this);
     }
 
-    public int GetLineNum ()
+    public string GetFileName()
     {
-        return LineNum;
+        return _logWindow.GetCurrentFileName(LineNum);
     }
 
-    public string GetFileName ()
+    public ILogLine GetLogLine(int lineNum)
     {
-        return LogWindow.GetCurrentFileName(GetLineNum());
+        return _logWindow.GetLine(lineNum);
     }
 
-    public ILogLine GetLogLine (int lineNum)
+    public int GetLineCount()
     {
-        return LogWindow.GetLine(lineNum);
+        return _logWindow.LogFileReader.LineCount;
     }
 
-    public IList<ILogLineColumnizer> GetRegisteredColumnizers ()
-    {
-        return PluginRegistry.RegisteredColumnizers;
-    }
-
-    public int GetLineCount ()
-    {
-        return LogWindow.LogFileReader.LineCount;
-    }
-
-    public void SetLineNum (int lineNum)
+    public void SetLineNum(int lineNum)
     {
         LineNum = lineNum;
     }
