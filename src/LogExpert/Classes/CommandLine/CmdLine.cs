@@ -10,14 +10,20 @@ namespace LogExpert.Classes.CommandLine;
 /// <summary>
 /// Represents an string command line parameter.
 /// </summary>
-public class CmdLineString(string name, bool required, string helpMessage) : CmdLineParameter(name, required, helpMessage)
+public class CmdLineString (string name, bool required, string helpMessage) : CmdLineParameter(name, required, helpMessage)
 {
 
     #region Public methods
 
-    public static implicit operator string(CmdLineString s)
+    public static implicit operator string (CmdLineString s)
     {
+        ArgumentNullException.ThrowIfNull(s, nameof(s));
         return s.Value;
+    }
+
+    public override string ToString ()
+    {
+        return Value;
     }
 
     #endregion

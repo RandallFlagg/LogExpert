@@ -1,3 +1,4 @@
+using System;
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -140,24 +141,26 @@ public class RolloverFilenameBuilder
     {
         var fmt = EscapeNonvarRegions(formatString);
         var datePos = formatString.IndexOf("$D(", StringComparison.Ordinal);
+
         if (datePos != -1)
         {
             var endPos = formatString.IndexOf(')', datePos);
             if (endPos != -1)
             {
-                _dateTimeFormat = formatString.Substring(datePos + 3, endPos - datePos - 3);
-                _dateTimeFormat = _dateTimeFormat.ToUpper();
-                _dateTimeFormat = _dateTimeFormat.Replace('D', 'd').Replace('Y', 'y');
+                _dateTimeFormat = formatString.Substring(datePos + 3, endPos - datePos - 3)
+                                              .ToUpperInvariant()
+                                              .Replace('D', 'd')
+                                              .Replace('Y', 'y');
 
-                var dtf = _dateTimeFormat;
-                dtf = dtf.ToUpper();
-                dtf = dtf.Replace("D", "\\d", StringComparison.Ordinal);
-                dtf = dtf.Replace("Y", "\\d", StringComparison.Ordinal);
-                dtf = dtf.Replace("M", "\\d", StringComparison.Ordinal);
-                fmt = fmt.Remove(datePos, 2); // remove $D
-                fmt = fmt.Remove(datePos + 1, _dateTimeFormat.Length); // replace with regex version of format
-                fmt = fmt.Insert(datePos + 1, dtf);
-                fmt = fmt.Insert(datePos + 1, "?'date'"); // name the regex group
+                var dtf = _dateTimeFormat.ToUpper(CultureInfo.InvariantCulture)
+                                         .Replace("D", "\\d", StringComparison.Ordinal)
+                                         .Replace("Y", "\\d", StringComparison.Ordinal)
+                                         .Replace("M", "\\d", StringComparison.Ordinal);
+
+                fmt = fmt.Remove(datePos, 2) // remove $D
+                         .Remove(datePos + 1, _dateTimeFormat.Length) // replace with regex version of format
+                         .Insert(datePos + 1, dtf)
+                         .Insert(datePos + 1, "?'date'"); // name the regex group
             }
         }
 

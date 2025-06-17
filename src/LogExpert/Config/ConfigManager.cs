@@ -1,4 +1,5 @@
 using System.Drawing;
+using System.Globalization;
 using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
@@ -8,7 +9,6 @@ using LogExpert.Core.Classes.Filter;
 using LogExpert.Core.Config;
 using LogExpert.Core.Entities;
 using LogExpert.Core.EventArguments;
-using LogExpert.Core.EventHandlers;
 using LogExpert.Core.Interface;
 
 using Newtonsoft.Json;
@@ -26,7 +26,6 @@ public class ConfigManager : IConfigManager
     private static readonly object _monitor = new();
     private static ConfigManager _instance;
     private readonly object _loadSaveLock = new();
-    private readonly object _saveSaveLock = new();
     private Settings _settings;
 
     #endregion
@@ -42,12 +41,13 @@ public class ConfigManager : IConfigManager
 
     #region Events
 
-    public event ConfigChangedEventHandler ConfigChanged;
+    public event EventHandler<ConfigChangedEventArgs> ConfigChanged;
 
     #endregion
 
     #region Properties
 
+    //TODO: Change to init
     public static ConfigManager Instance
     {
         get
@@ -117,13 +117,13 @@ public class ConfigManager : IConfigManager
 
     private Settings Load ()
     {
-        _logger.Info("Loading settings");
+        _logger.Info(CultureInfo.InvariantCulture, "Loading settings");
 
         string dir;
-
-        if (File.Exists(PortableModeDir + Path.DirectorySeparatorChar + PortableModeSettingsFileName) == false)
+        
+        if (!File.Exists(Path.Combine(PortableModeDir, PortableModeSettingsFileName)))
         {
-            _logger.Info("Load settings standard mode");
+            _logger.Info(CultureInfo.InvariantCulture, "Load settings standard mode");
             dir = ConfigDir;
         }
         else
@@ -134,24 +134,33 @@ public class ConfigManager : IConfigManager
 
         if (!Directory.Exists(dir))
         {
-            Directory.CreateDirectory(dir);
+            _ = Directory.CreateDirectory(dir);
         }
 
-        if (!File.Exists(dir + Path.DirectorySeparatorChar + "settings.json"))
+        if (!File.Exists(Path.Combine(dir, "settings.json")))
         {
             return LoadOrCreateNew(null);
         }
 
         try
         {
-            FileInfo fileInfo = new(dir + Path.DirectorySeparatorChar + "settings.json");
+            FileInfo fileInfo = new(Path.Combine(dir, "settings.json"));
             return LoadOrCreateNew(fileInfo);
         }
-        catch (Exception e)
+        catch (IOException ex)
         {
-            _logger.Error($"Error loading settings: {e}");
-            return LoadOrCreateNew(null);
+            _logger.Error($"File system error: {ex.Message}");
         }
+        catch (UnauthorizedAccessException ex)
+        {
+            _logger.Error($"Access denied: {ex.Message}");
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            _logger.Error($"Unexpected error: {ex.Message}");
+        }
+
+        return LoadOrCreateNew(null);
 
     }
 
@@ -269,7 +278,7 @@ public class ConfigManager : IConfigManager
     {
         lock (_loadSaveLock)
         {
-            _logger.Info("Saving settings");
+            _logger.Info(CultureInfo.InvariantCulture, "Saving settings");
             var dir = Settings.Preferences.PortableMode ? Application.StartupPath : ConfigDir;
 
             if (!Directory.Exists(dir))
@@ -359,8 +368,8 @@ public class ConfigManager : IConfigManager
     /// <param name="flags">Flags to indicate which parts shall be imported</param>
     private Settings Import (Settings currentSettings, FileInfo fileInfo, ExportImportFlags flags)
     {
-        Settings importSettings = LoadOrCreateNew(fileInfo);
-        Settings ownSettings = ObjectClone.Clone(currentSettings);
+        var importSettings = LoadOrCreateNew(fileInfo);
+        var ownSettings = ObjectClone.Clone(currentSettings);
         Settings newSettings;
 
         // at first check for 'Other' as this are the most options.

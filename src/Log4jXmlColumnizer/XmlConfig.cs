@@ -1,4 +1,4 @@
-﻿using LogExpert;
+using LogExpert;
 
 namespace Log4jXmlColumnizer;
 
@@ -26,7 +26,7 @@ internal class XmlConfig : IXmlLogConfiguration
                                         "</xsl:template>" +
                                         "</xsl:stylesheet>";
 
-    public string[] Namespace => ["log4j", "http://jakarta.apache.org/log4j"];
+    public string[] GetNamespaceDeclaration () => ["log4j", "http://jakarta.apache.org/log4j"];
 
     #endregion
 }

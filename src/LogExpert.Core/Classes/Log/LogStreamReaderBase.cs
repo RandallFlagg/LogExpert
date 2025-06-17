@@ -35,7 +35,7 @@ public abstract class LogStreamReaderBase : ILogStreamReader
     /// <summary>
     /// Indicates whether or not the stream reader has already been disposed.
     /// </summary>
-    public bool IsDisposed { get; private set; }
+    public abstract bool IsDisposed { get; protected set; }
 
     #endregion
 
@@ -46,15 +46,8 @@ public abstract class LogStreamReaderBase : ILogStreamReader
     /// </summary>
     public void Dispose()
     {
-        try
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-        finally
-        {
-            IsDisposed = true;
-        }
+        Dispose(true);
+        GC.SuppressFinalize(this);
     }
     /// <summary>
     /// Destroy and release the current stream reader.

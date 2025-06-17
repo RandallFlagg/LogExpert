@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Windows.Forms;
 using System.Xml.Serialization;
@@ -106,7 +107,7 @@ public class SftpFileSystem (IFileSystemCallback callback) : IFileSystemPlugin, 
 
     public void SaveConfig (string configDir)
     {
-        _logger.Info("Saving SFTP config");
+        _logger.Info(CultureInfo.InvariantCulture, "Saving SFTP config");
         XmlSerializer xml = new(ConfigData.GetType());
 
         FileStream fs = null;

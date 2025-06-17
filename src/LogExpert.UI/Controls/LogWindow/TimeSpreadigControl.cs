@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Runtime.Versioning;
 
 using LogExpert.Core.Classes;
@@ -146,7 +147,7 @@ internal partial class TimeSpreadingControl : UserControl
 
     private void TimeSpreadCalc_CalcDone (object sender, EventArgs e)
     {
-        _logger.Debug("timeSpreadCalc_CalcDone()");
+        _logger.Debug(CultureInfo.InvariantCulture, "timeSpreadCalc_CalcDone()");
 
         lock (_monitor)
         {
