@@ -20,7 +20,7 @@ public class Settings
 
     public IList<ColumnizerHistoryEntry> ColumnizerHistoryList { get; set; } = [];
 
-    public List<ColorEntry> FileColors { get; set; } = [];
+    public List<ColorEntry> FileColors { get; } = [];
 
     public List<string> FileHistoryList { get; set; } = [];
 
