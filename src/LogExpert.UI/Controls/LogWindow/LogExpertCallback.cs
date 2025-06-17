@@ -8,17 +8,17 @@ internal class LogExpertCallback (LogWindow logWindow) : ColumnizerCallback(logW
 
     public void AddTempFileTab (string fileName, string title)
     {
-        LogWindow.AddTempFileTab(fileName, title);
+        logWindow.AddTempFileTab(fileName, title);
     }
 
     public void AddPipedTab (IList<LineEntry> lineEntryList, string title)
     {
-        LogWindow.WritePipeTab(lineEntryList, title);
+        logWindow.WritePipeTab(lineEntryList, title);
     }
 
     public string GetTabTitle ()
     {
-        return LogWindow.Text;
+        return logWindow.Text;
     }
 
     #endregion

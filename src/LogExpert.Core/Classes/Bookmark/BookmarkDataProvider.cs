@@ -1,3 +1,5 @@
+using System.Globalization;
+
 using LogExpert.Core.Entities;
 using LogExpert.Core.Interface;
 
@@ -27,21 +29,11 @@ public class BookmarkDataProvider : IBookmarkData
 
     #endregion
 
-    #region Delegates
-
-    public delegate void AllBookmarksRemovedEventHandler (object sender, EventArgs e);
-
-    public delegate void BookmarkAddedEventHandler (object sender, EventArgs e);
-
-    public delegate void BookmarkRemovedEventHandler (object sender, EventArgs e);
-
-    #endregion
-
     #region Events
 
-    public event BookmarkAddedEventHandler BookmarkAdded;
-    public event BookmarkRemovedEventHandler BookmarkRemoved;
-    public event AllBookmarksRemovedEventHandler AllBookmarksRemoved;
+    public event EventHandler<EventArgs> BookmarkAdded;
+    public event EventHandler<EventArgs> BookmarkRemoved;
+    public event EventHandler<EventArgs> AllBookmarksRemoved;
 
     #endregion
 
@@ -141,8 +133,11 @@ public class BookmarkDataProvider : IBookmarkData
         OnBookmarkRemoved();
     }
 
-    public void RemoveBookmarksForLines (List<int> lineNumList)
+    //TOOD: check if the callers are checking for null before calling
+    public void RemoveBookmarksForLines (IEnumerable<int> lineNumList)
     {
+        ArgumentNullException.ThrowIfNull(lineNumList, nameof(lineNumList));
+
         foreach (var lineNum in lineNumList)
         {
             _ = BookmarkList.Remove(lineNum);
@@ -152,16 +147,18 @@ public class BookmarkDataProvider : IBookmarkData
         OnBookmarkRemoved();
     }
 
-
+    //TOOD: check if the callers are checking for null before calling
     public void AddBookmark (Entities.Bookmark bookmark)
     {
+        ArgumentNullException.ThrowIfNull(bookmark, nameof(bookmark));
+
         BookmarkList.Add(bookmark.LineNum, bookmark);
         OnBookmarkAdded();
     }
 
     public void ClearAllBookmarks ()
     {
-        _logger.Debug("Removing all bookmarks");
+        _logger.Debug(CultureInfo.InvariantCulture, "Removing all bookmarks");
         BookmarkList.Clear();
         OnAllBookmarksRemoved();
     }

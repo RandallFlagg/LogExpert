@@ -10,7 +10,15 @@ public class Column : IColumn
     private const int MAXLENGTH = 4678 - 3;
     private const string REPLACEMENT = "...";
 
-    private static readonly IEnumerable<Func<string, string>> _replacements;
+    private static readonly List<Func<string, string>> _replacements = [
+        //replace tab with 3 spaces, from old coding. Needed???
+                input => input.Replace("\t", "  ", StringComparison.Ordinal),
+
+                //shorten string if it exceeds maxLength
+                input => input.Length > MAXLENGTH
+                        ? string.Concat(input.AsSpan(0, MAXLENGTH), REPLACEMENT)
+                        : input
+    ];
 
     private string _fullValue;
 
@@ -20,31 +28,18 @@ public class Column : IColumn
 
     static Column ()
     {
-        var replacements = new List<Func<string, string>>(
-            [
-                //replace tab with 3 spaces, from old coding. Needed???
-                input => input.Replace("\t", "  ", StringComparison.Ordinal),
-
-                //shorten string if it exceeds maxLength
-                input => input.Length > MAXLENGTH
-                        ? string.Concat(input.AsSpan(0, MAXLENGTH), REPLACEMENT)
-                        : input
-            ]);
-
         if (Environment.Version >= Version.Parse("6.2"))
         {
             //Win8 or newer support full UTF8 chars with the preinstalled fonts.
             //Replace null char with UTF8 Symbol U+2400 (␀)
-            replacements.Add(input => input.Replace("\0", "␀", StringComparison.Ordinal));
+            _replacements.Add(input => input.Replace("\0", "␀", StringComparison.Ordinal));
         }
         else
         {
             //Everything below Win8 the installed fonts seems to not to support reliabel
             //Replace null char with space
-            replacements.Add(input => input.Replace("\0", " ", StringComparison.Ordinal));
+            _replacements.Add(input => input.Replace("\0", " ", StringComparison.Ordinal));
         }
-
-        _replacements = replacements;
 
         EmptyColumn = new Column { FullValue = string.Empty };
     }
@@ -77,7 +72,7 @@ public class Column : IColumn
 
     public string DisplayValue { get; private set; }
 
-    string ITextValue.Text => DisplayValue;
+    public string Text => DisplayValue;
 
     #endregion
 

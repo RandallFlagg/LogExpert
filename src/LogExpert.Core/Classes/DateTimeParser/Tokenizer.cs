@@ -1,37 +1,37 @@
-﻿using System;
+using System;
+using System.Globalization;
 
 namespace LogExpert.Core.Classes.DateTimeParser;
 
 internal class Tokenizer
 {
-    private string formatString;
-    private int formatStringPosition;
+    private readonly string formatString;
 
-    public Tokenizer(string fmt)
+    public Tokenizer (string fmt)
     {
         formatString = fmt;
     }
 
-    public int Position => formatStringPosition;
+    public int Position { get; private set; }
 
     public int Length => formatString.Length;
 
-    public string Substring(int startIndex, int length)
+    public string Substring (int startIndex, int length)
     {
         return formatString.Substring(startIndex, length);
     }
 
-    public int Peek(int offset = 0)
+    public int Peek (int offset = 0)
     {
-        if (formatStringPosition + offset >= formatString.Length)
+        if (Position + offset >= formatString.Length)
         {
             return -1;
         }
 
-        return formatString[formatStringPosition + offset];
+        return formatString[Position + offset];
     }
 
-    public int PeekUntil(int startOffset, int until)
+    public int PeekUntil (int startOffset, int until)
     {
         var offset = startOffset;
         while (true)
@@ -50,7 +50,7 @@ internal class Tokenizer
         return 0;
     }
 
-    public bool PeekOneOf(int offset, string s)
+    public bool PeekOneOf (int offset, string s)
     {
         foreach (var c in s)
         {
@@ -62,12 +62,12 @@ internal class Tokenizer
         return false;
     }
 
-    public void Advance(int characters = 1)
+    public void Advance (int characters = 1)
     {
-        formatStringPosition = Math.Min(formatStringPosition + characters, formatString.Length);
+        Position = Math.Min(Position + characters, formatString.Length);
     }
 
-    public bool ReadOneOrMore(int c)
+    public bool ReadOneOrMore (int c)
     {
         if (Peek() != c)
         {
@@ -82,7 +82,7 @@ internal class Tokenizer
         return true;
     }
 
-    public bool ReadOneOf(string s)
+    public bool ReadOneOf (string s)
     {
         if (PeekOneOf(0, s))
         {
@@ -92,38 +92,29 @@ internal class Tokenizer
         return false;
     }
 
-    public bool ReadString(string s, bool ignoreCase = false)
+    public bool ReadString (string str, bool ignoreCase = false)
     {
-        if (formatStringPosition + s.Length > formatString.Length)
+        if (Position + str.Length > formatString.Length)
         {
             return false;
         }
 
-        for (var i = 0; i < s.Length; i++)
+        for (var i = 0; i < str.Length; i++)
         {
-            var c1 = s[i];
+            var c1 = str[i];
             var c2 = (char)Peek(i);
-            if (ignoreCase)
+
+            if ((ignoreCase && char.ToUpperInvariant(c1) != char.ToUpperInvariant(c2)) || (!ignoreCase && c1 != c2))
             {
-                if (char.ToLower(c1) != char.ToLower(c2))
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                if (c1 != c2)
-                {
-                    return false;
-                }
+                return false;
             }
         }
 
-        Advance(s.Length);
+        Advance(str.Length);
         return true;
     }
 
-    public bool ReadEnclosed(char open, char close)
+    public bool ReadEnclosed (char open, char close)
     {
         if (Peek() == open)
         {

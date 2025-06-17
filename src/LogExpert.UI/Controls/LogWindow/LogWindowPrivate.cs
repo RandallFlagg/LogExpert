@@ -156,7 +156,7 @@ partial class LogWindow
 
             if (persistenceData.MultiFileNames.Count > 0)
             {
-                _logger.Info("Detected MultiFile name list in persistence options");
+                _logger.Info(CultureInfo.InvariantCulture, "Detected MultiFile name list in persistence options");
                 _fileNames = new string[persistenceData.MultiFileNames.Count];
                 persistenceData.MultiFileNames.CopyTo(_fileNames);
             }
@@ -331,7 +331,7 @@ partial class LogWindow
 
     private void EnterLoadFileStatus ()
     {
-        _logger.Debug("EnterLoadFileStatus begin");
+        _logger.Debug(CultureInfo.InvariantCulture, "EnterLoadFileStatus begin");
 
         if (InvokeRequired)
         {
@@ -356,7 +356,7 @@ partial class LogWindow
         ClearBookmarkList();
         dataGridView.ClearSelection();
         dataGridView.RowCount = 0;
-        _logger.Debug("EnterLoadFileStatus end");
+        _logger.Debug(CultureInfo.InvariantCulture, "EnterLoadFileStatus end");
     }
 
     [SupportedOSPlatform("windows")]
@@ -376,7 +376,7 @@ partial class LogWindow
     [SupportedOSPlatform("windows")]
     private void LogfileDead ()
     {
-        _logger.Info("File not found.");
+        _logger.Info(CultureInfo.InvariantCulture, "File not found.");
         _isDeadFile = true;
 
         //this.logFileReader.FileSizeChanged -= this.FileSizeChangedHandler;
@@ -403,7 +403,7 @@ partial class LogWindow
     [SupportedOSPlatform("windows")]
     private void LogfileRespawned ()
     {
-        _logger.Info("LogfileDead(): Reloading file because it has been respawned.");
+        _logger.Info(CultureInfo.InvariantCulture, "LogfileDead(): Reloading file because it has been respawned.");
         _isDeadFile = false;
         dataGridView.Enabled = true;
         StatusLineText("");
@@ -529,7 +529,7 @@ partial class LogWindow
             }
             else
             {
-                _logger.Debug("Preventing reload because of recursive calls.");
+                _logger.Debug(CultureInfo.InvariantCulture, "Preventing reload because of recursive calls.");
             }
 
             _reloadOverloadCounter--;
@@ -539,9 +539,9 @@ partial class LogWindow
     [SupportedOSPlatform("windows")]
     private void ReloadFinishedThreadFx ()
     {
-        _logger.Info("Waiting for loading to be complete.");
+        _logger.Info(CultureInfo.InvariantCulture, "Waiting for loading to be complete.");
         _loadingFinishedEvent.WaitOne();
-        _logger.Info("Refreshing filter view because of reload.");
+        _logger.Info(CultureInfo.InvariantCulture, "Refreshing filter view because of reload.");
         Invoke(new MethodInvoker(FilterSearch));
         LoadFilterPipes();
     }
@@ -552,7 +552,7 @@ partial class LogWindow
         {
             if (e.ReadPos >= e.FileSize)
             {
-                //_logger.Warn("UpdateProgress(): ReadPos (" + e.ReadPos + ") is greater than file size (" + e.FileSize + "). Aborting Update");
+                //_logger.Warn(CultureInfo.InvariantCulture, "UpdateProgress(): ReadPos (" + e.ReadPos + ") is greater than file size (" + e.FileSize + "). Aborting Update");
                 return;
             }
 
@@ -589,7 +589,7 @@ partial class LogWindow
 
     private void LoadingFinished ()
     {
-        _logger.Info("File loading complete.");
+        _logger.Info(CultureInfo.InvariantCulture, "File loading complete.");
 
         StatusLineText("");
         _logFileReader.FileSizeChanged += OnFileSizeChanged;
@@ -629,16 +629,16 @@ partial class LogWindow
         Thread.CurrentThread.Name = "LogEventWorker";
         while (true)
         {
-            _logger.Debug("Waiting for signal");
+            _logger.Debug(CultureInfo.InvariantCulture, "Waiting for signal");
             _logEventArgsEvent.WaitOne();
-            _logger.Debug("Wakeup signal received.");
+            _logger.Debug(CultureInfo.InvariantCulture, "Wakeup signal received.");
             while (true)
             {
                 LogEventArgs e;
                 var lastLineCount = 0;
                 lock (_logEventArgsList)
                 {
-                    _logger.Info("{0} events in queue", _logEventArgsList.Count);
+                    _logger.Info(CultureInfo.InvariantCulture, "{0} events in queue", _logEventArgsList.Count);
                     if (_logEventArgsList.Count == 0)
                     {
                         _logEventArgsEvent.Reset();
@@ -717,7 +717,7 @@ partial class LogWindow
                 dataGridView.RowCount = e.LineCount;
             }
 
-            _logger.Debug("UpdateGrid(): new RowCount={0}", dataGridView.RowCount);
+            _logger.Debug(CultureInfo.InvariantCulture, "UpdateGrid(): new RowCount={0}", dataGridView.RowCount);
 
             if (e.IsRollover)
             {
@@ -732,7 +732,7 @@ partial class LogWindow
                         currentLineNum = 0;
                     }
 
-                    _logger.Debug("UpdateGrid(): Rollover=true, Rollover offset={0}, currLineNum was {1}, new currLineNum={2}", e.RolloverOffset, dataGridView.CurrentCellAddress.Y, currentLineNum);
+                    _logger.Debug(CultureInfo.InvariantCulture, "UpdateGrid(): Rollover=true, Rollover offset={0}, currLineNum was {1}, new currLineNum={2}", e.RolloverOffset, dataGridView.CurrentCellAddress.Y, currentLineNum);
                     firstDisplayedLine -= e.RolloverOffset;
                     if (firstDisplayedLine < 0)
                     {
@@ -954,7 +954,7 @@ partial class LogWindow
 
     private void SetColumnizerInternal (ILogLineColumnizer columnizer)
     {
-        _logger.Info("SetColumnizerInternal(): {0}", columnizer.GetName());
+        _logger.Info(CultureInfo.InvariantCulture, "SetColumnizerInternal(): {0}", columnizer.GetName());
 
         ILogLineColumnizer oldColumnizer = CurrentColumnizer;
         var oldColumnizerIsXmlType = CurrentColumnizer is ILogLineXmlColumnizer;
@@ -1783,7 +1783,7 @@ partial class LogWindow
                 }
                 else
                 {
-                    _logger.Warn("Edit control in logWindow was null");
+                    _logger.Warn(CultureInfo.InvariantCulture, "Edit control in logWindow was null");
                 }
             }
         }
@@ -1797,7 +1797,7 @@ partial class LogWindow
         {
             var pos = editControl.SelectionStart + editControl.SelectionLength;
             StatusLineText("   " + pos);
-            _logger.Debug("SelStart: {0}, SelLen: {1}", editControl.SelectionStart, editControl.SelectionLength);
+            _logger.Debug(CultureInfo.InvariantCulture, "SelStart: {0}, SelLen: {1}", editControl.SelectionStart, editControl.SelectionLength);
         }
     }
 
@@ -2725,7 +2725,7 @@ partial class LogWindow
     [SupportedOSPlatform("windows")]
     private void WritePipeToTab (FilterPipe pipe, IList<int> lineNumberList, string name, PersistenceData persistenceData)
     {
-        _logger.Info("WritePipeToTab(): {0} lines.", lineNumberList.Count);
+        _logger.Info(CultureInfo.InvariantCulture, "WritePipeToTab(): {0} lines.", lineNumberList.Count);
         StatusLineText("Writing to temp file... Press ESC to cancel.");
         _guiStateArgs.MenuEnabled = false;
         SendGuiStateUpdate();
@@ -2769,7 +2769,7 @@ partial class LogWindow
         }
 
         pipe.CloseFile();
-        _logger.Info("WritePipeToTab(): finished");
+        _logger.Info(CultureInfo.InvariantCulture, "WritePipeToTab(): finished");
         Invoke(new WriteFilterToTabFinishedFx(WriteFilterToTabFinished), pipe, name, persistenceData);
     }
 
@@ -3168,7 +3168,7 @@ partial class LogWindow
             PatternBlock block;
             var maxBlockLen = patternArgs.EndLine - patternArgs.StartLine;
             //int searchLine = i + 1;
-            _logger.Debug("TestStatistic(): i={0} searchLine={1}", i, searchLine);
+            _logger.Debug(CultureInfo.InvariantCulture, "TestStatistic(): i={0} searchLine={1}", i, searchLine);
             //bool firstBlock = true;
             searchLine++;
             UpdateProgressBar(searchLine);
@@ -3178,7 +3178,7 @@ partial class LogWindow
                            _patternArgs.MaxMisses,
                            processedLinesDict)) != null)
             {
-                _logger.Debug("Found block: {0}", block);
+                _logger.Debug(CultureInfo.InvariantCulture, "Found block: {0}", block);
                 if (block.Weigth >= _patternArgs.MinWeight)
                 {
                     //PatternBlock existingBlock = FindExistingBlock(block, blockList);
@@ -3224,7 +3224,7 @@ partial class LogWindow
         //  this.Invoke(new MethodInvoker(CreatePatternWindow));
         //}
         _patternWindow.SetBlockList(blockList, _patternArgs);
-        _logger.Info("TestStatistics() ended");
+        _logger.Info(CultureInfo.InvariantCulture, "TestStatistics() ended");
     }
 
     private void AddBlockTargetLinesToDict (Dictionary<int, int> dict, PatternBlock block)
