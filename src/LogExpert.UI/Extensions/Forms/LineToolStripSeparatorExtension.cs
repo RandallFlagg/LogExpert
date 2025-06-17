@@ -1,6 +1,6 @@
-using LogExpert.Core.Config;
+﻿using System.Runtime.Versioning;
 
-using System.Runtime.Versioning;
+using LogExpert.Core.Config;
 
 namespace LogExpert.UI.Extensions.Forms;
 
@@ -12,7 +12,7 @@ internal class LineToolStripSeparatorExtension : ToolStripSeparator
         Paint += OnExtendedToolStripSeparatorPaint;
     }
 
-    private void OnExtendedToolStripSeparatorPaint(object sender, PaintEventArgs e)
+    private void OnExtendedToolStripSeparatorPaint (object sender, PaintEventArgs e)
     {
         // Get the separator's width and height.
         var toolStripSeparator = (ToolStripSeparator)sender;

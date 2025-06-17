@@ -1,4 +1,4 @@
-﻿using LogExpert.Dialogs;
+using LogExpert.Dialogs;
 using LogExpert.UI.Extensions.Forms;
 using System;
 using System.Drawing;
