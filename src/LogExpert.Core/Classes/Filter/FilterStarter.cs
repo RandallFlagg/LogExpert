@@ -85,7 +85,6 @@ public class FilterStarter
         }
 
         var workStartLine = startLine;
-        List<WaitHandle> handleList = [];
         _progressLineCount = 0;
         _progressCallback = progressCallback;
         while (workStartLine < startLine + maxCount)
@@ -103,13 +102,6 @@ public class FilterStarter
             var filter = await Task.Run(() => DoWork(filterParams, workStartLine, interval, ThreadProgressCallback)).ConfigureAwait(false);
             FilterDoneCallback(filter);
             workStartLine += interval;
-        }
-
-        WaitHandle[] handles = [.. handleList];
-        // wait for worker threads completion
-        if (handles.Length > 0)
-        {
-            _ = WaitHandle.WaitAll(handles);
         }
 
         MergeResults();

@@ -61,6 +61,7 @@ public class Util
                 : string.Empty + $"{size / 1048576.0:0.00}" + " MB";
     }
 
+    //TOOD: check if the callers are checking for null before calling
     public static bool TestFilterCondition (FilterParams filterParams, ILogLine line, ILogLineColumnizerCallback columnizerCallback)
     {
         ArgumentNullException.ThrowIfNull(filterParams, nameof(filterParams));

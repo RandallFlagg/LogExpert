@@ -800,7 +800,7 @@ partial class LogWindow
             for (var i = filterStart; i < e.LineCount; ++i)
             {
                 var line = _logFileReader.GetLogLine(i);
-                //TODO: Why line can equal null here? Prevent this from happening and replace the check with an exception throw
+                //TODO: Why line can be equal null here? Need to understand all the situations and handle them correctlly. Prevent this from happening and replace the check with an exception throw
                 if (line == null)
                 {
                     return;
