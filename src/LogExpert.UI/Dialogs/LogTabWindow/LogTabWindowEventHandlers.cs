@@ -350,7 +350,7 @@ internal partial class LogTabWindow
         _bookmarkWindow?.SetColumnizer(e.Columnizer);
     }
 
-    private void OnBookmarkAdded (object sender, BookmarkEventArgs e)
+    private void OnBookmarkAdded (object sender, EventArgs e)
     {
         _bookmarkWindow.UpdateView();
     }
@@ -360,7 +360,7 @@ internal partial class LogTabWindow
         _bookmarkWindow.BookmarkTextChanged(e.Bookmark);
     }
 
-    private void OnBookmarkRemoved (object sender, BookmarkEventArgs e)
+    private void OnBookmarkRemoved (object sender, EventArgs e)
     {
         _bookmarkWindow.UpdateView();
     }

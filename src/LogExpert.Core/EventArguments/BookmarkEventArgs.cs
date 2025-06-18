@@ -2,20 +2,11 @@ using LogExpert.Core.Entities;
 
 namespace LogExpert.Core.EventArguments;
 
-public class BookmarkEventArgs : EventArgs
+public class BookmarkEventArgs (Bookmark bookmark) : EventArgs
 {
-    public BookmarkEventArgs (Bookmark bookmark)
-    {
-        Bookmark = bookmark;
-    }
-
-    public BookmarkEventArgs () { }
-
-    public static new readonly BookmarkEventArgs Empty = new();
-
     #region Properties
 
-    public Bookmark Bookmark { get; }
+    public Bookmark Bookmark { get; } = bookmark;
 
     #endregion
 }

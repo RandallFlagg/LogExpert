@@ -291,9 +291,9 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
 
     public event EventHandler<CurrentHighlightGroupChangedEventArgs> CurrentHighlightGroupChanged;
 
-    public event EventHandler<BookmarkEventArgs> BookmarkAdded;
+    public event EventHandler<EventArgs> BookmarkAdded;
 
-    public event EventHandler<BookmarkEventArgs> BookmarkRemoved;
+    public event EventHandler<EventArgs> BookmarkRemoved;
 
     public event EventHandler<BookmarkEventArgs> BookmarkTextChanged;
 

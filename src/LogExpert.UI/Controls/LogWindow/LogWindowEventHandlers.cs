@@ -68,12 +68,12 @@ partial class LogWindow
 
     protected void OnBookmarkAdded ()
     {
-        BookmarkAdded?.Invoke(this, BookmarkEventArgs.Empty);
+        BookmarkAdded?.Invoke(this, EventArgs.Empty);
     }
 
     protected void OnBookmarkRemoved ()
     {
-        BookmarkRemoved?.Invoke(this, BookmarkEventArgs.Empty);
+        BookmarkRemoved?.Invoke(this, EventArgs.Empty);
     }
 
     protected void OnBookmarkTextChanged (Bookmark bookmark)
