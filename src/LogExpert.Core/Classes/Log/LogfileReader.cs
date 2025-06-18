@@ -16,8 +16,6 @@ public class LogfileReader : IAutoLogLineColumnizerCallback, IDisposable
 
     private static readonly ILogger _logger = LogManager.GetCurrentClassLogger();
 
-    private readonly GetLogLineFx _logLineFx;
-
     private readonly string _fileName;
     private readonly int _max_buffers;
     private readonly int _maxLinesPerBuffer;
@@ -68,7 +66,6 @@ public class LogfileReader : IAutoLogLineColumnizerCallback, IDisposable
         _maxLinesPerBuffer = linesPerBuffer;
         _multiFileOptions = multiFileOptions;
         _pluginRegistry = pluginRegistry;
-        _logLineFx = GetLogLineInternal;
         _disposed = false;
 
         InitLruBuffers();
@@ -108,7 +105,6 @@ public class LogfileReader : IAutoLogLineColumnizerCallback, IDisposable
         _maxLinesPerBuffer = linesPerBuffer;
         _multiFileOptions = multiFileOptions;
         _pluginRegistry = pluginRegistry;
-        _logLineFx = GetLogLineInternal;
         _disposed = false;
 
         InitLruBuffers();
@@ -124,12 +120,6 @@ public class LogfileReader : IAutoLogLineColumnizerCallback, IDisposable
 
         StartGCThread();
     }
-
-    #endregion
-
-    #region Delegates
-
-    private delegate Task<ILogLine> GetLogLineFx (int lineNum);
 
     #endregion
 
@@ -422,7 +412,7 @@ public class LogfileReader : IAutoLogLineColumnizerCallback, IDisposable
 
         if (!_isFastFailOnGetLogLine)
         {
-            var task = Task.Run(() => _logLineFx(lineNum));
+            var task = Task.Run(() => GetLogLineInternal(lineNum));
             if (task.Wait(WAIT_TIME))
             {
                 result = task.Result;
@@ -440,7 +430,7 @@ public class LogfileReader : IAutoLogLineColumnizerCallback, IDisposable
             if (!_isFailModeCheckCallPending)
             {
                 _isFailModeCheckCallPending = true;
-                var logLine = await _logLineFx(lineNum);
+                var logLine = await GetLogLineInternal(lineNum);
                 GetLineFinishedCallback(logLine);
             }
         }
