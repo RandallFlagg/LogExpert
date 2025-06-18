@@ -62,8 +62,10 @@ partial class LogWindow
                     {
                         isUsingDefaultColumnizer = true;
                     }
+
                     PreSelectColumnizer(columnizer);
                 }
+
                 SetDefaultHighlightGroup();
             }
 
@@ -86,7 +88,7 @@ partial class LogWindow
             catch (LogFileException lfe)
             {
                 _logger.Error(lfe);
-                MessageBox.Show("Cannot load file\n" + lfe.Message, "LogExpert");
+                MessageBox.Show($"Cannot load file\n{lfe.Message}", "LogExpert");
                 _ = BeginInvoke(new FunctionWith1BoolParam(Close), true);
                 _isLoadError = true;
                 return;
@@ -103,14 +105,7 @@ partial class LogWindow
                 CurrentColumnizer = _forcedColumnizerForLoading;
             }
 
-            if (CurrentColumnizer is IPreProcessColumnizer processColumnizer)
-            {
-                _logFileReader.PreProcessColumnizer = processColumnizer;
-            }
-            else
-            {
-                _logFileReader.PreProcessColumnizer = null;
-            }
+            _logFileReader.PreProcessColumnizer = CurrentColumnizer is IPreProcessColumnizer processColumnizer ? processColumnizer : null;
 
             RegisterLogFileReaderEvents();
             _logger.Info($"Loading logfile: {fileName}");
@@ -141,7 +136,7 @@ partial class LogWindow
 
         foreach (var name in fileNames)
         {
-            _logger.Info("File: {0}", name);
+            _logger.Info($"File: {name}");
         }
 
         if (_logFileReader != null)
@@ -188,12 +183,9 @@ partial class LogWindow
         {
             var persistenceData = GetPersistenceData();
 
-            if (ForcedPersistenceFileName == null)
-            {
-                return Persister.SavePersistenceData(FileName, persistenceData, Preferences);
-            }
-
-            return Persister.SavePersistenceDataWithFixedName(ForcedPersistenceFileName, persistenceData);
+            return ForcedPersistenceFileName == null
+                ? Persister.SavePersistenceData(FileName, persistenceData, Preferences)
+                : Persister.SavePersistenceDataWithFixedName(ForcedPersistenceFileName, persistenceData);
         }
         catch (IOException ex)
         {
@@ -291,7 +283,7 @@ partial class LogWindow
 
         if (IsTempFile)
         {
-            _logger.Info("Deleting temp file {0}", FileName);
+            _logger.Info($"Deleting temp file {FileName}");
 
             try
             {
@@ -299,7 +291,7 @@ partial class LogWindow
             }
             catch (IOException e)
             {
-                _logger.Error(e, "Error while deleting temp file {0}: {1}", FileName, e);
+                _logger.Error(e, $"Error while deleting temp file {FileName}: {e}");
             }
         }
 
@@ -358,7 +350,7 @@ partial class LogWindow
         {
             return new Column
             {
-                FullValue = (rowIndex + 1).ToString() // line number
+                FullValue = $"{rowIndex + 1}" // line number
             };
         }
 
@@ -376,19 +368,14 @@ partial class LogWindow
                 {
                     var value = cols.ColumnValues[columnIndex - 2];
 
-                    if (value != null && value.DisplayValue != null)
-                    {
-                        return value;
-                    }
-                    return value;
+                    return value != null && value.DisplayValue != null
+                        ? value
+                        : value;
                 }
 
-                if (columnIndex == 2)
-                {
-                    return cols.ColumnValues[^1];
-                }
-
-                return Column.EmptyColumn;
+                return columnIndex == 2
+                    ? cols.ColumnValues[^1]
+                    : Column.EmptyColumn;
             }
         }
         catch
@@ -416,43 +403,12 @@ partial class LogWindow
 
             if ((e.State & DataGridViewElementStates.Selected) == DataGridViewElementStates.Selected)
             {
-                var backColor = e.CellStyle.SelectionBackColor;
-
-                Brush brush;
-
-                if (gridView.Focused)
-                {
-                    brush = new SolidBrush(backColor);
-                }
-                else
-                {
-                    brush = new SolidBrush(Color.FromArgb(255, 170, 170, 170)); //gray
-                }
-
+                using var brush = PaintHelper.GetBrushForFocusedControl(gridView.Focused, e.CellStyle.SelectionBackColor);
                 e.Graphics.FillRectangle(brush, e.CellBounds);
-                brush.Dispose();
             }
             else
             {
-                var bgColor = Color.White;
-
-                if (!DebugOptions.DisableWordHighlight)
-                {
-                    if (entry != null)
-                    {
-                        bgColor = entry.BackgroundColor;
-                    }
-                }
-                else
-                {
-                    if (entry != null)
-                    {
-                        bgColor = entry.BackgroundColor;
-                    }
-                }
-
-                e.CellStyle.BackColor = bgColor;
-
+                e.CellStyle.BackColor = PaintHelper.GetBackColorFromHighlightEntry(entry);
                 e.PaintBackground(e.ClipBounds, false);
             }
 
@@ -472,9 +428,9 @@ partial class LogWindow
                     Rectangle r; // = new Rectangle(e.CellBounds.Left + 2, e.CellBounds.Top + 2, 6, 6);
                     r = e.CellBounds;
                     r.Inflate(-2, -2);
-                    Brush brush = new SolidBrush(BookmarkColor);
+                    using var brush = new SolidBrush(BookmarkColor);
                     e.Graphics.FillRectangle(brush, r);
-                    brush.Dispose();
+
                     var bookmark = _bookmarkProvider.GetBookmarkForLine(rowIndex);
 
                     if (bookmark.Text.Length > 0)
@@ -484,12 +440,10 @@ partial class LogWindow
                             LineAlignment = StringAlignment.Center,
                             Alignment = StringAlignment.Center
                         };
-                        Brush brush2 = new SolidBrush(Color.FromArgb(255, 190, 100, 0)); //dark orange
-                        Font font = new("Courier New", Preferences.FontSize, FontStyle.Bold);
-                        e.Graphics.DrawString("i", font, brush2, new RectangleF(r.Left, r.Top, r.Width, r.Height),
-                            format);
-                        font.Dispose();
-                        brush2.Dispose();
+
+                        using var brush2 = new SolidBrush(Color.FromArgb(255, 190, 100, 0)); //dark orange
+                        using var font = new Font("Courier New", Preferences.FontSize, FontStyle.Bold);
+                        e.Graphics.DrawString("i", font, brush2, new RectangleF(r.Left, r.Top, r.Width, r.Height), format);
                     }
                 }
             }
@@ -628,14 +582,9 @@ partial class LogWindow
         GuiStateUpdate(this, _guiStateArgs);
         var searchParams = _parentLogTabWin.SearchParams;
 
-        if ((searchParams.IsForward || searchParams.IsFindNext) && !searchParams.IsShiftF3Pressed)
-        {
-            searchParams.CurrentLine = dataGridView.CurrentCellAddress.Y + 1;
-        }
-        else
-        {
-            searchParams.CurrentLine = dataGridView.CurrentCellAddress.Y - 1;
-        }
+        searchParams.CurrentLine = (searchParams.IsForward || searchParams.IsFindNext) && !searchParams.IsShiftF3Pressed
+            ? dataGridView.CurrentCellAddress.Y + 1
+            : dataGridView.CurrentCellAddress.Y - 1;
 
         _currentSearchParams = searchParams; // remember for async "not found" messages
 
@@ -1663,14 +1612,9 @@ partial class LogWindow
         }
         else
         {
-            if (dataGridView.CurrentCellAddress.Y != -1)
-            {
-                patternArgs.StartLine = dataGridView.CurrentCellAddress.Y;
-            }
-            else
-            {
-                patternArgs.StartLine = 0;
-            }
+            patternArgs.StartLine = dataGridView.CurrentCellAddress.Y != -1
+                ? dataGridView.CurrentCellAddress.Y
+                : 0;
             patternArgs.EndLine = dataGridView.RowCount - 1;
         }
     }
@@ -1800,19 +1744,14 @@ partial class LogWindow
         lock (_currentHighlightGroupLock)
         {
             _currentHighlightGroup = _parentLogTabWin.FindHighlightGroup(groupName);
-            if (_currentHighlightGroup == null)
-            {
-                if (_parentLogTabWin.HighlightGroupList.Count > 0)
-                {
-                    _currentHighlightGroup = _parentLogTabWin.HighlightGroupList[0];
-                }
-                else
-                {
-                    _currentHighlightGroup = new HighlightGroup();
-                }
-            }
+
+            _currentHighlightGroup ??= _parentLogTabWin.HighlightGroupList.Count > 0
+                ? _parentLogTabWin.HighlightGroupList[0]
+                : new HighlightGroup();
+
             _guiStateArgs.HighlightGroupName = _currentHighlightGroup.GroupName;
         }
+
         SendGuiStateUpdate();
         BeginInvoke(new MethodInvoker(RefreshAllGrids));
     }
@@ -1845,7 +1784,7 @@ partial class LogWindow
 
     public void AddToTimeSync (LogWindow master)
     {
-        _logger.Info("Syncing window for {0} to {1}", Util.GetNameFromPath(FileName), Util.GetNameFromPath(master.FileName));
+        _logger.Info($"Syncing window for {Util.GetNameFromPath(FileName)} to {Util.GetNameFromPath(master.FileName)}");
         lock (_timeSyncListLock)
         {
             if (IsTimeSynced && master.TimeSyncList != TimeSyncList)
@@ -1853,10 +1792,12 @@ partial class LogWindow
             {
                 FreeFromTimeSync();
             }
+
             TimeSyncList = master.TimeSyncList;
             TimeSyncList.AddWindow(this);
             ScrollToTimestamp(TimeSyncList.CurrentTimestamp, false, false);
         }
+
         OnSyncModeChanged();
     }
 
@@ -1866,12 +1807,13 @@ partial class LogWindow
         {
             if (TimeSyncList != null)
             {
-                _logger.Info("De-Syncing window for {0}", Util.GetNameFromPath(FileName));
+                _logger.Info($"De-Syncing window for {Util.GetNameFromPath(FileName)}");
                 TimeSyncList.WindowRemoved -= OnTimeSyncListWindowRemoved;
                 TimeSyncList.RemoveWindow(this);
                 TimeSyncList = null;
             }
         }
+
         OnSyncModeChanged();
     }
 

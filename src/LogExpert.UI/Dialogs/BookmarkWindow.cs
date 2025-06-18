@@ -235,24 +235,10 @@ internal partial class BookmarkWindow : DockContent, ISharedToolWindow, IBookmar
 
     private void CommentPainting (BufferedDataGridView gridView, DataGridViewCellPaintingEventArgs e)
     {
-        var backColor = e.CellStyle.SelectionBackColor;
-
         if ((e.State & DataGridViewElementStates.Selected) == DataGridViewElementStates.Selected)
         {
-            Brush brush;
-            if (gridView.Focused)
-            {
-                // _logger.logDebug("CellPaint Focus");
-                brush = new SolidBrush(backColor);
-            }
-            else
-            {
-                // _logger.logDebug("CellPaint No Focus");
-                brush = new SolidBrush(Color.FromArgb(255, 170, 170, 170)); //gray
-            }
-
+            using var brush = PaintHelper.GetBrushForFocusedControl(gridView.Focused, e.CellStyle.SelectionBackColor);
             e.Graphics.FillRectangle(brush, e.CellBounds);
-            brush.Dispose();
         }
         else
         {
@@ -297,8 +283,7 @@ internal partial class BookmarkWindow : DockContent, ISharedToolWindow, IBookmar
         }
         else
         {
-            var bookmark = _bookmarkData.Bookmarks[rowIndex];
-            bookmarkTextBox.Text = bookmark.Text;
+            bookmarkTextBox.Text = _bookmarkData.Bookmarks[rowIndex].Text;
             bookmarkTextBox.Enabled = true;
         }
     }
@@ -553,12 +538,8 @@ internal partial class BookmarkWindow : DockContent, ISharedToolWindow, IBookmar
 
     private void OnRemoveCommentsToolStripMenuItemClick (object sender, EventArgs e)
     {
-        if (
-            MessageBox.Show("Really remove bookmark comments for selected lines?", "LogExpert",
-                MessageBoxButtons.YesNo) ==
-            DialogResult.Yes)
+        if (MessageBox.Show("Really remove bookmark comments for selected lines?", "LogExpert", MessageBoxButtons.YesNo) == DialogResult.Yes)
         {
-            List<int> lineNumList = [];
             foreach (DataGridViewRow row in bookmarkDataGridView.SelectedRows)
             {
                 if (row.Index != -1)

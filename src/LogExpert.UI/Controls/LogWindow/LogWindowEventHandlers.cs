@@ -392,6 +392,8 @@ partial class LogWindow
             return;
         }
 
+
+
         var lineNum = _filterResultList[e.RowIndex];
         var line = _logFileReader.GetLogLineWithWait(lineNum).Result;
 
@@ -401,43 +403,17 @@ partial class LogWindow
             e.Graphics.SetClip(e.CellBounds);
             if ((e.State & DataGridViewElementStates.Selected) == DataGridViewElementStates.Selected)
             {
-                Brush brush;
-                if (gridView.Focused)
-                {
-                    brush = new SolidBrush(e.CellStyle.SelectionBackColor);
-                }
-                else
-                {
-                    brush = new SolidBrush(Color.FromArgb(255, 170, 170, 170)); //gray
-                }
-
+                using var brush = PaintHelper.GetBrushForFocusedControl(gridView.Focused, e.CellStyle.SelectionBackColor);
                 e.Graphics.FillRectangle(brush, e.CellBounds);
-                brush.Dispose();
             }
             else
             {
-                var bgColor = Color.White;
                 // paint direct filter hits with different bg color
                 //if (this.filterParams.SpreadEnabled && this.filterHitList.Contains(lineNum))
                 //{
                 //  bgColor = Color.FromArgb(255, 220, 220, 220);
                 //}
-                if (!DebugOptions.DisableWordHighlight)
-                {
-                    if (entry != null)
-                    {
-                        bgColor = entry.BackgroundColor;
-                    }
-                }
-                else
-                {
-                    if (entry != null)
-                    {
-                        bgColor = entry.BackgroundColor;
-                    }
-                }
-
-                e.CellStyle.BackColor = bgColor;
+                e.CellStyle.BackColor = PaintHelper.GetBackColorFromHighlightEntry(entry);
                 e.PaintBackground(e.ClipBounds, false);
             }
 
@@ -454,12 +430,11 @@ partial class LogWindow
             {
                 if (_bookmarkProvider.IsBookmarkAtLine(lineNum))
                 {
-                    Rectangle r = new(e.CellBounds.Left + 2, e.CellBounds.Top + 2, 6, 6);
+                    Rectangle r;// = new(e.CellBounds.Left + 2, e.CellBounds.Top + 2, 6, 6);
                     r = e.CellBounds;
                     r.Inflate(-2, -2);
-                    Brush brush = new SolidBrush(BookmarkColor);
+                    using var brush = new SolidBrush(BookmarkColor);
                     e.Graphics.FillRectangle(brush, r);
-                    brush.Dispose();
 
                     var bookmark = _bookmarkProvider.GetBookmarkForLine(lineNum);
 
@@ -471,11 +446,9 @@ partial class LogWindow
                             Alignment = StringAlignment.Center
                         };
 
-                        Brush brush2 = new SolidBrush(Color.FromArgb(255, 190, 100, 0));
-                        Font font = new("Verdana", Preferences.FontSize, FontStyle.Bold);
+                        using var brush2 = new SolidBrush(Color.FromArgb(255, 190, 100, 0));
+                        using var font = new Font("Verdana", Preferences.FontSize, FontStyle.Bold);
                         e.Graphics.DrawString("!", font, brush2, new RectangleF(r.Left, r.Top, r.Width, r.Height), format);
-                        font.Dispose();
-                        brush2.Dispose();
                     }
                 }
             }

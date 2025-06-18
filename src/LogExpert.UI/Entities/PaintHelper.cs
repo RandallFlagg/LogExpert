@@ -40,41 +40,12 @@ internal static class PaintHelper
 
             if ((e.State & DataGridViewElementStates.Selected) == DataGridViewElementStates.Selected)
             {
-                var backColor = e.CellStyle.SelectionBackColor;
-                Brush brush;
-
-                if (gridView.Focused)
-                {
-                    brush = new SolidBrush(backColor);
-                }
-                else
-                {
-                    brush = new SolidBrush(Color.FromArgb(255, 170, 170, 170)); //gray
-                }
-
+                using var brush = GetBrushForFocusedControl(gridView.Focused, e.CellStyle.SelectionBackColor);
                 e.Graphics.FillRectangle(brush, e.CellBounds);
-                brush.Dispose();
             }
             else
             {
-                var bgColor = Color.White;
-
-                if (!DebugOptions.DisableWordHighlight)
-                {
-                    if (entry != null)
-                    {
-                        bgColor = entry.BackgroundColor;
-                    }
-                }
-                else
-                {
-                    if (entry != null)
-                    {
-                        bgColor = entry.BackgroundColor;
-                    }
-                }
-
-                e.CellStyle.BackColor = bgColor;
+                e.CellStyle.BackColor = GetBackColorFromHighlightEntry(entry);
                 e.PaintBackground(e.ClipBounds, false);
             }
 
@@ -117,6 +88,36 @@ internal static class PaintHelper
             e.Paint(e.CellBounds, DataGridViewPaintParts.Border);
             e.Handled = true;
         }
+    }
+
+    public static Color GetBackColorFromHighlightEntry (HighlightEntry? entry)
+    {
+        var bgColor = Color.White;
+
+        if (!DebugOptions.DisableWordHighlight)
+        {
+            if (entry != null)
+            {
+                bgColor = entry.BackgroundColor;
+            }
+        }
+        else
+        {
+            if (entry != null)
+            {
+                bgColor = entry.BackgroundColor;
+            }
+        }
+
+        return bgColor;
+    }
+
+    [SupportedOSPlatform("windows")]
+    public static Brush GetBrushForFocusedControl (bool focused, Color selectionColor)
+    {
+        return focused
+            ? new SolidBrush(selectionColor)
+            : new SolidBrush(Color.FromArgb(255, 170, 170, 170)); //Gray
     }
 
     [SupportedOSPlatform("windows")]

@@ -72,6 +72,7 @@ internal partial class PatternWindow : Form //TODO: Can this be changed to UserC
         _blockList.Clear();
         List<PatternBlock> singeList = [];
         //int blockId = -1;
+
         for (var i = 0; i < flatBlockList.Count; ++i)
         {
             var block = flatBlockList[i];
@@ -93,6 +94,7 @@ internal partial class PatternWindow : Form //TODO: Can this be changed to UserC
             //  singeList.Add(block);
             //}
         }
+
         _blockList.Add(singeList);
         Invoke(new MethodInvoker(SetBlockListGuiStuff));
     }
@@ -231,10 +233,9 @@ internal partial class PatternWindow : Form //TODO: Can this be changed to UserC
                 Rectangle rect = new(e.CellBounds.X, e.CellBounds.Y, width, e.CellBounds.Height);
                 var alpha = 90 + (int)((int)e.Value / (double)maxWeight * 165);
 
-                Brush brush = new SolidBrush(Color.FromArgb(alpha, 170, 180, 150));//gray green
+                using var brush = new SolidBrush(Color.FromArgb(alpha, 170, 180, 150));//gray green
                 rect.Inflate(-2, -1);
                 e.Graphics.FillRectangle(brush, rect);
-                brush.Dispose();
             }
 
             e.PaintContent(e.CellBounds);
@@ -360,7 +361,7 @@ internal partial class PatternWindow : Form //TODO: Can this be changed to UserC
     {
         _logWindow.PatternStatisticSelectRange(_patternArgs);
         recalcButton.Enabled = true;
-        rangeLabel.Text = "Start: " + _patternArgs.StartLine + "\r\nEnd: " + _patternArgs.EndLine;
+        rangeLabel.Text = $"Start: {_patternArgs.StartLine} \r\nEnd: {_patternArgs.EndLine}";
     }
 
     #endregion

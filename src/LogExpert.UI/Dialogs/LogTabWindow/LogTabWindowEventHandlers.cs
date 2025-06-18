@@ -79,20 +79,15 @@ internal partial class LogTabWindow
         try
         {
             _shouldStop = true;
-            _statusLineEventHandle.Set();
-            _statusLineEventWakeupHandle.Set();
+            _ = _statusLineEventHandle.Set();
+            _ = _statusLineEventWakeupHandle.Set();
             _ledThread.Join();
 
             IList<LogWindow.LogWindow> deleteLogWindowList = [];
             ConfigManager.Settings.AlwaysOnTop = TopMost && ConfigManager.Settings.Preferences.AllowOnlyOneInstance;
             SaveLastOpenFilesList();
 
-            foreach (var logWindow in _logWindowList)
-            {
-                deleteLogWindowList.Add(logWindow);
-            }
-
-            foreach (var logWindow in deleteLogWindowList)
+            foreach (var logWindow in _logWindowList.ToArray())
             {
                 RemoveAndDisposeLogWindow(logWindow, true);
             }
