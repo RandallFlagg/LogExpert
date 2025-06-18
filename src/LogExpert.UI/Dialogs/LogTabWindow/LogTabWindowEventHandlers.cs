@@ -13,8 +13,6 @@ using LogExpert.Dialogs;
 using LogExpert.UI.Dialogs;
 using LogExpert.UI.Extensions.LogWindow;
 
-using WeifenLuo.WinFormsUI.Docking;
-
 namespace LogExpert.UI.Controls.LogTabWindow;
 
 internal partial class LogTabWindow
@@ -708,21 +706,17 @@ internal partial class LogTabWindow
     [SupportedOSPlatform("windows")]
     private void OnCloseOtherTabsToolStripMenuItemClick (object sender, EventArgs e)
     {
-        IList<Form> closeList = [];
+        List<LogWindow.LogWindow> closeList = [];
         lock (_logWindowList)
         {
-            foreach (DockContent content in dockPanel.Contents)
-            {
-                if (content != dockPanel.ActiveContent && content is LogWindow.LogWindow)
-                {
-                    closeList.Add(content);
-                }
-            }
+            closeList = [.. dockPanel.Contents
+                .OfType<LogWindow.LogWindow>()
+                .Where(content => content != dockPanel.ActiveContent)];
         }
 
-        foreach (var form in closeList)
+        foreach (var logWindow in closeList)
         {
-            form.Close();
+            logWindow.Close();
         }
     }
 
@@ -801,9 +795,8 @@ internal partial class LogTabWindow
 
             lock (_logWindowList)
             {
-                foreach (DockContent content in dockPanel.Contents.Cast<DockContent>())
+                foreach (var logWindow in dockPanel.Contents.OfType<LogWindow.LogWindow>())
                 {
-                    var logWindow = content as LogWindow.LogWindow;
                     var persistenceFileName = logWindow?.SavePersistenceData(true);
                     if (persistenceFileName != null)
                     {
