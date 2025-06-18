@@ -501,20 +501,20 @@ partial class LogWindow
         }
     }
 
-    public IList<HighlightMatchEntry> FindHighlightMatches (ITextValue column)
+    public IList<HighlightMatchEntry> FindHighlightMatches (ITextValue line)
     {
         IList<HighlightMatchEntry> resultList = [];
 
-        if (column != null)
+        if (line != null)
         {
             lock (_currentHighlightGroupLock)
             {
-                GetHighlightEntryMatches(column, _currentHighlightGroup.HighlightEntryList, resultList);
+                GetHighlightEntryMatches(line, _currentHighlightGroup.HighlightEntryList, resultList);
             }
 
             lock (_tempHighlightEntryList)
             {
-                GetHighlightEntryMatches(column, _tempHighlightEntryList, resultList);
+                GetHighlightEntryMatches(line, _tempHighlightEntryList, resultList);
             }
         }
 
@@ -532,6 +532,7 @@ partial class LogWindow
                 dataGridView.FirstDisplayedScrollingRowIndex = _logFileReader.LineCount - 1;
             }
         }
+
         BeginInvoke(new MethodInvoker(dataGridView.Refresh));
         //this.dataGridView.Refresh();
         _parentLogTabWin.FollowTailChanged(this, isChecked, byTrigger);
