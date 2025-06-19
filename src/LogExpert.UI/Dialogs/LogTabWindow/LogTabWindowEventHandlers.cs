@@ -706,13 +706,10 @@ internal partial class LogTabWindow
     [SupportedOSPlatform("windows")]
     private void OnCloseOtherTabsToolStripMenuItemClick (object sender, EventArgs e)
     {
-        List<LogWindow.LogWindow> closeList = [];
-        lock (_logWindowList)
-        {
-            closeList = [.. dockPanel.Contents
+        var closeList = dockPanel.Contents
                 .OfType<LogWindow.LogWindow>()
-                .Where(content => content != dockPanel.ActiveContent)];
-        }
+                .Where(content => content != dockPanel.ActiveContent)
+                .ToList();
 
         foreach (var logWindow in closeList)
         {

@@ -275,7 +275,7 @@ internal partial class PatternWindow : Form //TODO: Can this be changed to UserC
         contentDataGridView.RowCount = _currentBlock.TargetEnd - _currentBlock.TargetStart + 1;
         contentDataGridView.Refresh();
         contentDataGridView.CurrentCell = contentDataGridView.Rows[0].Cells[0];
-        blockLinesLabel.Text = "" + contentDataGridView.RowCount;
+        blockLinesLabel.Text = $"{contentDataGridView.RowCount}";
     }
 
     private void OnContentDataGridViewCellValueNeeded (object sender, DataGridViewCellValueEventArgs e)
@@ -361,7 +361,7 @@ internal partial class PatternWindow : Form //TODO: Can this be changed to UserC
     {
         _logWindow.PatternStatisticSelectRange(_patternArgs);
         recalcButton.Enabled = true;
-        rangeLabel.Text = $"Start: {_patternArgs.StartLine} \r\nEnd: {_patternArgs.EndLine}";
+        rangeLabel.Text = $"Start: {_patternArgs.StartLine}\nEnd: {_patternArgs.EndLine}";
     }
 
     #endregion

@@ -11,7 +11,6 @@ using NLog;
 namespace LogExpert.UI.Entities;
 
 //TOOD: This whole class should be refactored and rethought
-//TODO: This class should not knoow ConfigManager?
 internal static class PaintHelper
 {
     #region Fields
