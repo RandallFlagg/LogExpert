@@ -37,7 +37,7 @@ internal static class PaintHelper
             var entry = logPaintCtx.FindHighlightEntry(line, true);
             e.Graphics.SetClip(e.CellBounds);
 
-            if ((e.State & DataGridViewElementStates.Selected) == DataGridViewElementStates.Selected)
+            if (e.State.HasFlag(DataGridViewElementStates.Selected))
             {
                 using var brush = GetBrushForFocusedControl(gridView.Focused, e.CellStyle.SelectionBackColor);
                 e.Graphics.FillRectangle(brush, e.CellBounds);

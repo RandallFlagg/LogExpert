@@ -401,7 +401,7 @@ partial class LogWindow
             var entry = FindFirstNoWordMatchHilightEntry(line);
             e.Graphics.SetClip(e.CellBounds);
 
-            if ((e.State & DataGridViewElementStates.Selected) == DataGridViewElementStates.Selected)
+            if (e.State.HasFlag(DataGridViewElementStates.Selected))
             {
                 using var brush = PaintHelper.GetBrushForFocusedControl(gridView.Focused, e.CellStyle.SelectionBackColor);
                 e.Graphics.FillRectangle(brush, e.CellBounds);

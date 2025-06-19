@@ -235,7 +235,7 @@ internal partial class BookmarkWindow : DockContent, ISharedToolWindow, IBookmar
 
     private void CommentPainting (BufferedDataGridView gridView, DataGridViewCellPaintingEventArgs e)
     {
-        if ((e.State & DataGridViewElementStates.Selected) == DataGridViewElementStates.Selected)
+        if (e.State.HasFlag(DataGridViewElementStates.Selected))
         {
             using var brush = PaintHelper.GetBrushForFocusedControl(gridView.Focused, e.CellStyle.SelectionBackColor);
             e.Graphics.FillRectangle(brush, e.CellBounds);
