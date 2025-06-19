@@ -1,4 +1,5 @@
 using System.Drawing;
+using System.Globalization;
 using System.Text;
 using System.Text.Json;
 using System.Xml;
@@ -351,7 +352,7 @@ public static class Persister
         var sLineCount = fileElement.GetAttribute("lineCount");
         if (sLineCount != null && sLineCount.Length > 0)
         {
-            persistenceData.LineCount = int.Parse(sLineCount);
+            persistenceData.LineCount = int.Parse(sLineCount, CultureInfo.InvariantCulture);
         }
         persistenceData.FilterParamsList = ReadFilter(fileElement);
         persistenceData.FilterTabDataList = ReadFilterTabs(fileElement);
@@ -406,6 +407,7 @@ public static class Persister
                         line = attr.InnerText;
                     }
                 }
+
                 foreach (XmlNode subNode in node.ChildNodes)
                 {
                     if (subNode.Name.Equals("text", StringComparison.OrdinalIgnoreCase))
@@ -421,22 +423,25 @@ public static class Persister
                         posY = subNode.InnerText;
                     }
                 }
+
                 if (line == null || posX == null || posY == null)
                 {
                     _logger.Error($"Invalid XML format for bookmark: {node.InnerText}");
                     continue;
                 }
-                var lineNum = int.Parse(line);
+
+                var lineNum = int.Parse(line, CultureInfo.InvariantCulture);
 
                 Entities.Bookmark bookmark = new(lineNum)
                 {
-                    OverlayOffset = new Size(int.Parse(posX), int.Parse(posY))
+                    OverlayOffset = new Size(int.Parse(posX, CultureInfo.InvariantCulture), int.Parse(posY, CultureInfo.InvariantCulture))
                 };
 
                 if (text != null)
                 {
                     bookmark.Text = text;
                 }
+
                 bookmarkList.Add(lineNum, bookmark);
             }
         }
@@ -459,10 +464,10 @@ public static class Persister
     private static SortedList<int, RowHeightEntry> ReadRowHeightList (XmlElement startNode)
     {
         SortedList<int, RowHeightEntry> rowHeightList = [];
-        XmlNode rowHeightsNode = startNode.SelectSingleNode("rowheights");
+        var rowHeightsNode = startNode.SelectSingleNode("rowheights");
         if (rowHeightsNode != null)
         {
-            XmlNodeList rowHeightNodeList = rowHeightsNode.ChildNodes; // all "rowheight" nodes
+            var rowHeightNodeList = rowHeightsNode.ChildNodes; // all "rowheight" nodes
             foreach (XmlNode node in rowHeightNodeList)
             {
                 string height = null;
@@ -478,11 +483,12 @@ public static class Persister
                         height = attr.InnerText;
                     }
                 }
-                var lineNum = int.Parse(line);
-                var heightValue = int.Parse(height);
+                var lineNum = int.Parse(line, CultureInfo.InvariantCulture);
+                var heightValue = int.Parse(height, CultureInfo.InvariantCulture);
                 rowHeightList.Add(lineNum, new RowHeightEntry(lineNum, heightValue));
             }
         }
+
         return rowHeightList;
     }
 
@@ -558,7 +564,7 @@ public static class Persister
         value = GetOptionsAttribute(optionsNode, "multifile", "maxDays");
         try
         {
-            persistenceData.MultiFileMaxDays = value != null ? short.Parse(value) : 0;
+            persistenceData.MultiFileMaxDays = value != null ? short.Parse(value, CultureInfo.InvariantCulture) : 0;
         }
         catch (Exception)
         {
@@ -586,12 +592,12 @@ public static class Persister
         value = GetOptionsAttribute(optionsNode, "currentline", "line");
         if (value != null)
         {
-            persistenceData.CurrentLine = int.Parse(value);
+            persistenceData.CurrentLine = int.Parse(value, CultureInfo.InvariantCulture);
         }
         value = GetOptionsAttribute(optionsNode, "firstDisplayedLine", "line");
         if (value != null)
         {
-            persistenceData.FirstDisplayedLine = int.Parse(value);
+            persistenceData.FirstDisplayedLine = int.Parse(value, CultureInfo.InvariantCulture);
         }
 
         value = GetOptionsAttribute(optionsNode, "filter", "visible");
@@ -601,7 +607,7 @@ public static class Persister
         value = GetOptionsAttribute(optionsNode, "filter", "position");
         if (value != null)
         {
-            persistenceData.FilterPosition = int.Parse(value);
+            persistenceData.FilterPosition = int.Parse(value, CultureInfo.InvariantCulture);
         }
 
         value = GetOptionsAttribute(optionsNode, "bookmarklist", "visible");
@@ -609,7 +615,7 @@ public static class Persister
         value = GetOptionsAttribute(optionsNode, "bookmarklist", "position");
         if (value != null)
         {
-            persistenceData.BookmarkListPosition = int.Parse(value);
+            persistenceData.BookmarkListPosition = int.Parse(value, CultureInfo.InvariantCulture);
         }
 
         value = GetOptionsAttribute(optionsNode, "followTail", "enabled");

@@ -86,7 +86,7 @@ public class RolloverFilenameBuilder
             _indexGroup = match.Groups["index"];
             if (_indexGroup.Success)
             {
-                Index = _indexGroup.Value.Length > 0 ? int.Parse(_indexGroup.Value) : 0;
+                Index = _indexGroup.Value.Length > 0 ? int.Parse(_indexGroup.Value, CultureInfo.InvariantCulture) : 0;
             }
             _condGroup = match.Groups["cond"];
         }
@@ -120,7 +120,7 @@ public class RolloverFilenameBuilder
             if (!_hideZeroIndex || Index > 0)
             {
                 var format = "D" + _indexGroup.Length;
-                fileName = fileName.Insert(_indexGroup.Index, Index.ToString(format));
+                fileName = fileName.Insert(_indexGroup.Index, Index.ToString(format, CultureInfo.InvariantCulture));
                 if (_hideZeroIndex && _condContent != null)
                 {
                     fileName = fileName.Insert(_indexGroup.Index, _condContent);
