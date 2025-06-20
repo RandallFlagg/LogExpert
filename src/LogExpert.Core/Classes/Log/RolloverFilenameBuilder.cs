@@ -24,7 +24,7 @@ namespace LogExpert.Core.Classes.Log;
 /// <summary>
 /// This class is responsible for building file names for multifile.
 /// </summary>
-public class RolloverFilenameBuilder
+internal class RolloverFilenameBuilder
 {
     #region Fields
 
