@@ -63,11 +63,9 @@ public class CmdLine
     {
         get
         {
-            if (parameters.TryGetValue(name, out CmdLineParameter value) == false)
-            {
-                throw new CmdLineException(name, "Not a registered parameter.");
-            }
-            return value;
+            return parameters.TryGetValue(name, out CmdLineParameter value)
+                ? value
+                : throw new CmdLineException(name, "Not a registered parameter.");
         }
     }
 
