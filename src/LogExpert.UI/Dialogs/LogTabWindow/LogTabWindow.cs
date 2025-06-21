@@ -168,7 +168,7 @@ internal partial class LogTabWindow : Form, ILogTabWindow
         // get a list of resource names from the manifest
         var resNames = a.GetManifestResourceNames();
 
-        Bitmap bmp = Resources.Resources.Deceased;
+        Bitmap bmp = Resources.Deceased;
         _deadIcon = Icon.FromHandle(bmp.GetHicon());
         bmp.Dispose();
         Closing += OnLogTabWindowClosing;
