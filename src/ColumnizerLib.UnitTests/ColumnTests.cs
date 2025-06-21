@@ -1,5 +1,7 @@
-﻿using LogExpert;
+using LogExpert;
+
 using NUnit.Framework;
+
 using System;
 using System.Text;
 
@@ -9,44 +11,30 @@ namespace ColumnizerLib.UnitTests;
 public class ColumnTests
 {
     [Test]
-    public void Column_LineCutOf()
+    public void Column_LineCutOff ()
     {
-        Column column = new();
+        var expectedFullValue = new StringBuilder().Append('6', 4675).Append("1234").ToString();
+        var expectedDisplayValue = expectedFullValue[..4675] + "..."; // Using substring shorthand
 
-        StringBuilder builder = new();
-
-        for (var i = 0; i < 4675; i++)
+        Column column = new()
         {
-            builder.Append("6");
-        }
+            FullValue = expectedFullValue
+        };
 
-        var expected = builder + "...";
-        builder.Append("1234");
-
-        column.FullValue = builder.ToString();
-
-        Assert.That(column.DisplayValue, Is.EqualTo(expected));
-        Assert.That(column.FullValue, Is.EqualTo(builder.ToString()));
+        Assert.That(column.DisplayValue, Is.EqualTo(expectedDisplayValue));
+        Assert.That(column.FullValue, Is.EqualTo(expectedFullValue));
     }
 
     [Test]
-    public void Column_NoLineCutOf()
+    public void Column_NoLineCutOff ()
     {
-        Column column = new();
-
-        StringBuilder builder = new();
-
-        for (var i = 0; i < 4675; i++)
+        var expected = new StringBuilder().Append('6', 4675).ToString();
+        Column column = new()
         {
-            builder.Append("6");
-        }
+            FullValue = expected
+        };
 
-        var expected = builder.ToString();
-
-        column.FullValue = expected;
-
-        Assert.That(column.DisplayValue, Is.EqualTo(expected));
-        Assert.That(column.FullValue, Is.EqualTo(expected));
+        Assert.That(column.DisplayValue, Is.EqualTo(column.FullValue));
     }
 
     [Test]

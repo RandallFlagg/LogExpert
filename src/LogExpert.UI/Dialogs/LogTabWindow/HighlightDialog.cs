@@ -12,7 +12,7 @@ using NLog;
 namespace LogExpert.Dialogs;
 
 [SupportedOSPlatform("windows")]
-public partial class HighlightDialog : Form
+internal partial class HighlightDialog : Form
 {
     private static readonly ILogger _logger = LogManager.GetCurrentClassLogger();
 

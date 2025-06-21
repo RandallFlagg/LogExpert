@@ -1,7 +1,6 @@
 using System.Text;
 
 using LogExpert.Core.Classes;
-using LogExpert.Core.Classes.Bookmark;
 using LogExpert.Core.Classes.Columnizer;
 using LogExpert.Core.Classes.Filter;
 using LogExpert.Core.Classes.Highlight;
@@ -524,6 +523,7 @@ partial class LogWindow
                 {
                     continue;
                 }
+
                 if (CheckHighlightEntryMatch(entry, line))
                 {
                     return entry;
@@ -548,20 +548,23 @@ partial class LogWindow
         }
     }
 
-    public IList<HilightMatchEntry> FindHighlightMatches (ITextValue column)
+    public IList<HighlightMatchEntry> FindHighlightMatches (ITextValue column)
     {
-        IList<HilightMatchEntry> resultList = new List<HilightMatchEntry>();
+        IList<HighlightMatchEntry> resultList = [];
+
         if (column != null)
         {
             lock (_currentHighlightGroupLock)
             {
                 GetHighlightEntryMatches(column, _currentHighlightGroup.HighlightEntryList, resultList);
             }
+
             lock (_tempHighlightEntryList)
             {
                 GetHighlightEntryMatches(column, _tempHighlightEntryList, resultList);
             }
         }
+
         return resultList;
     }
 
@@ -704,6 +707,7 @@ partial class LogWindow
                     dataGridView.FirstDisplayedScrollingRowIndex += 1;
                 }
             }
+
             dataGridView.CurrentCell = dataGridView.Rows[line].Cells[0];
         }
         catch (Exception e)
@@ -840,6 +844,7 @@ partial class LogWindow
                     break;
                 }
             }
+
             if (_bookmarkProvider.IsBookmarkAtLine(i))
             {
                 Bookmark bookmark = _bookmarkProvider.GetBookmarkForLine(i);
@@ -867,6 +872,7 @@ partial class LogWindow
                                 //heightSum += rr.Height;
                                 heightSum += GetRowHeight(rn);
                             }
+
                             r.Offset(0, r.Height + heightSum);
                         }
                         else
@@ -877,14 +883,17 @@ partial class LogWindow
                                 //heightSum += rr.Height;
                                 heightSum += GetRowHeight(rn);
                             }
+
                             r.Offset(0, -(r.Height + heightSum));
                         }
                         //r.Offset(0, this.dataGridView.DisplayRectangle.Height);
                     }
+
                     if (_logger.IsDebugEnabled)
                     {
-                        _logger.Debug("AddBookmarkOverlay() r.Location={0}, width={1}, scroll_offset={2}", r.Location.X, r.Width, dataGridView.HorizontalScrollingOffset);
+                        _logger.Debug($"AddBookmarkOverlay() r.Location={r.Location.X}, width={r.Width}, scroll_offset={dataGridView.HorizontalScrollingOffset}");
                     }
+
                     overlay.Position = r.Location - new Size(dataGridView.HorizontalScrollingOffset, 0);
                     overlay.Position += new Size(10, r.Height / 2);
                     dataGridView.AddOverlay(overlay);
@@ -1160,11 +1169,13 @@ partial class LogWindow
         {
             OnTailFollowed(EventArgs.Empty);
         }
+
         if (Preferences.TimestampControl)
         {
             SetTimestampLimits();
             SyncTimestampDisplay();
         }
+
         dataGridView.Focus();
 
         SendGuiStateUpdate();
@@ -1206,6 +1217,7 @@ partial class LogWindow
                     lineNumList.Add(row.Index);
                 }
             }
+
             lineNumList.Sort();
             // create dummy FilterPipe for connecting line numbers to original window
             // setting IsStopped to true prevents further filter processing
@@ -1283,11 +1295,11 @@ partial class LogWindow
         //}
     }
 
-    public void PreferencesChanged (Preferences newPreferences, bool isLoadTime, SettingsFlags flags)
+    public void PreferencesChanged (string fontName, float fontSize, bool setLastColumnWidth, int lastColumnWidth, bool isLoadTime, SettingsFlags flags)
     {
         if ((flags & SettingsFlags.GuiOrColors) == SettingsFlags.GuiOrColors)
         {
-            NormalFont = new Font(new FontFamily(newPreferences.FontName), newPreferences.FontSize);
+            NormalFont = new Font(new FontFamily(fontName), fontSize);
             BoldFont = new Font(NormalFont, FontStyle.Bold);
             MonospacedFont = new Font("Courier New", Preferences.FontSize, FontStyle.Bold);
 
@@ -1301,14 +1313,15 @@ partial class LogWindow
 
             ShowBookmarkBubbles = Preferences.ShowBubbles;
 
-            ApplyDataGridViewPrefs(dataGridView, newPreferences);
-            ApplyDataGridViewPrefs(filterGridView, newPreferences);
+            ApplyDataGridViewPrefs(dataGridView, setLastColumnWidth, lastColumnWidth);
+            ApplyDataGridViewPrefs(filterGridView, setLastColumnWidth, lastColumnWidth);
 
             if (Preferences.TimestampControl)
             {
                 SetTimestampLimits();
                 SyncTimestampDisplay();
             }
+
             if (isLoadTime)
             {
                 filterTailCheckBox.Checked = Preferences.FilterTail;
@@ -1319,11 +1332,13 @@ partial class LogWindow
             _timeSpreadCalc.TimeMode = Preferences.TimeSpreadTimeMode;
             timeSpreadingControl.ForeColor = Preferences.TimeSpreadColor;
             timeSpreadingControl.ReverseAlpha = Preferences.ReverseAlpha;
+
             if (CurrentColumnizer.IsTimeshiftImplemented())
             {
                 timeSpreadingControl.Invoke(new MethodInvoker(timeSpreadingControl.Refresh));
                 ShowTimeSpread(Preferences.ShowTimeSpread);
             }
+
             ToggleColumnFinder(Preferences.ShowColumnFinder, false);
         }
 
@@ -1400,6 +1415,7 @@ partial class LogWindow
             GetTimestampForLineForward(ref foundLine, roundToSeconds); // fwd to next valid timestamp
             return foundLine;
         }
+
         return -foundLine;
     }
 
@@ -1413,6 +1429,7 @@ partial class LogWindow
         {
             return lineNum;
         }
+
         if (timestamp < currentTimestamp)
         {
             //rangeStart = rangeStart;
@@ -1429,7 +1446,7 @@ partial class LogWindow
             return -lineNum;
         }
 
-        lineNum = (rangeEnd - rangeStart) / 2 + rangeStart;
+        lineNum = ((rangeEnd - rangeStart) / 2) + rangeStart;
         // prevent endless loop
         if (rangeEnd - rangeStart < 2)
         {
@@ -1438,12 +1455,12 @@ partial class LogWindow
             {
                 return rangeStart;
             }
+
             currentTimestamp = GetTimestampForLine(ref rangeEnd, roundToSeconds);
-            if (currentTimestamp.CompareTo(timestamp) == 0)
-            {
-                return rangeEnd;
-            }
-            return -lineNum;
+
+            return currentTimestamp.CompareTo(timestamp) == 0
+                ? rangeEnd
+                : -lineNum;
         }
 
         return FindTimestampLine_Internal(lineNum, rangeStart, rangeEnd, timestamp, roundToSeconds);
@@ -1454,7 +1471,6 @@ partial class LogWindow
    * has no timestamp, the previous line will be checked until a
    * timestamp is found.
    */
-
     public DateTime GetTimestampForLine (ref int lineNum, bool roundToSeconds)
     {
         lock (_currentColumnizerLock)
@@ -1463,7 +1479,8 @@ partial class LogWindow
             {
                 return DateTime.MinValue;
             }
-            _logger.Debug("GetTimestampForLine({0}) enter", lineNum);
+
+            _logger.Debug($"GetTimestampForLine({lineNum}) enter");
             DateTime timeStamp = DateTime.MinValue;
             var lookBack = false;
             if (lineNum >= 0 && lineNum < dataGridView.RowCount)
@@ -1474,25 +1491,30 @@ partial class LogWindow
                     {
                         return DateTime.MinValue;
                     }
+
                     lookBack = true;
                     ILogLine logLine = _logFileReader.GetLogLine(lineNum);
                     if (logLine == null)
                     {
                         return DateTime.MinValue;
                     }
+
                     ColumnizerCallbackObject.LineNum = lineNum;
                     timeStamp = CurrentColumnizer.GetTimestamp(ColumnizerCallbackObject, logLine);
                     if (roundToSeconds)
                     {
                         timeStamp = timeStamp.Subtract(TimeSpan.FromMilliseconds(timeStamp.Millisecond));
                     }
+
                     lineNum--;
                 }
             }
+
             if (lookBack)
             {
                 lineNum++;
             }
+
             _logger.Debug("GetTimestampForLine() leave with lineNum={0}", lineNum);
             return timeStamp;
         }
@@ -1503,7 +1525,6 @@ partial class LogWindow
    * has no timestamp, the next line will be checked until a
    * timestamp is found.
    */
-
     public DateTime GetTimestampForLineForward (ref int lineNum, bool roundToSeconds)
     {
         lock (_currentColumnizerLock)

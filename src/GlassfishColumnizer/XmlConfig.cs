@@ -1,4 +1,4 @@
-﻿using LogExpert;
+using LogExpert;
 
 namespace GlassfishColumnizer;
 
@@ -12,7 +12,7 @@ internal class XmlConfig : IXmlLogConfiguration
 
     public string Stylesheet { get; }
 
-    public string[] Namespace => null;
+    public string[] GetNamespaceDeclaration () => null;
 
     #endregion
 }

@@ -15,7 +15,7 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace LogExpert.UI.Controls.LogTabWindow;
 
-public partial class LogTabWindow
+internal partial class LogTabWindow
 {
     #region Public methods
 
@@ -72,9 +72,10 @@ public partial class LogTabWindow
 
         EncodingOptions encodingOptions = new();
         FillDefaultEncodingFromSettings(encodingOptions);
-        LogWindow.LogWindow logWindow = new(this, logFileName, isTempFile, forcePersistenceLoading, ConfigManager);
-
-        logWindow.GivenFileName = givenFileName;
+        LogWindow.LogWindow logWindow = new(this, logFileName, isTempFile, forcePersistenceLoading, ConfigManager)
+        {
+            GivenFileName = givenFileName
+        };
 
         if (preProcessColumnizer != null)
         {

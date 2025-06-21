@@ -16,7 +16,7 @@ namespace LogExpert.Dialogs;
 
 //TODO can be moved to Logexpert.UI if the PaintHelper has been refactored
 [SupportedOSPlatform("windows")]
-public partial class BookmarkWindow : DockContent, ISharedToolWindow, IBookmarkView
+internal partial class BookmarkWindow : DockContent, ISharedToolWindow, IBookmarkView
 {
     #region Fields
 
@@ -38,7 +38,7 @@ public partial class BookmarkWindow : DockContent, ISharedToolWindow, IBookmarkV
         AutoScaleMode = AutoScaleMode.Dpi;
 
         bookmarkDataGridView.CellValueNeeded += OnBoomarkDataGridViewCellValueNeeded;
-        bookmarkDataGridView.CellPainting += boomarkDataGridView_CellPainting;
+        bookmarkDataGridView.CellPainting += OnBoomarkDataGridViewCellPainting;
 
         ChangeTheme(Controls);
     }
@@ -50,6 +50,7 @@ public partial class BookmarkWindow : DockContent, ISharedToolWindow, IBookmarkV
     public void ChangeTheme (Control.ControlCollection container)
     {
         #region ApplyColorToAllControls
+
         foreach (Control component in container)
         {
             if (component.Controls != null && component.Controls.Count > 0)
@@ -65,6 +66,7 @@ public partial class BookmarkWindow : DockContent, ISharedToolWindow, IBookmarkV
             }
 
         }
+
         #endregion
 
         #region DataGridView
@@ -196,26 +198,18 @@ public partial class BookmarkWindow : DockContent, ISharedToolWindow, IBookmarkV
         HideIfNeeded();
     }
 
-    //TODO: BAD DESIGN! FIX!!!
-    public void PreferencesChanged (Preferences newPreferences, bool isLoadTime, SettingsFlags flags, IConfigManager configManager)
+    public void PreferencesChanged (string fontName, float fontSize, bool setLastColumnWidth, int lastColumnWidth, SettingsFlags flags)
     {
         if ((flags & SettingsFlags.GuiOrColors) == SettingsFlags.GuiOrColors)
         {
-            SetFont(newPreferences.FontName, newPreferences.FontSize);
-            if (bookmarkDataGridView.Columns.Count > 1 && newPreferences.SetLastColumnWidth)
+            SetFont(fontName, fontSize);
+            if (bookmarkDataGridView.Columns.Count > 1 && setLastColumnWidth)
             {
-                bookmarkDataGridView.Columns[bookmarkDataGridView.Columns.Count - 1].MinimumWidth =
-                    newPreferences.LastColumnWidth;
+                bookmarkDataGridView.Columns[bookmarkDataGridView.Columns.Count - 1].MinimumWidth = lastColumnWidth;
             }
 
-            PaintHelper.ApplyDataGridViewPrefs(bookmarkDataGridView, newPreferences, configManager);
+            PaintHelper.ApplyDataGridViewPrefs(bookmarkDataGridView, setLastColumnWidth, lastColumnWidth);
         }
-    }
-
-    //TODO: BAD DESIGN! FIX!!!
-    public void PreferencesChanged (Preferences newPreferences, bool isLoadTime, SettingsFlags flags)
-    {
-        PreferencesChanged(newPreferences, isLoadTime, flags, null);
     }
 
     public void SetCurrentFile (IFileViewContext ctx)
@@ -260,10 +254,13 @@ public partial class BookmarkWindow : DockContent, ISharedToolWindow, IBookmarkV
         {
             Rectangle r = ClientRectangle;
             e.Graphics.FillRectangle(SystemBrushes.FromSystemColor(ColorMode.BookmarksDefaultBackgroundColor), r);
-            RectangleF rect = r;
-            StringFormat sf = new();
-            sf.Alignment = StringAlignment.Center;
-            sf.LineAlignment = StringAlignment.Center;
+
+            StringFormat sf = new()
+            {
+                Alignment = StringAlignment.Center,
+                LineAlignment = StringAlignment.Center
+            };
+
             e.Graphics.DrawString("No bookmarks in current file", SystemFonts.DialogFont, SystemBrushes.WindowText, r, sf);
         }
         else
@@ -369,7 +366,7 @@ public partial class BookmarkWindow : DockContent, ISharedToolWindow, IBookmarkV
 
     #region Events handler
 
-    private void boomarkDataGridView_CellPainting (object sender, DataGridViewCellPaintingEventArgs e)
+    private void OnBoomarkDataGridViewCellPainting (object sender, DataGridViewCellPaintingEventArgs e)
     {
         if (bookmarkData == null)
         {

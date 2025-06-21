@@ -15,7 +15,7 @@ namespace LogExpert.Dialogs;
 /// The control raises events (ValueChanged, ValueDragged) when the date/time changes so that owner can react accordingly.
 /// </summary>
 [SupportedOSPlatform("windows")]
-public partial class DateTimeDragControl : UserControl
+internal partial class DateTimeDragControl : UserControl
 {
     #region Fields
 
@@ -234,16 +234,15 @@ public partial class DateTimeDragControl : UserControl
             .Select(DateFormatPartAdjuster.AdjustDateTimeFormatPart)
             .ToArray();
 
-        Rectangle rect = ClientRectangle;
-        var oneCharWidth = rect.Width / _dateParts.Sum(s => s.Length);
-        var left = rect.Left;
+        var oneCharWidth = ClientRectangle.Width / _dateParts.Sum(s => s.Length);
+        var left = ClientRectangle.Left;
 
         _digitRects.Clear();
 
         foreach (var datePart in _dateParts)
         {
             var s = datePart.Length * oneCharWidth;
-            _digitRects.Add(new Rectangle(left, rect.Top, s, rect.Height));
+            _digitRects.Add(new Rectangle(left, ClientRectangle.Top, s, ClientRectangle.Height));
             left += s;
         }
 

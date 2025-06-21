@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.Runtime.Versioning;
 using System.Text;
 
@@ -9,14 +10,14 @@ using LogExpert.Core.Config;
 using LogExpert.Core.Entities;
 using LogExpert.Core.EventArguments;
 using LogExpert.Dialogs;
-using LogExpert.UI.Controls.LogWindow;
 using LogExpert.UI.Dialogs;
+using LogExpert.UI.Extensions.LogWindow;
 
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace LogExpert.UI.Controls.LogTabWindow;
 
-public partial class LogTabWindow
+internal partial class LogTabWindow
 {
     #region Events handler
 
@@ -516,7 +517,7 @@ public partial class LogTabWindow
         }
         else
         {
-            _logger.Warn("Received SyncModeChanged event while disposing. Event ignored.");
+            _logger.Warn(CultureInfo.InvariantCulture, "Received SyncModeChanged event while disposing. Event ignored.");
         }
     }
 

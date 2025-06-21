@@ -3,7 +3,6 @@ using System.Runtime.Versioning;
 using System.Text;
 using System.Text.RegularExpressions;
 
-using LogExpert.Classes.Filter;
 using LogExpert.Core.Callback;
 using LogExpert.Core.Classes;
 using LogExpert.Core.Classes.Columnizer;
@@ -60,6 +59,21 @@ partial class LogWindow
         dataGridViewCellStyleMainGrid.ForeColor = SystemColors.ControlText;
         dataGridViewCellStyleMainGrid.SelectionBackColor = SystemColors.Highlight;
         dataGridViewCellStyleMainGrid.SelectionForeColor = SystemColors.HighlightText;
+
+        Color highlightColor = SystemColors.Highlight;
+        //Color is smaller than 128, means its darker
+        var isDark = (highlightColor.R * 0.2126) + (highlightColor.G * 0.7152) + (highlightColor.B * 0.0722) < 255 / 2;
+
+        if (isDark)
+        {
+            dataGridViewCellStyleMainGrid.SelectionForeColor = Color.White;
+        }
+        else
+        {
+            dataGridViewCellStyleMainGrid.SelectionForeColor = Color.Black;
+
+        }
+
         dataGridViewCellStyleMainGrid.WrapMode = DataGridViewTriState.False;
         dataGridView.DefaultCellStyle = dataGridViewCellStyleMainGrid;
 
@@ -69,6 +83,16 @@ partial class LogWindow
         dataGridViewCellStyleFilterGrid.ForeColor = SystemColors.ControlText;
         dataGridViewCellStyleFilterGrid.SelectionBackColor = SystemColors.Highlight;
         dataGridViewCellStyleFilterGrid.SelectionForeColor = SystemColors.HighlightText;
+
+        if (isDark)
+        {
+            dataGridViewCellStyleFilterGrid.SelectionForeColor = Color.White;
+        }
+        else
+        {
+            dataGridViewCellStyleFilterGrid.SelectionForeColor = Color.Black;
+        }
+
         dataGridViewCellStyleFilterGrid.WrapMode = DataGridViewTriState.False;
         filterGridView.DefaultCellStyle = dataGridViewCellStyleFilterGrid;
     }
@@ -131,7 +155,7 @@ partial class LogWindow
 
             if (persistenceData.MultiFileNames.Count > 0)
             {
-                _logger.Info("Detected MultiFile name list in persistence options");
+                _logger.Info(CultureInfo.InvariantCulture, "Detected MultiFile name list in persistence options");
                 _fileNames = new string[persistenceData.MultiFileNames.Count];
                 persistenceData.MultiFileNames.CopyTo(_fileNames);
             }
@@ -306,7 +330,7 @@ partial class LogWindow
 
     private void EnterLoadFileStatus ()
     {
-        _logger.Debug("EnterLoadFileStatus begin");
+        _logger.Debug(CultureInfo.InvariantCulture, "EnterLoadFileStatus begin");
 
         if (InvokeRequired)
         {
@@ -331,7 +355,7 @@ partial class LogWindow
         ClearBookmarkList();
         dataGridView.ClearSelection();
         dataGridView.RowCount = 0;
-        _logger.Debug("EnterLoadFileStatus end");
+        _logger.Debug(CultureInfo.InvariantCulture, "EnterLoadFileStatus end");
     }
 
     [SupportedOSPlatform("windows")]
@@ -351,7 +375,7 @@ partial class LogWindow
     [SupportedOSPlatform("windows")]
     private void LogfileDead ()
     {
-        _logger.Info("File not found.");
+        _logger.Info(CultureInfo.InvariantCulture, "File not found.");
         _isDeadFile = true;
 
         //this.logFileReader.FileSizeChanged -= this.FileSizeChangedHandler;
@@ -378,7 +402,7 @@ partial class LogWindow
     [SupportedOSPlatform("windows")]
     private void LogfileRespawned ()
     {
-        _logger.Info("LogfileDead(): Reloading file because it has been respawned.");
+        _logger.Info(CultureInfo.InvariantCulture, "LogfileDead(): Reloading file because it has been respawned.");
         _isDeadFile = false;
         dataGridView.Enabled = true;
         StatusLineText("");
@@ -504,7 +528,7 @@ partial class LogWindow
             }
             else
             {
-                _logger.Debug("Preventing reload because of recursive calls.");
+                _logger.Debug(CultureInfo.InvariantCulture, "Preventing reload because of recursive calls.");
             }
 
             _reloadOverloadCounter--;
@@ -514,9 +538,9 @@ partial class LogWindow
     [SupportedOSPlatform("windows")]
     private void ReloadFinishedThreadFx ()
     {
-        _logger.Info("Waiting for loading to be complete.");
+        _logger.Info(CultureInfo.InvariantCulture, "Waiting for loading to be complete.");
         _loadingFinishedEvent.WaitOne();
-        _logger.Info("Refreshing filter view because of reload.");
+        _logger.Info(CultureInfo.InvariantCulture, "Refreshing filter view because of reload.");
         Invoke(new MethodInvoker(FilterSearch));
         LoadFilterPipes();
     }
@@ -527,7 +551,7 @@ partial class LogWindow
         {
             if (e.ReadPos >= e.FileSize)
             {
-                //_logger.Warn("UpdateProgress(): ReadPos (" + e.ReadPos + ") is greater than file size (" + e.FileSize + "). Aborting Update");
+                //_logger.Warn(CultureInfo.InvariantCulture, "UpdateProgress(): ReadPos (" + e.ReadPos + ") is greater than file size (" + e.FileSize + "). Aborting Update");
                 return;
             }
 
@@ -564,7 +588,7 @@ partial class LogWindow
 
     private void LoadingFinished ()
     {
-        _logger.Info("File loading complete.");
+        _logger.Info(CultureInfo.InvariantCulture, "File loading complete.");
 
         StatusLineText("");
         _logFileReader.FileSizeChanged += OnFileSizeChanged;
@@ -590,7 +614,12 @@ partial class LogWindow
         _statusEventArgs.FileSize = _logFileReader.FileSize;
         SendStatusLineUpdate();
 
-        PreferencesChanged(_parentLogTabWin.Preferences, true, SettingsFlags.All);
+        var setLastColumnWidth = _parentLogTabWin.Preferences.SetLastColumnWidth;
+        var lastColumnWidth = _parentLogTabWin.Preferences.LastColumnWidth;
+        var fontName = _parentLogTabWin.Preferences.FontName;
+        var fontSize = _parentLogTabWin.Preferences.FontSize;
+
+        PreferencesChanged(fontName, fontSize, setLastColumnWidth, lastColumnWidth, true, SettingsFlags.All);
         //LoadPersistenceData();
     }
 
@@ -599,16 +628,16 @@ partial class LogWindow
         Thread.CurrentThread.Name = "LogEventWorker";
         while (true)
         {
-            _logger.Debug("Waiting for signal");
+            _logger.Debug(CultureInfo.InvariantCulture, "Waiting for signal");
             _logEventArgsEvent.WaitOne();
-            _logger.Debug("Wakeup signal received.");
+            _logger.Debug(CultureInfo.InvariantCulture, "Wakeup signal received.");
             while (true)
             {
                 LogEventArgs e;
                 var lastLineCount = 0;
                 lock (_logEventArgsList)
                 {
-                    _logger.Info("{0} events in queue", _logEventArgsList.Count);
+                    _logger.Info(CultureInfo.InvariantCulture, "{0} events in queue", _logEventArgsList.Count);
                     if (_logEventArgsList.Count == 0)
                     {
                         _logEventArgsEvent.Reset();
@@ -687,7 +716,7 @@ partial class LogWindow
                 dataGridView.RowCount = e.LineCount;
             }
 
-            _logger.Debug("UpdateGrid(): new RowCount={0}", dataGridView.RowCount);
+            _logger.Debug(CultureInfo.InvariantCulture, "UpdateGrid(): new RowCount={0}", dataGridView.RowCount);
 
             if (e.IsRollover)
             {
@@ -702,7 +731,7 @@ partial class LogWindow
                         currentLineNum = 0;
                     }
 
-                    _logger.Debug("UpdateGrid(): Rollover=true, Rollover offset={0}, currLineNum was {1}, new currLineNum={2}", e.RolloverOffset, dataGridView.CurrentCellAddress.Y, currentLineNum);
+                    _logger.Debug(CultureInfo.InvariantCulture, "UpdateGrid(): Rollover=true, Rollover offset={0}, currLineNum was {1}, new currLineNum={2}", e.RolloverOffset, dataGridView.CurrentCellAddress.Y, currentLineNum);
                     firstDisplayedLine -= e.RolloverOffset;
                     if (firstDisplayedLine < 0)
                     {
@@ -770,7 +799,8 @@ partial class LogWindow
             var filterLineAdded = false;
             for (var i = filterStart; i < e.LineCount; ++i)
             {
-                ILogLine line = _logFileReader.GetLogLine(i);
+                var line = _logFileReader.GetLogLine(i);
+                //TODO: Why line can be equal null here? Need to understand all the situations and handle them correctlly. Prevent this from happening and replace the check with an exception throw
                 if (line == null)
                 {
                     return;
@@ -924,7 +954,7 @@ partial class LogWindow
 
     private void SetColumnizerInternal (ILogLineColumnizer columnizer)
     {
-        _logger.Info("SetColumnizerInternal(): {0}", columnizer.GetName());
+        _logger.Info(CultureInfo.InvariantCulture, "SetColumnizerInternal(): {0}", columnizer.GetName());
 
         ILogLineColumnizer oldColumnizer = CurrentColumnizer;
         var oldColumnizerIsXmlType = CurrentColumnizer is ILogLineXmlColumnizer;
@@ -1092,21 +1122,18 @@ partial class LogWindow
         }
     }
 
-    private void PaintCell (DataGridViewCellPaintingEventArgs e, BufferedDataGridView gridView, bool noBackgroundFill,
-        HighlightEntry groundEntry)
+    private void PaintCell (DataGridViewCellPaintingEventArgs e, BufferedDataGridView gridView, bool noBackgroundFill, HighlightEntry groundEntry)
     {
         PaintHighlightedCell(e, gridView, noBackgroundFill, groundEntry);
     }
 
-    private void PaintHighlightedCell (DataGridViewCellPaintingEventArgs e, BufferedDataGridView gridView,
-        bool noBackgroundFill,
-        HighlightEntry groundEntry)
+    private void PaintHighlightedCell (DataGridViewCellPaintingEventArgs e, BufferedDataGridView gridView, bool noBackgroundFill, HighlightEntry groundEntry)
     {
         var column = e.Value as IColumn;
 
         column ??= Column.EmptyColumn;
 
-        IList<HilightMatchEntry> matchList = FindHighlightMatches(column);
+        IList<HighlightMatchEntry> matchList = FindHighlightMatches(column);
         // too many entries per line seem to cause problems with the GDI
         while (matchList.Count > 50)
         {
@@ -1121,23 +1148,23 @@ partial class LogWindow
             IsWordMatch = true
         };
 
-        HilightMatchEntry hme = new()
+        HighlightMatchEntry hme = new()
         {
             StartPos = 0,
             Length = column.DisplayValue.Length,
-            HilightEntry = he
+            HighlightEntry = he
         };
 
         if (groundEntry != null)
         {
-            hme.HilightEntry.IsBold = groundEntry.IsBold;
+            hme.HighlightEntry.IsBold = groundEntry.IsBold;
         }
 
         matchList = MergeHighlightMatchEntries(matchList, hme);
 
-        var leftPad = e.CellStyle.Padding.Left;
-        RectangleF rect = new(e.CellBounds.Left + leftPad, e.CellBounds.Top, e.CellBounds.Width,
-            e.CellBounds.Height);
+        //var leftPad = e.CellStyle.Padding.Left;
+        //RectangleF rect = new(e.CellBounds.Left + leftPad, e.CellBounds.Top, e.CellBounds.Width, e.CellBounds.Height);
+
         Rectangle borderWidths = PaintHelper.BorderWidths(e.AdvancedBorderStyle);
         Rectangle valBounds = e.CellBounds;
         valBounds.Offset(borderWidths.X, borderWidths.Y);
@@ -1172,33 +1199,29 @@ partial class LogWindow
         Rectangle r = gridView.GetCellDisplayRectangle(e.ColumnIndex, e.RowIndex, true);
         e.Graphics.SetClip(e.CellBounds);
 
-        foreach (HilightMatchEntry matchEntry in matchList)
+        foreach (HighlightMatchEntry matchEntry in matchList)
         {
-            Font font = matchEntry != null && matchEntry.HilightEntry.IsBold ? BoldFont : NormalFont;
-            Brush bgBrush = matchEntry.HilightEntry.BackgroundColor != Color.Empty
-                ? new SolidBrush(matchEntry.HilightEntry.BackgroundColor)
+            Font font = matchEntry != null && matchEntry.HighlightEntry.IsBold ? BoldFont : NormalFont;
+
+            Brush bgBrush = matchEntry.HighlightEntry.BackgroundColor != Color.Empty
+                ? new SolidBrush(matchEntry.HighlightEntry.BackgroundColor)
                 : null;
+
             var matchWord = column.DisplayValue.Substring(matchEntry.StartPos, matchEntry.Length);
             Size wordSize = TextRenderer.MeasureText(e.Graphics, matchWord, font, proposedSize, flags);
             wordSize.Height = e.CellBounds.Height;
             Rectangle wordRect = new(wordPos, wordSize);
 
-            Color foreColor = matchEntry.HilightEntry.ForegroundColor;
+            Color foreColor = matchEntry.HighlightEntry.ForegroundColor;
             if ((e.State & DataGridViewElementStates.Selected) != DataGridViewElementStates.Selected)
             {
-                if (!noBackgroundFill && bgBrush != null && !matchEntry.HilightEntry.NoBackground)
+                if (!noBackgroundFill && bgBrush != null && !matchEntry.HighlightEntry.NoBackground)
                 {
                     e.Graphics.FillRectangle(bgBrush, wordRect);
                 }
             }
 
-            if (foreColor == Color.Black)
-            {
-                foreColor = ColorMode.ForeColor;
-            }
-
-            TextRenderer.DrawText(e.Graphics, matchWord, font, wordRect,
-                foreColor, flags);
+            TextRenderer.DrawText(e.Graphics, matchWord, font, wordRect, foreColor, flags);
 
             wordPos.Offset(wordSize.Width, 0);
             bgBrush?.Dispose();
@@ -1214,26 +1237,25 @@ partial class LogWindow
     /// <param name="matchList">List of all highlight matches for the current cell</param>
     /// <param name="groundEntry">The entry that is used as the default.</param>
     /// <returns>List of HilightMatchEntry objects. The list spans over the whole cell and contains color infos for every substring.</returns>
-    private IList<HilightMatchEntry> MergeHighlightMatchEntries (IList<HilightMatchEntry> matchList,
-        HilightMatchEntry groundEntry)
+    private IList<HighlightMatchEntry> MergeHighlightMatchEntries (IList<HighlightMatchEntry> matchList, HighlightMatchEntry groundEntry)
     {
         // Fill an area with lenth of whole text with a default hilight entry
         var entryArray = new HighlightEntry[groundEntry.Length];
         for (var i = 0; i < entryArray.Length; ++i)
         {
-            entryArray[i] = groundEntry.HilightEntry;
+            entryArray[i] = groundEntry.HighlightEntry;
         }
 
         // "overpaint" with all matching word match enries
         // Non-word-mode matches will not overpaint because they use the groundEntry
-        foreach (HilightMatchEntry me in matchList)
+        foreach (HighlightMatchEntry me in matchList)
         {
             var endPos = me.StartPos + me.Length;
             for (var i = me.StartPos; i < endPos; ++i)
             {
-                if (me.HilightEntry.IsWordMatch)
+                if (me.HighlightEntry.IsWordMatch)
                 {
-                    entryArray[i] = me.HilightEntry;
+                    entryArray[i] = me.HighlightEntry;
                 }
                 else
                 {
@@ -1243,7 +1265,7 @@ partial class LogWindow
         }
 
         // collect areas with same hilight entry and build new highlight match entries for it
-        IList<HilightMatchEntry> mergedList = [];
+        IList<HighlightMatchEntry> mergedList = [];
 
         if (entryArray.Length > 0)
         {
@@ -1255,11 +1277,11 @@ partial class LogWindow
             {
                 if (entryArray[pos] != currentEntry)
                 {
-                    HilightMatchEntry me = new()
+                    HighlightMatchEntry me = new()
                     {
                         StartPos = lastStartPos,
                         Length = pos - lastStartPos,
-                        HilightEntry = currentEntry
+                        HighlightEntry = currentEntry
                     };
 
                     mergedList.Add(me);
@@ -1268,11 +1290,11 @@ partial class LogWindow
                 }
             }
 
-            HilightMatchEntry me2 = new()
+            HighlightMatchEntry me2 = new()
             {
                 StartPos = lastStartPos,
                 Length = pos - lastStartPos,
-                HilightEntry = currentEntry
+                HighlightEntry = currentEntry
             };
 
             mergedList.Add(me2);
@@ -1348,7 +1370,7 @@ partial class LogWindow
         return resultList;
     }
 
-    private void GetHighlightEntryMatches (ITextValue line, IList<HighlightEntry> hilightEntryList, IList<HilightMatchEntry> resultList)
+    private void GetHighlightEntryMatches (ITextValue line, IList<HighlightEntry> hilightEntryList, IList<HighlightMatchEntry> resultList)
     {
         foreach (HighlightEntry entry in hilightEntryList)
         {
@@ -1357,9 +1379,9 @@ partial class LogWindow
                 MatchCollection matches = entry.Regex.Matches(line.Text);
                 foreach (Match match in matches)
                 {
-                    HilightMatchEntry me = new()
+                    HighlightMatchEntry me = new()
                     {
-                        HilightEntry = entry,
+                        HighlightEntry = entry,
                         StartPos = match.Index,
                         Length = match.Length
                     };
@@ -1371,9 +1393,9 @@ partial class LogWindow
             {
                 if (CheckHighlightEntryMatch(entry, line))
                 {
-                    HilightMatchEntry me = new()
+                    HighlightMatchEntry me = new()
                     {
-                        HilightEntry = entry,
+                        HighlightEntry = entry,
                         StartPos = 0,
                         Length = line.Text.Length
                     };
@@ -1702,7 +1724,7 @@ partial class LogWindow
             var wasCancelled = _shouldCancel;
             _shouldCancel = false;
             _isSearching = false;
-            StatusLineText("");
+            StatusLineText(string.Empty);
             _guiStateArgs.MenuEnabled = true;
 
             if (wasCancelled)
@@ -1761,7 +1783,7 @@ partial class LogWindow
                 }
                 else
                 {
-                    _logger.Warn("Edit control in logWindow was null");
+                    _logger.Warn(CultureInfo.InvariantCulture, "Edit control in logWindow was null");
                 }
             }
         }
@@ -1775,7 +1797,7 @@ partial class LogWindow
         {
             var pos = editControl.SelectionStart + editControl.SelectionLength;
             StatusLineText("   " + pos);
-            _logger.Debug("SelStart: {0}, SelLen: {1}", editControl.SelectionStart, editControl.SelectionLength);
+            _logger.Debug(CultureInfo.InvariantCulture, "SelStart: {0}, SelLen: {1}", editControl.SelectionStart, editControl.SelectionLength);
         }
     }
 
@@ -1955,7 +1977,6 @@ partial class LogWindow
         if (filterComboBox.Text.Length == 0)
         {
             _filterParams.SearchText = string.Empty;
-            _filterParams.LowerSearchText = string.Empty;
             _filterParams.IsRangeSearch = false;
             ClearFilterList();
             filterSearchButton.Image = null;
@@ -1973,7 +1994,6 @@ partial class LogWindow
         FireCancelHandlers(); // make sure that there's no other filter running (maybe from filter restore)
 
         _filterParams.SearchText = text;
-        _filterParams.LowerSearchText = text.ToLowerInvariant();
         ConfigManager.Settings.FilterHistoryList.Remove(text);
         ConfigManager.Settings.FilterHistoryList.Insert(0, text);
         var maxHistory = ConfigManager.Settings.Preferences.MaximumFilterEntries;
@@ -2703,7 +2723,7 @@ partial class LogWindow
     [SupportedOSPlatform("windows")]
     private void WritePipeToTab (FilterPipe pipe, IList<int> lineNumberList, string name, PersistenceData persistenceData)
     {
-        _logger.Info("WritePipeToTab(): {0} lines.", lineNumberList.Count);
+        _logger.Info(CultureInfo.InvariantCulture, "WritePipeToTab(): {0} lines.", lineNumberList.Count);
         StatusLineText("Writing to temp file... Press ESC to cancel.");
         _guiStateArgs.MenuEnabled = false;
         SendGuiStateUpdate();
@@ -2747,7 +2767,7 @@ partial class LogWindow
         }
 
         pipe.CloseFile();
-        _logger.Info("WritePipeToTab(): finished");
+        _logger.Info(CultureInfo.InvariantCulture, "WritePipeToTab(): finished");
         Invoke(new WriteFilterToTabFinishedFx(WriteFilterToTabFinished), pipe, name, persistenceData);
     }
 
@@ -2934,13 +2954,13 @@ partial class LogWindow
     }
 
     [SupportedOSPlatform("windows")]
-    private void ApplyDataGridViewPrefs (BufferedDataGridView dataGridView, Preferences prefs)
+    private void ApplyDataGridViewPrefs (BufferedDataGridView dataGridView, bool setLastColumnWidth, int lastColumnWidth)
     {
         if (dataGridView.Columns.GetColumnCount(DataGridViewElementStates.None) > 1)
         {
-            if (prefs.SetLastColumnWidth)
+            if (setLastColumnWidth)
             {
-                dataGridView.Columns[dataGridView.Columns.GetColumnCount(DataGridViewElementStates.None) - 1].MinimumWidth = prefs.LastColumnWidth;
+                dataGridView.Columns[dataGridView.Columns.GetColumnCount(DataGridViewElementStates.None) - 1].MinimumWidth = lastColumnWidth;
             }
             else
             {
@@ -3146,7 +3166,7 @@ partial class LogWindow
             PatternBlock block;
             var maxBlockLen = patternArgs.EndLine - patternArgs.StartLine;
             //int searchLine = i + 1;
-            _logger.Debug("TestStatistic(): i={0} searchLine={1}", i, searchLine);
+            _logger.Debug(CultureInfo.InvariantCulture, "TestStatistic(): i={0} searchLine={1}", i, searchLine);
             //bool firstBlock = true;
             searchLine++;
             UpdateProgressBar(searchLine);
@@ -3156,7 +3176,7 @@ partial class LogWindow
                            _patternArgs.MaxMisses,
                            processedLinesDict)) != null)
             {
-                _logger.Debug("Found block: {0}", block);
+                _logger.Debug(CultureInfo.InvariantCulture, "Found block: {0}", block);
                 if (block.Weigth >= _patternArgs.MinWeight)
                 {
                     //PatternBlock existingBlock = FindExistingBlock(block, blockList);
@@ -3202,7 +3222,7 @@ partial class LogWindow
         //  this.Invoke(new MethodInvoker(CreatePatternWindow));
         //}
         _patternWindow.SetBlockList(blockList, _patternArgs);
-        _logger.Info("TestStatistics() ended");
+        _logger.Info(CultureInfo.InvariantCulture, "TestStatistics() ended");
     }
 
     private void AddBlockTargetLinesToDict (Dictionary<int, int> dict, PatternBlock block)

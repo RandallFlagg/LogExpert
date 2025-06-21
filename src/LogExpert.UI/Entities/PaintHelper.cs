@@ -3,7 +3,6 @@ using System.Runtime.Versioning;
 using LogExpert.Core.Classes.Highlight;
 using LogExpert.Core.Config;
 using LogExpert.Core.Entities;
-using LogExpert.Core.Interface;
 using LogExpert.Dialogs;
 using LogExpert.UI.Controls;
 using LogExpert.UI.Interface;
@@ -13,54 +12,48 @@ using NLog;
 namespace LogExpert.UI.Entities;
 
 //TOOD: This whole class should be refactored and rethought
-//TODO: This class should not knoow ConfigManager?
+//TODO: This class should not know ConfigManager?
 internal static class PaintHelper
 {
     #region Fields
 
-    private static readonly ILogger _logger = LogManager.GetCurrentClassLogger();
-
-    //TODO Make configurable
-    private static Color _bookmarkColor = Color.FromArgb(165, 200, 225);
-
-    #endregion
-
-    #region Properties
-    public static IConfigManager ConfigManager { get; set; }
-
-    private static Preferences Preferences => ConfigManager.Settings.Preferences;
+    private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
     #endregion
 
     #region Public methods
 
     [SupportedOSPlatform("windows")]
-    public static void CellPainting (ILogPaintContextUI logPaintCtx, BufferedDataGridView gridView, int rowIndex,
-        DataGridViewCellPaintingEventArgs e)
+    public static void CellPainting (ILogPaintContextUI logPaintCtx, BufferedDataGridView gridView, int rowIndex, DataGridViewCellPaintingEventArgs e)
     {
         if (rowIndex < 0 || e.ColumnIndex < 0)
         {
             e.Handled = false;
             return;
         }
+
         ILogLine line = logPaintCtx.GetLogLine(rowIndex);
+
         if (line != null)
         {
             HighlightEntry entry = logPaintCtx.FindHighlightEntry(line, true);
             e.Graphics.SetClip(e.CellBounds);
+
             if ((e.State & DataGridViewElementStates.Selected) == DataGridViewElementStates.Selected)
             {
                 Color backColor = e.CellStyle.SelectionBackColor;
                 Brush brush;
+
                 if (gridView.Focused)
                 {
-                    brush = new SolidBrush(e.CellStyle.SelectionBackColor);
+                    brush = new SolidBrush(backColor);
                 }
                 else
                 {
                     var color = Color.FromArgb(255, 170, 170, 170);
                     brush = new SolidBrush(color);
                 }
+
                 e.Graphics.FillRectangle(brush, e.CellBounds);
                 brush.Dispose();
             }
@@ -81,6 +74,7 @@ internal static class PaintHelper
                         bgColor = entry.BackgroundColor;
                     }
                 }
+
                 e.CellStyle.BackColor = bgColor;
                 e.PaintBackground(e.ClipBounds, false);
             }
@@ -112,10 +106,10 @@ internal static class PaintHelper
                             LineAlignment = StringAlignment.Center,
                             Alignment = StringAlignment.Center
                         };
+
                         Brush brush2 = new SolidBrush(Color.FromArgb(255, 190, 100, 0));
                         Font font = logPaintCtx.MonospacedFont;
-                        e.Graphics.DrawString("i", font, brush2, new RectangleF(r.Left, r.Top, r.Width, r.Height),
-                            format);
+                        e.Graphics.DrawString("i", font, brush2, new RectangleF(r.Left, r.Top, r.Width, r.Height), format);
                         brush2.Dispose();
                     }
                 }
@@ -191,16 +185,17 @@ internal static class PaintHelper
             _logger.Error(ae);
         }
 
-        gridView.Columns.Add(CreateMarkerColumn());
+        _ = gridView.Columns.Add(CreateMarkerColumn());
 
-        gridView.Columns.Add(CreateLineNumberColumn());
+        _ = gridView.Columns.Add(CreateLineNumberColumn());
 
         foreach (var colName in columnizer.GetColumnNames())
         {
-            gridView.Columns.Add(CreateTitleColumn(colName));
+            _ = gridView.Columns.Add(CreateTitleColumn(colName));
         }
 
         gridView.RowCount = rowCount;
+
         if (currLine != -1)
         {
             gridView.CurrentCell = gridView.Rows[currLine].Cells[0];
@@ -210,25 +205,23 @@ internal static class PaintHelper
         {
             gridView.FirstDisplayedScrollingRowIndex = currFirstLine;
         }
+
         //gridView.Refresh();
         //AutoResizeColumns(gridView);
     }
 
-    //TODO: Original name is AutoResizeColumn. Where is this used?
-    //TODO: Rename ConfigManager to configManager
     [SupportedOSPlatform("windows")]
-    private static void AutoResizeColumns (BufferedDataGridView gridView, IConfigManager configManager)
+    private static void AutoResizeColumns (BufferedDataGridView gridView, bool setLastColumnWidth, int lastColumnWidth)
     {
         try
         {
             gridView.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.DisplayedCells);
-            if (gridView.Columns.Count > 1 && Preferences.SetLastColumnWidth &&
-                gridView.Columns[gridView.Columns.Count - 1].Width < Preferences.LastColumnWidth
+            if (gridView.Columns.Count > 1 && setLastColumnWidth && gridView.Columns[gridView.Columns.Count - 1].Width < lastColumnWidth
             )
             {
                 // It seems that using 'MinimumWidth' instead of 'Width' prevents the DataGridView's NullReferenceExceptions
                 //gridView.Columns[gridView.Columns.Count - 1].Width = this.Preferences.lastColumnWidth;
-                gridView.Columns[gridView.Columns.Count - 1].MinimumWidth = Preferences.LastColumnWidth;
+                gridView.Columns[gridView.Columns.Count - 1].MinimumWidth = lastColumnWidth;
             }
         }
         catch (NullReferenceException e)
@@ -242,16 +235,13 @@ internal static class PaintHelper
     }
 
     [SupportedOSPlatform("windows")]
-    public static void ApplyDataGridViewPrefs (BufferedDataGridView dataGridView, Preferences prefs, IConfigManager configManager)
+    public static void ApplyDataGridViewPrefs (BufferedDataGridView dataGridView, bool setLastColumnWidht, int lastColumnWidth)
     {
-        //TODO: This is a very bad solution and should be solved ASAP
-        ConfigManager ??= configManager;
-
         if (dataGridView.Columns.Count > 1)
         {
-            if (prefs.SetLastColumnWidth)
+            if (setLastColumnWidht)
             {
-                dataGridView.Columns[dataGridView.Columns.Count - 1].MinimumWidth = prefs.LastColumnWidth;
+                dataGridView.Columns[dataGridView.Columns.Count - 1].MinimumWidth = lastColumnWidth;
             }
             else
             {
@@ -269,7 +259,7 @@ internal static class PaintHelper
 
         dataGridView.Invalidate();
         dataGridView.Refresh();
-        AutoResizeColumns(dataGridView, ConfigManager);
+        AutoResizeColumns(dataGridView, setLastColumnWidht, lastColumnWidth);
     }
 
     [SupportedOSPlatform("windows")]
@@ -279,29 +269,26 @@ internal static class PaintHelper
         {
             X = advancedBorderStyle.Left == DataGridViewAdvancedCellBorderStyle.None ? 0 : 1
         };
-        if (advancedBorderStyle.Left == DataGridViewAdvancedCellBorderStyle.OutsetDouble ||
-            advancedBorderStyle.Left == DataGridViewAdvancedCellBorderStyle.InsetDouble)
+        if (advancedBorderStyle.Left is DataGridViewAdvancedCellBorderStyle.OutsetDouble or DataGridViewAdvancedCellBorderStyle.InsetDouble)
         {
             rect.X++;
         }
 
         rect.Y = advancedBorderStyle.Top == DataGridViewAdvancedCellBorderStyle.None ? 0 : 1;
-        if (advancedBorderStyle.Top == DataGridViewAdvancedCellBorderStyle.OutsetDouble ||
-            advancedBorderStyle.Top == DataGridViewAdvancedCellBorderStyle.InsetDouble)
+        if (advancedBorderStyle.Top is DataGridViewAdvancedCellBorderStyle.OutsetDouble or DataGridViewAdvancedCellBorderStyle.InsetDouble)
         {
             rect.Y++;
         }
 
         rect.Width = advancedBorderStyle.Right == DataGridViewAdvancedCellBorderStyle.None ? 0 : 1;
-        if (advancedBorderStyle.Right == DataGridViewAdvancedCellBorderStyle.OutsetDouble ||
-            advancedBorderStyle.Right == DataGridViewAdvancedCellBorderStyle.InsetDouble)
+        if (advancedBorderStyle.Right is DataGridViewAdvancedCellBorderStyle.OutsetDouble or DataGridViewAdvancedCellBorderStyle.InsetDouble)
         {
             rect.Width++;
         }
 
         rect.Height = advancedBorderStyle.Bottom == DataGridViewAdvancedCellBorderStyle.None ? 0 : 1;
-        if (advancedBorderStyle.Bottom == DataGridViewAdvancedCellBorderStyle.OutsetDouble ||
-            advancedBorderStyle.Bottom == DataGridViewAdvancedCellBorderStyle.InsetDouble)
+        if (advancedBorderStyle.Bottom is DataGridViewAdvancedCellBorderStyle.OutsetDouble or
+            DataGridViewAdvancedCellBorderStyle.InsetDouble)
         {
             rect.Height++;
         }
@@ -327,7 +314,7 @@ internal static class PaintHelper
     {
         var value = e.Value ?? string.Empty;
 
-        IList<HilightMatchEntry> matchList = logPaintCtx.FindHighlightMatches(value as ILogLine);
+        IList<HighlightMatchEntry> matchList = logPaintCtx.FindHighlightMatches(value as ILogLine);
         // too many entries per line seem to cause problems with the GDI
         while (matchList.Count > 50)
         {
@@ -338,7 +325,7 @@ internal static class PaintHelper
         {
             if (!string.IsNullOrEmpty(column.FullValue))
             {
-                HilightMatchEntry hme = new()
+                HighlightMatchEntry hme = new()
                 {
                     StartPos = 0,
                     Length = column.FullValue.Length
@@ -358,7 +345,7 @@ internal static class PaintHelper
                     IsWordMatch = false
                 };
 
-                hme.HilightEntry = he;
+                hme.HighlightEntry = he;
 
                 matchList = MergeHighlightMatchEntries(matchList, hme);
             }
@@ -399,14 +386,14 @@ internal static class PaintHelper
         Rectangle r = gridView.GetCellDisplayRectangle(e.ColumnIndex, e.RowIndex, true);
         e.Graphics.SetClip(e.CellBounds);
 
-        foreach (HilightMatchEntry matchEntry in matchList)
+        foreach (HighlightMatchEntry matchEntry in matchList)
         {
-            Font font = matchEntry != null && matchEntry.HilightEntry.IsBold
+            Font font = matchEntry != null && matchEntry.HighlightEntry.IsBold
                 ? logPaintCtx.BoldFont
                 : logPaintCtx.NormalFont;
 
-            Brush bgBrush = matchEntry.HilightEntry.BackgroundColor != Color.Empty
-                ? new SolidBrush(matchEntry.HilightEntry.BackgroundColor)
+            Brush bgBrush = matchEntry.HighlightEntry.BackgroundColor != Color.Empty
+                ? new SolidBrush(matchEntry.HighlightEntry.BackgroundColor)
                 : null;
 
             var matchWord = string.Empty;
@@ -422,10 +409,10 @@ internal static class PaintHelper
             wordSize.Height = e.CellBounds.Height;
             Rectangle wordRect = new(wordPos, wordSize);
 
-            Color foreColor = matchEntry.HilightEntry.ForegroundColor;
+            Color foreColor = matchEntry.HighlightEntry.ForegroundColor;
             if ((e.State & DataGridViewElementStates.Selected) != DataGridViewElementStates.Selected)
             {
-                if (!noBackgroundFill && bgBrush != null && !matchEntry.HilightEntry.NoBackground)
+                if (!noBackgroundFill && bgBrush != null && !matchEntry.HighlightEntry.NoBackground)
                 {
                     e.Graphics.FillRectangle(bgBrush, wordRect);
                 }
@@ -455,25 +442,25 @@ internal static class PaintHelper
     /// <param name="matchList">List of all highlight matches for the current cell</param>
     /// <param name="groundEntry">The entry that is used as the default.</param>
     /// <returns>List of HilightMatchEntry objects. The list spans over the whole cell and contains color infos for every substring.</returns>
-    private static IList<HilightMatchEntry> MergeHighlightMatchEntries (IList<HilightMatchEntry> matchList, HilightMatchEntry groundEntry)
+    private static IList<HighlightMatchEntry> MergeHighlightMatchEntries (IList<HighlightMatchEntry> matchList, HighlightMatchEntry groundEntry)
     {
         // Fill an area with lenth of whole text with a default hilight entry
         var entryArray = new HighlightEntry[groundEntry.Length];
         for (var i = 0; i < entryArray.Length; ++i)
         {
-            entryArray[i] = groundEntry.HilightEntry;
+            entryArray[i] = groundEntry.HighlightEntry;
         }
 
         // "overpaint" with all matching word match enries
         // Non-word-mode matches will not overpaint because they use the groundEntry
-        foreach (HilightMatchEntry me in matchList)
+        foreach (HighlightMatchEntry me in matchList)
         {
             var endPos = me.StartPos + me.Length;
             for (var i = me.StartPos; i < endPos; ++i)
             {
-                if (me.HilightEntry.IsWordMatch)
+                if (me.HighlightEntry.IsWordMatch)
                 {
-                    entryArray[i] = me.HilightEntry;
+                    entryArray[i] = me.HighlightEntry;
                 }
                 //else
                 //{
@@ -483,7 +470,7 @@ internal static class PaintHelper
         }
 
         // collect areas with same hilight entry and build new highlight match entries for it
-        IList<HilightMatchEntry> mergedList = [];
+        IList<HighlightMatchEntry> mergedList = [];
         if (entryArray.Length > 0)
         {
             HighlightEntry currentEntry = entryArray[0];
@@ -493,22 +480,22 @@ internal static class PaintHelper
             {
                 if (entryArray[pos] != currentEntry)
                 {
-                    HilightMatchEntry me = new()
+                    HighlightMatchEntry me = new()
                     {
                         StartPos = lastStartPos,
                         Length = pos - lastStartPos,
-                        HilightEntry = currentEntry
+                        HighlightEntry = currentEntry
                     };
                     mergedList.Add(me);
                     currentEntry = entryArray[pos];
                     lastStartPos = pos;
                 }
             }
-            HilightMatchEntry me2 = new()
+            HighlightMatchEntry me2 = new()
             {
                 StartPos = lastStartPos,
                 Length = pos - lastStartPos,
-                HilightEntry = currentEntry
+                HighlightEntry = currentEntry
             };
             mergedList.Add(me2);
         }

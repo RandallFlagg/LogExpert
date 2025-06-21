@@ -1,9 +1,9 @@
-﻿using System.Runtime.Versioning;
+using System.Runtime.Versioning;
 
 namespace LogExpert.UI.Dialogs;
 
 [SupportedOSPlatform("windows")]
-public partial class GotoLineDialog : Form
+internal partial class GotoLineDialog : Form
 {
     #region Fields
 

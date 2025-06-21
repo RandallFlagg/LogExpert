@@ -43,7 +43,7 @@ internal class ProcessLauncher : IKeywordAction
             parameters = parameters.Replace("%F", callback.GetFileName(), StringComparison.Ordinal);
             parameters = parameters.Replace("%K", keyword, StringComparison.Ordinal);
 
-            var lineNumber = callback.GetLineNum(); //Line Numbers start at 0, but are displayed (+1)
+            var lineNumber = callback.LineNum; //Line Numbers start at 0, but are displayed (+1)
             var logline = callback.GetLogLine(lineNumber).FullLine;
             parameters = parameters.Replace("%L", string.Empty + lineNumber, System.StringComparison.Ordinal);
             parameters = parameters.Replace("%T", callback.GetTabTitle(), StringComparison.Ordinal);

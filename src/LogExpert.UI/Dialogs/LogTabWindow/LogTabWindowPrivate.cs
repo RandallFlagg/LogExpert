@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.Runtime.Versioning;
 using System.Security;
 using System.Text;
@@ -21,7 +22,7 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace LogExpert.UI.Controls.LogTabWindow;
 
-public partial class LogTabWindow
+internal partial class LogTabWindow
 {
     #region Private Methods
 
@@ -73,7 +74,12 @@ public partial class LogTabWindow
             ShowHint = DockState.DockBottom
         };
 
-        _bookmarkWindow.PreferencesChanged(ConfigManager.Settings.Preferences, false, SettingsFlags.All, ConfigManager.Instance);
+        var setLastColumnWidth = ConfigManager.Settings.Preferences.SetLastColumnWidth;
+        var lastColumnWidth = ConfigManager.Settings.Preferences.LastColumnWidth;
+        var fontName = ConfigManager.Settings.Preferences.FontName;
+        var fontSize = ConfigManager.Settings.Preferences.FontSize;
+
+        _bookmarkWindow.PreferencesChanged(fontName, fontSize, setLastColumnWidth, lastColumnWidth, SettingsFlags.All);
         _bookmarkWindow.VisibleChanged += OnBookmarkWindowVisibleChanged;
         _firstBookmarkWindowShow = true;
     }
@@ -135,7 +141,7 @@ public partial class LogTabWindow
             }
             catch (ArgumentException)
             {
-                _logger.Warn("Encoding " + ConfigManager.Settings.Preferences.DefaultEncoding + " is not a valid encoding");
+                _logger.Warn(CultureInfo.InvariantCulture, "Encoding " + ConfigManager.Settings.Preferences.DefaultEncoding + " is not a valid encoding");
                 encodingOptions.DefaultEncoding = null;
             }
         }
@@ -963,18 +969,23 @@ public partial class LogTabWindow
     [SupportedOSPlatform("windows")]
     private void NotifyWindowsForChangedPrefs (SettingsFlags flags)
     {
-        _logger.Info("The preferences have changed");
+        _logger.Info(CultureInfo.InvariantCulture, "The preferences have changed");
         ApplySettings(ConfigManager.Settings, flags);
+
+        var setLastColumnWidth = ConfigManager.Settings.Preferences.SetLastColumnWidth;
+        var lastColumnWidth = ConfigManager.Settings.Preferences.LastColumnWidth;
+        var fontName = ConfigManager.Settings.Preferences.FontName;
+        var fontSize = ConfigManager.Settings.Preferences.FontSize;
 
         lock (_logWindowList)
         {
             foreach (LogWindow.LogWindow logWindow in _logWindowList)
             {
-                logWindow.PreferencesChanged(ConfigManager.Settings.Preferences, false, flags);
+                logWindow.PreferencesChanged(fontName, fontSize, setLastColumnWidth, lastColumnWidth, false, flags);
             }
         }
 
-        _bookmarkWindow.PreferencesChanged(ConfigManager.Settings.Preferences, false, flags);
+        _bookmarkWindow.PreferencesChanged(fontName, fontSize, setLastColumnWidth, lastColumnWidth, flags);
 
         HighlightGroupList = ConfigManager.Settings.Preferences.HighlightGroupList;
         if ((flags & SettingsFlags.HighlightSettings) == SettingsFlags.HighlightSettings)
@@ -1104,7 +1115,7 @@ public partial class LogTabWindow
         {
             ILogLineColumnizer columnizer = ColumnizerPicker.DecideColumnizerByName(columnizerName, PluginRegistry.PluginRegistry.Instance.RegisteredColumnizers);
 
-            _logger.Info("Starting external tool with sysout redirection: {0} {1}", cmd, args);
+            _logger.Info(CultureInfo.InvariantCulture, "Starting external tool with sysout redirection: {0} {1}", cmd, args);
             startInfo.UseShellExecute = false;
             startInfo.RedirectStandardOutput = true;
             //process.OutputDataReceived += pipe.DataReceivedEventHandler;
@@ -1132,7 +1143,7 @@ public partial class LogTabWindow
         }
         else
         {
-            _logger.Info("Starting external tool: {0} {1}", cmd, args);
+            _logger.Info(CultureInfo.InvariantCulture, "Starting external tool: {0} {1}", cmd, args);
 
             try
             {
@@ -1293,7 +1304,7 @@ public partial class LogTabWindow
             _logger.Info($"Generation {i} collect count: {GC.CollectionCount(i)}");
         }
 
-        _logger.Info("----------------------------");
+        _logger.Info(CultureInfo.InvariantCulture, "----------------------------");
     }
 
     private void ThrowExceptionFx ()

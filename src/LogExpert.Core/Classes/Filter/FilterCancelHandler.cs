@@ -1,8 +1,10 @@
-﻿using LogExpert.Core.Interface;
+using System.Globalization;
+
+using LogExpert.Core.Interface;
 
 using NLog;
 
-namespace LogExpert.Classes.Filter;
+namespace LogExpert.Core.Classes.Filter;
 
 public class FilterCancelHandler : IBackgroundProcessCancelHandler
 {
@@ -26,7 +28,7 @@ public class FilterCancelHandler : IBackgroundProcessCancelHandler
 
     public void EscapePressed()
     {
-        _logger.Info("FilterCancelHandler called.");
+        _logger.Info(CultureInfo.InvariantCulture, "FilterCancelHandler called.");
         _filterStarter.CancelFilter();
     }
 

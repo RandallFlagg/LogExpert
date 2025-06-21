@@ -1,4 +1,4 @@
-﻿using LogExpert.Core.Interface;
+using LogExpert.Core.Interface;
 using System;
 using System.Windows.Forms;
 
@@ -17,7 +17,7 @@ internal class LogExpertApplicationContext : ApplicationContext
     public LogExpertApplicationContext(LogExpertProxy proxy, ILogTabWindow firstLogWin)
     {
         _proxy = proxy;
-        _proxy.LastWindowClosed += new LogExpertProxy.LastWindowClosedEventHandler(OnProxyLastWindowClosed);
+        _proxy.LastWindowClosed += OnProxyLastWindowClosed;
         firstLogWin.Show();
     }
 

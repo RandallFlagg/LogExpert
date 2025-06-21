@@ -1,18 +1,18 @@
-﻿using LogExpert.Core.Config;
+﻿using System.Runtime.Versioning;
 
-using System.Runtime.Versioning;
+using LogExpert.Core.Config;
 
 namespace LogExpert.UI.Extensions.Forms;
 
 [SupportedOSPlatform("windows")]
-public class LineToolStripSeparatorExtension : ToolStripSeparator
+internal class LineToolStripSeparatorExtension : ToolStripSeparator
 {
     public LineToolStripSeparatorExtension()
     {
         Paint += OnExtendedToolStripSeparatorPaint;
     }
 
-    private void OnExtendedToolStripSeparatorPaint(object sender, PaintEventArgs e)
+    private void OnExtendedToolStripSeparatorPaint (object sender, PaintEventArgs e)
     {
         // Get the separator's width and height.
         var toolStripSeparator = (ToolStripSeparator)sender;

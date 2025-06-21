@@ -1,4 +1,4 @@
-﻿using LogExpert.Classes;
+using LogExpert.Classes;
 using LogExpert.Classes.CommandLine;
 using LogExpert.Config;
 using LogExpert.Core.Classes.IPC;
@@ -7,6 +7,7 @@ using LogExpert.Core.Interface;
 using LogExpert.Dialogs;
 using LogExpert.UI.Controls.LogWindow;
 using LogExpert.UI.Dialogs;
+using LogExpert.UI.Extensions.LogWindow;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -14,6 +15,7 @@ using Newtonsoft.Json.Linq;
 using NLog;
 
 using System.Diagnostics;
+using System.Globalization;
 using System.IO.Pipes;
 using System.Reflection;
 using System.Security;
@@ -49,7 +51,7 @@ internal static class Program
         Application.EnableVisualStyles();
         Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
 
-        _logger.Info("\r\n============================================================================\r\nLogExpert {0} started.\r\n============================================================================", Assembly.GetExecutingAssembly().GetName().Version.ToString(3));
+        _logger.Info(CultureInfo.InvariantCulture, $"\r\n============================================================================\r\nLogExpert {Assembly.GetExecutingAssembly().GetName().Version.ToString(3)} started.\r\n============================================================================");
 
         CancellationTokenSource cts = new();
         try
@@ -70,6 +72,7 @@ internal static class Program
                     MessageBox.Show(@"Config file not found", @"LogExpert");
                 }
             }
+
             PluginRegistry.PluginRegistry.Instance.Create(ConfigManager.Instance.ConfigDir, ConfigManager.Instance.Settings.Preferences.PollingInterval);
 
             var pId = Process.GetCurrentProcess().SessionId;
@@ -85,7 +88,7 @@ internal static class Program
                     // first application instance
                     Application.EnableVisualStyles();
                     Application.SetCompatibleTextRenderingDefault(false);
-                    ILogTabWindow logWin = AbstractLogTabWindow.Create(absoluteFilePaths.Length > 0 ? absoluteFilePaths : null, 1, false, ConfigManager.Instance);
+                    var logWin = AbstractLogTabWindow.Create(absoluteFilePaths.Length > 0 ? absoluteFilePaths : null, 1, false, ConfigManager.Instance);
 
                     // first instance
                     var wi = WindowsIdentity.GetCurrent();
@@ -126,6 +129,7 @@ internal static class Program
                         MessageBox.Show($"Cannot open connection to first instance ({errMsg})", "LogExpert");
                     }
 
+                    //TODO: Remove this from here? Why is it called from the Main project and not from the main window?
                     if (settings.Preferences.AllowOnlyOneInstance && settings.Preferences.ShowErrorMessageAllowOnlyOneInstances)
                     {
                         AllowOnlyOneInstanceErrorDialog a = new();
@@ -190,47 +194,33 @@ internal static class Program
 
     private static void SendMessageToProxy(IpcMessage message, LogExpertProxy proxy)
     {
-        switch (message.Type)
-        {
-            case IpcMessageType.Load:
-                {
-                    var payLoad = message.Payload.ToObject<LoadPayload>();
+        var payLoad = message.Payload.ToObject<LoadPayload>();
 
-                    if (CheckPayload(payLoad))
-                    {
-                        proxy.LoadFiles([.. payLoad.Files]);
-                    }
-                }
-                break;
-            case IpcMessageType.NewWindow:
-                {
-                    var payLoad = message.Payload.ToObject<LoadPayload>();
-                    if (CheckPayload(payLoad))
-                    {
-                        proxy.NewWindow([.. payLoad.Files]);
-                    }
-                }
-                break;
-            case IpcMessageType.NewWindowOrLockedWindow:
-                {
-                    var payLoad = message.Payload.ToObject<LoadPayload>();
-                    if (CheckPayload(payLoad))
-                    {
-                        proxy.NewWindowOrLockedWindow([.. payLoad.Files]);
-                    }
-                }
-                break;
-            default:
-                _logger.Error($"Unknown IPC Message Type {message.Type}");
-                break;
+        if (CheckPayload(payLoad))
+        {
+            switch (message.Type)
+            {
+                case IpcMessageType.Load:
+                    proxy.LoadFiles([.. payLoad.Files]);
+                    break;
+                case IpcMessageType.NewWindow:
+                    proxy.NewWindow([.. payLoad.Files]);
+                    break;
+                case IpcMessageType.NewWindowOrLockedWindow:
+                    proxy.NewWindowOrLockedWindow([.. payLoad.Files]);
+                    break;
+                default:
+                    _logger.Error($"Unknown IPC Message Type: {message.Type}; with payload: {payLoad}");
+                    break;
+            }
         }
     }
 
-    private static bool CheckPayload(LoadPayload payLoad)
+    private static bool CheckPayload (LoadPayload payLoad)
     {
         if (payLoad == null)
         {
-            _logger.Error("Invalid payload for NewWindow command");
+            _logger.Error("Invalid payload command: null");
             return false;
         }
 

@@ -1,11 +1,12 @@
 using NLog;
 
+using System.Globalization;
 using System.Runtime.Versioning;
 
 namespace LogExpert.UI.Controls;
 
 [SupportedOSPlatform("windows")]
-public partial class KnobControl : UserControl
+internal partial class KnobControl : UserControl
 {
     #region Fields
 
@@ -147,7 +148,7 @@ public partial class KnobControl : UserControl
         var sense = _isShiftPressed ? DragSensitivity * 2 : DragSensitivity;
 
         var diff = _startMouseY - e.Y;
-        _logger.Debug("KnobDiff: {0}", diff);
+        _logger.Debug(CultureInfo.InvariantCulture, "KnobDiff: {0}", diff);
         var range = MaxValue - MinValue;
         _value = _oldValue + diff / sense;
 

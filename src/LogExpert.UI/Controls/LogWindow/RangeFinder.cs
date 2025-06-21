@@ -1,4 +1,6 @@
-﻿using LogExpert.Core.Callback;
+using System.Globalization;
+
+using LogExpert.Core.Callback;
 using LogExpert.Core.Classes;
 using LogExpert.Core.Classes.Filter;
 using LogExpert.Core.Entities;
@@ -12,7 +14,7 @@ namespace LogExpert.UI.Controls.LogWindow;
 /// <summary>
 /// Delivers the range (from..to) that matches the current range filter settings starting from a given line.
 /// </summary>
-public class RangeFinder(FilterParams filterParams, ColumnizerCallback callback)
+internal class RangeFinder(FilterParams filterParams, ColumnizerCallback callback)
 {
     #region Fields
 
@@ -29,12 +31,12 @@ public class RangeFinder(FilterParams filterParams, ColumnizerCallback callback)
 
         if (_filterParams.RangeSearchText == null || _filterParams.RangeSearchText.Trim().Length == 0)
         {
-            _logger.Info("Range search text not set. Cancelling range search.");
+            _logger.Info(CultureInfo.InvariantCulture, "Range search text not set. Cancelling range search.");
             return null;
         }
         if (_filterParams.SearchText == null || _filterParams.SearchText.Trim().Length == 0)
         {
-            _logger.Info("Search text not set. Cancelling range search.");
+            _logger.Info(CultureInfo.InvariantCulture, "Search text not set. Cancelling range search.");
             return null;
         }
 
@@ -74,7 +76,7 @@ public class RangeFinder(FilterParams filterParams, ColumnizerCallback callback)
 
         if (!foundStartLine)
         {
-            _logger.Info("Range start not found");
+            _logger.Info(CultureInfo.InvariantCulture, "Range start not found");
             return null;
         }
 

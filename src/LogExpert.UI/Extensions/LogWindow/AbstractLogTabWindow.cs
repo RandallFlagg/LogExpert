@@ -1,9 +1,9 @@
 using System.Runtime.Versioning;
 
 using LogExpert.Core.Interface;
-using LogExpert.UI.Dialogs.LogTabWindow;
+using LogExpert.UI.Controls.LogTabWindow;
 
-namespace LogExpert.UI.Controls.LogWindow;
+namespace LogExpert.UI.Extensions.LogWindow;
 
 public abstract class AbstractLogTabWindow ()
 {
@@ -12,6 +12,6 @@ public abstract class AbstractLogTabWindow ()
     [SupportedOSPlatform("windows")]
     public static ILogTabWindow Create (string[] fileNames, int instanceNumber, bool showInstanceNumbers, IConfigManager configManager)
     {
-        return new LogTabWindow.LogTabWindow(fileNames, instanceNumber, showInstanceNumbers, configManager);
+        return new LogTabWindow(fileNames, instanceNumber, showInstanceNumbers, configManager);
     }
 }

@@ -11,6 +11,8 @@ public class PositionAwareStreamReaderLegacy : PositionAwareStreamReaderBase
     private int _charBufferPos;
     private bool _crDetect;
 
+    public override bool IsDisposed { get; protected set; }
+
     #endregion
 
     #region cTor

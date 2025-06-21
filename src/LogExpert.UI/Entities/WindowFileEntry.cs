@@ -7,7 +7,7 @@ namespace LogExpert.UI.Entities;
 /// <summary>
 /// Represents a log file and its window. Used as a kind of handle for menus or list of open files.
 /// </summary>
-public class WindowFileEntry (LogWindow logWindow)
+internal class WindowFileEntry (LogWindow logWindow)
 {
     #region Fields
 

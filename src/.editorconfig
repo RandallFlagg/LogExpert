@@ -50,7 +50,7 @@ dotnet_style_parentheses_in_other_operators = never_if_unnecessary:warning
 dotnet_style_parentheses_in_relational_binary_operators = always_for_clarity:warning
 
 # Modifier preferences
-dotnet_style_require_accessibility_modifiers = always:warning
+dotnet_style_require_accessibility_modifiers = for_non_interface_members
 
 # Expression-level preferences
 dotnet_prefer_system_hash_code = true
@@ -89,7 +89,7 @@ dotnet_style_allow_statement_immediately_after_block_experimental = false:warnin
 #### C# Coding Conventions ####
 
 # var preferences
-csharp_style_var_elsewhere = false:suggestion
+csharp_style_var_elsewhere = true:suggestion
 csharp_style_var_for_built_in_types = true:warning
 csharp_style_var_when_type_is_apparent = true:warning
 
@@ -219,7 +219,13 @@ dotnet_naming_rule.non_field_members_should_be_pascal_case.severity = warning
 dotnet_naming_rule.non_field_members_should_be_pascal_case.symbols = non_field_members
 dotnet_naming_rule.non_field_members_should_be_pascal_case.style = pascal_case
 
+dotnet_naming_rule.no_single_letter_names.severity = error
+dotnet_naming_rule.no_single_letter_names.symbols = parameters_and_variables
+dotnet_naming_rule.no_single_letter_names.style = descriptive_names
+
 # Symbol specifications
+
+dotnet_naming_symbols.parameters_and_variables.applicable_kinds = parameter, local
 
 dotnet_naming_symbols.interface.applicable_kinds = interface
 dotnet_naming_symbols.interface.applicable_accessibilities = public, internal, private, protected, protected_internal, private_protected
@@ -234,6 +240,9 @@ dotnet_naming_symbols.non_field_members.applicable_accessibilities = public, int
 dotnet_naming_symbols.non_field_members.required_modifiers = 
 
 # Naming styles
+
+dotnet_naming_style.descriptive_names.capitalization = camel_case
+dotnet_naming_style.descriptive_names.minimum_word_length = 2
 
 dotnet_naming_style.pascal_case.required_prefix = 
 dotnet_naming_style.pascal_case.required_suffix = 
@@ -277,7 +286,7 @@ dotnet_diagnostic.IDE0003.severity = warning
 dotnet_diagnostic.IDE0004.severity = warning
 
 # IDE0005: Remove unnecessary import
-dotnet_diagnostic.IDE0005.severity = warning
+dotnet_diagnostic.IDE0005.severity = none
 
 # IDE0005_gen: Remove unnecessary import (NotConfigurable)
 #dotnet_diagnostic.IDE0005_gen.severity = silent
@@ -388,7 +397,7 @@ dotnet_diagnostic.IDE0044.severity = warning
 dotnet_diagnostic.IDE0045.severity = warning
 
 # IDE0046: Use conditional expression for return
-dotnet_diagnostic.IDE0046.severity = warning
+dotnet_diagnostic.IDE0046.severity = suggestion
 
 # IDE0047: Remove unnecessary parentheses
 dotnet_diagnostic.IDE0047.severity = warning
@@ -415,7 +424,7 @@ dotnet_diagnostic.IDE0053.severity = suggestion
 dotnet_diagnostic.IDE0054.severity = warning
 
 # IDE0055: Fix formatting
-dotnet_diagnostic.IDE0055.severity = warning
+dotnet_diagnostic.IDE0055.severity = none
 
 # IDE0056: Use index operator
 dotnet_diagnostic.IDE0056.severity = warning
@@ -571,7 +580,7 @@ dotnet_code_quality.CA1001.excluded_type_names_with_derived_types =
 
 # CA1002: Do not expose generic lists
 dotnet_diagnostic.CA1002.severity = suggestion
-dotnet_code_quality.CA1002.api_surface = all
+dotnet_code_quality.CA1002.api_surface = public
 
 # CA1003: Use generic event handler instances
 dotnet_diagnostic.CA1003.severity = warning
@@ -4865,3 +4874,4 @@ dotnet_diagnostic.xUnit3000.severity = warning
 
 # xUnit3001: Classes that implement Xunit.Abstractions.IXunitSerializable must have a public parameterless constructor
 dotnet_diagnostic.xUnit3001.severity = warning
+

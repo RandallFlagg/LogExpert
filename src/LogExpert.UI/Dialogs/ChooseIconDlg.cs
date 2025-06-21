@@ -4,7 +4,7 @@ using System.Runtime.Versioning;
 namespace LogExpert.UI.Dialogs;
 
 [SupportedOSPlatform("windows")]
-public partial class ChooseIconDlg : Form
+internal partial class ChooseIconDlg : Form
 {
     #region Fields
 

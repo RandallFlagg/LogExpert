@@ -1,11 +1,11 @@
-﻿using LogExpert.Core.Config;
+using LogExpert.Core.Config;
 
 using System.Runtime.Versioning;
 
 namespace LogExpert.UI.Extensions.Forms;
 
 [SupportedOSPlatform("windows")]
-public class MenuSelectedColors : ProfessionalColorTable
+internal class MenuSelectedColors : ProfessionalColorTable
 {
     public override Color ImageMarginGradientBegin => ColorMode.MenuBackgroundColor;
 

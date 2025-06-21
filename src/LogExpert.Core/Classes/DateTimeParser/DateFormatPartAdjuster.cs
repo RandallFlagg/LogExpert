@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace LogExpert.Core.Classes.DateTimeParser;
 
+//TODO: This should be moved into LogExpert.UI and changed to internal
 // Ensures we have constant width (number of characters) date formats
 public static class DateFormatPartAdjuster
 {
@@ -18,6 +19,8 @@ public static class DateFormatPartAdjuster
 
     public static string AdjustDateTimeFormatPart(string part)
     {
+        ArgumentNullException.ThrowIfNull(part, nameof(part));
+
         if (!_dateTimePartReplacements.TryGetValue(part, out var adjustedPart))
         {
             return part;

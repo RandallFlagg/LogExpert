@@ -3,7 +3,7 @@ using System.Runtime.Versioning;
 namespace LogExpert.Dialogs;
 
 [SupportedOSPlatform("windows")]
-public partial class ParamRequesterDialog : Form
+internal partial class ParamRequesterDialog : Form
 {
     #region Fields
 
