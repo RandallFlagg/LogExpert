@@ -25,11 +25,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Remove="Dialogs\LogTabWindow\LogTabWindowEventHandlers.resx" />
-    <EmbeddedResource Remove="Controls\LogWindow\LogWindowEventHandlers.resx" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Include="..\..\Licenses\WinformsUI.Docking.license.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -40,18 +35,6 @@
     <Compile Update="Dialogs\Eminus\EminusConfigDlg.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="Properties\Resources.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Update="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
   </ItemGroup>
 
 </Project>
