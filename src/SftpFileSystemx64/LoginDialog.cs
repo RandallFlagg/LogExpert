@@ -47,8 +47,10 @@ public partial class LoginDialog : Form
 
     #region Properties / Indexers
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public string Password { get; private set; }
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public string Username
     {
         get => _username;

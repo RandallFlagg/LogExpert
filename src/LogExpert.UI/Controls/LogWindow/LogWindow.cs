@@ -430,8 +430,10 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
 
     #region Properties
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public Color BookmarkColor { get; set; } = Color.FromArgb(165, 200, 225);
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public ILogLineColumnizer CurrentColumnizer
     {
         get => _currentColumnizer;
@@ -446,6 +448,7 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
     }
 
     [SupportedOSPlatform("windows")]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public bool ShowBookmarkBubbles
     {
         get => _guiStateArgs.ShowBookmarkBubbles;
@@ -456,22 +459,28 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
         }
     }
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public string FileName { get; private set; }
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public string SessionFileName { get; set; }
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public bool IsMultiFile
     {
         get => _isMultiFile;
         private set => _guiStateArgs.IsMultiFileActive = _isMultiFile = value;
     }
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public bool IsTempFile { get; }
 
     private readonly IConfigManager ConfigManager;
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public string TempTitleName { get; set; } = "";
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     internal FilterPipe FilterPipe { get; set; }
 
     public string Title => IsTempFile
@@ -480,26 +489,36 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
 
     public ColumnizerCallback ColumnizerCallbackObject { get; }
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public bool ForcePersistenceLoading { get; set; }
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public string ForcedPersistenceFileName { get; set; }
 
     public Preferences Preferences => _parentLogTabWin.Preferences;
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public string GivenFileName { get; set; }
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public TimeSyncList TimeSyncList { get; private set; }
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public bool IsTimeSynced => TimeSyncList != null;
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     protected EncodingOptions EncodingOptions { get; set; }
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public IBookmarkData BookmarkData => _bookmarkProvider;
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public Font MonospacedFont { get; private set; }
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public Font NormalFont { get; private set; }
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public Font BoldFont { get; private set; }
 
     LogfileReader ILogWindow.LogFileReader => _logFileReader;

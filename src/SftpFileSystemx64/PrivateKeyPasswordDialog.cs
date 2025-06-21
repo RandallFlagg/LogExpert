@@ -21,6 +21,7 @@ public partial class PrivateKeyPasswordDialog : Form
 
     #region Properties / Indexers
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public string Password { get; private set; }
 
     #endregion

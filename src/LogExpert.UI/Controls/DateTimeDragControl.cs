@@ -83,10 +83,13 @@ internal partial class DateTimeDragControl : UserControl
 
     #region Properties
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public DateTime MinDateTime { get; set; } = DateTime.MinValue;
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public DateTime MaxDateTime { get; set; } = DateTime.MaxValue;
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public DragOrientationsEnum DragOrientation
     {
         get => _dragOrientation;
@@ -97,8 +100,10 @@ internal partial class DateTimeDragControl : UserControl
         }
     }
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public Color HoverColor { get; set; }
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public DateTime DateTime
     {
         get => _dateTime.Subtract(TimeSpan.FromMilliseconds(_dateTime.Millisecond));

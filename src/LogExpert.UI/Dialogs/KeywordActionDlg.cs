@@ -54,6 +54,7 @@ internal partial class KeywordActionDlg : Form
 
     #region Properties
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public ActionEntry ActionEntry { get; private set; }
 
     #endregion

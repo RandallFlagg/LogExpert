@@ -31,6 +31,7 @@ internal partial class SearchDialog : Form
 
     #region Properties
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public SearchParams SearchParams { get; set; } = new();
 
     #endregion

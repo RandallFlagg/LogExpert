@@ -45,6 +45,7 @@ internal partial class HighlightDialog : Form
 
     #region Properties / Indexers
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public List<HighlightGroup> HighlightGroupList
     {
         get => _highlightGroupList;
@@ -59,8 +60,10 @@ internal partial class HighlightDialog : Form
         }
     }
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public IList<IKeywordAction> KeywordActionList { get; set; }
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public string PreSelectedGroupName { get; set; }
 
     private bool IsDirty => btnApply.Image == _applyButtonImage;

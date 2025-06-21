@@ -58,10 +58,12 @@ internal partial class FilterSelectorForm : Form //TODO: Can this be changed to 
 
     #region Properties
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public ILogLineColumnizer SelectedColumnizer { get; private set; }
 
     public bool ApplyToAll => applyToAllCheckBox.Checked;
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public bool IsConfigPressed { get; private set; }
     public IConfigManager ConfigManager { get; }
 

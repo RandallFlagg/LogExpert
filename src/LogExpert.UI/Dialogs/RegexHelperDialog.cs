@@ -31,6 +31,7 @@ internal partial class RegexHelperDialog : Form
 
     #region Properties
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public bool CaseSensitive
     {
         get => _caseSensitive;
@@ -41,6 +42,7 @@ internal partial class RegexHelperDialog : Form
         }
     }
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public string Pattern
     {
         get => comboBoxRegex.Text;

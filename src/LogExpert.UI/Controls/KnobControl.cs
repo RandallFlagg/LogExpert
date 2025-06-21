@@ -48,10 +48,13 @@ internal partial class KnobControl : UserControl
 
     #region Properties
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public int MinValue { get; set; }
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public int MaxValue { get; set; }
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public int Value
     {
         get => _value;
@@ -65,6 +68,7 @@ internal partial class KnobControl : UserControl
 
     public int Range => MaxValue - MinValue;
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public int DragSensitivity { get; set; } = 3;
 
     #endregion

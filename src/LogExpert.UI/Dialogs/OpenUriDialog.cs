@@ -28,6 +28,7 @@ internal partial class OpenUriDialog : Form
 
     public string Uri => cmbUri.Text;
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public IList<string> UriHistory { get; set; }
 
     #endregion

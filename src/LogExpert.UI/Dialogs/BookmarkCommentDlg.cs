@@ -19,6 +19,7 @@ internal partial class BookmarkCommentDlg : Form
 
     #region Properties
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public string Comment
     {
         set => commentTextBox.Text = value;

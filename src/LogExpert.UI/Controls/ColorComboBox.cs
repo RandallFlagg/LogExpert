@@ -46,6 +46,7 @@ internal class ColorComboBox : ComboBox
 
     #region Properties
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public Color CustomColor
     {
         get => _customColor;

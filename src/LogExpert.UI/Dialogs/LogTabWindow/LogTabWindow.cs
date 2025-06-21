@@ -294,16 +294,19 @@ internal partial class LogTabWindow : Form, ILogTabWindow
     #region Properties
 
     [SupportedOSPlatform("windows")]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public LogWindow.LogWindow CurrentLogWindow
     {
         get => _currentLogWindow;
         set => ChangeCurrentLogWindow(value);
     }
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public SearchParams SearchParams { get; private set; } = new SearchParams();
 
     public Preferences Preferences => ConfigManager.Settings.Preferences;
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public List<HighlightGroup> HighlightGroupList { get; private set; } = [];
 
     //public Settings Settings
@@ -311,6 +314,7 @@ internal partial class LogTabWindow : Form, ILogTabWindow
     //  get { return ConfigManager.Settings; }
     //}
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public ILogExpertProxy LogExpertProxy { get; set; }
     public IConfigManager ConfigManager { get; }
 

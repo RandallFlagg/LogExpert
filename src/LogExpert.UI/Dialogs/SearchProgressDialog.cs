@@ -25,6 +25,7 @@ internal partial class SearchProgressDialog : Form
 
     #region Properties
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public bool ShouldStop { get; private set; }
 
     #endregion

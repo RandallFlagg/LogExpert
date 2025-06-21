@@ -19,6 +19,7 @@ internal partial class TabRenameDialog : Form
 
     #region Properties
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public string TabName
     {
         get => textBoxTabName.Text;

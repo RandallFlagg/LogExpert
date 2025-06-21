@@ -68,8 +68,10 @@ internal partial class BufferedDataGridView : DataGridView
   }
    */
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public ContextMenuStrip EditModeMenuStrip { get; set; }
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public bool PaintWithOverlays { get; set; }
 
     #endregion

@@ -51,6 +51,7 @@ internal partial class SettingsDialog : Form
 
     #region Properties
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public Preferences Preferences { get; private set; }
     private IConfigManager ConfigManager { get; }
 

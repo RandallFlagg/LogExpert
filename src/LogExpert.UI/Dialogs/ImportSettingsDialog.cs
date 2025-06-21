@@ -40,8 +40,10 @@ internal partial class ImportSettingsDialog : Form
 
     #region Properties
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public string FileName { get; private set; }
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public ExportImportFlags ImportFlags { get; private set; }
 
     #endregion

@@ -32,6 +32,7 @@ internal partial class ToolArgsDialog : Form
 
     #region Properties
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public string Arg { get; set; }
 
     #endregion

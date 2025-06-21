@@ -25,6 +25,7 @@ internal partial class GotoLineDialog : Form
 
     #region Properties
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
     public int Line { get; private set; }
 
     #endregion

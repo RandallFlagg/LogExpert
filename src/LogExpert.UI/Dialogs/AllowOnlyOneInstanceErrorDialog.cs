@@ -5,6 +5,7 @@ namespace LogExpert.Dialogs;
 [SupportedOSPlatform("windows")]
 public partial class AllowOnlyOneInstanceErrorDialog : Form
 {
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public bool DoNotShowThisMessageAgain { get; private set; }
 
     public AllowOnlyOneInstanceErrorDialog ()
