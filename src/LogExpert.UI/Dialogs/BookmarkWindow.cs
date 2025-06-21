@@ -204,8 +204,7 @@ internal partial class BookmarkWindow : DockContent, ISharedToolWindow, IBookmar
     {
         if (!splitContainer1.Visible)
         {
-            var r = ClientRectangle;
-            e.Graphics.FillRectangle(SystemBrushes.ControlLight, r);
+            e.Graphics.FillRectangle(SystemBrushes.ControlLight, ClientRectangle);
 
             StringFormat sf = new()
             {
@@ -213,7 +212,7 @@ internal partial class BookmarkWindow : DockContent, ISharedToolWindow, IBookmar
                 LineAlignment = StringAlignment.Center
             };
 
-            e.Graphics.DrawString("No bookmarks in current file", SystemFonts.DialogFont, SystemBrushes.WindowText, r, sf);
+            e.Graphics.DrawString("No bookmarks in current file", SystemFonts.DialogFont, SystemBrushes.WindowText, ClientRectangle, sf);
         }
         else
         {

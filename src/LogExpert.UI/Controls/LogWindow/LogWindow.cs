@@ -985,11 +985,12 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
             {
                 if (_bookmarkProvider.IsBookmarkAtLine(lineNum))
                 {
-                    Rectangle r;// = new(e.CellBounds.Left + 2, e.CellBounds.Top + 2, 6, 6);
-                    r = e.CellBounds;
-                    r.Inflate(-2, -2);
+                    //This was the OLD rect, left for future Information
+                    //(e.CellBounds.Left + 2, e.CellBounds.Top + 2, 6, 6);
+                    var rect = e.CellBounds;
+                    rect.Inflate(-2, -2);
                     using var brush = new SolidBrush(BookmarkColor);
-                    e.Graphics.FillRectangle(brush, r);
+                    e.Graphics.FillRectangle(brush, rect);
 
                     var bookmark = _bookmarkProvider.GetBookmarkForLine(lineNum);
 
@@ -1003,7 +1004,7 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
 
                         using var brush2 = new SolidBrush(Color.FromArgb(255, 190, 100, 0));
                         using var font = new Font("Verdana", Preferences.FontSize, FontStyle.Bold);
-                        e.Graphics.DrawString("!", font, brush2, new RectangleF(r.Left, r.Top, r.Width, r.Height), format);
+                        e.Graphics.DrawString("!", font, brush2, new RectangleF(rect.Left, rect.Top, rect.Width, rect.Height), format);
                     }
                 }
             }
@@ -1018,7 +1019,7 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
     {
         if (e.RowIndex < 0 || e.ColumnIndex < 0 || _filterResultList.Count <= e.RowIndex)
         {
-            e.Value = "";
+            e.Value = string.Empty;
             return;
         }
 
@@ -1118,7 +1119,7 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
                     break;
                 }
             case Keys.Tab when e.Modifiers == Keys.None:
-                dataGridView.Focus();
+                _ = dataGridView.Focus();
                 e.Handled = true;
                 break;
         }
@@ -1131,7 +1132,7 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
         {
             case Keys.Tab when e.Modifiers == Keys.None:
                 {
-                    filterGridView.Focus();
+                    _ = filterGridView.Focus();
                     e.Handled = true;
                     break;
                 }
@@ -1161,7 +1162,7 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
     {
         if (dataGridView.CurrentCell != null)
         {
-            dataGridView.BeginEdit(false);
+            _ = dataGridView.BeginEdit(false);
         }
     }
 
