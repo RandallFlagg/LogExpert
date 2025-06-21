@@ -638,8 +638,6 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
 
     private delegate void WriteFilterToTabFinishedFx (FilterPipe pipe, string namePrefix, PersistenceData persistenceData);
 
-    private delegate void SetBookmarkFx (int lineNum, string comment);
-
     private delegate void FunctionWith1BoolParam (bool arg);
 
     private delegate void PatternStatisticFx (PatternArgs patternArgs);

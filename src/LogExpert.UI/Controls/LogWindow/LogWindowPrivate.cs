@@ -777,127 +777,75 @@ partial class LogWindow
         //this.dataGridView.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.DisplayedCells);
     }
 
-    private void CheckFilterAndHighlight (LogEventArgs e)
+    private void CheckFilterAndHighlight(LogEventArgs e)
     {
         var noLed = true;
-        bool suppressLed;
-        bool setBookmark;
-        bool stopTail;
-        string bookmarkComment;
 
-        if (filterTailCheckBox.Checked || _filterPipeList.Count > 0)
+        var isFiltering = filterTailCheckBox.Checked || _filterPipeList.Count > 0;
+        var firstStopTail = true;
+        var startLine = e.PrevLineCount;
+
+        if (e.IsRollover)
         {
-            var filterStart = e.PrevLineCount;
-            if (e.IsRollover)
+            ShiftFilterLines(e.RolloverOffset);
+            startLine -= e.RolloverOffset;
+        }
+
+        var callback = isFiltering ? new ColumnizerCallback(this) : null;
+        var filterLineAdded = false;
+
+        for (var i = startLine; i < e.LineCount; ++i)
+        {
+            var line = _logFileReader.GetLogLine(i);
+            if (line == null)
             {
-                ShiftFilterLines(e.RolloverOffset);
-                filterStart -= e.RolloverOffset;
+                return; // TODO: Handle this more robustly as noted
             }
 
-            var firstStopTail = true;
-            ColumnizerCallback callback = new(this);
-            var filterLineAdded = false;
-            for (var i = filterStart; i < e.LineCount; ++i)
+            if (isFiltering)
             {
-                var line = _logFileReader.GetLogLine(i);
-                //TODO: Why line can be equal null here? Need to understand all the situations and handle them correctlly. Prevent this from happening and replace the check with an exception throw
-                if (line == null)
-                {
-                    return;
-                }
-
                 if (filterTailCheckBox.Checked)
                 {
                     callback.SetLineNum(i);
                     if (Util.TestFilterCondition(_filterParams, line, callback))
                     {
-                        //AddFilterLineFx addFx = new AddFilterLineFx(AddFilterLine);
-                        //this.Invoke(addFx, new object[] { i, true });
                         filterLineAdded = true;
-                        AddFilterLine(i, false, _filterParams, _filterResultList, _lastFilterLinesList,
-                            _filterHitList);
+                        AddFilterLine(i, false, _filterParams, _filterResultList, _lastFilterLinesList, _filterHitList);
                     }
                 }
 
-                //ProcessFilterPipeFx pipeFx = new ProcessFilterPipeFx(ProcessFilterPipes);
-                //pipeFx.BeginInvoke(i, null, null);
                 ProcessFilterPipes(i);
+            }
 
-                IList<HighlightEntry> matchingList = FindMatchingHilightEntries(line);
-                LaunchHighlightPlugins(matchingList, i);
-                GetHilightActions(matchingList, out suppressLed, out stopTail, out setBookmark, out bookmarkComment);
-                if (setBookmark)
-                {
-                    SetBookmarkFx fx = SetBookmarkFromTrigger;
-                    fx.BeginInvoke(i, bookmarkComment, null, null);
-                }
+            var matchingList = FindMatchingHilightEntries(line);
+            LaunchHighlightPlugins(matchingList, i);
+            GetHilightActions(matchingList, out var suppressLed, out var stopTail, out var setBookmark, out var bookmarkComment);
 
-                if (stopTail && _guiStateArgs.FollowTail)
-                {
-                    var wasFollow = _guiStateArgs.FollowTail;
-                    FollowTailChanged(false, true);
-                    if (firstStopTail && wasFollow)
-                    {
-                        Invoke(new SelectLineFx(SelectAndEnsureVisible), [i, false]);
-                        firstStopTail = false;
-                    }
-                }
+            if (setBookmark)
+            {
+                Task.Run(() => SetBookmarkFromTrigger(i, bookmarkComment));
+            }
 
-                if (!suppressLed)
+            if (stopTail && _guiStateArgs.FollowTail)
+            {
+                var wasFollow = _guiStateArgs.FollowTail;
+                FollowTailChanged(false, true);
+                if (firstStopTail && wasFollow)
                 {
-                    noLed = false;
+                    Invoke(new SelectLineFx(SelectAndEnsureVisible), new object[] { i, false });
+                    firstStopTail = false;
                 }
             }
 
-            if (filterLineAdded)
+            if (!suppressLed)
             {
-                //AddFilterLineGuiUpdateFx addFx = new AddFilterLineGuiUpdateFx(AddFilterLineGuiUpdate);
-                //this.Invoke(addFx);
-                TriggerFilterLineGuiUpdate();
+                noLed = false;
             }
         }
-        else
+
+        if (isFiltering && filterLineAdded)
         {
-            var firstStopTail = true;
-            var startLine = e.PrevLineCount;
-            if (e.IsRollover)
-            {
-                ShiftFilterLines(e.RolloverOffset);
-                startLine -= e.RolloverOffset;
-            }
-
-            for (var i = startLine; i < e.LineCount; ++i)
-            {
-                ILogLine line = _logFileReader.GetLogLine(i);
-                if (line != null)
-                {
-                    IList<HighlightEntry> matchingList = FindMatchingHilightEntries(line);
-                    LaunchHighlightPlugins(matchingList, i);
-                    GetHilightActions(matchingList, out suppressLed, out stopTail, out setBookmark,
-                        out bookmarkComment);
-                    if (setBookmark)
-                    {
-                        SetBookmarkFx fx = SetBookmarkFromTrigger;
-                        fx.BeginInvoke(i, bookmarkComment, null, null);
-                    }
-
-                    if (stopTail && _guiStateArgs.FollowTail)
-                    {
-                        var wasFollow = _guiStateArgs.FollowTail;
-                        FollowTailChanged(false, true);
-                        if (firstStopTail && wasFollow)
-                        {
-                            Invoke(new SelectLineFx(SelectAndEnsureVisible), [i, false]);
-                            firstStopTail = false;
-                        }
-                    }
-
-                    if (!suppressLed)
-                    {
-                        noLed = false;
-                    }
-                }
-            }
+            TriggerFilterLineGuiUpdate();
         }
 
         if (!noLed)
