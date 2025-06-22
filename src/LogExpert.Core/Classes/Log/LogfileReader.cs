@@ -52,59 +52,30 @@ public class LogfileReader : IAutoLogLineColumnizerCallback, IDisposable
 
     #region cTor
 
+    /// Public constructor for single file.
     public LogfileReader (string fileName, EncodingOptions encodingOptions, bool multiFile, int bufferCount, int linesPerBuffer, MultiFileOptions multiFileOptions, bool useNewReader, IPluginRegistry pluginRegistry)
+    : this([fileName], encodingOptions, multiFile, bufferCount, linesPerBuffer, multiFileOptions, useNewReader, pluginRegistry)
     {
-        if (fileName == null)
-        {
-            return;
-        }
-
-        UseNewReader = useNewReader;
-
-        _fileName = fileName;
-        EncodingOptions = encodingOptions;
-        IsMultiFile = multiFile;
-        _max_buffers = bufferCount;
-        _maxLinesPerBuffer = linesPerBuffer;
-        _multiFileOptions = multiFileOptions;
-        _pluginRegistry = pluginRegistry;
-        _disposed = false;
-
-        InitLruBuffers();
-
-        if (multiFile)
-        {
-            var info = GetLogFileInfo(fileName);
-            RolloverFilenameHandler rolloverHandler = new(info, _multiFileOptions);
-            var nameList = rolloverHandler.GetNameList(_pluginRegistry);
-
-            ILogFileInfo fileInfo = null;
-            foreach (var name in nameList)
-            {
-                fileInfo = AddFile(name);
-            }
-
-            _watchedILogFileInfo = fileInfo; // last added file in the list is the watched file
-        }
-        else
-        {
-            _watchedILogFileInfo = AddFile(fileName);
-        }
-
-        StartGCThread();
     }
 
+    /// Public constructor for multiple files.
     public LogfileReader (string[] fileNames, EncodingOptions encodingOptions, int bufferCount, int linesPerBuffer, MultiFileOptions multiFileOptions, bool useNewReader, IPluginRegistry pluginRegistry)
+        : this(fileNames, encodingOptions, true, bufferCount, linesPerBuffer, multiFileOptions, useNewReader, pluginRegistry)
     {
+        // In this overload, we assume multiFile is always true.
+    }
+
+    // Single private constructor that contains the common initialization logic.
+    private LogfileReader (string[] fileNames, EncodingOptions encodingOptions, bool multiFile, int bufferCount, int linesPerBuffer, MultiFileOptions multiFileOptions, bool useNewReader, IPluginRegistry pluginRegistry)
+    {
+        // Validate input: at least one file must be provided.
         if (fileNames == null || fileNames.Length < 1)
         {
-            return;
+            throw new ArgumentException("Must provide at least one file.", nameof(fileNames));
         }
 
         UseNewReader = useNewReader;
-
         EncodingOptions = encodingOptions;
-        IsMultiFile = true;
         _max_buffers = bufferCount;
         _maxLinesPerBuffer = linesPerBuffer;
         _multiFileOptions = multiFileOptions;
@@ -114,13 +85,45 @@ public class LogfileReader : IAutoLogLineColumnizerCallback, IDisposable
         InitLruBuffers();
 
         ILogFileInfo fileInfo = null;
-        foreach (var name in fileNames)
+
+        // If there's exactly one file, use the supplied 'multiFile' flag;
+        // otherwise, if there are multiple files, always treat it as a multi-file case.
+        if (fileNames.Length == 1)
         {
-            fileInfo = AddFile(name);
+            _fileName = fileNames[0];
+            IsMultiFile = multiFile;
+
+            if (multiFile)
+            {
+                // For multi-file rollover mode: get rollover names.
+                var info = GetLogFileInfo(_fileName);
+                RolloverFilenameHandler rolloverHandler = new(info, _multiFileOptions);
+                var nameList = rolloverHandler.GetNameList(_pluginRegistry);
+
+                foreach (var name in nameList)
+                {
+                    fileInfo = AddFile(name);
+                }
+            }
+            else
+            {
+                // Single file scenario.
+                fileInfo = AddFile(_fileName);
+            }
+        }
+        else
+        {
+            // Multiple file names supplied; force multi-file.
+            IsMultiFile = true;
+            foreach (var name in fileNames)
+            {
+                fileInfo = AddFile(name);
+            }
+            // Use the full name of the last file as _fileName.
+            _fileName = fileInfo.FullName;
         }
 
         _watchedILogFileInfo = fileInfo;
-        _fileName = fileInfo.FullName;
 
         StartGCThread();
     }
