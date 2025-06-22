@@ -19,10 +19,11 @@ public class LogfileReader : IAutoLogLineColumnizerCallback, IDisposable
     private readonly string _fileName;
     private readonly int _max_buffers;
     private readonly int _maxLinesPerBuffer;
-
     private readonly object _monitor = new();
     private readonly MultiFileOptions _multiFileOptions;
     private readonly IPluginRegistry _pluginRegistry;
+    private readonly CancellationTokenSource _cts = new();
+
     private IList<LogBuffer> _bufferList;
     private ReaderWriterLock _bufferListLock;
     private bool _contentDeleted;
@@ -30,20 +31,15 @@ public class LogfileReader : IAutoLogLineColumnizerCallback, IDisposable
     private ReaderWriterLock _disposeLock;
     private EncodingOptions _encodingOptions;
     private long _fileLength;
-
     private Task _garbageCollectorTask;
     private Task _monitorTask;
-    private readonly CancellationTokenSource _cts = new();
-
     private bool _isDeleted;
     private bool _isFailModeCheckCallPending;
     private bool _isFastFailOnGetLogLine;
     private bool _isLineCountDirty = true;
     private IList<ILogFileInfo> _logFileInfoList = [];
     private Dictionary<int, LogBufferCacheEntry> _lruCacheDict;
-
     private ReaderWriterLock _lruCacheDictLock;
-
     private bool _shouldStop;
     private bool _disposed;
     private ILogFileInfo _watchedILogFileInfo;
@@ -218,7 +214,7 @@ public class LogfileReader : IAutoLogLineColumnizerCallback, IDisposable
         ReleaseBufferListWriterLock();
         try
         {
-            foreach (ILogFileInfo info in _logFileInfoList)
+            foreach (var info in _logFileInfoList)
             {
                 //info.OpenFile();
                 ReadToBufferList(info, 0, LineCount);
@@ -226,7 +222,7 @@ public class LogfileReader : IAutoLogLineColumnizerCallback, IDisposable
 
             if (_logFileInfoList.Count > 0)
             {
-                ILogFileInfo info = _logFileInfoList[_logFileInfoList.Count - 1];
+                var info = _logFileInfoList[_logFileInfoList.Count - 1];
                 _fileLength = info.Length;
                 _watchedILogFileInfo = info;
             }
@@ -254,6 +250,7 @@ public class LogfileReader : IAutoLogLineColumnizerCallback, IDisposable
     /// Public for unit tests.
     /// </summary>
     /// <returns></returns>
+    //TODO: Make this private
     public int ShiftBuffers ()
     {
         _logger.Info(CultureInfo.InvariantCulture, "ShiftBuffers() begin for {0}{1}", _fileName, IsMultiFile ? " (MultiFile)" : "");
@@ -263,19 +260,19 @@ public class LogfileReader : IAutoLogLineColumnizerCallback, IDisposable
         lock (_monitor)
         {
             RolloverFilenameHandler rolloverHandler = new(_watchedILogFileInfo, _multiFileOptions);
-            LinkedList<string> fileNameList = rolloverHandler.GetNameList(_pluginRegistry);
+            var fileNameList = rolloverHandler.GetNameList(_pluginRegistry);
 
             ResetBufferCache();
             IList<ILogFileInfo> lostILogFileInfoList = [];
             IList<ILogFileInfo> readNewILogFileInfoList = [];
             IList<ILogFileInfo> newFileInfoList = [];
-            IEnumerator<ILogFileInfo> enumerator = _logFileInfoList.GetEnumerator();
+            var enumerator = _logFileInfoList.GetEnumerator();
             while (enumerator.MoveNext())
             {
-                ILogFileInfo logFileInfo = enumerator.Current;
+                var logFileInfo = enumerator.Current;
                 var fileName = logFileInfo.FullName;
                 _logger.Debug(CultureInfo.InvariantCulture, "Testing file {0}", fileName);
-                LinkedListNode<string> node = fileNameList.Find(fileName);
+                var node = fileNameList.Find(fileName);
                 if (node == null)
                 {
                     _logger.Warn(CultureInfo.InvariantCulture, "File {0} not found", fileName);
@@ -285,7 +282,7 @@ public class LogfileReader : IAutoLogLineColumnizerCallback, IDisposable
                 if (node.Previous != null)
                 {
                     fileName = node.Previous.Value;
-                    ILogFileInfo newILogFileInfo = GetLogFileInfo(fileName);
+                    var newILogFileInfo = GetLogFileInfo(fileName);
                     _logger.Debug(CultureInfo.InvariantCulture, "{0} exists\r\nOld size={1}, new size={2}", fileName, logFileInfo.OriginalLength, newILogFileInfo.Length);
                     // is the new file the same as the old buffer info?
                     if (newILogFileInfo.Length == logFileInfo.OriginalLength)
@@ -335,10 +332,10 @@ public class LogfileReader : IAutoLogLineColumnizerCallback, IDisposable
             if (lostILogFileInfoList.Count > 0)
             {
                 _logger.Info(CultureInfo.InvariantCulture, "Deleting buffers for lost files");
-                foreach (ILogFileInfo ILogFileInfo in lostILogFileInfoList)
+                foreach (var logFileInfo in lostILogFileInfoList)
                 {
-                    //this.ILogFileInfoList.Remove(ILogFileInfo);
-                    LogBuffer lastBuffer = DeleteBuffersForInfo(ILogFileInfo, false);
+                    //this.ILogFileInfoList.Remove(logFileInfo);
+                    var lastBuffer = DeleteBuffersForInfo(logFileInfo, false);
                     if (lastBuffer != null)
                     {
                         offset += lastBuffer.StartLine + lastBuffer.LineCount;
@@ -347,7 +344,7 @@ public class LogfileReader : IAutoLogLineColumnizerCallback, IDisposable
 
                 _lruCacheDictLock.AcquireWriterLock(Timeout.Infinite);
                 _logger.Info(CultureInfo.InvariantCulture, "Adjusting StartLine values in {0} buffers by offset {1}", _bufferList.Count, offset);
-                foreach (LogBuffer buffer in _bufferList)
+                foreach (var buffer in _bufferList)
                 {
                     SetNewStartLineForBuffer(buffer, buffer.StartLine - offset);
                 }
@@ -366,7 +363,7 @@ public class LogfileReader : IAutoLogLineColumnizerCallback, IDisposable
             foreach (ILogFileInfo ILogFileInfo in readNewILogFileInfoList)
             {
                 DeleteBuffersForInfo(ILogFileInfo, true);
-                //this.ILogFileInfoList.Remove(ILogFileInfo);
+                //this.ILogFileInfoList.Remove(logFileInfo);
             }
 
             _logger.Info(CultureInfo.InvariantCulture, "Deleting buffers for the watched file");
@@ -375,9 +372,9 @@ public class LogfileReader : IAutoLogLineColumnizerCallback, IDisposable
             _logger.Info(CultureInfo.InvariantCulture, "Re-Reading files");
             foreach (ILogFileInfo ILogFileInfo in readNewILogFileInfoList)
             {
-                //ILogFileInfo.OpenFile();
+                //logFileInfo.OpenFile();
                 ReadToBufferList(ILogFileInfo, 0, LineCount);
-                //this.ILogFileInfoList.Add(ILogFileInfo);
+                //this.ILogFileInfoList.Add(logFileInfo);
                 newFileInfoList.Add(ILogFileInfo);
             }
 
@@ -511,7 +508,7 @@ public class LogfileReader : IAutoLogLineColumnizerCallback, IDisposable
     {
         var result = -1;
         AcquireBufferListReaderLock();
-        LogBuffer logBuffer = GetBufferForLine(lineNum);
+        var logBuffer = GetBufferForLine(lineNum);
         if (logBuffer != null)
         {
             var index = _bufferList.IndexOf(logBuffer);
@@ -544,7 +541,7 @@ public class LogfileReader : IAutoLogLineColumnizerCallback, IDisposable
     public int GetRealLineNumForVirtualLineNum (int lineNum)
     {
         AcquireBufferListReaderLock();
-        LogBuffer logBuffer = GetBufferForLine(lineNum);
+        var logBuffer = GetBufferForLine(lineNum);
         var result = -1;
         if (logBuffer != null)
         {
