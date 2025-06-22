@@ -1,4 +1,4 @@
-﻿using LogExpert.Core.Classes.Columnizer;
+using LogExpert.Core.Classes.Columnizer;
 using LogExpert.Core.Classes.Log;
 using LogExpert.Core.Entities;
 
@@ -22,7 +22,7 @@ public class SquareBracketColumnizerTest
         SquareBracketColumnizer squareBracketColumnizer = new();
         var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName);
 
-        LogfileReader logFileReader = new(path, new EncodingOptions(), true, 40, 50, new MultiFileOptions(), PluginRegistry.PluginRegistry.Instance);
+        LogfileReader logFileReader = new(path, new EncodingOptions(), true, 40, 50, new MultiFileOptions(), false, PluginRegistry.PluginRegistry.Instance);
         logFileReader.ReadFiles();
         List<ILogLine> loglines = new()
         {

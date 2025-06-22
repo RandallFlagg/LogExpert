@@ -52,12 +52,14 @@ public class LogfileReader : IAutoLogLineColumnizerCallback, IDisposable
 
     #region cTor
 
-    public LogfileReader (string fileName, EncodingOptions encodingOptions, bool multiFile, int bufferCount, int linesPerBuffer, MultiFileOptions multiFileOptions, IPluginRegistry pluginRegistry)
+    public LogfileReader (string fileName, EncodingOptions encodingOptions, bool multiFile, int bufferCount, int linesPerBuffer, MultiFileOptions multiFileOptions, bool useNewReader, IPluginRegistry pluginRegistry)
     {
         if (fileName == null)
         {
             return;
         }
+
+        UseNewReader = useNewReader;
 
         _fileName = fileName;
         EncodingOptions = encodingOptions;
@@ -92,12 +94,14 @@ public class LogfileReader : IAutoLogLineColumnizerCallback, IDisposable
         StartGCThread();
     }
 
-    public LogfileReader (string[] fileNames, EncodingOptions encodingOptions, int bufferCount, int linesPerBuffer, MultiFileOptions multiFileOptions, IPluginRegistry pluginRegistry)
+    public LogfileReader (string[] fileNames, EncodingOptions encodingOptions, int bufferCount, int linesPerBuffer, MultiFileOptions multiFileOptions, bool useNewReader, IPluginRegistry pluginRegistry)
     {
         if (fileNames == null || fileNames.Length < 1)
         {
             return;
         }
+
+        UseNewReader = useNewReader;
 
         EncodingOptions = encodingOptions;
         IsMultiFile = true;
@@ -155,7 +159,7 @@ public class LogfileReader : IAutoLogLineColumnizerCallback, IDisposable
 
             return _currLineCount;
         }
-        set => _currLineCount = value;
+        private set => _currLineCount = value;
     }
 
     public bool IsMultiFile { get; }
@@ -164,13 +168,15 @@ public class LogfileReader : IAutoLogLineColumnizerCallback, IDisposable
 
     public long FileSize { get; private set; }
 
+    //TODO: Change to private field. No need for a property.
     public bool IsXmlMode { get; set; }
 
+    //TODO: Change to private field. No need for a property.
     public IXmlLogConfiguration XmlLogConfig { get; set; }
 
     public IPreProcessColumnizer PreProcessColumnizer { get; set; }
 
-    public EncodingOptions EncodingOptions
+    private EncodingOptions EncodingOptions
     {
         get => _encodingOptions;
         set
@@ -185,7 +191,7 @@ public class LogfileReader : IAutoLogLineColumnizerCallback, IDisposable
         }
     }
 
-    public bool UseNewReader { get; set; }
+    private bool UseNewReader { get; set; }
 
     #endregion
 

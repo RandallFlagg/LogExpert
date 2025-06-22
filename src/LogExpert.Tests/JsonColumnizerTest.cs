@@ -1,4 +1,4 @@
-﻿using LogExpert.Core.Classes.Log;
+using LogExpert.Core.Classes.Log;
 using LogExpert.Core.Entities;
 
 using NUnit.Framework;
@@ -16,7 +16,7 @@ public class JsonColumnizerTest
     {
         var jsonColumnizer = new JsonColumnizer.JsonColumnizer();
         var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName);
-        LogfileReader reader = new(path, new EncodingOptions(), true, 40, 50, new MultiFileOptions(), PluginRegistry.PluginRegistry.Instance);
+        LogfileReader reader = new(path, new EncodingOptions(), true, 40, 50, new MultiFileOptions(), false, PluginRegistry.PluginRegistry.Instance);
         reader.ReadFiles();
 
         ILogLine line = reader.GetLogLine(0);
