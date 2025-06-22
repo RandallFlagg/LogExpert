@@ -412,7 +412,7 @@ public class LogfileReader : IAutoLogLineColumnizerCallback, IDisposable
 
         if (!_isFastFailOnGetLogLine)
         {
-            var task = Task.Run(() => _logLineFx(lineNum));
+            var task = Task.Run(() => GetLogLineInternal(lineNum));
             if (task.Wait(WAIT_TIME))
             {
                 result = task.Result;
@@ -430,7 +430,7 @@ public class LogfileReader : IAutoLogLineColumnizerCallback, IDisposable
             if (!_isFailModeCheckCallPending)
             {
                 _isFailModeCheckCallPending = true;
-                var logLine = await _logLineFx(lineNum);
+                var logLine = await GetLogLineInternal(lineNum);
                 GetLineFinishedCallback(logLine);
             }
         }
@@ -970,7 +970,6 @@ public class LogfileReader : IAutoLogLineColumnizerCallback, IDisposable
 
                 while (ReadLine(reader, logBuffer.StartLine + logBuffer.LineCount, logBuffer.StartLine + logBuffer.LineCount + droppedLines, out var line))
                 {
-                    LogLine logLine = new();
                     if (_shouldStop)
                     {
                         Monitor.Exit(logBuffer);
@@ -1001,8 +1000,7 @@ public class LogfileReader : IAutoLogLineColumnizerCallback, IDisposable
                         lineCount = 1;
                     }
 
-                    logLine.FullLine = line;
-                    logLine.LineNumber = logBuffer.StartLine + logBuffer.LineCount;
+                    LogLine logLine = new(line, logBuffer.StartLine + logBuffer.LineCount);
 
                     logBuffer.AddLine(logLine, filePos);
                     filePos = reader.Position;
@@ -1331,11 +1329,7 @@ public class LogfileReader : IAutoLogLineColumnizerCallback, IDisposable
                         continue;
                     }
 
-                    LogLine logLine = new()
-                    {
-                        FullLine = line,
-                        LineNumber = logBuffer.StartLine + logBuffer.LineCount
-                    };
+                    LogLine logLine = new(line, logBuffer.StartLine + logBuffer.LineCount);
 
                     logBuffer.AddLine(logLine, filePos);
                     filePos = reader.Position;
@@ -1775,6 +1769,8 @@ public class LogfileReader : IAutoLogLineColumnizerCallback, IDisposable
 
     #endregion
 
+    #region IDisposable Support
+
     public void Dispose ()
     {
         Dispose(true);
@@ -1801,6 +1797,9 @@ public class LogfileReader : IAutoLogLineColumnizerCallback, IDisposable
         Dispose(false);
     }
 
+    #endregion IDisposable Support
+
+    #region Event Handlers
     protected virtual void OnFileSizeChanged (LogEventArgs e)
     {
         FileSizeChanged?.Invoke(this, e);
@@ -1832,16 +1831,12 @@ public class LogfileReader : IAutoLogLineColumnizerCallback, IDisposable
         Respawned?.Invoke(this, EventArgs.Empty);
     }
 
-    private class LogLine : ILogLine
+    #endregion Event Handlers
+
+    #region Records
+    private record LogLine (string FullLine, int LineNumber) : ILogLine
     {
-        #region Properties
-
-        public string FullLine { get; set; }
-
-        public int LineNumber { get; set; }
-
-        string ITextValue.Text => FullLine;
-
-        #endregion
+        public string Text => FullLine;
     }
+    #endregion Records
 }
