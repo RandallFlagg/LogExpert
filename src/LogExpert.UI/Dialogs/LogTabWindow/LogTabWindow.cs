@@ -17,6 +17,7 @@ using LogExpert.Core.Enums;
 using LogExpert.Core.EventArguments;
 using LogExpert.Core.Interface;
 using LogExpert.Dialogs;
+using LogExpert.Entities;
 using LogExpert.PluginRegistry.FileSystem;
 using LogExpert.UI.Dialogs;
 using LogExpert.UI.Entities;

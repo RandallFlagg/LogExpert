@@ -4,7 +4,6 @@ using System.Runtime.Versioning;
 using System.Text;
 using System.Text.RegularExpressions;
 
-using LogExpert.Classes.Filter;
 using LogExpert.Core.Callback;
 using LogExpert.Core.Classes;
 using LogExpert.Core.Classes.Bookmark;
@@ -18,6 +17,7 @@ using LogExpert.Core.Entities;
 using LogExpert.Core.EventArguments;
 using LogExpert.Core.Interface;
 using LogExpert.Dialogs;
+using LogExpert.Entities;
 using LogExpert.Extensions;
 using LogExpert.UI.Dialogs;
 using LogExpert.UI.Entities;
@@ -3738,18 +3738,18 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
 
         while (!_shouldTimestampDisplaySyncingCancel)
         {
-            _timeShiftSyncWakeupEvent.WaitOne();
+            _ = _timeShiftSyncWakeupEvent.WaitOne();
             if (_shouldTimestampDisplaySyncingCancel)
             {
                 return;
             }
 
-            _timeShiftSyncWakeupEvent.Reset();
+            _ = _timeShiftSyncWakeupEvent.Reset();
 
             while (!_shouldTimestampDisplaySyncingCancel)
             {
                 var signaled = _timeShiftSyncTimerEvent.WaitOne(WAIT_TIME, true);
-                _timeShiftSyncTimerEvent.Reset();
+                _ = _timeShiftSyncTimerEvent.Reset();
                 if (!signaled)
                 {
                     break;
@@ -3791,17 +3791,11 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
                 refLine = row2;
                 var timeStamp2 = GetTimestampForLine(ref refLine, false);
                 //TimeSpan span = TimeSpan.FromTicks(timeStamp2.Ticks - timeStamp1.Ticks);
-                DateTime diff;
-                if (timeStamp1.Ticks > timeStamp2.Ticks)
-                {
-                    diff = new DateTime(timeStamp1.Ticks - timeStamp2.Ticks);
-                }
-                else
-                {
-                    diff = new DateTime(timeStamp2.Ticks - timeStamp1.Ticks);
-                }
+                var diff = timeStamp1.Ticks > timeStamp2.Ticks
+                    ? new DateTime(timeStamp1.Ticks - timeStamp2.Ticks)
+                    : new DateTime(timeStamp2.Ticks - timeStamp1.Ticks);
 
-                StatusLineText("Time diff is " + diff.ToString("HH:mm:ss.fff"));
+                StatusLineText($"Time diff is {diff:HH:mm:ss.fff}");
             }
             else
             {
@@ -3830,14 +3824,9 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
                     }
                 }
 
-                if (filterGridView.Rows.GetRowCount(DataGridViewElementStates.None) > 0) // exception no rows
-                {
-                    filterGridView.CurrentCell = filterGridView.Rows[index].Cells[0];
-                }
-                else
-                {
-                    filterGridView.CurrentCell = null;
-                }
+                filterGridView.CurrentCell = filterGridView.Rows.GetRowCount(DataGridViewElementStates.None) > 0
+                    ? filterGridView.Rows[index].Cells[0]
+                    : null;
             }
         }
         catch (Exception e)
@@ -4008,7 +3997,7 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
             if (shouldScroll)
             {
                 dataGridView.CurrentCell = dataGridView.Rows[line].Cells[0];
-                dataGridView.Focus();
+                _ = dataGridView.Focus();
             }
         }
         catch (ArgumentOutOfRangeException e)
@@ -4027,7 +4016,7 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
     {
         if (!dataGridView.CurrentCell.ReadOnly)
         {
-            dataGridView.BeginEdit(false);
+            _ = dataGridView.BeginEdit(false);
             if (dataGridView.EditingControl != null)
             {
                 if (dataGridView.EditingControl is LogCellEditingControl editControl)
@@ -4235,7 +4224,6 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
         if (filterComboBox.Text.Length == 0)
         {
             _filterParams.SearchText = string.Empty;
-            _filterParams.LowerSearchText = string.Empty;
             _filterParams.IsRangeSearch = false;
             ClearFilterList();
             filterSearchButton.Image = null;
@@ -4253,8 +4241,7 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
         FireCancelHandlers(); // make sure that there's no other filter running (maybe from filter restore)
 
         _filterParams.SearchText = text;
-        _filterParams.LowerSearchText = text.ToLowerInvariant();
-        ConfigManager.Settings.FilterHistoryList.Remove(text);
+        _ = ConfigManager.Settings.FilterHistoryList.Remove(text);
         ConfigManager.Settings.FilterHistoryList.Insert(0, text);
         var maxHistory = ConfigManager.Settings.Preferences.MaximumFilterEntries;
 
@@ -4266,7 +4253,7 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
         filterComboBox.Items.Clear();
         foreach (var item in ConfigManager.Settings.FilterHistoryList)
         {
-            filterComboBox.Items.Add(item);
+            _ = filterComboBox.Items.Add(item);
         }
 
         filterComboBox.Text = text;
@@ -4275,7 +4262,7 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
         _filterParams.RangeSearchText = filterRangeComboBox.Text;
         if (_filterParams.IsRangeSearch)
         {
-            ConfigManager.Settings.FilterRangeHistoryList.Remove(filterRangeComboBox.Text);
+            _ = ConfigManager.Settings.FilterRangeHistoryList.Remove(filterRangeComboBox.Text);
             ConfigManager.Settings.FilterRangeHistoryList.Insert(0, filterRangeComboBox.Text);
             if (ConfigManager.Settings.FilterRangeHistoryList.Count > maxHistory)
             {
@@ -4285,7 +4272,7 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
             filterRangeComboBox.Items.Clear();
             foreach (var item in ConfigManager.Settings.FilterRangeHistoryList)
             {
-                filterRangeComboBox.Items.Add(item);
+                _ = filterRangeComboBox.Items.Add(item);
             }
         }
 
