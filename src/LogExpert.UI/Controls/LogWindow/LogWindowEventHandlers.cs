@@ -1708,8 +1708,8 @@ partial class LogWindow
     {
         if (!_isLoading)
         {
-            dataGridView.Refresh();
-            filterGridView.Refresh();
+            Utils.SafeRefresh(dataGridView);
+            Utils.SafeRefresh(filterGridView);
         }
     }
 

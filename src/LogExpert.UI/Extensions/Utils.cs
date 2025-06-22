@@ -2,11 +2,10 @@ using System.Runtime.Versioning;
 
 namespace LogExpert.UI.Extensions;
 
-
+[SupportedOSPlatform("windows")]
 internal static class Utils
 {
-    [SupportedOSPlatform("windows")]
-    public static string GetWordFromPos (int xPos, string text, Graphics g, Font font)
+    public static string GetWordFromPos(int xPos, string text, Graphics g, Font font)
     {
         var words = text.Split([' ', '.', ':', ';']);
 
@@ -51,5 +50,19 @@ internal static class Utils
         return found
             ? words[y]
             : null;
+    }
+
+    public static void SafeRefresh(Control control)
+    {
+        ArgumentNullException.ThrowIfNull(control);
+
+        if (control.InvokeRequired)
+        {
+            control.Invoke(new Action(control.Refresh));
+        }
+        else
+        {
+            control.Refresh();
+        }
     }
 }

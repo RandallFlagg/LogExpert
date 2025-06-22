@@ -144,7 +144,7 @@ public class LogfileReader : IAutoLogLineColumnizerCallback, IDisposable
             {
                 _currLineCount = 0;
                 AcquireBufferListReaderLock();
-                foreach (LogBuffer buffer in _bufferList)
+                foreach (var buffer in _bufferList)
                 {
                     _currLineCount += buffer.LineCount;
                 }

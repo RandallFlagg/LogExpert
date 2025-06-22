@@ -35,7 +35,6 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
 
     private readonly Image _advancedButtonImage;
 
-    private readonly object _bookmarkLock = new();
     private readonly BookmarkDataProvider _bookmarkProvider = new();
 
     private readonly IList<IBackgroundProcessCancelHandler> _cancelHandlerList = [];

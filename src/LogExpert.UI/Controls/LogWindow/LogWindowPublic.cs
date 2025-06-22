@@ -956,8 +956,6 @@ partial class LogWindow
 
     public void SetBookmarkFromTrigger (int lineNum, string comment)
     {
-        lock (_bookmarkLock)
-        {
             ILogLine line = _logFileReader.GetLogLine(lineNum);
             if (line == null)
             {
@@ -978,7 +976,6 @@ partial class LogWindow
             }
             _bookmarkProvider.AddBookmark(new Bookmark(lineNum, comment));
             OnBookmarkAdded();
-        }
     }
 
     public void JumpNextBookmark ()
