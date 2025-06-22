@@ -783,7 +783,7 @@ partial class LogWindow
 
         var isFiltering = filterTailCheckBox.Checked || _filterPipeList.Count > 0;
         var firstStopTail = true;
-        var startLine = e.PrevLineCount;
+        var startLine = e.PrevLineCount - 1;
 
         if (e.IsRollover)
         {
@@ -794,7 +794,7 @@ partial class LogWindow
         var callback = isFiltering ? new ColumnizerCallback(this) : null;
         var filterLineAdded = false;
 
-        for (var i = startLine; i < e.LineCount; ++i)
+        for (var i = startLine; i < e.LineCount; i++)
         {
             var line = _logFileReader.GetLogLine(i);
             if (line == null)
