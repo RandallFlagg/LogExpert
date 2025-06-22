@@ -43,6 +43,7 @@ internal class BufferShiftTest : RolloverHandlerTestBase
 
         PluginRegistry.PluginRegistry.Instance.Create(TestDirectory.FullName, 500);
         LogfileReader reader = new(files.Last.Value, encodingOptions, true, 40, 50, options, false, PluginRegistry.PluginRegistry.Instance);
+        //reader.StartMonitoring();
         reader.ReadFiles();
 
         IList<ILogFileInfo> lil = reader.GetLogFileInfoList();

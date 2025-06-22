@@ -203,6 +203,7 @@ public class LogfileReader : IAutoLogLineColumnizerCallback, IDisposable
     /// <summary>
     /// Public for unit test reasons
     /// </summary>
+    //TODO: Make this private
     public void ReadFiles ()
     {
         FileSize = 0;

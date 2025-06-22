@@ -19,6 +19,7 @@ public class CSVColumnizerTest
         CsvColumnizer.CsvColumnizer csvColumnizer = new();
         var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, filename);
         LogfileReader reader = new(path, new EncodingOptions(), true, 40, 50, new MultiFileOptions(), false, PluginRegistry.PluginRegistry.Instance);
+        //reader.StartMonitoring();
         reader.ReadFiles();
         ILogLine line = reader.GetLogLine(0);
         IColumnizedLogLine logline = new ColumnizedLogLine();
