@@ -1,11 +1,12 @@
 using LogExpert.Core.Entities;
+using LogExpert.Core.Interface;
 
-namespace LogExpert.Core.Interface;
+namespace LogExpert.UI.Interface;
 
 /// <summary>
 /// To be implemented by the bookmark window. Will be informed from LogWindow about changes in bookmarks.
 /// </summary>
-public interface IBookmarkView
+internal interface IBookmarkView
 {
     #region Properties
 

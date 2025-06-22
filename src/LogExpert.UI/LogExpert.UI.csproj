@@ -6,6 +6,7 @@
     <ForceDesignerDPIUnaware>true</ForceDesignerDPIUnaware>
     <TargetFramework>net8.0-windows</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
+    <RootNamespace>LogExpert.UI</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
