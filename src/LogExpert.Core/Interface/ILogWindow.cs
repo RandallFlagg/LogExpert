@@ -1,6 +1,5 @@
 using LogExpert.Core.Classes.Log;
 using LogExpert.Core.Classes.Persister;
-using LogExpert.Core.Entities;
 
 namespace LogExpert.Core.Interface;
 
@@ -11,15 +10,17 @@ public interface ILogWindow
 
     ILogLine GetLine (int lineNum);
 
-    //TODO Find a way to not use a referenced int (https://github.com/LogExperts/LogExpert/issues/404)
-    DateTime GetTimestampForLineForward (ref int lineNum, bool v);
+    ILogLine GetLogLineWithWait (int lineNum);
 
     //TODO Find a way to not use a referenced int (https://github.com/LogExperts/LogExpert/issues/404)
-    DateTime GetTimestampForLine (ref int lastLineNum, bool v);
+    DateTime GetTimestampForLineForward (ref int lineNum, bool roundToSeconds);
 
-    int FindTimestampLine_Internal (int lineNum1, int lineNum2, int lastLineNum, DateTime searchTimeStamp, bool v);
+    //TODO Find a way to not use a referenced int (https://github.com/LogExperts/LogExpert/issues/404)
+    DateTime GetTimestampForLine (ref int lastLineNum, bool roundToSeconds);
 
-    void SelectLine (int lineNum, bool v1, bool v2);
+    int FindTimestampLineInternal (int lineNum, int rangeStart, int rangeEnd, DateTime timestamp, bool roundToSeconds);
+
+    void SelectLine (int lineNum, bool triggerSyncCall, bool shouldScroll);
 
     PersistenceData GetPersistenceData ();
 

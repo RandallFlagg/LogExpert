@@ -324,10 +324,10 @@ internal partial class BookmarkWindow : DockContent, ISharedToolWindow, IBookmar
                 // {
                 // CommentPainting(this.bookmarkDataGridView, lineNum, e);
                 // }
-                {
-                    // else
-                    PaintHelper.CellPainting(_logPaintContext, bookmarkDataGridView, lineNum, e);
-                }
+                //{
+                // else
+                PaintHelper.CellPainting(_logPaintContext, bookmarkDataGridView.Focused, lineNum, e.ColumnIndex, e);
+                //}
             }
             catch (Exception ex)
             {

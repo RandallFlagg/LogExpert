@@ -119,7 +119,7 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
 
     private int _lineHeight;
 
-    internal LogfileReader _logFileReader;
+    private LogfileReader _logFileReader;
     private MultiFileOptions _multiFileOptions = new();
     private bool _noSelectionUpdates;
     private PatternArgs _patternArgs = new();
@@ -339,6 +339,10 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
         }
     }
 
+    public int CurrentLineNum => dataGridView.CurrentRow == null
+            ? -1
+            : dataGridView.CurrentRow.Index;
+
     public string FileName { get; private set; }
 
     public string SessionFileName { get; set; }
@@ -406,6 +410,11 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
     public ILogLine GetLogLine (int lineNum)
     {
         return _logFileReader.GetLogLine(lineNum);
+    }
+
+    public ILogLine GetLogLineWithWait (int lineNum)
+    {
+        return _logFileReader.GetLogLineWithWait(lineNum).Result;
     }
 
     public Bookmark GetBookmarkForLine (int lineNum)
@@ -551,9 +560,9 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
     }
 
     [SupportedOSPlatform("windows")]
-    void ILogWindow.SelectLine (int lineNum, bool v1, bool v2)
+    void ILogWindow.SelectLine (int lineNum, bool triggerSyncCall, bool shouldScroll)
     {
-        SelectLine(lineNum, v1, v2);
+        SelectLine(lineNum, triggerSyncCall, shouldScroll);
     }
 
     [SupportedOSPlatform("windows")]
@@ -938,72 +947,7 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
     private void OnFilterGridViewCellPainting (object sender, DataGridViewCellPaintingEventArgs e)
     {
         var gridView = (BufferedDataGridView)sender;
-
-        if (e.RowIndex < 0 || e.ColumnIndex < 0 || _filterResultList.Count <= e.RowIndex)
-        {
-            e.Handled = false;
-            return;
-        }
-
-        var lineNum = _filterResultList[e.RowIndex];
-        var line = _logFileReader.GetLogLineWithWait(lineNum).Result;
-
-        if (line != null)
-        {
-            var entry = FindFirstNoWordMatchHilightEntry(line);
-            e.Graphics.SetClip(e.CellBounds);
-
-            if (e.State.HasFlag(DataGridViewElementStates.Selected))
-            {
-                using var brush = PaintHelper.GetBrushForFocusedControl(gridView.Focused, e.CellStyle.SelectionBackColor);
-                e.Graphics.FillRectangle(brush, e.CellBounds);
-            }
-            else
-            {
-                e.CellStyle.BackColor = PaintHelper.GetBackColorFromHighlightEntry(entry);
-                e.PaintBackground(e.ClipBounds, false);
-            }
-
-            if (DebugOptions.DisableWordHighlight)
-            {
-                e.PaintContent(e.CellBounds);
-            }
-            else
-            {
-                PaintCell(e, entry);
-            }
-
-            if (e.ColumnIndex == 0)
-            {
-                if (_bookmarkProvider.IsBookmarkAtLine(lineNum))
-                {
-                    //This was the OLD rect, left for future Information
-                    //(e.CellBounds.Left + 2, e.CellBounds.Top + 2, 6, 6);
-                    var rect = e.CellBounds;
-                    rect.Inflate(-2, -2);
-                    using var brush = new SolidBrush(BookmarkColor);
-                    e.Graphics.FillRectangle(brush, rect);
-
-                    var bookmark = _bookmarkProvider.GetBookmarkForLine(lineNum);
-
-                    if (bookmark.Text.Length > 0)
-                    {
-                        StringFormat format = new()
-                        {
-                            LineAlignment = StringAlignment.Center,
-                            Alignment = StringAlignment.Center
-                        };
-
-                        using var brush2 = new SolidBrush(Color.FromArgb(255, 190, 100, 0));
-                        using var font = new Font("Verdana", Preferences.FontSize, FontStyle.Bold);
-                        e.Graphics.DrawString("!", font, brush2, new RectangleF(rect.Left, rect.Top, rect.Width, rect.Height), format);
-                    }
-                }
-            }
-
-            e.Paint(e.CellBounds, DataGridViewPaintParts.Border);
-            e.Handled = true;
-        }
+        CellPainting(gridView.Focused, e.RowIndex, e.ColumnIndex, true, e);
     }
 
     [SupportedOSPlatform("windows")]
@@ -3910,7 +3854,7 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
     }
 
     [SupportedOSPlatform("windows")]
-    private void SelectLine (int line, bool triggerSyncCall, bool shouldScroll)
+    private void SelectLine (int lineNum, bool triggerSyncCall, bool shouldScroll)
     {
         try
         {
@@ -3926,7 +3870,7 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
                 return;
             }
 
-            if (line == -1)
+            if (lineNum == -1)
             {
                 // Hmm... is that experimental code from early days?
                 MessageBox.Show(this, "Not found:", "Search result");
@@ -3934,16 +3878,16 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
             }
 
             // Prevent ArgumentOutOfRangeException
-            if (line >= dataGridView.Rows.GetRowCount(DataGridViewElementStates.None))
+            if (lineNum >= dataGridView.Rows.GetRowCount(DataGridViewElementStates.None))
             {
-                line = dataGridView.Rows.GetRowCount(DataGridViewElementStates.None) - 1;
+                lineNum = dataGridView.Rows.GetRowCount(DataGridViewElementStates.None) - 1;
             }
 
-            dataGridView.Rows[line].Selected = true;
+            dataGridView.Rows[lineNum].Selected = true;
 
             if (shouldScroll)
             {
-                dataGridView.CurrentCell = dataGridView.Rows[line].Cells[0];
+                dataGridView.CurrentCell = dataGridView.Rows[lineNum].Cells[0];
                 _ = dataGridView.Focus();
             }
         }
@@ -4738,12 +4682,7 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
             return true;
         }
 
-        if (filterParams.IsCaseSensitive != filterCaseSensitiveCheckBox.Checked)
-        {
-            return true;
-        }
-
-        return false;
+        return filterParams.IsCaseSensitive != filterCaseSensitiveCheckBox.Checked;
     }
 
     [SupportedOSPlatform("windows")]
@@ -6380,12 +6319,17 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
         return Column.EmptyColumn;
     }
 
-    public void CellPainting (bool focused, int rowIndex, DataGridViewCellPaintingEventArgs e)
+    public void CellPainting (bool focused, int rowIndex, int columnIndex, bool isFilteredGridView, DataGridViewCellPaintingEventArgs e)
     {
-        if (rowIndex < 0 || e.ColumnIndex < 0)
+        if (rowIndex < 0 || columnIndex < 0 || (isFilteredGridView && _filterResultList.Count <= rowIndex))
         {
             e.Handled = false;
             return;
+        }
+
+        if (isFilteredGridView)
+        {
+            rowIndex = _filterResultList[rowIndex];
         }
 
         var line = _logFileReader.GetLogLineWithWait(rowIndex).Result;
@@ -6415,16 +6359,16 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
                 PaintCell(e, entry);
             }
 
-            if (e.ColumnIndex == 0)
+            if (columnIndex == 0)
             {
                 if (_bookmarkProvider.IsBookmarkAtLine(rowIndex))
                 {
                     //keeping this comment, because it's the original code
                     // = new Rectangle(e.CellBounds.Left + 2, e.CellBounds.Top + 2, 6, 6);
-                    var r = e.CellBounds;
-                    r.Inflate(-2, -2);
+                    var rect = e.CellBounds;
+                    rect.Inflate(-2, -2);
                     using var brush = new SolidBrush(BookmarkColor);
-                    e.Graphics.FillRectangle(brush, r);
+                    e.Graphics.FillRectangle(brush, rect);
 
                     var bookmark = _bookmarkProvider.GetBookmarkForLine(rowIndex);
 
@@ -6436,9 +6380,13 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
                             Alignment = StringAlignment.Center
                         };
 
+                        //Todo Add this as a Settings Option
+                        var fontName = isFilteredGridView ? "Verdana" : "Courier New";
+                        var stringToDraw = isFilteredGridView ? "!" : "i";
+
                         using var brush2 = new SolidBrush(Color.FromArgb(255, 190, 100, 0)); //dark orange
-                        using var font = new Font("Courier New", Preferences.FontSize, FontStyle.Bold);
-                        e.Graphics.DrawString("i", font, brush2, new RectangleF(r.Left, r.Top, r.Width, r.Height), format);
+                        using var font = new Font(fontName, Preferences.FontSize, FontStyle.Bold);
+                        e.Graphics.DrawString(stringToDraw, font, brush2, new RectangleF(rect.Left, rect.Top, rect.Width, rect.Height), format);
                     }
                 }
             }
@@ -6451,7 +6399,7 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
     public void OnDataGridViewCellPainting (object sender, DataGridViewCellPaintingEventArgs e)
     {
         var gridView = (BufferedDataGridView)sender;
-        CellPainting(gridView.Focused, e.RowIndex, e);
+        CellPainting(gridView.Focused, e.RowIndex, e.ColumnIndex, false, e);
     }
 
     /// <summary>
@@ -6570,7 +6518,8 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
             {
                 SelectLine(dataGridView.RowCount - 1, false, true);
             }
-            dataGridView.Focus();
+
+            _ = dataGridView.Focus();
         }
     }
 
@@ -7341,8 +7290,7 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
 
     public int FindTimestampLine (int lineNum, DateTime timestamp, bool roundToSeconds)
     {
-        var foundLine =
-            FindTimestampLine_Internal(lineNum, 0, dataGridView.RowCount - 1, timestamp, roundToSeconds);
+        var foundLine = FindTimestampLineInternal(lineNum, 0, dataGridView.RowCount - 1, timestamp, roundToSeconds);
         if (foundLine >= 0)
         {
             // go backwards to the first occurence of the hit
@@ -7365,10 +7313,9 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
         return -foundLine;
     }
 
-    public int FindTimestampLine_Internal (int lineNum, int rangeStart, int rangeEnd, DateTime timestamp,
-        bool roundToSeconds)
+    public int FindTimestampLineInternal (int lineNum, int rangeStart, int rangeEnd, DateTime timestamp, bool roundToSeconds)
     {
-        _logger.Debug("FindTimestampLine_Internal(): timestamp={0}, lineNum={1}, rangeStart={2}, rangeEnd={3}", timestamp, lineNum, rangeStart, rangeEnd);
+        _logger.Debug($"FindTimestampLine_Internal(): timestamp={timestamp}, lineNum={lineNum}, rangeStart={rangeStart}, rangeEnd={rangeEnd}");
         var refLine = lineNum;
         var currentTimestamp = GetTimestampForLine(ref refLine, roundToSeconds);
         if (currentTimestamp.CompareTo(timestamp) == 0)
@@ -7409,7 +7356,7 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
                 : -lineNum;
         }
 
-        return FindTimestampLine_Internal(lineNum, rangeStart, rangeEnd, timestamp, roundToSeconds);
+        return FindTimestampLineInternal(lineNum, rangeStart, rangeEnd, timestamp, roundToSeconds);
     }
 
     /**
@@ -7461,7 +7408,7 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
                 lineNum++;
             }
 
-            _logger.Debug("GetTimestampForLine() leave with lineNum={0}", lineNum);
+            _logger.Debug($"GetTimestampForLine() leave with lineNum={lineNum}");
             return timeStamp;
         }
     }
@@ -7488,23 +7435,29 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
                 {
                     lookFwd = true;
                     var logLine = _logFileReader.GetLogLine(lineNum);
+
                     if (logLine == null)
                     {
                         timeStamp = DateTime.MinValue;
                         break;
                     }
+
                     timeStamp = CurrentColumnizer.GetTimestamp(ColumnizerCallbackObject, logLine);
+
                     if (roundToSeconds)
                     {
                         timeStamp = timeStamp.Subtract(TimeSpan.FromMilliseconds(timeStamp.Millisecond));
                     }
+
                     lineNum++;
                 }
             }
+
             if (lookFwd)
             {
                 lineNum--;
             }
+
             return timeStamp;
         }
     }
@@ -7521,48 +7474,31 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
 
     public ILogLine GetCurrentLine ()
     {
-        if (dataGridView.CurrentRow != null && dataGridView.CurrentRow.Index != -1)
-        {
-            return _logFileReader.GetLogLine(dataGridView.CurrentRow.Index);
-        }
-        return null;
+        return dataGridView.CurrentRow != null && dataGridView.CurrentRow.Index != -1
+            ? _logFileReader.GetLogLine(dataGridView.CurrentRow.Index)
+            : null;
     }
 
     public ILogLine GetLine (int lineNum)
     {
-        if (lineNum < 0 || _logFileReader == null || lineNum >= _logFileReader.LineCount)
-        {
-            return null;
-        }
-        return _logFileReader.GetLogLine(lineNum);
-    }
-
-    public int GetCurrentLineNum ()
-    {
-        if (dataGridView.CurrentRow == null)
-        {
-            return -1;
-        }
-        return dataGridView.CurrentRow.Index;
+        return lineNum < 0 || _logFileReader == null || lineNum >= _logFileReader.LineCount
+            ? null
+            : _logFileReader.GetLogLine(lineNum);
     }
 
     public int GetRealLineNum ()
     {
-        var lineNum = GetCurrentLineNum();
-        if (lineNum == -1)
-        {
-            return -1;
-        }
-        return _logFileReader.GetRealLineNumForVirtualLineNum(lineNum);
+        var lineNum = CurrentLineNum;
+        return lineNum == -1
+            ? -1
+            : _logFileReader.GetRealLineNumForVirtualLineNum(lineNum);
     }
 
     public ILogFileInfo GetCurrentFileInfo ()
     {
-        if (dataGridView.CurrentRow != null && dataGridView.CurrentRow.Index != -1)
-        {
-            return _logFileReader.GetLogFileInfoForLine(dataGridView.CurrentRow.Index);
-        }
-        return null;
+        return dataGridView.CurrentRow != null && dataGridView.CurrentRow.Index != -1
+            ? _logFileReader.GetLogFileInfoForLine(dataGridView.CurrentRow.Index)
+            : null;
     }
 
     /// <summary>

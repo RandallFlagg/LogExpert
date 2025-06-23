@@ -306,7 +306,7 @@ internal class TimeSpreadCalculator
 
             while (searchTimeStamp.CompareTo(_endTimestamp) <= 0)
             {
-                lineNum = _logWindow.FindTimestampLine_Internal(lineNum, lineNum, lastLineNum, searchTimeStamp, false);
+                lineNum = _logWindow.FindTimestampLineInternal(lineNum, lineNum, lastLineNum, searchTimeStamp, false);
                 if (lineNum < 0)
                 {
                     lineNum = -lineNum;

@@ -22,9 +22,9 @@ internal static class PaintHelper
     #region Public methods
 
     [SupportedOSPlatform("windows")]
-    public static void CellPainting (ILogPaintContextUI logPaintCtx, BufferedDataGridView gridView, int rowIndex, DataGridViewCellPaintingEventArgs e)
+    public static void CellPainting (ILogPaintContextUI logPaintCtx, bool focused, int rowIndex, int columnIndex, DataGridViewCellPaintingEventArgs e)
     {
-        if (rowIndex < 0 || e.ColumnIndex < 0)
+        if (rowIndex < 0 || columnIndex < 0)
         {
             e.Handled = false;
             return;
@@ -39,7 +39,7 @@ internal static class PaintHelper
 
             if (e.State.HasFlag(DataGridViewElementStates.Selected))
             {
-                using var brush = GetBrushForFocusedControl(gridView.Focused, e.CellStyle.SelectionBackColor);
+                using var brush = GetBrushForFocusedControl(focused, e.CellStyle.SelectionBackColor);
                 e.Graphics.FillRectangle(brush, e.CellBounds);
             }
             else
@@ -54,7 +54,7 @@ internal static class PaintHelper
             }
             else
             {
-                PaintCell(logPaintCtx, e, gridView, false, entry);
+                PaintCell(logPaintCtx, e, entry);
             }
 
             if (e.ColumnIndex == 0)
@@ -358,13 +358,13 @@ internal static class PaintHelper
     #region Private Methods
 
     [SupportedOSPlatform("windows")]
-    private static void PaintCell (ILogPaintContextUI logPaintCtx, DataGridViewCellPaintingEventArgs e, BufferedDataGridView gridView, bool noBackgroundFill, HighlightEntry groundEntry)
+    private static void PaintCell (ILogPaintContextUI logPaintCtx, DataGridViewCellPaintingEventArgs e, HighlightEntry groundEntry)
     {
-        PaintHighlightedCell(logPaintCtx, e, gridView, noBackgroundFill, groundEntry);
+        PaintHighlightedCell(logPaintCtx, e, groundEntry);
     }
 
     [SupportedOSPlatform("windows")]
-    private static void PaintHighlightedCell (ILogPaintContextUI logPaintCtx, DataGridViewCellPaintingEventArgs e, BufferedDataGridView gridView, bool noBackgroundFill, HighlightEntry groundEntry)
+    private static void PaintHighlightedCell (ILogPaintContextUI logPaintCtx, DataGridViewCellPaintingEventArgs e, HighlightEntry groundEntry)
     {
         var value = e.Value ?? string.Empty;
 
@@ -463,9 +463,9 @@ internal static class PaintHelper
             Rectangle wordRect = new(wordPos, wordSize);
 
             var foreColor = matchEntry.HighlightEntry.ForegroundColor;
-            if ((e.State & DataGridViewElementStates.Selected) != DataGridViewElementStates.Selected)
+            if (!e.State.HasFlag(DataGridViewElementStates.Selected))
             {
-                if (!noBackgroundFill && bgBrush != null && !matchEntry.HighlightEntry.NoBackground)
+                if (bgBrush != null && !matchEntry.HighlightEntry.NoBackground)
                 {
                     e.Graphics.FillRectangle(bgBrush, wordRect);
                 }
@@ -479,7 +479,6 @@ internal static class PaintHelper
             }
 
             TextRenderer.DrawText(e.Graphics, matchWord, font, wordRect, foreColor, flags);
-
             wordPos.Offset(wordSize.Width, 0);
         }
     }
