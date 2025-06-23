@@ -1,7 +1,6 @@
-﻿using System.Windows.Forms;
+using System.Windows.Forms;
 using LogExpert.Core.Enums;
 using LogExpert.Dialogs;
-using LogExpert.UI.Extensions.Forms;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace LogExpert.UI.Controls.LogTabWindow
@@ -63,15 +62,15 @@ namespace LogExpert.UI.Controls.LogTabWindow
             closeFileToolStripMenuItem = new ToolStripMenuItem();
             reloadToolStripMenuItem = new ToolStripMenuItem();
             newFromClipboardToolStripMenuItem = new ToolStripMenuItem();
-            menuToolStripSeparatorExtension1 = new MenuToolStripSeparatorExtension();
+            ToolStripSeparator1 = new ToolStripSeparator();
             multiFileToolStripMenuItem = new ToolStripMenuItem();
             multiFileEnabledStripMenuItem = new ToolStripMenuItem();
             multifileMaskToolStripMenuItem = new ToolStripMenuItem();
-            menuToolStripSeparatorExtension2 = new MenuToolStripSeparatorExtension();
+            ToolStripSeparator2 = new ToolStripSeparator();
             loadProjectToolStripMenuItem = new ToolStripMenuItem();
             saveProjectToolStripMenuItem = new ToolStripMenuItem();
             exportBookmarksToolStripMenuItem = new ToolStripMenuItem();
-            menuToolStripSeparatorExtension3 = new MenuToolStripSeparatorExtension();
+            ToolStripSeparator3 = new ToolStripSeparator();
             lastUsedToolStripMenuItem = new ToolStripMenuItem();
             exitToolStripMenuItem = new ToolStripMenuItem();
             viewNavigateToolStripMenuItem = new ToolStripMenuItem();
@@ -84,35 +83,35 @@ namespace LogExpert.UI.Controls.LogTabWindow
             jumpToPrevToolStripMenuItem = new ToolStripMenuItem();
             showBookmarkListToolStripMenuItem = new ToolStripMenuItem();
             columnFinderToolStripMenuItem = new ToolStripMenuItem();
-            menuToolStripSeparatorExtension5 = new MenuToolStripSeparatorExtension();
+            ToolStripSeparator5 = new ToolStripSeparator();
             toolStripEncodingMenuItem = new ToolStripMenuItem();
             toolStripEncodingASCIIItem = new ToolStripMenuItem();
             toolStripEncodingANSIItem = new ToolStripMenuItem();
             toolStripEncodingISO88591Item = new ToolStripMenuItem();
             toolStripEncodingUTF8Item = new ToolStripMenuItem();
             toolStripEncodingUTF16Item = new ToolStripMenuItem();
-            menuToolStripSeparatorExtension6 = new MenuToolStripSeparatorExtension();
+            ToolStripSeparator6 = new ToolStripSeparator();
             timeshiftToolStripMenuItem = new ToolStripMenuItem();
             timeshiftMenuTextBox = new ToolStripTextBox();
-            menuToolStripSeparatorExtension4 = new MenuToolStripSeparatorExtension();
+            ToolStripSeparator4 = new ToolStripSeparator();
             copyMarkedLinesIntoNewTabToolStripMenuItem = new ToolStripMenuItem();
             optionToolStripMenuItem = new ToolStripMenuItem();
             columnizerToolStripMenuItem = new ToolStripMenuItem();
             hilightingToolStripMenuItem1 = new ToolStripMenuItem();
-            menuToolStripSeparatorExtension7 = new MenuToolStripSeparatorExtension();
+            ToolStripSeparator7 = new ToolStripSeparator();
             settingsToolStripMenuItem = new ToolStripMenuItem();
-            menuToolStripSeparatorExtension9 = new MenuToolStripSeparatorExtension();
+            ToolStripSeparator9 = new ToolStripSeparator();
             cellSelectModeToolStripMenuItem = new ToolStripMenuItem();
             alwaysOnTopToolStripMenuItem = new ToolStripMenuItem();
             hideLineColumnToolStripMenuItem = new ToolStripMenuItem();
-            menuToolStripSeparatorExtension8 = new MenuToolStripSeparatorExtension();
+            ToolStripSeparator8 = new ToolStripSeparator();
             lockInstanceToolStripMenuItem = new ToolStripMenuItem();
             toolsToolStripMenuItem = new ToolStripMenuItem();
             configureToolStripMenuItem = new ToolStripMenuItem();
-            configureToolStripSeparator = new MenuToolStripSeparatorExtension();
+            configureToolStripSeparator = new ToolStripSeparator();
             helpToolStripMenuItem = new ToolStripMenuItem();
             showHelpToolStripMenuItem = new ToolStripMenuItem();
-            menuToolStripSeparatorExtension11 = new MenuToolStripSeparatorExtension();
+            ToolStripSeparator11 = new ToolStripSeparator();
             aboutToolStripMenuItem = new ToolStripMenuItem();
             debugToolStripMenuItem = new ToolStripMenuItem();
             dumpLogBufferInfoToolStripMenuItem = new ToolStripMenuItem();
@@ -133,18 +132,18 @@ namespace LogExpert.UI.Controls.LogTabWindow
             externalToolsToolStrip = new ToolStrip();
             buttonToolStrip = new ToolStrip();
             toolStripButtonOpen = new ToolStripButton();
-            lineToolStripSeparatorExtension1 = new LineToolStripSeparatorExtension();
+            lineToolStripSeparatorExtension1 = new ToolStripSeparator();
             toolStripButtonSearch = new ToolStripButton();
             toolStripButtonFilter = new ToolStripButton();
-            lineToolStripSeparatorExtension2 = new LineToolStripSeparatorExtension();
+            lineToolStripSeparatorExtension2 = new ToolStripSeparator();
             toolStripButtonBookmark = new ToolStripButton();
             toolStripButtonUp = new ToolStripButton();
             toolStripButtonDown = new ToolStripButton();
-            lineToolStripSeparatorExtension3 = new LineToolStripSeparatorExtension();
+            lineToolStripSeparatorExtension3 = new ToolStripSeparator();
             toolStripButtonBubbles = new ToolStripButton();
-            lineToolStripSeparatorExtension4 = new LineToolStripSeparatorExtension();
+            lineToolStripSeparatorExtension4 = new ToolStripSeparator();
             toolStripButtonTail = new ToolStripButton();
-            lineToolStripSeparatorExtension5 = new LineToolStripSeparatorExtension();
+            lineToolStripSeparatorExtension5 = new ToolStripSeparator();
             groupsComboBoxHighlightGroups = new ToolStripComboBox();
             checkBoxFollowTail = new CheckBox();
             tabContextMenuStrip = new ContextMenuStrip(components);
@@ -174,7 +173,7 @@ namespace LogExpert.UI.Controls.LogTabWindow
             statusStrip.Location = new System.Drawing.Point(0, 954);
             statusStrip.Name = "statusStrip";
             statusStrip.Padding = new Padding(3, 0, 23, 0);
-            statusStrip.Size = new System.Drawing.Size(1603, 63);
+            statusStrip.Size = new System.Drawing.Size(1603, 35);
             statusStrip.SizingGrip = false;
             statusStrip.TabIndex = 5;
             statusStrip.Text = "statusStrip1";
@@ -185,7 +184,7 @@ namespace LogExpert.UI.Controls.LogTabWindow
             labelLines.BorderSides = ToolStripStatusLabelBorderSides.Left | ToolStripStatusLabelBorderSides.Top | ToolStripStatusLabelBorderSides.Right | ToolStripStatusLabelBorderSides.Bottom;
             labelLines.BorderStyle = Border3DStyle.SunkenOuter;
             labelLines.Name = "labelLines";
-            labelLines.Size = new System.Drawing.Size(26, 58);
+            labelLines.Size = new System.Drawing.Size(26, 35);
             labelLines.Text = "0";
             // 
             // labelSize
@@ -194,7 +193,7 @@ namespace LogExpert.UI.Controls.LogTabWindow
             labelSize.BorderSides = ToolStripStatusLabelBorderSides.Left | ToolStripStatusLabelBorderSides.Top | ToolStripStatusLabelBorderSides.Right | ToolStripStatusLabelBorderSides.Bottom;
             labelSize.BorderStyle = Border3DStyle.SunkenOuter;
             labelSize.Name = "labelSize";
-            labelSize.Size = new System.Drawing.Size(26, 58);
+            labelSize.Size = new System.Drawing.Size(26, 35);
             labelSize.Text = "0";
             // 
             // labelCurrentLine
@@ -203,18 +202,18 @@ namespace LogExpert.UI.Controls.LogTabWindow
             labelCurrentLine.BorderSides = ToolStripStatusLabelBorderSides.Left | ToolStripStatusLabelBorderSides.Top | ToolStripStatusLabelBorderSides.Right | ToolStripStatusLabelBorderSides.Bottom;
             labelCurrentLine.BorderStyle = Border3DStyle.SunkenOuter;
             labelCurrentLine.Name = "labelCurrentLine";
-            labelCurrentLine.Size = new System.Drawing.Size(28, 58);
+            labelCurrentLine.Size = new System.Drawing.Size(28, 35);
             labelCurrentLine.Text = "L:";
             // 
             // loadProgessBar
             // 
             loadProgessBar.Name = "loadProgessBar";
-            loadProgessBar.Size = new System.Drawing.Size(83, 57);
+            loadProgessBar.Size = new System.Drawing.Size(83, 35);
             // 
             // labelStatus
             // 
             labelStatus.Name = "labelStatus";
-            labelStatus.Size = new System.Drawing.Size(39, 58);
+            labelStatus.Size = new System.Drawing.Size(39, 35);
             labelStatus.Text = "Ready";
             // 
             // mainMenuStrip
@@ -232,7 +231,7 @@ namespace LogExpert.UI.Controls.LogTabWindow
             // 
             // fileToolStripMenuItem
             // 
-            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { openToolStripMenuItem, openURIToolStripMenuItem, closeFileToolStripMenuItem, reloadToolStripMenuItem, newFromClipboardToolStripMenuItem, menuToolStripSeparatorExtension1, multiFileToolStripMenuItem, menuToolStripSeparatorExtension2, loadProjectToolStripMenuItem, saveProjectToolStripMenuItem, exportBookmarksToolStripMenuItem, menuToolStripSeparatorExtension3, lastUsedToolStripMenuItem, exitToolStripMenuItem });
+            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { openToolStripMenuItem, openURIToolStripMenuItem, closeFileToolStripMenuItem, reloadToolStripMenuItem, newFromClipboardToolStripMenuItem, ToolStripSeparator1, multiFileToolStripMenuItem, ToolStripSeparator2, loadProjectToolStripMenuItem, saveProjectToolStripMenuItem, exportBookmarksToolStripMenuItem, ToolStripSeparator3, lastUsedToolStripMenuItem, exitToolStripMenuItem });
             fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             fileToolStripMenuItem.Size = new System.Drawing.Size(37, 19);
             fileToolStripMenuItem.Text = "File";
@@ -284,10 +283,10 @@ namespace LogExpert.UI.Controls.LogTabWindow
             newFromClipboardToolStripMenuItem.ToolTipText = "Creates a new tab with content from clipboard";
             newFromClipboardToolStripMenuItem.Click += OnNewFromClipboardToolStripMenuItemClick;
             // 
-            // menuToolStripSeparatorExtension1
+            // ToolStripSeparator1
             // 
-            menuToolStripSeparatorExtension1.Name = "menuToolStripSeparatorExtension1";
-            menuToolStripSeparatorExtension1.Size = new System.Drawing.Size(250, 6);
+            ToolStripSeparator1.Name = "ToolStripSeparator1";
+            ToolStripSeparator1.Size = new System.Drawing.Size(250, 6);
             // 
             // multiFileToolStripMenuItem
             // 
@@ -318,10 +317,10 @@ namespace LogExpert.UI.Controls.LogTabWindow
             multifileMaskToolStripMenuItem.Text = "File name mask...";
             multifileMaskToolStripMenuItem.Click += OnMultiFileMaskToolStripMenuItemClick;
             // 
-            // menuToolStripSeparatorExtension2
+            // ToolStripSeparator2
             // 
-            menuToolStripSeparatorExtension2.Name = "menuToolStripSeparatorExtension2";
-            menuToolStripSeparatorExtension2.Size = new System.Drawing.Size(250, 6);
+            ToolStripSeparator2.Name = "ToolStripSeparator2";
+            ToolStripSeparator2.Size = new System.Drawing.Size(250, 6);
             // 
             // loadProjectToolStripMenuItem
             // 
@@ -347,10 +346,10 @@ namespace LogExpert.UI.Controls.LogTabWindow
             exportBookmarksToolStripMenuItem.ToolTipText = "Write a list of bookmarks and their comments to a CSV file";
             exportBookmarksToolStripMenuItem.Click += OnExportBookmarksToolStripMenuItemClick;
             // 
-            // menuToolStripSeparatorExtension3
+            // ToolStripSeparator3
             // 
-            menuToolStripSeparatorExtension3.Name = "menuToolStripSeparatorExtension3";
-            menuToolStripSeparatorExtension3.Size = new System.Drawing.Size(250, 6);
+            ToolStripSeparator3.Name = "ToolStripSeparator3";
+            ToolStripSeparator3.Size = new System.Drawing.Size(250, 6);
             // 
             // lastUsedToolStripMenuItem
             // 
@@ -369,7 +368,7 @@ namespace LogExpert.UI.Controls.LogTabWindow
             // 
             // viewNavigateToolStripMenuItem
             // 
-            viewNavigateToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { goToLineToolStripMenuItem, searchToolStripMenuItem, filterToolStripMenuItem, bookmarksToolStripMenuItem, columnFinderToolStripMenuItem, menuToolStripSeparatorExtension5, toolStripEncodingMenuItem, menuToolStripSeparatorExtension6, timeshiftToolStripMenuItem, timeshiftMenuTextBox, menuToolStripSeparatorExtension4, copyMarkedLinesIntoNewTabToolStripMenuItem });
+            viewNavigateToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { goToLineToolStripMenuItem, searchToolStripMenuItem, filterToolStripMenuItem, bookmarksToolStripMenuItem, columnFinderToolStripMenuItem, ToolStripSeparator5, toolStripEncodingMenuItem, ToolStripSeparator6, timeshiftToolStripMenuItem, timeshiftMenuTextBox, ToolStripSeparator4, copyMarkedLinesIntoNewTabToolStripMenuItem });
             viewNavigateToolStripMenuItem.Name = "viewNavigateToolStripMenuItem";
             viewNavigateToolStripMenuItem.Size = new System.Drawing.Size(96, 19);
             viewNavigateToolStripMenuItem.Text = "View/Navigate";
@@ -458,10 +457,10 @@ namespace LogExpert.UI.Controls.LogTabWindow
             columnFinderToolStripMenuItem.Text = "Column finder";
             columnFinderToolStripMenuItem.Click += OnColumnFinderToolStripMenuItemClick;
             // 
-            // menuToolStripSeparatorExtension5
+            // ToolStripSeparator5
             // 
-            menuToolStripSeparatorExtension5.Name = "menuToolStripSeparatorExtension5";
-            menuToolStripSeparatorExtension5.Size = new System.Drawing.Size(186, 6);
+            ToolStripSeparator5.Name = "ToolStripSeparator5";
+            ToolStripSeparator5.Size = new System.Drawing.Size(186, 6);
             // 
             // toolStripEncodingMenuItem
             // 
@@ -517,10 +516,10 @@ namespace LogExpert.UI.Controls.LogTabWindow
             toolStripEncodingUTF16Item.Text = "Unicode";
             toolStripEncodingUTF16Item.Click += OnUTF16ToolStripMenuItemClick;
             // 
-            // menuToolStripSeparatorExtension6
+            // ToolStripSeparator6
             // 
-            menuToolStripSeparatorExtension6.Name = "menuToolStripSeparatorExtension6";
-            menuToolStripSeparatorExtension6.Size = new System.Drawing.Size(186, 6);
+            ToolStripSeparator6.Name = "ToolStripSeparator6";
+            ToolStripSeparator6.Size = new System.Drawing.Size(186, 6);
             // 
             // timeshiftToolStripMenuItem
             // 
@@ -542,10 +541,10 @@ namespace LogExpert.UI.Controls.LogTabWindow
             timeshiftMenuTextBox.ToolTipText = "Time offset (hh:mm:ss.fff)";
             timeshiftMenuTextBox.KeyDown += OnTimeShiftMenuTextBoxKeyDown;
             // 
-            // menuToolStripSeparatorExtension4
+            // ToolStripSeparator4
             // 
-            menuToolStripSeparatorExtension4.Name = "menuToolStripSeparatorExtension4";
-            menuToolStripSeparatorExtension4.Size = new System.Drawing.Size(186, 6);
+            ToolStripSeparator4.Name = "ToolStripSeparator4";
+            ToolStripSeparator4.Size = new System.Drawing.Size(186, 6);
             // 
             // copyMarkedLinesIntoNewTabToolStripMenuItem
             // 
@@ -558,7 +557,7 @@ namespace LogExpert.UI.Controls.LogTabWindow
             // 
             // optionToolStripMenuItem
             // 
-            optionToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { columnizerToolStripMenuItem, hilightingToolStripMenuItem1, menuToolStripSeparatorExtension7, settingsToolStripMenuItem, menuToolStripSeparatorExtension9, cellSelectModeToolStripMenuItem, alwaysOnTopToolStripMenuItem, hideLineColumnToolStripMenuItem, menuToolStripSeparatorExtension8, lockInstanceToolStripMenuItem });
+            optionToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { columnizerToolStripMenuItem, hilightingToolStripMenuItem1, ToolStripSeparator7, settingsToolStripMenuItem, ToolStripSeparator9, cellSelectModeToolStripMenuItem, alwaysOnTopToolStripMenuItem, hideLineColumnToolStripMenuItem, ToolStripSeparator8, lockInstanceToolStripMenuItem });
             optionToolStripMenuItem.Name = "optionToolStripMenuItem";
             optionToolStripMenuItem.Size = new System.Drawing.Size(61, 19);
             optionToolStripMenuItem.Text = "Options";
@@ -579,10 +578,10 @@ namespace LogExpert.UI.Controls.LogTabWindow
             hilightingToolStripMenuItem1.Text = "Highlighting and triggers...";
             hilightingToolStripMenuItem1.Click += OnHighlightingToolStripMenuItemClick;
             // 
-            // menuToolStripSeparatorExtension7
+            // ToolStripSeparator7
             // 
-            menuToolStripSeparatorExtension7.Name = "menuToolStripSeparatorExtension7";
-            menuToolStripSeparatorExtension7.Size = new System.Drawing.Size(221, 6);
+            ToolStripSeparator7.Name = "ToolStripSeparator7";
+            ToolStripSeparator7.Size = new System.Drawing.Size(221, 6);
             // 
             // settingsToolStripMenuItem
             // 
@@ -592,10 +591,10 @@ namespace LogExpert.UI.Controls.LogTabWindow
             settingsToolStripMenuItem.Text = "Settings...";
             settingsToolStripMenuItem.Click += OnSettingsToolStripMenuItemClick;
             // 
-            // menuToolStripSeparatorExtension9
+            // ToolStripSeparator9
             // 
-            menuToolStripSeparatorExtension9.Name = "menuToolStripSeparatorExtension9";
-            menuToolStripSeparatorExtension9.Size = new System.Drawing.Size(221, 6);
+            ToolStripSeparator9.Name = "ToolStripSeparator9";
+            ToolStripSeparator9.Size = new System.Drawing.Size(221, 6);
             // 
             // cellSelectModeToolStripMenuItem
             // 
@@ -622,10 +621,10 @@ namespace LogExpert.UI.Controls.LogTabWindow
             hideLineColumnToolStripMenuItem.Text = "Hide line column";
             hideLineColumnToolStripMenuItem.Click += OnHideLineColumnToolStripMenuItemClick;
             // 
-            // menuToolStripSeparatorExtension8
+            // ToolStripSeparator8
             // 
-            menuToolStripSeparatorExtension8.Name = "menuToolStripSeparatorExtension8";
-            menuToolStripSeparatorExtension8.Size = new System.Drawing.Size(221, 6);
+            ToolStripSeparator8.Name = "ToolStripSeparator8";
+            ToolStripSeparator8.Size = new System.Drawing.Size(221, 6);
             // 
             // lockInstanceToolStripMenuItem
             // 
@@ -658,7 +657,7 @@ namespace LogExpert.UI.Controls.LogTabWindow
             // 
             // helpToolStripMenuItem
             // 
-            helpToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { showHelpToolStripMenuItem, menuToolStripSeparatorExtension11, aboutToolStripMenuItem });
+            helpToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { showHelpToolStripMenuItem, ToolStripSeparator11, aboutToolStripMenuItem });
             helpToolStripMenuItem.Name = "helpToolStripMenuItem";
             helpToolStripMenuItem.Size = new System.Drawing.Size(44, 19);
             helpToolStripMenuItem.Text = "Help";
@@ -671,10 +670,10 @@ namespace LogExpert.UI.Controls.LogTabWindow
             showHelpToolStripMenuItem.Text = "Show help";
             showHelpToolStripMenuItem.Click += OnShowHelpToolStripMenuItemClick;
             // 
-            // menuToolStripSeparatorExtension11
+            // ToolStripSeparator11
             // 
-            menuToolStripSeparatorExtension11.Name = "menuToolStripSeparatorExtension11";
-            menuToolStripSeparatorExtension11.Size = new System.Drawing.Size(145, 6);
+            ToolStripSeparator11.Name = "ToolStripSeparator11";
+            ToolStripSeparator11.Size = new System.Drawing.Size(145, 6);
             // 
             // aboutToolStripMenuItem
             // 
@@ -834,7 +833,6 @@ namespace LogExpert.UI.Controls.LogTabWindow
             dockPanel.Dock = DockStyle.Fill;
             dockPanel.DockBackColor = System.Drawing.SystemColors.Control;
             dockPanel.DocumentStyle = DocumentStyle.DockingWindow;
-            dockPanel.ForeColor = System.Drawing.SystemColors.Control;
             dockPanel.Location = new System.Drawing.Point(0, 0);
             dockPanel.Margin = new Padding(0);
             dockPanel.Name = "dockPanel";
@@ -1273,22 +1271,22 @@ namespace LogExpert.UI.Controls.LogTabWindow
         private ToolStripMenuItem columnFinderToolStripMenuItem;
         private DockPanel dockPanel;
         private ToolStripMenuItem tabRenameToolStripMenuItem;
-        private LineToolStripSeparatorExtension lineToolStripSeparatorExtension1;
-        private LineToolStripSeparatorExtension lineToolStripSeparatorExtension2;
-        private MenuToolStripSeparatorExtension menuToolStripSeparatorExtension1;
-        private MenuToolStripSeparatorExtension menuToolStripSeparatorExtension2;
-        private MenuToolStripSeparatorExtension menuToolStripSeparatorExtension3;
-        private LineToolStripSeparatorExtension lineToolStripSeparatorExtension3;
-        private LineToolStripSeparatorExtension lineToolStripSeparatorExtension4;
-        private LineToolStripSeparatorExtension lineToolStripSeparatorExtension5;
-        private MenuToolStripSeparatorExtension menuToolStripSeparatorExtension5;
-        private MenuToolStripSeparatorExtension menuToolStripSeparatorExtension6;
-        private MenuToolStripSeparatorExtension menuToolStripSeparatorExtension4;
-        private MenuToolStripSeparatorExtension menuToolStripSeparatorExtension7;
-        private MenuToolStripSeparatorExtension menuToolStripSeparatorExtension9;
-        private MenuToolStripSeparatorExtension menuToolStripSeparatorExtension8;
-        private MenuToolStripSeparatorExtension configureToolStripSeparator;
-        private MenuToolStripSeparatorExtension menuToolStripSeparatorExtension11;
+        private ToolStripSeparator lineToolStripSeparatorExtension1;
+        private ToolStripSeparator lineToolStripSeparatorExtension2;
+        private ToolStripSeparator ToolStripSeparator1;
+        private ToolStripSeparator ToolStripSeparator2;
+        private ToolStripSeparator ToolStripSeparator3;
+        private ToolStripSeparator lineToolStripSeparatorExtension3;
+        private ToolStripSeparator lineToolStripSeparatorExtension4;
+        private ToolStripSeparator lineToolStripSeparatorExtension5;
+        private ToolStripSeparator ToolStripSeparator5;
+        private ToolStripSeparator ToolStripSeparator6;
+        private ToolStripSeparator ToolStripSeparator4;
+        private ToolStripSeparator ToolStripSeparator7;
+        private ToolStripSeparator ToolStripSeparator9;
+        private ToolStripSeparator ToolStripSeparator8;
+        private ToolStripSeparator configureToolStripSeparator;
+        private ToolStripSeparator ToolStripSeparator11;
     }
 }
 
