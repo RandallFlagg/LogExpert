@@ -3418,11 +3418,18 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
             Rectangle wordRect = new(wordPos, wordSize);
 
             var foreColor = matchEntry.HighlightEntry.ForegroundColor;
-            if (e.State.HasFlag(DataGridViewElementStates.Selected))
+            if (!e.State.HasFlag(DataGridViewElementStates.Selected))
             {
                 if (bgBrush != null && !matchEntry.HighlightEntry.NoBackground)
                 {
                     e.Graphics.FillRectangle(bgBrush, wordRect);
+                }
+            }
+            else
+            {
+                if (foreColor.Equals(Color.Black))
+                {
+                    foreColor = Color.White;
                 }
             }
 
