@@ -414,8 +414,9 @@ internal partial class HighlightDialog : Form
             Rectangle rectangle = new(0, e.Bounds.Top, e.Bounds.Width, e.Bounds.Height);
 
             var selected = e.State.HasFlag(DrawItemState.Selected);
-
-            var forgroundColor = selected ? PaintHelper.GetForeColorBasedOnBackColor(entry.ForegroundColor) : entry.ForegroundColor;
+            var forgroundColor = selected
+                ? PaintHelper.GetForeColorBasedOnBackColor(entry.ForegroundColor)
+                : entry.ForegroundColor;
 
             if (!selected)
             {

@@ -955,11 +955,6 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
 
             if (e.State.HasFlag(DataGridViewElementStates.Selected))
             {
-                if (e.CellStyle.SelectionForeColor != Color.White)
-                {
-                    e.CellStyle.SelectionForeColor = PaintHelper.GetForeColorBasedOnBackColor(e.CellStyle.SelectionBackColor);
-                }
-
                 using var brush = PaintHelper.GetBrushForFocusedControl(gridView.Focused, e.CellStyle.SelectionBackColor);
                 e.Graphics.FillRectangle(brush, e.CellBounds);
             }
@@ -6402,11 +6397,6 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
 
             if (e.State.HasFlag(DataGridViewElementStates.Selected))
             {
-                if (e.CellStyle.ForeColor != Color.White)
-                {
-                    e.CellStyle.ForeColor = PaintHelper.GetForeColorBasedOnBackColor(e.CellStyle.SelectionBackColor);
-                }
-
                 using var brush = PaintHelper.GetBrushForFocusedControl(focused, e.CellStyle.SelectionBackColor);
                 e.Graphics.FillRectangle(brush, e.CellBounds);
             }

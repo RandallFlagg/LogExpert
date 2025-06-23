@@ -39,11 +39,6 @@ internal static class PaintHelper
 
             if (e.State.HasFlag(DataGridViewElementStates.Selected))
             {
-                if (e.CellStyle.SelectionForeColor != Color.White)
-                {
-                    e.CellStyle.SelectionForeColor = GetForeColorBasedOnBackColor(e.CellStyle.SelectionBackColor);
-                }
-
                 using var brush = GetBrushForFocusedControl(gridView.Focused, e.CellStyle.SelectionBackColor);
                 e.Graphics.FillRectangle(brush, e.CellBounds);
             }
