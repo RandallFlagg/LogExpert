@@ -3208,11 +3208,12 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
         {
             CurrentColumnizer = columnizer;
             _freezeStateMap.Clear();
+
             if (_logFileReader != null)
             {
-                if (CurrentColumnizer is IPreProcessColumnizer)
+                if (CurrentColumnizer is IPreProcessColumnizer columnizer1)
                 {
-                    _logFileReader.PreProcessColumnizer = (IPreProcessColumnizer)CurrentColumnizer;
+                    _logFileReader.PreProcessColumnizer = columnizer1;
                 }
                 else
                 {
@@ -3237,7 +3238,7 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
 
             // Reload when previous columnizer was PreProcess and current is not, and vice versa.
             // When the current columnizer is a preProcess columnizer, reload in every case.
-            if (CurrentColumnizer is IPreProcessColumnizer != oldColumnizerIsPreProcess ||
+            if ((CurrentColumnizer is IPreProcessColumnizer) != oldColumnizerIsPreProcess ||
                 CurrentColumnizer is IPreProcessColumnizer)
             {
                 //forcedColumnizer = currentColumnizer; // prevent Columnizer selection on SetGuiAfterReload()
@@ -3390,8 +3391,7 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
                 | TextFormatFlags.PreserveGraphicsClipping
                 | TextFormatFlags.NoPadding
                 | TextFormatFlags.VerticalCenter
-                | TextFormatFlags.TextBoxControl
-            ;
+                | TextFormatFlags.TextBoxControl;
 
         //          | TextFormatFlags.VerticalCenter
         //          | TextFormatFlags.TextBoxControl
@@ -6395,9 +6395,9 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
 
             if (e.State.HasFlag(DataGridViewElementStates.Selected))
             {
-                if (e.CellStyle.SelectionForeColor != Color.White)
+                if (e.CellStyle.ForeColor != Color.White)
                 {
-                    e.CellStyle.SelectionForeColor = PaintHelper.GetForeColorBasedOnBackColor(e.CellStyle.SelectionBackColor);
+                    e.CellStyle.ForeColor = PaintHelper.GetForeColorBasedOnBackColor(e.CellStyle.SelectionBackColor);
                 }
 
                 using var brush = PaintHelper.GetBrushForFocusedControl(focused, e.CellStyle.SelectionBackColor);
@@ -6490,11 +6490,13 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
                 {
                     continue;
                 }
+
                 if (CheckHighlightEntryMatch(entry, line))
                 {
                     return entry;
                 }
             }
+
             return null;
         }
     }
