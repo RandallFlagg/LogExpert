@@ -245,7 +245,7 @@ internal partial class PatternWindow : Form //TODO: Can this be changed to UserC
         {
             var gridView = (BufferedDataGridView)sender;
             var rowIndex = GetLineForHitGrid(e.RowIndex);
-            _logWindow.CellPainting(gridView, rowIndex, e);
+            _logWindow.CellPainting(gridView.Focused, rowIndex, e);
         }
     }
 
@@ -314,7 +314,7 @@ internal partial class PatternWindow : Form //TODO: Can this be changed to UserC
 
         var gridView = (BufferedDataGridView)sender;
         var rowIndex = GetLineForContentGrid(e.RowIndex);
-        _logWindow.CellPainting(gridView, rowIndex, e);
+        _logWindow.CellPainting(gridView.Focused, rowIndex, e);
     }
 
     private void OnContentDataGridViewCellMouseDoubleClick (object sender, DataGridViewCellMouseEventArgs e)

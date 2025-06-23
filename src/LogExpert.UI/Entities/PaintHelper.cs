@@ -39,6 +39,11 @@ internal static class PaintHelper
 
             if (e.State.HasFlag(DataGridViewElementStates.Selected))
             {
+                if (e.CellStyle.SelectionForeColor != Color.White)
+                {
+                    e.CellStyle.SelectionForeColor = GetForeColorBasedOnBackColor(e.CellStyle.SelectionBackColor);
+                }
+
                 using var brush = GetBrushForFocusedControl(gridView.Focused, e.CellStyle.SelectionBackColor);
                 e.Graphics.FillRectangle(brush, e.CellBounds);
             }
@@ -62,12 +67,12 @@ internal static class PaintHelper
                 var bookmark = logPaintCtx.GetBookmarkForLine(rowIndex);
                 if (bookmark != null)
                 {
-                    Rectangle r; // = new Rectangle(e.CellBounds.Left + 2, e.CellBounds.Top + 2, 6, 6);
-                    r = e.CellBounds;
+                    //keep this is the old initialisation of r => new Rectangle(e.CellBounds.Left + 2, e.CellBounds.Top + 2, 6, 6);
+                    var r = e.CellBounds;
                     r.Inflate(-2, -2);
-                    Brush brush = new SolidBrush(logPaintCtx.BookmarkColor);
+                    using var brush = new SolidBrush(logPaintCtx.BookmarkColor);
                     e.Graphics.FillRectangle(brush, r);
-                    brush.Dispose();
+
                     if (bookmark.Text.Length > 0)
                     {
                         StringFormat format = new()
@@ -76,10 +81,9 @@ internal static class PaintHelper
                             Alignment = StringAlignment.Center
                         };
 
-                        Brush brush2 = new SolidBrush(Color.FromArgb(255, 190, 100, 0));
-                        var font = logPaintCtx.MonospacedFont;
+                        using var brush2 = new SolidBrush(Color.FromArgb(255, 190, 100, 0));
+                        using var font = logPaintCtx.MonospacedFont;
                         e.Graphics.DrawString("i", font, brush2, new RectangleF(r.Left, r.Top, r.Width, r.Height), format);
-                        brush2.Dispose();
                     }
                 }
             }
@@ -124,7 +128,7 @@ internal static class PaintHelper
     {
         DataGridViewTextBoxColumn markerColumn = new()
         {
-            HeaderText = "",
+            HeaderText = string.Empty,
             AutoSizeMode = DataGridViewAutoSizeColumnMode.NotSet,
             Resizable = DataGridViewTriState.False,
             DividerWidth = 1,
@@ -233,6 +237,50 @@ internal static class PaintHelper
         }
     }
 
+    /// <summary>
+    /// This returns Black or White based on the color that is given
+    /// If the color is smaller than 128 it means its a darker color and white should be the fore color,
+    /// if the color is bigger than 128 it means its a lighter color and black should be the fore color
+    /// </summary>
+    /// <param name="backColor">lighter or darker back color</param>
+    /// <returns>White or Black based on the given back color</returns>
+    public static Color GetForeColorBasedOnBackColor (Color backColor)
+    {
+        var isSelectionBackColorDark = (backColor.R * 0.2126) + (backColor.G * 0.7152) + (backColor.B * 0.0722) < 255 / 2;
+
+        return isSelectionBackColorDark ? Color.White : Color.Black;
+    }
+
+    [SupportedOSPlatform("windows")]
+    public static DataGridViewCellStyle GetDataGridViewCellStyle ()
+    {
+        return new()
+        {
+            Alignment = DataGridViewContentAlignment.MiddleLeft,
+            BackColor = SystemColors.Window,
+            Font = new Font("Courier New", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0),
+            ForeColor = Color.White,
+            SelectionBackColor = SystemColors.Highlight,
+            SelectionForeColor = GetForeColorBasedOnBackColor(SystemColors.Highlight),
+            WrapMode = DataGridViewTriState.False
+        };
+    }
+
+    [SupportedOSPlatform("windows")]
+    public static DataGridViewCellStyle GetDataGridDefaultRowStyle ()
+    {
+        return new DataGridViewCellStyle
+        {
+            Alignment = DataGridViewContentAlignment.MiddleLeft,
+            BackColor = SystemColors.Window,
+            Font = new Font("Courier New", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0),
+            ForeColor = Color.Black,
+            SelectionBackColor = SystemColors.Highlight,
+            SelectionForeColor = GetForeColorBasedOnBackColor(SystemColors.Highlight),
+            WrapMode = DataGridViewTriState.False
+        };
+    }
+
     [SupportedOSPlatform("windows")]
     public static void ApplyDataGridViewPrefs (BufferedDataGridView dataGridView, bool setLastColumnWidht, int lastColumnWidth)
     {
@@ -266,26 +314,38 @@ internal static class PaintHelper
     {
         Rectangle rect = new()
         {
-            X = advancedBorderStyle.Left == DataGridViewAdvancedCellBorderStyle.None ? 0 : 1
+            X = advancedBorderStyle.Left == DataGridViewAdvancedCellBorderStyle.None
+            ? 0
+            : 1
         };
+
         if (advancedBorderStyle.Left is DataGridViewAdvancedCellBorderStyle.OutsetDouble or DataGridViewAdvancedCellBorderStyle.InsetDouble)
         {
             rect.X++;
         }
 
-        rect.Y = advancedBorderStyle.Top == DataGridViewAdvancedCellBorderStyle.None ? 0 : 1;
+        rect.Y = advancedBorderStyle.Top == DataGridViewAdvancedCellBorderStyle.None
+            ? 0
+            : 1;
+
         if (advancedBorderStyle.Top is DataGridViewAdvancedCellBorderStyle.OutsetDouble or DataGridViewAdvancedCellBorderStyle.InsetDouble)
         {
             rect.Y++;
         }
 
-        rect.Width = advancedBorderStyle.Right == DataGridViewAdvancedCellBorderStyle.None ? 0 : 1;
+        rect.Width = advancedBorderStyle.Right == DataGridViewAdvancedCellBorderStyle.None
+            ? 0
+            : 1;
+
         if (advancedBorderStyle.Right is DataGridViewAdvancedCellBorderStyle.OutsetDouble or DataGridViewAdvancedCellBorderStyle.InsetDouble)
         {
             rect.Width++;
         }
 
-        rect.Height = advancedBorderStyle.Bottom == DataGridViewAdvancedCellBorderStyle.None ? 0 : 1;
+        rect.Height = advancedBorderStyle.Bottom == DataGridViewAdvancedCellBorderStyle.None
+            ? 0
+            : 1;
+
         if (advancedBorderStyle.Bottom is DataGridViewAdvancedCellBorderStyle.OutsetDouble or
             DataGridViewAdvancedCellBorderStyle.InsetDouble)
         {
@@ -334,8 +394,8 @@ internal static class PaintHelper
                 {
                     SearchText = column.FullValue,
                     //TODO change to white if the background color is darker
-                    ForegroundColor = groundEntry?.ForegroundColor ?? Color.FromKnownColor(KnownColor.Black),
                     BackgroundColor = groundEntry?.BackgroundColor ?? Color.Empty,
+                    ForegroundColor = groundEntry?.ForegroundColor ?? Color.FromKnownColor(KnownColor.Black),
                     IsRegEx = false,
                     IsCaseSensitive = false,
                     IsLedSwitch = false,
@@ -351,13 +411,12 @@ internal static class PaintHelper
             }
         }
 
-        var leftPad = e.CellStyle.Padding.Left;
-        RectangleF rect = new(e.CellBounds.Left + leftPad, e.CellBounds.Top, e.CellBounds.Width, e.CellBounds.Height);
         var borderWidths = BorderWidths(e.AdvancedBorderStyle);
         var valBounds = e.CellBounds;
         valBounds.Offset(borderWidths.X, borderWidths.Y);
         valBounds.Width -= borderWidths.Right;
         valBounds.Height -= borderWidths.Bottom;
+
         if (e.CellStyle.Padding != Padding.Empty)
         {
             valBounds.Offset(e.CellStyle.Padding.Left, e.CellStyle.Padding.Top);
@@ -383,16 +442,15 @@ internal static class PaintHelper
         var wordPos = valBounds.Location;
         Size proposedSize = new(valBounds.Width, valBounds.Height);
 
-        var r = gridView.GetCellDisplayRectangle(e.ColumnIndex, e.RowIndex, true);
         e.Graphics.SetClip(e.CellBounds);
 
         foreach (var matchEntry in matchList)
         {
-            var font = matchEntry != null && matchEntry.HighlightEntry.IsBold
+            using var font = matchEntry != null && matchEntry.HighlightEntry.IsBold
                 ? logPaintCtx.BoldFont
                 : logPaintCtx.NormalFont;
 
-            Brush bgBrush = matchEntry.HighlightEntry.BackgroundColor != Color.Empty
+            using var bgBrush = matchEntry.HighlightEntry.BackgroundColor != Color.Empty
                 ? new SolidBrush(matchEntry.HighlightEntry.BackgroundColor)
                 : null;
 
@@ -428,10 +486,8 @@ internal static class PaintHelper
             TextRenderer.DrawText(e.Graphics, matchWord, font, wordRect, foreColor, flags);
 
             wordPos.Offset(wordSize.Width, 0);
-            bgBrush?.Dispose();
         }
     }
-
 
     /// <summary>
     /// Builds a list of HilightMatchEntry objects. A HilightMatchEntry spans over a region that is painted with the same foreground and
@@ -480,24 +536,26 @@ internal static class PaintHelper
             {
                 if (entryArray[pos] != currentEntry)
                 {
-                    HighlightMatchEntry me = new()
+                    HighlightMatchEntry mergeEntry = new()
                     {
                         StartPos = lastStartPos,
                         Length = pos - lastStartPos,
                         HighlightEntry = currentEntry
                     };
-                    mergedList.Add(me);
+
+                    mergedList.Add(mergeEntry);
                     currentEntry = entryArray[pos];
                     lastStartPos = pos;
                 }
             }
-            HighlightMatchEntry me2 = new()
+
+            HighlightMatchEntry secondMergeEntry = new()
             {
                 StartPos = lastStartPos,
                 Length = pos - lastStartPos,
                 HighlightEntry = currentEntry
             };
-            mergedList.Add(me2);
+            mergedList.Add(secondMergeEntry);
         }
 
         return mergedList;

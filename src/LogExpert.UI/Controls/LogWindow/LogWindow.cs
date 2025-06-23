@@ -155,7 +155,7 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
 
         CreateDefaultViewStyle();
 
-        columnNamesLabel.Text = ""; // no filtering on columns by default
+        columnNamesLabel.Text = string.Empty; // no filtering on columns by default
 
         _parentLogTabWin = parent;
         IsTempFile = isTempFile;
@@ -202,7 +202,7 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
         _filterParams = new FilterParams();
         foreach (var item in configManager.Settings.FilterHistoryList)
         {
-            filterComboBox.Items.Add(item);
+            _ = filterComboBox.Items.Add(item);
         }
 
         filterComboBox.DropDownHeight = filterComboBox.ItemHeight * configManager.Settings.Preferences.MaximumFilterEntriesDisplayed;
@@ -263,8 +263,6 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
 
         ResumeLayout();
     }
-
-
 
     #endregion
 
@@ -800,7 +798,7 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
         lock (_logEventArgsList)
         {
             _logEventArgsList.Add(e);
-            _logEventArgsEvent.Set();
+            _ = _logEventArgsEvent.Set();
         }
     }
 
@@ -819,7 +817,7 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
             for (var i = startCount; i < CurrentColumnizer.GetColumnCount(); i++)
             {
                 var colName = CurrentColumnizer.GetColumnNames()[i];
-                dataGridView.Columns.Add(PaintHelper.CreateTitleColumn(colName));
+                _ = dataGridView.Columns.Add(PaintHelper.CreateTitleColumn(colName));
             }
         }
     }
@@ -853,7 +851,7 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
         var index = span.LastIndexOf('.');
         if (index > 0)
         {
-            span = span.Substring(0, index + 4);
+            span = span[..(index + 4)];
         }
 
         SetTimeshiftValue(span);
@@ -947,8 +945,6 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
             return;
         }
 
-
-
         var lineNum = _filterResultList[e.RowIndex];
         var line = _logFileReader.GetLogLineWithWait(lineNum).Result;
 
@@ -956,18 +952,19 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
         {
             var entry = FindFirstNoWordMatchHilightEntry(line);
             e.Graphics.SetClip(e.CellBounds);
+
             if (e.State.HasFlag(DataGridViewElementStates.Selected))
             {
+                if (e.CellStyle.SelectionForeColor != Color.White)
+                {
+                    e.CellStyle.SelectionForeColor = PaintHelper.GetForeColorBasedOnBackColor(e.CellStyle.SelectionBackColor);
+                }
+
                 using var brush = PaintHelper.GetBrushForFocusedControl(gridView.Focused, e.CellStyle.SelectionBackColor);
                 e.Graphics.FillRectangle(brush, e.CellBounds);
             }
             else
             {
-                // paint direct filter hits with different bg color
-                //if (this.filterParams.SpreadEnabled && this.filterHitList.Contains(lineNum))
-                //{
-                //  bgColor = Color.FromArgb(255, 220, 220, 220);
-                //}
                 e.CellStyle.BackColor = PaintHelper.GetBackColorFromHighlightEntry(entry);
                 e.PaintBackground(e.ClipBounds, false);
             }
@@ -978,7 +975,7 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
             }
             else
             {
-                PaintCell(e, filterGridView, false, entry);
+                PaintCell(e, entry);
             }
 
             if (e.ColumnIndex == 0)
@@ -2037,21 +2034,12 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
             var filterParams = (FilterParams)filterListBox.Items[e.Index];
             Rectangle rectangle = new(0, e.Bounds.Top, e.Bounds.Width, e.Bounds.Height);
 
-            Brush brush;
+            using var brush = (e.State & DrawItemState.Selected) == DrawItemState.Selected
+                ? new SolidBrush(filterListBox.BackColor)
+                : new SolidBrush(filterParams.Color);
 
-            if ((e.State & DrawItemState.Selected) == DrawItemState.Selected)
-            {
-                brush = new SolidBrush(filterListBox.BackColor);
-            }
-            else
-            {
-                brush = new SolidBrush(filterParams.Color);
-            }
-
-            e.Graphics.DrawString(filterParams.SearchText, e.Font, brush,
-                new PointF(rectangle.Left, rectangle.Top));
+            e.Graphics.DrawString(filterParams.SearchText, e.Font, brush, new PointF(rectangle.Left, rectangle.Top));
             e.DrawFocusRectangle();
-            brush.Dispose();
         }
     }
 
@@ -2203,7 +2191,7 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
         if (e.KeyCode == Keys.Enter)
         {
             SelectColumn();
-            dataGridView.Focus();
+            _ = dataGridView.Focus();
         }
     }
 
@@ -2259,10 +2247,10 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
     [SupportedOSPlatform("windows")]
     private void OnDataGridViewRowUnshared (object sender, DataGridViewRowEventArgs e)
     {
-        if (_logger.IsTraceEnabled)
-        {
-            _logger.Trace($"Row unshared line {e.Row.Cells[1].Value}");
-        }
+        //if (_logger.IsTraceEnabled)
+        //{
+        //    _logger.Trace($"Row unshared line {e.Row.Cells[1].Value}");
+        //}
     }
 
     #endregion
@@ -2280,6 +2268,16 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
     #endregion
 
     #region Private Methods
+
+    [SupportedOSPlatform("windows")]
+    private void CreateDefaultViewStyle ()
+    {
+
+        dataGridView.DefaultCellStyle = PaintHelper.GetDataGridViewCellStyle();
+        filterGridView.DefaultCellStyle = PaintHelper.GetDataGridViewCellStyle();
+        dataGridView.RowsDefaultCellStyle = PaintHelper.GetDataGridDefaultRowStyle();
+        filterGridView.RowsDefaultCellStyle = PaintHelper.GetDataGridDefaultRowStyle();
+    }
 
     [SupportedOSPlatform("windows")]
     private void RegisterLogFileReaderEvents ()
@@ -2304,56 +2302,6 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
             _logFileReader.Respawned -= OnLogFileReaderRespawned;
             _logFileReader.FileSizeChanged -= OnFileSizeChanged;
         }
-    }
-
-    [SupportedOSPlatform("windows")]
-    private void CreateDefaultViewStyle ()
-    {
-        DataGridViewCellStyle dataGridViewCellStyleMainGrid = new();
-        DataGridViewCellStyle dataGridViewCellStyleFilterGrid = new();
-
-        dataGridViewCellStyleMainGrid.Alignment = DataGridViewContentAlignment.MiddleLeft;
-        dataGridViewCellStyleMainGrid.BackColor = SystemColors.Window;
-        dataGridViewCellStyleMainGrid.Font = new Font("Courier New", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
-        dataGridViewCellStyleMainGrid.ForeColor = SystemColors.ControlText;
-        dataGridViewCellStyleMainGrid.SelectionBackColor = SystemColors.Highlight;
-        //dataGridViewCellStyleMainGrid.SelectionForeColor = SystemColors.HighlightText;
-
-        var highlightColor = SystemColors.Highlight;
-        //Color is smaller than 128, means its darker
-        var isSelectionBackColorDark = (highlightColor.R * 0.2126) + (highlightColor.G * 0.7152) + (highlightColor.B * 0.0722) < 255 / 2;
-
-        if (isSelectionBackColorDark)
-        {
-            dataGridViewCellStyleMainGrid.SelectionForeColor = Color.White;
-        }
-        else
-        {
-            dataGridViewCellStyleMainGrid.SelectionForeColor = Color.Black;
-
-        }
-
-        dataGridViewCellStyleMainGrid.WrapMode = DataGridViewTriState.False;
-        dataGridView.DefaultCellStyle = dataGridViewCellStyleMainGrid;
-
-        dataGridViewCellStyleFilterGrid.Alignment = DataGridViewContentAlignment.MiddleLeft;
-        dataGridViewCellStyleFilterGrid.BackColor = SystemColors.Window;
-        dataGridViewCellStyleFilterGrid.Font = new Font("Courier New", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
-        dataGridViewCellStyleFilterGrid.ForeColor = SystemColors.ControlText;
-        dataGridViewCellStyleFilterGrid.SelectionBackColor = SystemColors.Highlight;
-        //dataGridViewCellStyleFilterGrid.SelectionForeColor = SystemColors.HighlightText;
-
-        if (isSelectionBackColorDark)
-        {
-            dataGridViewCellStyleFilterGrid.SelectionForeColor = Color.White;
-        }
-        else
-        {
-            dataGridViewCellStyleFilterGrid.SelectionForeColor = Color.Black;
-        }
-
-        dataGridViewCellStyleFilterGrid.WrapMode = DataGridViewTriState.False;
-        filterGridView.DefaultCellStyle = dataGridViewCellStyleFilterGrid;
     }
 
     [SupportedOSPlatform("windows")]
@@ -3083,7 +3031,7 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
 
                 var matchingList = FindMatchingHilightEntries(line);
                 LaunchHighlightPlugins(matchingList, i);
-                GetHilightActions(matchingList, out suppressLed, out stopTail, out setBookmark, out bookmarkComment);
+                GetHighlightActions(matchingList, out suppressLed, out stopTail, out setBookmark, out bookmarkComment);
                 if (setBookmark)
                 {
                     SetBookmarkFx fx = SetBookmarkFromTrigger;
@@ -3131,7 +3079,7 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
                 {
                     var matchingList = FindMatchingHilightEntries(line);
                     LaunchHighlightPlugins(matchingList, i);
-                    GetHilightActions(matchingList, out suppressLed, out stopTail, out setBookmark,
+                    GetHighlightActions(matchingList, out suppressLed, out stopTail, out setBookmark,
                         out bookmarkComment);
                     if (setBookmark)
                     {
@@ -3380,12 +3328,12 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
         }
     }
 
-    private void PaintCell (DataGridViewCellPaintingEventArgs e, BufferedDataGridView gridView, bool noBackgroundFill, HighlightEntry groundEntry)
+    private void PaintCell (DataGridViewCellPaintingEventArgs e, HighlightEntry groundEntry)
     {
-        PaintHighlightedCell(e, gridView, noBackgroundFill, groundEntry);
+        PaintHighlightedCell(e, groundEntry);
     }
 
-    private void PaintHighlightedCell (DataGridViewCellPaintingEventArgs e, BufferedDataGridView gridView, bool noBackgroundFill, HighlightEntry groundEntry)
+    private void PaintHighlightedCell (DataGridViewCellPaintingEventArgs e, HighlightEntry groundEntry)
     {
         var column = e.Value as IColumn;
 
@@ -3454,14 +3402,13 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
         var wordPos = valBounds.Location;
         Size proposedSize = new(valBounds.Width, valBounds.Height);
 
-        var r = gridView.GetCellDisplayRectangle(e.ColumnIndex, e.RowIndex, true);
         e.Graphics.SetClip(e.CellBounds);
 
         foreach (var matchEntry in matchList)
         {
             var font = matchEntry != null && matchEntry.HighlightEntry.IsBold ? BoldFont : NormalFont;
 
-            Brush bgBrush = matchEntry.HighlightEntry.BackgroundColor != Color.Empty
+            using var bgBrush = matchEntry.HighlightEntry.BackgroundColor != Color.Empty
                 ? new SolidBrush(matchEntry.HighlightEntry.BackgroundColor)
                 : null;
 
@@ -3471,18 +3418,16 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
             Rectangle wordRect = new(wordPos, wordSize);
 
             var foreColor = matchEntry.HighlightEntry.ForegroundColor;
-            if ((e.State & DataGridViewElementStates.Selected) != DataGridViewElementStates.Selected)
+            if (e.State.HasFlag(DataGridViewElementStates.Selected))
             {
-                if (!noBackgroundFill && bgBrush != null && !matchEntry.HighlightEntry.NoBackground)
+                if (bgBrush != null && !matchEntry.HighlightEntry.NoBackground)
                 {
                     e.Graphics.FillRectangle(bgBrush, wordRect);
                 }
             }
 
             TextRenderer.DrawText(e.Graphics, matchWord, font, wordRect, foreColor, flags);
-
             wordPos.Offset(wordSize.Width, 0);
-            bgBrush?.Dispose();
         }
     }
 
@@ -3664,7 +3609,7 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
         }
     }
 
-    private void GetHilightActions (IList<HighlightEntry> matchingList, out bool noLed, out bool stopTail, out bool setBookmark, out string bookmarkComment)
+    private void GetHighlightActions (IList<HighlightEntry> matchingList, out bool noLed, out bool stopTail, out bool setBookmark, out string bookmarkComment)
     {
         noLed = stopTail = setBookmark = false;
         bookmarkComment = string.Empty;
@@ -3724,8 +3669,8 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
     private void SyncTimestampDisplay (int lineNum)
     {
         _timeShiftSyncLine = lineNum;
-        _timeShiftSyncTimerEvent.Set();
-        _timeShiftSyncWakeupEvent.Set();
+        _ = _timeShiftSyncTimerEvent.Set();
+        _ = _timeShiftSyncWakeupEvent.Set();
     }
 
     [SupportedOSPlatform("windows")]
@@ -5285,6 +5230,7 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
         {
             Comment = bookmark.Text
         };
+
         if (dlg.ShowDialog() == DialogResult.OK)
         {
             bookmark.Text = dlg.Comment;
@@ -6432,7 +6378,7 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
         return Column.EmptyColumn;
     }
 
-    public void CellPainting (BufferedDataGridView gridView, int rowIndex, DataGridViewCellPaintingEventArgs e)
+    public void CellPainting (bool focused, int rowIndex, DataGridViewCellPaintingEventArgs e)
     {
         if (rowIndex < 0 || e.ColumnIndex < 0)
         {
@@ -6449,7 +6395,12 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
 
             if (e.State.HasFlag(DataGridViewElementStates.Selected))
             {
-                using var brush = PaintHelper.GetBrushForFocusedControl(gridView.Focused, e.CellStyle.SelectionBackColor);
+                if (e.CellStyle.SelectionForeColor != Color.White)
+                {
+                    e.CellStyle.SelectionForeColor = PaintHelper.GetForeColorBasedOnBackColor(e.CellStyle.SelectionBackColor);
+                }
+
+                using var brush = PaintHelper.GetBrushForFocusedControl(focused, e.CellStyle.SelectionBackColor);
                 e.Graphics.FillRectangle(brush, e.CellBounds);
             }
             else
@@ -6464,15 +6415,16 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
             }
             else
             {
-                PaintCell(e, gridView, false, entry);
+                PaintCell(e, entry);
             }
 
             if (e.ColumnIndex == 0)
             {
                 if (_bookmarkProvider.IsBookmarkAtLine(rowIndex))
                 {
-                    Rectangle r; // = new Rectangle(e.CellBounds.Left + 2, e.CellBounds.Top + 2, 6, 6);
-                    r = e.CellBounds;
+                    //keeping this comment, because it's the original code
+                    // = new Rectangle(e.CellBounds.Left + 2, e.CellBounds.Top + 2, 6, 6);
+                    var r = e.CellBounds;
                     r.Inflate(-2, -2);
                     using var brush = new SolidBrush(BookmarkColor);
                     e.Graphics.FillRectangle(brush, r);
@@ -6502,7 +6454,7 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
     public void OnDataGridViewCellPainting (object sender, DataGridViewCellPaintingEventArgs e)
     {
         var gridView = (BufferedDataGridView)sender;
-        CellPainting(gridView, e.RowIndex, e);
+        CellPainting(gridView.Focused, e.RowIndex, e);
     }
 
     /// <summary>

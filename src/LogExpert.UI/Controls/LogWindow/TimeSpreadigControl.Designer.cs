@@ -1,4 +1,4 @@
-﻿namespace LogExpert.UI.Controls.LogWindow
+namespace LogExpert.UI.Controls.LogWindow
 {
   partial class TimeSpreadingControl
   {
@@ -17,6 +17,7 @@
       {
         components.Dispose();
       }
+
       base.Dispose(disposing);
     }
 

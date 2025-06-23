@@ -412,13 +412,18 @@ internal partial class HighlightDialog : Form
             var entry = (HighlightEntry)listBoxHighlight.Items[e.Index];
             Rectangle rectangle = new(0, e.Bounds.Top, e.Bounds.Width, e.Bounds.Height);
 
-            if ((e.State & DrawItemState.Selected) != DrawItemState.Selected)
+            var selected = (e.State & DrawItemState.Selected) == DrawItemState.Selected;
+
+            using var brush = selected
+                ? new SolidBrush(entry.BackgroundColor)
+                : new SolidBrush(entry.ForegroundColor);
+
+            if (selected)
             {
-                e.Graphics.FillRectangle(new SolidBrush(entry.BackgroundColor), rectangle);
+                e.Graphics.FillRectangle(brush, rectangle);
             }
 
-            e.Graphics.DrawString(entry.SearchText, e.Font, new SolidBrush(entry.ForegroundColor),
-                new PointF(rectangle.Left, rectangle.Top));
+            e.Graphics.DrawString(entry.SearchText, e.Font, brush, new PointF(rectangle.Left, rectangle.Top));
 
             e.DrawFocusRectangle();
         }

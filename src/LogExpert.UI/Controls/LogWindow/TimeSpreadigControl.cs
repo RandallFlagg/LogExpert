@@ -12,7 +12,7 @@ namespace LogExpert.UI.Controls.LogWindow;
 [SupportedOSPlatform("windows")]
 internal partial class TimeSpreadingControl : UserControl
 {
-    private static readonly ILogger _logger = LogManager.GetCurrentClassLogger();
+    private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
     #region Fields
 
@@ -45,13 +45,11 @@ internal partial class TimeSpreadingControl : UserControl
 
     #region Delegates
 
-    public delegate void LineSelectedEventHandler (object sender, SelectLineEventArgs e);
-
     #endregion
 
     #region Events
 
-    public event LineSelectedEventHandler LineSelected;
+    public EventHandler<SelectLineEventArgs> LineSelected;
 
     #endregion
 
@@ -82,11 +80,10 @@ internal partial class TimeSpreadingControl : UserControl
         {
             if (DesignMode)
             {
-                Brush bgBrush = new SolidBrush(Color.FromKnownColor(KnownColor.LightSkyBlue));
+                using var bgBrush = new SolidBrush(Color.FromKnownColor(KnownColor.LightSkyBlue));
                 var rect = ClientRectangle;
                 rect.Inflate(0, -_edgeOffset);
                 e.Graphics.FillRectangle(bgBrush, rect);
-                bgBrush.Dispose();
             }
             else
             {
@@ -107,7 +104,7 @@ internal partial class TimeSpreadingControl : UserControl
         {
             y = 0;
         }
-        else if (y >= ClientRectangle.Height - _edgeOffset * 3)
+        else if (y >= ClientRectangle.Height - (_edgeOffset * 3))
         {
             y = list.Count - 1;
         }
@@ -153,7 +150,7 @@ internal partial class TimeSpreadingControl : UserControl
         {
             Invalidate();
             var rect = ClientRectangle;
-            rect.Size = new Size(rect.Width, rect.Height - _edgeOffset * 3);
+            rect.Size = new Size(rect.Width, rect.Height - (_edgeOffset * 3));
 
             if (rect.Height < 1)
             {
@@ -161,10 +158,9 @@ internal partial class TimeSpreadingControl : UserControl
             }
 
             _bitmap = new Bitmap(rect.Width, rect.Height);
-            var gfx = Graphics.FromImage(_bitmap);
-            Brush bgBrush = new SolidBrush(BackColor);
+            using var gfx = Graphics.FromImage(_bitmap);
+            using var bgBrush = new SolidBrush(BackColor);
             gfx.FillRectangle(bgBrush, rect);
-            bgBrush.Dispose();
 
             var list = TimeSpreadCalc.DiffList;
             int step;
@@ -199,10 +195,8 @@ internal partial class TimeSpreadingControl : UserControl
                         color = 0;
                     }
 
-                    Brush brush = new SolidBrush(Color.FromArgb(color, ForeColor));
-                    //Brush brush = new SolidBrush(Color.FromArgb(color, color, color, color));
+                    using var brush = new SolidBrush(Color.FromArgb(color, ForeColor));
                     gfx.FillRectangle(brush, fillRect);
-                    brush.Dispose();
                     fillRect.Offset(0, _rectHeight);
                 }
             }
@@ -217,7 +211,7 @@ internal partial class TimeSpreadingControl : UserControl
         {
             Invalidate();
             var rect = ClientRectangle;
-            rect.Size = new Size(rect.Width, rect.Height - _edgeOffset * 3);
+            rect.Size = new Size(rect.Width, rect.Height - (_edgeOffset * 3));
 
             if (rect.Height < 1)
             {
@@ -227,8 +221,8 @@ internal partial class TimeSpreadingControl : UserControl
             //this.bmp = new Bitmap(rect.Width, rect.Height);
             var gfx = Graphics.FromImage(_bitmap);
 
-            Brush bgBrush = new SolidBrush(BackColor);
-            Brush fgBrush = new SolidBrush(ForeColor);
+            using var bgBrush = new SolidBrush(BackColor);
+            using var fgBrush = new SolidBrush(ForeColor);
             //gfx.FillRectangle(bgBrush, rect);
 
             StringFormat format = new(StringFormatFlags.DirectionVertical | StringFormatFlags.NoWrap)
@@ -240,9 +234,6 @@ internal partial class TimeSpreadingControl : UserControl
             RectangleF rectf = new(rect.Left, rect.Top, rect.Width, rect.Height);
 
             gfx.DrawString("Calculating time spread view...", Font, fgBrush, rectf, format);
-
-            bgBrush.Dispose();
-            fgBrush.Dispose();
         }
 
         BeginInvoke(new MethodInvoker(Refresh));
@@ -252,7 +243,7 @@ internal partial class TimeSpreadingControl : UserControl
     {
         if (TimeSpreadCalc != null)
         {
-            _displayHeight = ClientRectangle.Height - _edgeOffset * 3;
+            _displayHeight = ClientRectangle.Height - (_edgeOffset * 3);
             TimeSpreadCalc.SetDisplayHeight(_displayHeight);
         }
     }

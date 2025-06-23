@@ -291,7 +291,7 @@ internal partial class BufferedDataGridView : DataGridView
             {
                 if (EditingControl is LogCellEditingControl editControl)
                 {
-                    editControl.EditingControlDataGridView.EndEdit();
+                    _ = editControl.EditingControlDataGridView.EndEdit();
                     var line = editControl.EditingControlDataGridView.CurrentCellAddress.Y;
                     if (e.KeyCode == Keys.Up)
                     {
@@ -313,7 +313,7 @@ internal partial class BufferedDataGridView : DataGridView
                     var scrollIndex = editControl.EditingControlDataGridView.HorizontalScrollingOffset;
                     var selStart = editControl.SelectionStart;
                     editControl.EditingControlDataGridView.CurrentCell = editControl.EditingControlDataGridView.Rows[line].Cells[col];
-                    editControl.EditingControlDataGridView.BeginEdit(false);
+                    _ = editControl.EditingControlDataGridView.BeginEdit(false);
                     editControl.SelectionStart = selStart;
                     editControl.ScrollToCaret();
                     editControl.EditingControlDataGridView.HorizontalScrollingOffset = scrollIndex;
