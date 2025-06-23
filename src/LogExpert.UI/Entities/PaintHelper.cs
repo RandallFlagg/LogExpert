@@ -90,24 +90,7 @@ internal static class PaintHelper
 
     public static Color GetBackColorFromHighlightEntry (HighlightEntry? entry)
     {
-        var bgColor = Color.White;
-
-        if (!DebugOptions.DisableWordHighlight)
-        {
-            if (entry != null)
-            {
-                bgColor = entry.BackgroundColor;
-            }
-        }
-        else
-        {
-            if (entry != null)
-            {
-                bgColor = entry.BackgroundColor;
-            }
-        }
-
-        return bgColor;
+        return entry?.BackgroundColor ?? Color.White;
     }
 
     [SupportedOSPlatform("windows")]
