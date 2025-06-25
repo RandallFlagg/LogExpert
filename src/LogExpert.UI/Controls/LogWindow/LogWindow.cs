@@ -2267,7 +2267,6 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
     [SupportedOSPlatform("windows")]
     private void CreateDefaultViewStyle ()
     {
-
         dataGridView.DefaultCellStyle = PaintHelper.GetDataGridViewCellStyle();
         filterGridView.DefaultCellStyle = PaintHelper.GetDataGridViewCellStyle();
         dataGridView.RowsDefaultCellStyle = PaintHelper.GetDataGridDefaultRowStyle();
@@ -3206,14 +3205,9 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
 
             if (_logFileReader != null)
             {
-                if (CurrentColumnizer is IPreProcessColumnizer columnizer1)
-                {
-                    _logFileReader.PreProcessColumnizer = columnizer1;
-                }
-                else
-                {
-                    _logFileReader.PreProcessColumnizer = null;
-                }
+                _logFileReader.PreProcessColumnizer = CurrentColumnizer is IPreProcessColumnizer columnizer1
+                    ? columnizer1
+                    : null;
             }
 
             // always reload when choosing XML columnizers
@@ -3413,18 +3407,18 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
             Rectangle wordRect = new(wordPos, wordSize);
 
             var foreColor = matchEntry.HighlightEntry.ForegroundColor;
-            if (!e.State.HasFlag(DataGridViewElementStates.Selected))
-            {
-                if (bgBrush != null && !matchEntry.HighlightEntry.NoBackground)
-                {
-                    e.Graphics.FillRectangle(bgBrush, wordRect);
-                }
-            }
-            else
+            if (e.State.HasFlag(DataGridViewElementStates.Selected))
             {
                 if (foreColor.Equals(Color.Black))
                 {
                     foreColor = Color.White;
+                }
+            }
+            else
+            {
+                if (bgBrush != null && !matchEntry.HighlightEntry.NoBackground)
+                {
+                    e.Graphics.FillRectangle(bgBrush, wordRect);
                 }
             }
 
