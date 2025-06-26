@@ -288,52 +288,24 @@ internal static class PaintHelper
     }
 
     [SupportedOSPlatform("windows")]
-    public static Rectangle BorderWidths (DataGridViewAdvancedBorderStyle advancedBorderStyle)
+    public static Rectangle BorderWidths (DataGridViewAdvancedBorderStyle style)
     {
-        Rectangle rect = new()
+        return new Rectangle(
+            GetBorderSize(style.Left),
+            GetBorderSize(style.Top),
+            GetBorderSize(style.Right),
+            GetBorderSize(style.Bottom));
+    }
+
+    [SupportedOSPlatform("windows")]
+    private static int GetBorderSize (DataGridViewAdvancedCellBorderStyle borderStyle)
+    {
+        return borderStyle switch
         {
-            X = advancedBorderStyle.Left == DataGridViewAdvancedCellBorderStyle.None
-            ? 0
-            : 1
+            DataGridViewAdvancedCellBorderStyle.None => 0,
+            DataGridViewAdvancedCellBorderStyle.InsetDouble or DataGridViewAdvancedCellBorderStyle.OutsetDouble => 2,
+            _ => 1
         };
-
-        if (advancedBorderStyle.Left is DataGridViewAdvancedCellBorderStyle.OutsetDouble or DataGridViewAdvancedCellBorderStyle.InsetDouble)
-        {
-            rect.X++;
-        }
-
-        rect.Y = advancedBorderStyle.Top == DataGridViewAdvancedCellBorderStyle.None
-            ? 0
-            : 1;
-
-        if (advancedBorderStyle.Top is DataGridViewAdvancedCellBorderStyle.OutsetDouble or DataGridViewAdvancedCellBorderStyle.InsetDouble)
-        {
-            rect.Y++;
-        }
-
-        rect.Width = advancedBorderStyle.Right == DataGridViewAdvancedCellBorderStyle.None
-            ? 0
-            : 1;
-
-        if (advancedBorderStyle.Right is DataGridViewAdvancedCellBorderStyle.OutsetDouble or DataGridViewAdvancedCellBorderStyle.InsetDouble)
-        {
-            rect.Width++;
-        }
-
-        rect.Height = advancedBorderStyle.Bottom == DataGridViewAdvancedCellBorderStyle.None
-            ? 0
-            : 1;
-
-        if (advancedBorderStyle.Bottom is DataGridViewAdvancedCellBorderStyle.OutsetDouble or
-            DataGridViewAdvancedCellBorderStyle.InsetDouble)
-        {
-            rect.Height++;
-        }
-
-        //rect.Width += this.owningColumn.DividerWidth;
-        //rect.Height += this.owningRow.DividerHeight;
-
-        return rect;
     }
 
     #endregion
@@ -349,9 +321,10 @@ internal static class PaintHelper
     [SupportedOSPlatform("windows")]
     private static void PaintHighlightedCell (ILogPaintContextUI logPaintCtx, DataGridViewCellPaintingEventArgs e, HighlightEntry groundEntry)
     {
+		//TODO Refactor if possible since Column is ITextValue
         var value = e.Value ?? string.Empty;
 
-        var matchList = logPaintCtx.FindHighlightMatches(value as ILogLine);
+        var matchList = logPaintCtx.FindHighlightMatches(value as ITextValue);
         // too many entries per line seem to cause problems with the GDI
         while (matchList.Count > 50)
         {
@@ -446,19 +419,20 @@ internal static class PaintHelper
             Rectangle wordRect = new(wordPos, wordSize);
 
             var foreColor = matchEntry.HighlightEntry.ForegroundColor;
-            if (!e.State.HasFlag(DataGridViewElementStates.Selected))
-            {
-                if (bgBrush != null && !matchEntry.HighlightEntry.NoBackground)
-                {
-                    e.Graphics.FillRectangle(bgBrush, wordRect);
-                }
-            }
-            else
+            if (e.State.HasFlag(DataGridViewElementStates.Selected))
             {
                 if (foreColor.Equals(Color.Black))
                 {
                     foreColor = Color.White;
                 }
+            }
+            else
+            {
+				if (bgBrush != null && !matchEntry.HighlightEntry.NoBackground)
+                {
+                    e.Graphics.FillRectangle(bgBrush, wordRect);
+                }
+
             }
 
             TextRenderer.DrawText(e.Graphics, matchWord, font, wordRect, foreColor, flags);
