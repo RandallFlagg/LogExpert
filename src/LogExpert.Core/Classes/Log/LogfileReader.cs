@@ -1785,13 +1785,13 @@ public class LogfileReader : IAutoLogLineColumnizerCallback, IDisposable
 
     #endregion
 
-    public void Dispose()
+    public void Dispose ()
     {
         Dispose(true);
         GC.SuppressFinalize(this); // Suppress finalization (not needed but best practice)
     }
 
-    protected virtual void Dispose(bool disposing)
+    protected virtual void Dispose (bool disposing)
     {
         if (!_disposed)
         {
@@ -1808,7 +1808,7 @@ public class LogfileReader : IAutoLogLineColumnizerCallback, IDisposable
     //TODO: Seems that this can be deleted. Need to verify.
     ~LogfileReader ()
     {
-        Dispose (false);
+        Dispose(false);
     }
 
     protected virtual void OnFileSizeChanged (LogEventArgs e)

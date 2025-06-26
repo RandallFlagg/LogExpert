@@ -1,5 +1,4 @@
 using LogExpert.Dialogs;
-using LogExpert.UI.Extensions.Forms;
 using System;
 using System.Drawing;
 using System.IO;
@@ -33,10 +32,10 @@ namespace LogExpert.UI.Controls.LogWindow
         /// Required method for Designer support - do not modify
         /// the contents of this method with the code editor.
         /// </summary>
-        private void InitializeComponent()
+        private void InitializeComponent ()
         {
             components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LogWindow));
+            var resources = new System.ComponentModel.ComponentResourceManager(typeof(LogWindow));
             splitContainerLogWindow = new SplitContainer();
             tableLayoutPanel1 = new TableLayoutPanel();
             columnFinderPanel = new Panel();
@@ -46,21 +45,21 @@ namespace LogExpert.UI.Controls.LogWindow
             dataGridContextMenuStrip = new ContextMenuStrip(components);
             copyToolStripMenuItem = new ToolStripMenuItem();
             copyToTabToolStripMenuItem = new ToolStripMenuItem();
-            menuToolStripSeparator1 = new MenuToolStripSeparatorExtension();
+            menuToolStripSeparator1 = new ToolStripSeparator();
             scrollAllTabsToTimestampToolStripMenuItem = new ToolStripMenuItem();
             syncTimestampsToToolStripMenuItem = new ToolStripMenuItem();
             freeThisWindowFromTimeSyncToolStripMenuItem = new ToolStripMenuItem();
             locateLineInOriginalFileToolStripMenuItem = new ToolStripMenuItem();
-            menuToolStripSeparator2 = new MenuToolStripSeparatorExtension();
+            menuToolStripSeparator2 = new ToolStripSeparator();
             toggleBoomarkToolStripMenuItem = new ToolStripMenuItem();
             bookmarkCommentToolStripMenuItem = new ToolStripMenuItem();
             markEditModeToolStripMenuItem = new ToolStripMenuItem();
-            menuToolStripSeparator3 = new MenuToolStripSeparatorExtension();
+            menuToolStripSeparator3 = new ToolStripSeparator();
             tempHighlightsToolStripMenuItem = new ToolStripMenuItem();
             removeAllToolStripMenuItem = new ToolStripMenuItem();
             makePermanentToolStripMenuItem = new ToolStripMenuItem();
             markCurrentFilterRangeToolStripMenuItem = new ToolStripMenuItem();
-            pluginSeparator = new MenuToolStripSeparatorExtension();
+            pluginSeparator = new ToolStripSeparator();
             timeSpreadingControl = new TimeSpreadingControl();
             advancedBackPanel = new Panel();
             advancedFilterSplitContainer = new SplitContainer();
@@ -112,14 +111,14 @@ namespace LogExpert.UI.Controls.LogWindow
             deleteBookmarksToolStripMenuItem = new ToolStripMenuItem();
             columnContextMenuStrip = new ContextMenuStrip(components);
             freezeLeftColumnsUntilHereToolStripMenuItem = new ToolStripMenuItem();
-            menuToolStripSeparator4 = new MenuToolStripSeparatorExtension();
+            menuToolStripSeparator4 = new ToolStripSeparator();
             moveToLastColumnToolStripMenuItem = new ToolStripMenuItem();
             moveLeftToolStripMenuItem = new ToolStripMenuItem();
             moveRightToolStripMenuItem = new ToolStripMenuItem();
-            menuToolStripSeparator5 = new MenuToolStripSeparatorExtension();
+            menuToolStripSeparator5 = new ToolStripSeparator();
             hideColumnToolStripMenuItem = new ToolStripMenuItem();
             restoreColumnsToolStripMenuItem = new ToolStripMenuItem();
-            menuToolStripSeparator6 = new MenuToolStripSeparatorExtension();
+            menuToolStripSeparator6 = new ToolStripSeparator();
             allColumnsToolStripMenuItem = new ToolStripMenuItem();
             editModeContextMenuStrip = new ContextMenuStrip(components);
             editModecopyToolStripMenuItem = new ToolStripMenuItem();
@@ -440,7 +439,6 @@ namespace LogExpert.UI.Controls.LogWindow
             // advancedFilterSplitContainer
             // 
             advancedFilterSplitContainer.Dock = DockStyle.Fill;
-            advancedFilterSplitContainer.IsSplitterFixed = true;
             advancedFilterSplitContainer.Location = new Point(0, 0);
             advancedFilterSplitContainer.Margin = new Padding(0);
             advancedFilterSplitContainer.Name = "advancedFilterSplitContainer";
@@ -449,14 +447,15 @@ namespace LogExpert.UI.Controls.LogWindow
             // advancedFilterSplitContainer.Panel1
             // 
             advancedFilterSplitContainer.Panel1.Controls.Add(pnlProFilter);
-            advancedFilterSplitContainer.Panel1MinSize = 100;
+            advancedFilterSplitContainer.Panel1MinSize = 50;
             // 
             // advancedFilterSplitContainer.Panel2
             // 
             advancedFilterSplitContainer.Panel2.Controls.Add(panelBackgroundAdvancedFilterSplitContainer);
-            advancedFilterSplitContainer.Panel2MinSize = 200;
+            advancedFilterSplitContainer.Panel2MinSize = 50;
             advancedFilterSplitContainer.Size = new Size(1855, 561);
-            advancedFilterSplitContainer.SplitterDistance = 124;
+            advancedFilterSplitContainer.SplitterDistance = 110;
+            advancedFilterSplitContainer.Panel2Collapsed = true;
             advancedFilterSplitContainer.SplitterWidth = 2;
             advancedFilterSplitContainer.TabIndex = 2;
             // 
@@ -479,7 +478,7 @@ namespace LogExpert.UI.Controls.LogWindow
             pnlProFilter.Controls.Add(btnFilterToTab);
             pnlProFilter.Location = new Point(0, 3);
             pnlProFilter.Name = "pnlProFilter";
-            pnlProFilter.Size = new Size(1852, 117);
+            pnlProFilter.Size = new Size(1852, 80);
             pnlProFilter.TabIndex = 0;
             // 
             // columnButton
@@ -647,7 +646,7 @@ namespace LogExpert.UI.Controls.LogWindow
             panelBackgroundAdvancedFilterSplitContainer.Dock = DockStyle.Fill;
             panelBackgroundAdvancedFilterSplitContainer.Location = new Point(0, 0);
             panelBackgroundAdvancedFilterSplitContainer.Name = "panelBackgroundAdvancedFilterSplitContainer";
-            panelBackgroundAdvancedFilterSplitContainer.Size = new Size(1855, 435);
+            panelBackgroundAdvancedFilterSplitContainer.Size = new Size(1855, 474);
             panelBackgroundAdvancedFilterSplitContainer.TabIndex = 7;
             // 
             // btnToggleHighlightPanel
@@ -680,7 +679,7 @@ namespace LogExpert.UI.Controls.LogWindow
             // 
             highlightSplitContainer.Panel2.Controls.Add(highlightSplitContainerBackPanel);
             highlightSplitContainer.Panel2MinSize = 350;
-            highlightSplitContainer.Size = new Size(1829, 432);
+            highlightSplitContainer.Size = new Size(1829, 471);
             highlightSplitContainer.SplitterDistance = 1475;
             highlightSplitContainer.TabIndex = 2;
             // 
@@ -714,7 +713,7 @@ namespace LogExpert.UI.Controls.LogWindow
             filterGridView.ShowCellToolTips = false;
             filterGridView.ShowEditingIcon = false;
             filterGridView.ShowRowErrors = false;
-            filterGridView.Size = new Size(1473, 430);
+            filterGridView.Size = new Size(1473, 469);
             filterGridView.TabIndex = 1;
             filterGridView.VirtualMode = true;
             filterGridView.CellContextMenuStripNeeded += OnFilterGridViewCellContextMenuStripNeeded;
@@ -766,7 +765,7 @@ namespace LogExpert.UI.Controls.LogWindow
             highlightSplitContainerBackPanel.Dock = DockStyle.Fill;
             highlightSplitContainerBackPanel.Location = new Point(0, 0);
             highlightSplitContainerBackPanel.Name = "highlightSplitContainerBackPanel";
-            highlightSplitContainerBackPanel.Size = new Size(348, 430);
+            highlightSplitContainerBackPanel.Size = new Size(348, 469);
             highlightSplitContainerBackPanel.TabIndex = 1;
             // 
             // hideFilterListOnLoadCheckBox
@@ -851,7 +850,7 @@ namespace LogExpert.UI.Controls.LogWindow
             filterListBox.ItemHeight = 25;
             filterListBox.Location = new Point(0, 0);
             filterListBox.Name = "filterListBox";
-            filterListBox.Size = new Size(252, 430);
+            filterListBox.Size = new Size(252, 469);
             filterListBox.TabIndex = 0;
             helpToolTip.SetToolTip(filterListBox, "Doubleclick to load a saved filter");
             filterListBox.DrawItem += OnFilterListBoxDrawItem;
@@ -1035,7 +1034,7 @@ namespace LogExpert.UI.Controls.LogWindow
             columnContextMenuStrip.ImageScalingSize = new Size(24, 24);
             columnContextMenuStrip.Items.AddRange(new ToolStripItem[] { freezeLeftColumnsUntilHereToolStripMenuItem, menuToolStripSeparator4, moveToLastColumnToolStripMenuItem, moveLeftToolStripMenuItem, moveRightToolStripMenuItem, menuToolStripSeparator5, hideColumnToolStripMenuItem, restoreColumnsToolStripMenuItem, menuToolStripSeparator6, allColumnsToolStripMenuItem });
             columnContextMenuStrip.Name = "columnContextMenuStrip";
-            columnContextMenuStrip.Size = new Size(230, 198);
+            columnContextMenuStrip.Size = new Size(230, 176);
             columnContextMenuStrip.Opening += OnColumnContextMenuStripOpening;
             // 
             // freezeLeftColumnsUntilHereToolStripMenuItem
@@ -1294,12 +1293,12 @@ namespace LogExpert.UI.Controls.LogWindow
         private System.Windows.Forms.CheckBox filterCaseSensitiveCheckBox;
         private System.Windows.Forms.Button filterSearchButton;
         private System.Windows.Forms.Panel panelBackgroundAdvancedFilterSplitContainer;
-        private MenuToolStripSeparatorExtension pluginSeparator;
-        private MenuToolStripSeparatorExtension menuToolStripSeparator1;
-        private MenuToolStripSeparatorExtension menuToolStripSeparator2;
-        private MenuToolStripSeparatorExtension menuToolStripSeparator3;
-        private MenuToolStripSeparatorExtension menuToolStripSeparator4;
-        private MenuToolStripSeparatorExtension menuToolStripSeparator5;
-        private MenuToolStripSeparatorExtension menuToolStripSeparator6;
+        private ToolStripSeparator pluginSeparator;
+        private ToolStripSeparator menuToolStripSeparator1;
+        private ToolStripSeparator menuToolStripSeparator2;
+        private ToolStripSeparator menuToolStripSeparator3;
+        private ToolStripSeparator menuToolStripSeparator4;
+        private ToolStripSeparator menuToolStripSeparator5;
+        private ToolStripSeparator menuToolStripSeparator6;
     }
 }

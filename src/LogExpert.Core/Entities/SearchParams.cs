@@ -1,4 +1,4 @@
-﻿namespace LogExpert.Core.Entities;
+namespace LogExpert.Entities;
 
 [Serializable]
 public class SearchParams

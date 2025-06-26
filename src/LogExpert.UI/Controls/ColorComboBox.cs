@@ -1,4 +1,4 @@
-﻿using System.Drawing.Drawing2D;
+using System.Drawing.Drawing2D;
 using System.Runtime.Versioning;
 
 namespace LogExpert.UI.Controls;
@@ -14,31 +14,34 @@ internal class ColorComboBox : ComboBox
 
     #region cTor
 
-    public ColorComboBox()
+    public ColorComboBox ()
     {
         DrawMode = DrawMode.OwnerDrawFixed;
         DrawItem += OnColorComboBoxDrawItem;
-        // add color presets
         if (!DesignMode)
         {
-            Items.Add(_customColor);
-            Items.Add(Color.Black);
-            Items.Add(Color.White);
-            Items.Add(Color.Gray);
-            Items.Add(Color.DarkGray);
-            Items.Add(Color.Blue);
-            Items.Add(Color.LightBlue);
-            Items.Add(Color.DarkBlue);
-            Items.Add(Color.Green);
-            Items.Add(Color.LightGreen);
-            Items.Add(Color.DarkGreen);
-            Items.Add(Color.Olive);
-            Items.Add(Color.Red);
-            Items.Add(Color.Pink);
-            Items.Add(Color.Purple);
-            Items.Add(Color.IndianRed);
-            Items.Add(Color.DarkCyan);
-            Items.Add(Color.Yellow);
+            Items.AddRange(
+                [
+                    _customColor,
+                    Color.Black,
+                    Color.White,
+                    Color.Gray,
+                    Color.DarkGray,
+                    Color.Blue,
+                    Color.LightBlue,
+                    Color.DarkBlue,
+                    Color.Green,
+                    Color.LightGreen,
+                    Color.DarkGreen,
+                    Color.Olive,
+                    Color.Red,
+                    Color.Pink,
+                    Color.Purple,
+                    Color.IndianRed,
+                    Color.DarkCyan,
+                    Color.Yellow
+                ]
+            );
         }
     }
 
@@ -63,7 +66,7 @@ internal class ColorComboBox : ComboBox
 
     #region Events handler
 
-    private void OnColorComboBoxDrawItem(object sender, DrawItemEventArgs e)
+    private void OnColorComboBoxDrawItem (object sender, DrawItemEventArgs e)
     {
         e.DrawBackground();
         if (e.Index >= 0)

@@ -18,13 +18,13 @@ internal partial class BufferedDataGridView : DataGridView
     private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
     private readonly Brush _brush;
 
-    private readonly Color _bubbleColor = Color.FromArgb(160, 250, 250, 0);
+    private readonly Color _bubbleColor = Color.FromArgb(160, 250, 250, 0); //yellow
     private readonly Font _font = new("Arial", 10);
 
     private readonly SortedList<int, BookmarkOverlay> _overlayList = [];
 
     private readonly Pen _pen;
-    private readonly Brush _textBrush = new SolidBrush(Color.FromArgb(200, 0, 0, 90));
+    private readonly Brush _textBrush = new SolidBrush(Color.FromArgb(200, 0, 0, 90)); //dark blue
 
     private BookmarkOverlay _draggedOverlay;
     private Point _dragStartPoint;
@@ -47,15 +47,9 @@ internal partial class BufferedDataGridView : DataGridView
 
     #endregion
 
-    #region Delegates
-
-    public delegate void OverlayDoubleClickedEventHandler (object sender, OverlayEventArgs e);
-
-    #endregion
-
     #region Events
 
-    public event OverlayDoubleClickedEventHandler OverlayDoubleClicked;
+    public event EventHandler<OverlayEventArgs> OverlayDoubleClicked;
 
     #endregion
 
@@ -113,15 +107,15 @@ internal partial class BufferedDataGridView : DataGridView
         e.Control.KeyDown -= OnControlKeyDown;
         e.Control.KeyDown += OnControlKeyDown;
         var editControl = (DataGridViewTextBoxEditingControl)e.Control;
-        e.Control.PreviewKeyDown -= Control_PreviewKeyDown;
-        e.Control.PreviewKeyDown += Control_PreviewKeyDown;
+        e.Control.PreviewKeyDown -= OnControlPreviewKeyDown;
+        e.Control.PreviewKeyDown += OnControlPreviewKeyDown;
 
         editControl.ContextMenuStrip = EditModeMenuStrip;
     }
 
     protected override void OnMouseDown (MouseEventArgs e)
     {
-        BookmarkOverlay overlay = GetOverlayForPosition(e.Location);
+        var overlay = GetOverlayForPosition(e.Location);
         if (overlay != null)
         {
             if (e.Button == MouseButtons.Right)
@@ -172,7 +166,7 @@ internal partial class BufferedDataGridView : DataGridView
         }
         else
         {
-            BookmarkOverlay overlay = GetOverlayForPosition(e.Location);
+            var overlay = GetOverlayForPosition(e.Location);
             Cursor = overlay != null ? Cursors.Hand : Cursors.Default;
             base.OnMouseMove(e);
         }
@@ -180,7 +174,7 @@ internal partial class BufferedDataGridView : DataGridView
 
     protected override void OnMouseDoubleClick (MouseEventArgs e)
     {
-        BookmarkOverlay overlay = GetOverlayForPosition(e.Location);
+        var overlay = GetOverlayForPosition(e.Location);
         if (overlay != null)
         {
             if (e.Button == MouseButtons.Left)
@@ -202,7 +196,7 @@ internal partial class BufferedDataGridView : DataGridView
     {
         lock (_overlayList)
         {
-            foreach (BookmarkOverlay overlay in _overlayList.Values)
+            foreach (var overlay in _overlayList.Values)
             {
                 if (overlay.BubbleRect.Contains(pos))
                 {
@@ -216,9 +210,9 @@ internal partial class BufferedDataGridView : DataGridView
 
     private void PaintOverlays (PaintEventArgs e)
     {
-        BufferedGraphicsContext currentContext = BufferedGraphicsManager.Current;
+        var currentContext = BufferedGraphicsManager.Current;
 
-        using BufferedGraphics myBuffer = currentContext.Allocate(CreateGraphics(), ClientRectangle);
+        using var myBuffer = currentContext.Allocate(CreateGraphics(), ClientRectangle);
         lock (_overlayList)
         {
             _overlayList.Clear();
@@ -247,9 +241,9 @@ internal partial class BufferedDataGridView : DataGridView
 
         lock (_overlayList)
         {
-            foreach (BookmarkOverlay overlay in _overlayList.Values)
+            foreach (var overlay in _overlayList.Values)
             {
-                SizeF textSize = myBuffer.Graphics.MeasureString(overlay.Bookmark.Text, _font, 300);
+                var textSize = myBuffer.Graphics.MeasureString(overlay.Bookmark.Text, _font, 300);
                 Rectangle rectBubble = new(overlay.Position, new Size((int)textSize.Width, (int)textSize.Height));
                 rectBubble.Offset(60, -(rectBubble.Height + 40));
                 rectBubble.Inflate(3, 3);
@@ -278,7 +272,7 @@ internal partial class BufferedDataGridView : DataGridView
 
     #region Events handler
 
-    private void Control_PreviewKeyDown (object sender, PreviewKeyDownEventArgs e)
+    private void OnControlPreviewKeyDown (object sender, PreviewKeyDownEventArgs e)
     {
         if ((e.KeyCode == Keys.C || e.KeyCode == Keys.Insert) && e.Control)
         {
@@ -291,13 +285,13 @@ internal partial class BufferedDataGridView : DataGridView
 
     private void OnControlKeyDown (object sender, KeyEventArgs e)
     {
-        if (e.KeyCode == Keys.Up || e.KeyCode == Keys.Down)
+        if (e.KeyCode is Keys.Up or Keys.Down)
         {
             if (EditingControl != null)
             {
                 if (EditingControl is LogCellEditingControl editControl)
                 {
-                    editControl.EditingControlDataGridView.EndEdit();
+                    _ = editControl.EditingControlDataGridView.EndEdit();
                     var line = editControl.EditingControlDataGridView.CurrentCellAddress.Y;
                     if (e.KeyCode == Keys.Up)
                     {
@@ -319,7 +313,7 @@ internal partial class BufferedDataGridView : DataGridView
                     var scrollIndex = editControl.EditingControlDataGridView.HorizontalScrollingOffset;
                     var selStart = editControl.SelectionStart;
                     editControl.EditingControlDataGridView.CurrentCell = editControl.EditingControlDataGridView.Rows[line].Cells[col];
-                    editControl.EditingControlDataGridView.BeginEdit(false);
+                    _ = editControl.EditingControlDataGridView.BeginEdit(false);
                     editControl.SelectionStart = selStart;
                     editControl.ScrollToCaret();
                     editControl.EditingControlDataGridView.HorizontalScrollingOffset = scrollIndex;

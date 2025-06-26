@@ -1,14 +1,10 @@
+using System.Globalization;
+
 using LogExpert.Core.Callback;
 using LogExpert.Core.Classes;
 using LogExpert.Core.Interface;
 
 using NLog;
-
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace LogExpert.UI.Controls.LogWindow;
 
@@ -39,10 +35,8 @@ internal class TimeSpreadCalculator
     private DateTime _endTimestamp;
     private int _lineCount;
     private int _maxDiff;
-    private TimeSpan _maxSpan;
     private bool _shouldStop;
-    private CancellationTokenSource cts = new();
-
+    private readonly CancellationTokenSource _cts = new();
     private DateTime _startTimestamp;
 
     private bool _timeMode = true;
@@ -54,28 +48,20 @@ internal class TimeSpreadCalculator
 
     #region cTor
 
-    public TimeSpreadCalculator(ILogWindow logWindow)
+    public TimeSpreadCalculator (ILogWindow logWindow)
     {
         _logWindow = logWindow;
         _callback = new ColumnizerCallback(_logWindow);
 
-        Task.Run(WorkerFx, cts.Token);
+        _ = Task.Run(WorkerFx, _cts.Token);
     }
-
-    #endregion
-
-    #region Delegates
-
-    public delegate void CalcDoneEventHandler(object sender, EventArgs e);
-
-    public delegate void StartCalcEventHandler(object sender, EventArgs e);
 
     #endregion
 
     #region Events
 
-    public event CalcDoneEventHandler CalcDone;
-    public event StartCalcEventHandler StartCalc;
+    public EventHandler<EventArgs> CalcDone;
+    public EventHandler<EventArgs> StartCalc;
 
     #endregion
 
@@ -89,8 +75,8 @@ internal class TimeSpreadCalculator
             _enabled = value;
             if (_enabled)
             {
-                _calcEvent.Set();
-                _lineCountEvent.Set();
+                _ = _calcEvent.Set();
+                _ = _lineCountEvent.Set();
             }
         }
     }
@@ -103,8 +89,8 @@ internal class TimeSpreadCalculator
             _timeMode = value;
             if (_enabled)
             {
-                _calcEvent.Set();
-                _lineCountEvent.Set();
+                _ = _calcEvent.Set();
+                _ = _lineCountEvent.Set();
             }
         }
     }
@@ -129,8 +115,9 @@ internal class TimeSpreadCalculator
             }
             else
             {
-                CalcValuesViaLines(_timePerLine, _maxSpan);
+                _ = CalcValuesViaLines(_timePerLine);
             }
+
             OnCalcDone(EventArgs.Empty);
         }
 
@@ -143,30 +130,31 @@ internal class TimeSpreadCalculator
 
     #region Public methods
 
-    public void Stop()
+    public void Stop ()
     {
         _shouldStop = true;
-        _lineCountEvent.Set();
-        cts.Cancel();
+        _ = _lineCountEvent.Set();
+
+        _cts.Cancel();
     }
 
-    public void SetLineCount(int count)
+    public void SetLineCount (int count)
     {
         _lineCount = count;
         if (Enabled)
         {
-            _calcEvent.Set();
-            _lineCountEvent.Set();
+            _ = _calcEvent.Set();
+            _ = _lineCountEvent.Set();
         }
     }
 
-    public void SetDisplayHeight(int height)
+    public void SetDisplayHeight (int height)
     {
         _displayHeight = height;
         if (Enabled)
         {
-            _calcEvent.Set();
-            _lineCountEvent.Set();
+            _ = _calcEvent.Set();
+            _ = _lineCountEvent.Set();
         }
     }
 
@@ -174,7 +162,7 @@ internal class TimeSpreadCalculator
 
     #region Private Methods
 
-    private void WorkerFx()
+    private void WorkerFx ()
     {
         //Thread.CurrentThread.Name = "TimeSpreadCalculator Worker";
         //Thread.CurrentThread.Priority = ThreadPriority.BelowNormal;
@@ -182,7 +170,7 @@ internal class TimeSpreadCalculator
         while (!_shouldStop)
         {
             // wait for wakeup
-            _lineCountEvent.WaitOne();
+            _ = _lineCountEvent.WaitOne();
 
             while (!_shouldStop)
             {
@@ -200,17 +188,19 @@ internal class TimeSpreadCalculator
                     {
                         DoCalc();
                     }
+
                     break;
                 }
 
                 _logger.Debug(CultureInfo.InvariantCulture, "TimeSpreadCalculator: signalled. no calc.");
-                _calcEvent.Reset();
+                _ = _calcEvent.Reset();
             }
-            _lineCountEvent.Reset();
+
+            _ = _lineCountEvent.Reset();
         }
     }
 
-    private void DoCalc()
+    private void DoCalc ()
     {
         OnStartCalc(EventArgs.Empty);
         _logger.Debug(CultureInfo.InvariantCulture, "TimeSpreadCalculator.DoCalc() begin");
@@ -231,20 +221,13 @@ internal class TimeSpreadCalculator
 
         if (_startTimestamp != DateTime.MinValue && _endTimestamp != DateTime.MinValue)
         {
-            TimeSpan overallSpan = _endTimestamp - _startTimestamp;
+            var overallSpan = _endTimestamp - _startTimestamp;
             var overallSpanMillis = (int)(overallSpan.Ticks / TimeSpan.TicksPerMillisecond);
             _timePerLine = (int)Math.Round(overallSpanMillis / (double)_lineCount);
-            DateTime oldTime = _logWindow.GetTimestampForLineForward(ref lineNum, false);
-            int step;
-
-            if (_lineCount > _displayHeight)
-            {
-                step = (int)Math.Round(_lineCount / (double)_displayHeight);
-            }
-            else
-            {
-                step = 1;
-            }
+            var oldTime = _logWindow.GetTimestampForLineForward(ref lineNum, false);
+            var step = _lineCount > _displayHeight
+                ? (int)Math.Round(_lineCount / (double)_displayHeight)
+                : 1;
 
             _logger.Debug(CultureInfo.InvariantCulture, "TimeSpreadCalculator.DoCalc() collecting data for {0} lines with step size {1}", lastLineNum, step);
 
@@ -255,10 +238,10 @@ internal class TimeSpreadCalculator
             for (var i = lineNum; i < lastLineNum; i += step)
             {
                 var currLineNum = i;
-                DateTime time = _logWindow.GetTimestampForLineForward(ref currLineNum, false);
+                var time = _logWindow.GetTimestampForLineForward(ref currLineNum, false);
                 if (time != DateTime.MinValue)
                 {
-                    TimeSpan span = time - oldTime;
+                    var span = time - oldTime;
                     maxList.Add(span);
                     timePerLineSum += (int)(span.Ticks / TimeSpan.TicksPerMillisecond);
                     newDiffList.Add(new SpreadEntry(i, 0, time));
@@ -270,14 +253,13 @@ internal class TimeSpreadCalculator
             if (maxList.Count > 3)
             {
                 maxList.Sort();
-                _maxSpan = maxList[^3];
             }
 
             lock (_diffListLock)
             {
                 DiffList = newDiffList;
                 _timePerLine = (int)Math.Round(timePerLineSum / ((double)(lastLineNum + 1) / step));
-                CalcValuesViaLines(_timePerLine, _maxSpan);
+                _ = CalcValuesViaLines(_timePerLine);
                 OnCalcDone(EventArgs.Empty);
                 _logger.Debug(CultureInfo.InvariantCulture, "TimeSpreadCalculator.DoCalc() end");
             }
@@ -285,7 +267,7 @@ internal class TimeSpreadCalculator
     }
 
     //TODO Refactor this method
-    private void DoCalc_via_Time()
+    private void DoCalc_via_Time ()
     {
         OnStartCalc(EventArgs.Empty);
         _logger.Debug(CultureInfo.InvariantCulture, "TimeSpreadCalculator.DoCalc_via_Time() begin");
@@ -304,25 +286,16 @@ internal class TimeSpreadCalculator
 
         if (_startTimestamp != DateTime.MinValue && _endTimestamp != DateTime.MinValue)
         {
-            TimeSpan overallSpan = _endTimestamp - _startTimestamp;
+            var overallSpan = _endTimestamp - _startTimestamp;
             var overallSpanMillis = overallSpan.Ticks / TimeSpan.TicksPerMillisecond;
             //int timePerLine = (int)Math.Round((double)overallSpanMillis / (double)this.lineCount);
 
-            long step;
-
-            if (overallSpanMillis > _displayHeight)
-            {
-                step = (long)Math.Round(overallSpanMillis / (double)_displayHeight);
-            }
-            else
-            {
-                step = 1;
-            }
+            var step = overallSpanMillis > _displayHeight ? (long)Math.Round(overallSpanMillis / (double)_displayHeight) : 1;
 
             _logger.Debug(CultureInfo.InvariantCulture, "TimeSpreadCalculator.DoCalc_via_Time() time range is {0} ms", overallSpanMillis);
 
             lineNum = 0;
-            DateTime searchTimeStamp = _startTimestamp;
+            var searchTimeStamp = _startTimestamp;
             var oldLineNum = lineNum;
             var loopCount = 0;
             var lineDiffSum = 0;
@@ -395,17 +368,17 @@ internal class TimeSpreadCalculator
         }
     }
 
-    private DateTime CalcValuesViaLines(int timePerLine, TimeSpan maxSpan)
+    private DateTime CalcValuesViaLines (int timePerLine)
     {
-        DateTime oldTime = DateTime.MinValue;
+        var oldTime = DateTime.MinValue;
 
         if (DiffList.Count > 0)
         {
             oldTime = DiffList[0].Timestamp;
 
-            foreach (SpreadEntry entry in DiffList)
+            foreach (var entry in DiffList)
             {
-                TimeSpan span = entry.Timestamp - oldTime;
+                var span = entry.Timestamp - oldTime;
                 double diffFromAverage = (int)(span.Ticks / TimeSpan.TicksPerMillisecond) - timePerLine;
 
                 if (diffFromAverage < 0)
@@ -422,9 +395,9 @@ internal class TimeSpreadCalculator
         return oldTime;
     }
 
-    private void CalcValuesViaTime(int maxDiff, double average)
+    private void CalcValuesViaTime (int maxDiff, double average)
     {
-        foreach (SpreadEntry entry in DiffList)
+        foreach (var entry in DiffList)
         {
             var lineDiff = entry.Diff;
             var diffFromAverage = entry.Diff - average;
@@ -433,6 +406,7 @@ internal class TimeSpreadCalculator
             {
                 diffFromAverage = 0;
             }
+
             var value = (int)(diffFromAverage / maxDiff * _contrast);
             entry.Value = 255 - value;
 
@@ -440,12 +414,12 @@ internal class TimeSpreadCalculator
         }
     }
 
-    private void OnCalcDone(EventArgs e)
+    private void OnCalcDone (EventArgs e)
     {
         CalcDone?.Invoke(this, e);
     }
 
-    private void OnStartCalc(EventArgs e)
+    private void OnStartCalc (EventArgs e)
     {
         StartCalc?.Invoke(this, e);
     }

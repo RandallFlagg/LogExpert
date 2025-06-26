@@ -1,4 +1,4 @@
-﻿namespace LogExpert.Core.Classes;
+namespace LogExpert.Core.Classes;
 
 public class SpreadEntry
 {
@@ -16,7 +16,7 @@ public class SpreadEntry
 
     #region cTor
 
-    public SpreadEntry(int lineNum, int diff, DateTime timestamp)
+    public SpreadEntry (int lineNum, int diff, DateTime timestamp)
     {
         LineNum = lineNum;
         Diff = diff;

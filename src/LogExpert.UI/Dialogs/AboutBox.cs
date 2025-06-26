@@ -1,10 +1,10 @@
-using LogExpert.Core.Classes;
-
-using Newtonsoft.Json;
-
 using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.Versioning;
+
+using LogExpert.Core.Classes;
+
+using Newtonsoft.Json;
 
 namespace LogExpert.UI.Dialogs;
 
@@ -19,7 +19,7 @@ internal partial class AboutBox : Form
 
     #region cTor
 
-    public AboutBox()
+    public AboutBox ()
     {
         InitializeComponent();
 
@@ -38,7 +38,7 @@ internal partial class AboutBox : Form
 
     //Name, Version, License, Download, Source
 
-    private void LoadUsedComponents()
+    private void LoadUsedComponents ()
     {
         var json = File.ReadAllText($"{Application.StartupPath}files\\json\\usedComponents.json");
         var usedComponents = JsonConvert.DeserializeObject<UsedComponents[]>(json);
@@ -47,7 +47,7 @@ internal partial class AboutBox : Form
     }
 
 
-    private void LoadResources()
+    private void LoadResources ()
     {
         logoPictureBox.Image = Resources.LogLover;
     }
@@ -139,7 +139,7 @@ internal partial class AboutBox : Form
 
     #region Events handler
 
-    private void OnLinkLabelURLClicked(object sender, LinkLabelLinkClickedEventArgs e)
+    private void OnLinkLabelURLClicked (object sender, LinkLabelLinkClickedEventArgs e)
     {
         var target = string.Empty;
 

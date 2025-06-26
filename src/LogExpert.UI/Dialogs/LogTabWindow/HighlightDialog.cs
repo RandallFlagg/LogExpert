@@ -6,6 +6,7 @@ using LogExpert.Core.Entities;
 using LogExpert.Core.Interface;
 using LogExpert.UI.Controls;
 using LogExpert.UI.Dialogs;
+using LogExpert.UI.Entities;
 
 using NLog;
 
@@ -412,13 +413,23 @@ internal partial class HighlightDialog : Form
             var entry = (HighlightEntry)listBoxHighlight.Items[e.Index];
             Rectangle rectangle = new(0, e.Bounds.Top, e.Bounds.Width, e.Bounds.Height);
 
-            if ((e.State & DrawItemState.Selected) != DrawItemState.Selected)
+            SolidBrush foregroundBrush;
+
+            if (e.State.HasFlag(DrawItemState.Selected))
             {
-                e.Graphics.FillRectangle(new SolidBrush(entry.BackgroundColor), rectangle);
+                foregroundBrush = new SolidBrush(PaintHelper.GetForeColorBasedOnBackColor(entry.ForegroundColor));
+            }
+            else
+            {
+                using var backgroundBrush = new SolidBrush(entry.BackgroundColor);
+                e.Graphics.FillRectangle(backgroundBrush, rectangle);
+                foregroundBrush = new SolidBrush(entry.ForegroundColor);
             }
 
-            e.Graphics.DrawString(entry.SearchText, e.Font, new SolidBrush(entry.ForegroundColor),
-                new PointF(rectangle.Left, rectangle.Top));
+            using (foregroundBrush)
+            {
+                e.Graphics.DrawString(entry.SearchText, e.Font, foregroundBrush, new PointF(rectangle.Left, rectangle.Top));
+            }
 
             e.DrawFocusRectangle();
         }
