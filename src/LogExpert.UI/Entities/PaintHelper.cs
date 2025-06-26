@@ -229,6 +229,7 @@ internal static class PaintHelper
         return isSelectionBackColorDark ? Color.White : Color.Black;
     }
 
+    //TODO Make this configurable => this should close https://github.com/LogExperts/LogExpert/issues/85
     [SupportedOSPlatform("windows")]
     public static DataGridViewCellStyle GetDataGridViewCellStyle ()
     {
@@ -244,6 +245,7 @@ internal static class PaintHelper
         };
     }
 
+    //TODO Make this configurable => this should close https://github.com/LogExperts/LogExpert/issues/85
     [SupportedOSPlatform("windows")]
     public static DataGridViewCellStyle GetDataGridDefaultRowStyle ()
     {
@@ -321,7 +323,7 @@ internal static class PaintHelper
     [SupportedOSPlatform("windows")]
     private static void PaintHighlightedCell (ILogPaintContextUI logPaintCtx, DataGridViewCellPaintingEventArgs e, HighlightEntry groundEntry)
     {
-		//TODO Refactor if possible since Column is ITextValue
+        //TODO Refactor if possible since Column is ITextValue
         var value = e.Value ?? string.Empty;
 
         var matchList = logPaintCtx.FindHighlightMatches(value as ITextValue);
@@ -428,7 +430,7 @@ internal static class PaintHelper
             }
             else
             {
-				if (bgBrush != null && !matchEntry.HighlightEntry.NoBackground)
+                if (bgBrush != null && !matchEntry.HighlightEntry.NoBackground)
                 {
                     e.Graphics.FillRectangle(bgBrush, wordRect);
                 }
