@@ -1,7 +1,7 @@
 using System.Runtime.Versioning;
 using System.Text.RegularExpressions;
 
-using LogExpert.Core.Entities;
+using LogExpert.Entities;
 using LogExpert.UI.Dialogs;
 
 namespace LogExpert.Dialogs;
