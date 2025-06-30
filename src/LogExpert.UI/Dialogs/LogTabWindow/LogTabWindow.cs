@@ -2108,7 +2108,7 @@ internal partial class LogTabWindow : Form, ILogTabWindow
             return;
         }
 
-        CurrentLogWindow.ColumnizerCallbackObject.LineNum = CurrentLogWindow.GetCurrentLineNum();
+        CurrentLogWindow.ColumnizerCallbackObject.LineNum = CurrentLogWindow.CurrentLineNum;
         FilterSelectorForm form = new(PluginRegistry.PluginRegistry.Instance.RegisteredColumnizers, CurrentLogWindow.CurrentColumnizer, CurrentLogWindow.ColumnizerCallbackObject, ConfigManager)
         {
             Owner = this,
