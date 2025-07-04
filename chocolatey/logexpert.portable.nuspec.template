@@ -10,7 +10,7 @@
     <packageSourceUrl>https://github.com/LogExperts/LogExpert/tree/master/chocolatey</packageSourceUrl>
     <projectUrl>https://github.com/LogExperts/LogExpert/</projectUrl>
     <bugTrackerUrl>https://github.com/LogExperts/LogExpert/issues</bugTrackerUrl>
-    <releaseNotes>https://github.com/LogExperts/LogExpert//releases/tag/v##version##</releaseNotes>
+    <releaseNotes>https://github.com/LogExperts/LogExpert/releases/tag/v##version##</releaseNotes>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>LogExpert is a Windows tail program (a GUI replacement for the Unix tail command).
 
