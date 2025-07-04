@@ -6,7 +6,7 @@
     <title>LogExpert ColumnizerLib</title>
     <authors>Zarunbal, Hagen Raab, Hirogen, RandallFlagg and others</authors>
     <owners>Zarunbal, Hirogen</owners>
-    <licenseUrl>https://cdn.rawgit.com/LogExperts/LogExpert/v##version##/LICENSE</licenseUrl>
+    <license type="file">https://raw.githubusercontent.com/LogExperts/LogExpert/v##version##/LICENSE</license>
     <projectUrl>https://github.com/Logexperts/LogExpert</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <bugTrackerUrl>https://github.com/LogExperts/LogExpert/issues</bugTrackerUrl>
