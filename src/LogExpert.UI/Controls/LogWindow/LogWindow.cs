@@ -558,6 +558,7 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
     {
         _logFileReader.LogBufferDiagnostic();
     }
+#endif
 
     [SupportedOSPlatform("windows")]
     void ILogWindow.SelectLine (int lineNum, bool triggerSyncCall, bool shouldScroll)
@@ -576,7 +577,7 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
     {
         WritePipeTab(lineEntryList, title);
     }
-#endif
+
 
     #region Event Handlers
 
@@ -4848,7 +4849,7 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
     }
 
     [SupportedOSPlatform("windows")]
-    private void WritePipeToTab (FilterPipe pipe, IList<int> lineNumberList, string name, PersistenceData persistenceData)
+    private void WritePipeToTab (FilterPipe pipe, List<int> lineNumberList, string name, PersistenceData persistenceData)
     {
         _logger.Info(CultureInfo.InvariantCulture, "WritePipeToTab(): {0} lines.", lineNumberList.Count);
         StatusLineText("Writing to temp file... Press ESC to cancel.");
@@ -4941,6 +4942,7 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
         {
             IsStopped = true
         };
+
         pipe.Closed += OnPipeDisconnected;
         pipe.OpenFile();
         foreach (var entry in lineEntryList)
@@ -5227,14 +5229,9 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
     [SupportedOSPlatform("windows")]
     private void ShowTimeSpread (bool show)
     {
-        if (show)
-        {
-            tableLayoutPanel1.ColumnStyles[1].Width = 16;
-        }
-        else
-        {
-            tableLayoutPanel1.ColumnStyles[1].Width = 0;
-        }
+        tableLayoutPanel1.ColumnStyles[1].Width = show
+            ? 16
+            : 0;
 
         _timeSpreadCalc.Enabled = show;
     }
@@ -5242,7 +5239,7 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
     [SupportedOSPlatform("windows")]
     protected internal void AddTempFileTab (string fileName, string title)
     {
-        _parentLogTabWin.AddTempFileTab(fileName, title);
+        _ = _parentLogTabWin.AddTempFileTab(fileName, title);
     }
 
     private void InitPatternWindow ()
@@ -5391,6 +5388,7 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
         {
             StartLine = startNum
         };
+
         var srcLine = block.StartLine;
         block.TargetStart = targetLine;
         var srcMisses = 0;
