@@ -10,7 +10,7 @@
     <projectUrl>https://github.com/LogExperts/LogExpert</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <bugTrackerUrl>https://github.com/LogExperts/LogExpert/issues</bugTrackerUrl>
-    <releaseNotes>https://github.com/LogExperts/LogExpert//releases/tag/v##version##</releaseNotes>
+    <releaseNotes>https://github.com/LogExperts/LogExpert/releases/tag/v##version##</releaseNotes>
     <description>Columnizer Lib for Logexpert plugins</description>
     <copyright>Copyright 2025</copyright>
     <tags>LogExpert Columnizer</tags>
