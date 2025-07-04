@@ -9,7 +9,7 @@
     <licenseUrl>https://cdn.rawgit.com/LogExperts/LogExpert/v##version##/LICENSE</licenseUrl>
     <projectUrl>https://github.com/Logexperts/LogExpert</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <bugTrackerUrl>https://github.com/LogExperts/LogExpert//issues</bugTrackerUrl>
+    <bugTrackerUrl>https://github.com/LogExperts/LogExpert/issues</bugTrackerUrl>
     <releaseNotes>https://github.com/LogExperts/LogExpert//releases/tag/v##version##</releaseNotes>
     <description>Columnizer Lib for Logexpert plugins</description>
     <copyright>Copyright 2025</copyright>
