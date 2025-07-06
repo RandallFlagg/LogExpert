@@ -1,98 +1,71 @@
-using Grpc.Core;
-using Grpc.Net.Client;
-
 using LogExpert.Classes;
+using LogExpert.Classes.CommandLine;
 using LogExpert.Config;
-using LogExpert.Controls.LogTabWindow;
+using LogExpert.Core.Classes.IPC;
+using LogExpert.Core.Config;
+using LogExpert.Core.Interface;
 using LogExpert.Dialogs;
+using LogExpert.UI.Controls.LogWindow;
+using LogExpert.UI.Dialogs;
+using LogExpert.UI.Extensions.LogWindow;
 
-using LogexpertGRPCService.Services;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 using NLog;
 
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
+using System.Globalization;
+using System.IO.Pipes;
 using System.Reflection;
 using System.Security;
 using System.Security.Principal;
-using System.Threading;
+using System.Text;
 using System.Windows.Forms;
 
-namespace LogExpert
+namespace LogExpert;
+
+internal static class Program
 {
-    internal static class Program
+    #region Fields
+
+    private static readonly Logger _logger = LogManager.GetLogger("Program");
+    private const string PIPE_SERVER_NAME = "LogExpert_IPC";
+    private const int PIPE_CONNECTION_TIMEOUT_IN_MS = 5000;
+
+    #endregion
+
+    #region Private Methods
+
+    /// <summary>
+    /// The main entry point for the application.
+    /// </summary>
+    [STAThread]
+    private static void Main(string[] args)
     {
-        #region Fields
-        private static readonly ILogger _logger = LogManager.GetLogger("Program");
-        #endregion
+        AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+        Application.ThreadException += Application_ThreadException;
 
-        #region Private Methods
+        ApplicationConfiguration.Initialize();
 
-        /// <summary>
-        /// The main entry point for the application.
-        /// </summary>
-        [STAThread]
-        private static void Main(string[] orgArgs)
+        Application.EnableVisualStyles();
+        Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
+
+        _logger.Info(CultureInfo.InvariantCulture, $"\r\n============================================================================\r\nLogExpert {Assembly.GetExecutingAssembly().GetName().Version.ToString(3)} started.\r\n============================================================================");
+
+        CancellationTokenSource cts = new();
+        try
         {
-            try
-            {
-                var server = new Server()
-                {
-                    Services = { Grpc.LogExpertService.BindService(new LogExpertServiceImpl()) },
-                    Ports = { new ServerPort("localhost", 5001, ServerCredentials.Insecure) }
-                };
-
-                Sub_Main(server, orgArgs);
-            }
-            catch (SecurityException se)
-            {
-                MessageBox.Show("Insufficient system rights for LogExpert. Maybe you have started it from a network drive. Please start LogExpert from a local drive.\n(" + se.Message + ")", "LogExpert Error");
-            }
-        }
-
-        private static void Sub_Main(Server server, string[] orgArgs)
-        {
-            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
-            Application.ThreadException += Application_ThreadException;
-            ApplicationConfiguration.Initialize();
-
-            Application.EnableVisualStyles();
-            Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
-
-            _logger.Info("\r\n============================================================================\r\nLogExpert {0} started.\r\n============================================================================", Assembly.GetExecutingAssembly().GetName().Version.ToString(3));
-
-            CmdLine cmdLine = new();
             CmdLineString configFile = new("config", false, "A configuration (settings) file");
+            CmdLine cmdLine = new();
             cmdLine.RegisterParameter(configFile);
-            string[] remainingArgs = cmdLine.Parse(orgArgs);
-
-            List<string> argsList = [];
-
-            // This loop tries to convert relative file names into absolute file names (assuming that platform file names are given).
-            // It tolerates errors, to give file system plugins (e.g. sftp) a change later.
-            // TODO: possibly should be moved to LocalFileSystem plugin
-            foreach (string fileArg in remainingArgs)
-            {
-                try
-                {
-                    FileInfo info = new(fileArg);
-                    argsList.Add(info.Exists ? info.FullName : fileArg);
-                }
-                catch (Exception)
-                {
-                    argsList.Add(fileArg);
-                }
-            }
-            string[] args = [.. argsList];
             if (configFile.Exists)
             {
                 FileInfo cfgFileInfo = new(configFile.Value);
-
+                //TODO: The config file import and the try catch for the primary instance and secondary instance should be separated functions
                 if (cfgFileInfo.Exists)
                 {
-                    ConfigManager.Import(cfgFileInfo, ExportImportFlags.All);
+                    ConfigManager.Instance.Import(cfgFileInfo, ExportImportFlags.All);
                 }
                 else
                 {
@@ -100,65 +73,45 @@ namespace LogExpert
                 }
             }
 
-            int pId = Process.GetCurrentProcess().SessionId;
+            PluginRegistry.PluginRegistry.Instance.Create(ConfigManager.Instance.ConfigDir, ConfigManager.Instance.Settings.Preferences.PollingInterval);
+
+            var pId = Process.GetCurrentProcess().SessionId;
 
             try
             {
-                Settings settings = ConfigManager.Settings;
-
                 Mutex mutex = new(false, "Local\\LogExpertInstanceMutex" + pId, out var isCreated);
+                var remainingArgs = cmdLine.Parse(args);
+                var absoluteFilePaths = GenerateAbsoluteFilePaths(remainingArgs);
 
                 if (isCreated)
                 {
                     // first application instance
                     Application.EnableVisualStyles();
                     Application.SetCompatibleTextRenderingDefault(false);
-                    LogTabWindow logWin = new(args.Length > 0 ? args : null, 1, false);
+                    var logWin = AbstractLogTabWindow.Create(absoluteFilePaths.Length > 0 ? absoluteFilePaths : null, 1, false, ConfigManager.Instance);
 
                     // first instance
-                    WindowsIdentity wi = WindowsIdentity.GetCurrent();
-
-                    server.Start();
-
-                    //IpcServerChannel ipcChannel = new IpcServerChannel("LogExpert" + pId);
-                    //ChannelServices.RegisterChannel(ipcChannel, false);
-                    //RemotingConfiguration.RegisterWellKnownServiceType(typeof(LogExpertProxy), "LogExpertProxy", WellKnownObjectMode.Singleton);
+                    var wi = WindowsIdentity.GetCurrent();
                     LogExpertProxy proxy = new(logWin);
-                    //RemotingServices.Marshal(proxy, "LogExpertProxy");
-
                     LogExpertApplicationContext context = new(proxy, logWin);
-                    Application.Run(context);
 
-                    //ChannelServices.UnregisterChannel(ipcChannel);
-                    server.ShutdownAsync().Wait();
+                    Task.Run(() => RunServerLoopAsync(SendMessageToProxy, proxy, cts.Token));
+
+                    Application.Run(context);
                 }
                 else
                 {
-                    int counter = 3;
+                    var counter = 3;
                     Exception errMsg = null;
-                    //IpcClientChannel ipcChannel = new IpcClientChannel("LogExpertClient#" + pId, null);
-                    //ChannelServices.RegisterChannel(ipcChannel, false);
 
+                    Settings settings = ConfigManager.Instance.Settings;
                     while (counter > 0)
                     {
                         try
                         {
-                            using var channel = GrpcChannel.ForAddress("https://localhost:5001");
-                            var client = new Grpc.LogExpertService.LogExpertServiceClient(channel);
-
-                            //Console.WriteLine("Greeting: " + reply.Result);
-                            // another instance already exists
-                            WindowsIdentity wi = WindowsIdentity.GetCurrent();
-                            //LogExpertProxy proxy = (LogExpertProxy)Activator.GetObject(typeof(LogExpertProxy), "ipc://LogExpert" + pId + "/LogExpertProxy");
-                            if (settings.Preferences.allowOnlyOneInstance)
-                            {
-                                client.LoadFiles(new Grpc.FileNames { FileNames_ = { args } });
-                            }
-                            else
-                            {
-                                client.NewWindowOrLockedWindow(new Grpc.FileNames { FileNames_ = { args } });
-                            }
-
+                            var wi = WindowsIdentity.GetCurrent();
+                            var command = SerializeCommandIntoNonFormattedJSON(absoluteFilePaths, settings.Preferences.AllowOnlyOneInstance);
+                            SendCommandToServer(command);
                             break;
                         }
                         catch (Exception e)
@@ -176,81 +129,225 @@ namespace LogExpert
                         MessageBox.Show($"Cannot open connection to first instance ({errMsg})", "LogExpert");
                     }
 
-                    if (settings.Preferences.allowOnlyOneInstance && settings.Preferences.ShowErrorMessageAllowOnlyOneInstances)
+                    //TODO: Remove this from here? Why is it called from the Main project and not from the main window?
+                    if (settings.Preferences.AllowOnlyOneInstance && settings.Preferences.ShowErrorMessageAllowOnlyOneInstances)
                     {
                         AllowOnlyOneInstanceErrorDialog a = new();
                         if (a.ShowDialog() == DialogResult.OK)
                         {
                             settings.Preferences.ShowErrorMessageAllowOnlyOneInstances = !a.DoNotShowThisMessageAgain;
-                            ConfigManager.Save(SettingsFlags.All);
+                            ConfigManager.Instance.Save(SettingsFlags.All);
                         }
-
-                        //MessageBox.Show($"Only one instance allowed, uncheck \"View Settings => Allow only 1 Instances\" to start multiple instances!", "Logexpert");
                     }
                 }
 
                 mutex.Close();
+                cts.Cancel();
             }
             catch (Exception ex)
             {
                 _logger.Error(ex, "Mutex error, giving up: ");
+                cts.Cancel();
                 MessageBox.Show($"Cannot open connection to first instance ({ex.Message})", "LogExpert");
             }
         }
-
-        [STAThread]
-        private static void ShowUnhandledException(object exceptionObject)
+        catch (SecurityException se)
         {
-            string errorText = string.Empty;
-            string stackTrace = string.Empty;
-            if (exceptionObject is Exception exception)
+            MessageBox.Show("Insufficient system rights for LogExpert. Maybe you have started it from a network drive. Please start LogExpert from a local drive.\n(" + se.Message + ")", "LogExpert Error");
+            cts.Cancel();
+        }
+    }
+
+    private static string SerializeCommandIntoNonFormattedJSON(string[] fileNames, bool allowOnlyOneInstance)
+    {
+        var message = new IpcMessage()
+        {
+            Type = allowOnlyOneInstance ? IpcMessageType.NewWindowOrLockedWindow : IpcMessageType.NewWindow,
+            Payload = JObject.FromObject(new LoadPayload { Files = [.. fileNames] })
+        };
+
+        return JsonConvert.SerializeObject(message, Formatting.None);
+    }
+
+    // This loop tries to convert relative file names into absolute file names (assuming that platform file names are given).
+    // It tolerates errors, to give file system plugins (e.g. sftp) a change later.
+    // TODO: possibly should be moved to LocalFileSystem plugin
+    private static string[] GenerateAbsoluteFilePaths(string[] remainingArgs)
+    {
+        List<string> argsList = [];
+
+        foreach (var fileArg in remainingArgs)
+        {
+            try
             {
-                errorText = exception.Message;
-                stackTrace = "\r\n" + exception.GetType().Name + "\r\n" +
-                             exception.StackTrace;
+                FileInfo info = new(fileArg);
+                argsList.Add(info.Exists ? info.FullName : fileArg);
             }
-            else
+            catch (Exception)
             {
-                stackTrace = exceptionObject.ToString();
-                string[] lines = stackTrace.Split('\n');
-                if (lines != null && lines.Length > 0)
+                argsList.Add(fileArg);
+            }
+        }
+
+        return [.. argsList];
+    }
+
+    private static void SendMessageToProxy(IpcMessage message, LogExpertProxy proxy)
+    {
+        var payLoad = message.Payload.ToObject<LoadPayload>();
+
+        if (CheckPayload(payLoad))
+        {
+            switch (message.Type)
+            {
+                case IpcMessageType.Load:
+                    proxy.LoadFiles([.. payLoad.Files]);
+                    break;
+                case IpcMessageType.NewWindow:
+                    proxy.NewWindow([.. payLoad.Files]);
+                    break;
+                case IpcMessageType.NewWindowOrLockedWindow:
+                    proxy.NewWindowOrLockedWindow([.. payLoad.Files]);
+                    break;
+                default:
+                    _logger.Error($"Unknown IPC Message Type: {message.Type}; with payload: {payLoad}");
+                    break;
+            }
+        }
+    }
+
+    private static bool CheckPayload (LoadPayload payLoad)
+    {
+        if (payLoad == null)
+        {
+            _logger.Error("Invalid payload command: null");
+            return false;
+        }
+
+        return true;
+    }
+
+    private static void SendCommandToServer(string command)
+    {
+        using var client = new NamedPipeClientStream(".", PIPE_SERVER_NAME, PipeDirection.Out);
+
+        try
+        {
+            client.Connect(PIPE_CONNECTION_TIMEOUT_IN_MS);
+        }
+        catch (TimeoutException)
+        {
+            _logger.Error("Timeout connecting to pipe server");
+            return;
+        }
+        catch (IOException ex)
+        {
+            _logger.Warn(ex, "An I/O error occurred while connecting to the pipe server.");
+            return;
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            _logger.Warn(ex, "Unauthorized access while connecting to the pipe server.");
+            return;
+        }
+
+        using var writer = new StreamWriter(client, Encoding.UTF8) { AutoFlush = true };
+        writer.WriteLine(command);
+    }
+
+    private static async Task RunServerLoopAsync(Action<IpcMessage, LogExpertProxy> onCommand, LogExpertProxy proxy, CancellationToken cancellationToken)
+    {
+        while (cancellationToken.IsCancellationRequested == false)
+        {
+            using var server = new NamedPipeServerStream(
+                PIPE_SERVER_NAME,
+                PipeDirection.In,
+                1,
+                PipeTransmissionMode.Message,
+                PipeOptions.Asynchronous);
+
+            try
+            {
+                await server.WaitForConnectionAsync(cancellationToken);
+                using var reader = new StreamReader(server, Encoding.UTF8);
+                var line = await reader.ReadLineAsync(cancellationToken);
+
+                if (line != null)
                 {
-                    errorText = lines[0];
+                    var message = JsonConvert.DeserializeObject<IpcMessage>(line);
+                    onCommand(message, proxy);
                 }
             }
-            ExceptionWindow win = new(errorText, stackTrace);
-            _ = win.ShowDialog();
+            catch (OperationCanceledException)
+            {
+                break;
+            }
+            catch (Exception ex)
+            {
+                _logger.Warn(ex, "Pipe server error");
+            }
         }
-
-        #endregion
-
-        #region Events handler
-
-        private static void Application_ThreadException(object sender, ThreadExceptionEventArgs e)
-        {
-            _logger.Fatal(e);
-
-            //ShowUnhandledException(e.Exception);
-            Thread thread = new(ShowUnhandledException);
-            thread.IsBackground = true;
-            thread.SetApartmentState(ApartmentState.STA);
-            thread.Start(e.Exception);
-            thread.Join();
-        }
-
-        private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
-        {
-            _logger.Fatal(e);
-
-            object exceptionObject = e.ExceptionObject;
-            //ShowUnhandledException(exceptionObject);
-            Thread thread = new(ShowUnhandledException);
-            thread.IsBackground = true;
-            thread.SetApartmentState(ApartmentState.STA);
-            thread.Start(exceptionObject);
-            thread.Join();
-        }
-
-        #endregion
     }
+
+    [STAThread]
+    private static void ShowUnhandledException(object exceptionObject)
+    {
+        var errorText = string.Empty;
+        string stackTrace;
+
+        if (exceptionObject is Exception exception)
+        {
+            errorText = exception.Message;
+            stackTrace = $"\r\n{exception.GetType().Name}\r\n{exception.StackTrace}";
+        }
+        else
+        {
+            stackTrace = exceptionObject.ToString();
+            var lines = stackTrace.Split('\n');
+
+            if (lines != null && lines.Length > 0)
+            {
+                errorText = lines[0];
+            }
+        }
+
+        ExceptionWindow win = new(errorText, stackTrace);
+        _ = win.ShowDialog();
+    }
+
+    #endregion
+
+    #region Events handler
+
+    private static void Application_ThreadException(object sender, ThreadExceptionEventArgs e)
+    {
+        _logger.Fatal(e);
+
+        Thread thread = new(ShowUnhandledException)
+        {
+            IsBackground = true
+        };
+
+        thread.SetApartmentState(ApartmentState.STA);
+        thread.Start(e.Exception);
+        thread.Join();
+    }
+
+    private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+    {
+        _logger.Fatal(e);
+
+        var exceptionObject = e.ExceptionObject;
+
+        Thread thread = new(ShowUnhandledException)
+        {
+            IsBackground = true
+        };
+
+        thread.SetApartmentState(ApartmentState.STA);
+        thread.Start(exceptionObject);
+        thread.Join();
+    }
+
+    #endregion
 }

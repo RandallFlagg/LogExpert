@@ -1,20 +1,10 @@
-﻿namespace CsvColumnizer
+﻿namespace CsvColumnizer;
+
+internal class CsvColumn(string name)
 {
-    internal class CsvColumn
-    {
-        #region cTor
+    #region Properties
 
-        public CsvColumn(string name)
-        {
-            Name = name;
-        }
+    public string Name { get; } = name;
 
-        #endregion
-
-        #region Properties
-
-        public string Name { get; }
-
-        #endregion
-    }
+    #endregion
 }
