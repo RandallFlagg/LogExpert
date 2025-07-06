@@ -578,7 +578,6 @@ internal partial class LogWindow : DockContent, ILogPaintContextUI, ILogView, IL
         WritePipeTab(lineEntryList, title);
     }
 
-
     #region Event Handlers
 
     [SupportedOSPlatform("windows")]
